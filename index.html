@@ -154,6 +154,15 @@ h3{font-size:17px;margin:0 0 6px}
 .lvopts{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
 .lvopts button{min-height:52px;border-radius:10px;border:2px solid var(--line);background:#fff;font-size:12.5px;font-weight:800;cursor:pointer;padding:2px}
 .lvopts button.on{border-color:var(--ink);color:#fff}
+.dayopts{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:2px}
+.dayopts button{min-height:44px;border-radius:10px;border:2px solid var(--line);background:#fff;font-size:12.5px;font-weight:800;cursor:pointer;padding:4px 8px;line-height:1.2;text-align:center}
+.dayopts button.on{border-color:var(--ink);color:#fff}
+.workkind{margin:8px 0 10px}
+.workkind .wkq{font-size:13.5px;font-weight:800;margin-bottom:8px;color:#0f172a}
+.workkind .seg{margin:0}
+.pdadd{margin-top:10px}
+.pdadd[hidden], .paidbox[hidden]{display:none !important}
+.paidbox .pdrm{margin-top:8px}
 .asgbox{background:#f8fafc;padding:12px}
 .asgopts{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .asgopts button{min-height:46px;border-radius:10px;border:2px solid var(--line);background:#fff;font-size:12.5px;font-weight:800;cursor:pointer;padding:2px 4px;line-height:1.15}
@@ -956,11 +965,32 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     // Places Autocomplete bias (NYC) when the user adds their own Google Maps key
     mapsBias: { south: 40.4774, west: -74.2591, north: 40.9176, east: -73.7004 },
     leaveTypes: [
-      { id: 'vacation', label: 'Vacation',  short: 'V', color: '#0E7490' },
-      { id: 'sick',     label: 'Sick',      short: 'S', color: '#9D174D' },
-      { id: 'comp',     label: 'Comp time', short: 'C', color: '#15803D' },
-      { id: 'personal', label: 'Personal',  short: 'P', color: '#7C2D12' },
-      { id: 'chart',    label: 'Chart time', short: 'CT', color: '#B45309' }
+      { id: 'vacation',     label: 'Vacation Day',        short: 'V',   color: '#0E7490' },
+      { id: 'vacationtime', label: 'Vacation Time',       short: 'VT',  color: '#155E75' },
+      { id: 'chart',        label: 'Chart Time',          short: 'CT',  color: '#B45309' },
+      { id: 'comp',         label: 'Comp Time',           short: 'C',   color: '#15803D' },
+      { id: 'sick',         label: 'Sick Day',            short: 'S',   color: '#9D174D' },
+      { id: 'military',     label: 'Military Day',        short: 'MIL', color: '#1D4ED8' },
+      { id: 'commanders',   label: 'Commanders Day',      short: 'CD',  color: '#6D28D9' },
+      { id: 'bereavement',  label: 'Bereavement Leave',   short: 'BER', color: '#44403C' },
+      { id: 'juryduty',     label: 'Jury Duty',           short: 'JD',  color: '#0F766E' },
+      { id: 'emprelations', label: 'Employee Relations',  short: 'ER',  color: '#9A3412' },
+      { id: 'personal',     label: 'Personal',            short: 'P',   color: '#7C2D12', hidden: true } // kept so older saved days still load
+    ],
+    // Primary day-sheet choices, in this order. Working / RDO are schedule defaults (not leave).
+    dayEntryOptions: [
+      { id: 'working',      label: 'Working' },
+      { id: 'rdo',          label: 'RDO' },
+      { id: 'vacation',     label: 'Vacation Day' },
+      { id: 'vacationtime', label: 'Vacation Time' },
+      { id: 'chart',        label: 'Chart Time' },
+      { id: 'comp',         label: 'Comp Time' },
+      { id: 'sick',         label: 'Sick Day' },
+      { id: 'military',     label: 'Military Day' },
+      { id: 'commanders',   label: 'Commanders Day' },
+      { id: 'bereavement',  label: 'Bereavement Leave' },
+      { id: 'juryduty',     label: 'Jury Duty' },
+      { id: 'emprelations', label: 'Employee Relations' }
     ],
     // Tour end: ending this many minutes or more past the scheduled end is overtime; 1..(this-1) minutes late earns none.
     otThresholdMin: 15,
@@ -1177,7 +1207,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (st === 'work' || st === 'dd') working = true;
     if (st === 'off' || st === 'ddoff') working = false;
     var extra = rdo && st === 'work', regular = working && !extra;
-    var sc = schedTour(day, squadId, opts, st, ov && ov.swap), len = (ov && ov.len) || sc.len || 0, start = (ov && ov.start) || sc.start || '';
+    var sc = schedTour(day, squadId, opts, st, ov && ov.swap), start = (ov && ov.start) || sc.start || '';
+    var span = extra && start && ov && ov.end ? rdoOtSpan(start, ov.end) : null;
+    var len = (ov && ov.len) || (span && span.len) || sc.len || 0;
     var lv = opts.leave && opts.leave[iso], e = start ? tourEnd(start, len) : null, pc = parseChart(chartAt(day, squadId)).type === 'pdu';
     return { iso: iso, rdo: rdo, status: st, working: working, regular: regular, onLeave: !!(lv && lv.type) && regular, len: len, start: start,
       countsNext: working && !!start && countsNextDay(start), pdu: pc, shift: sc.shift, pduColor: pc ? pduColor(day) : '', schedLen: sc.len, schedStart: sc.start, schedFrom: sc.from || '',
@@ -1287,6 +1319,47 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (idx >= 0) list[idx] = e; else list.push(e);
     } else if (idx >= 0) list.splice(idx, 1);
     return list;
+  }
+  // Full span of an RDO overtime tour (e.g. 01:30–16:00 -> 14:30). Used as ONE overtime entry.
+  function rdoOtSpan(start, end) {
+    var st = normTime(start || '') || '', en = normTime(end || '') || ''; if (!st || !en) return null;
+    var min = Math.round(hoursBetween(st, en) * 60); if (!(min > 0)) return null;
+    return { start: st, end: en, len: min, hours: Math.round(min / 60 * 10000) / 10000, label: fmtHM(min) };
+  }
+  // Day-sheet status: Working / RDO / leave. Working and RDO are defaults from the chart, not leave records.
+  function dayEntryOption(id) {
+    for (var i = 0; i < CONFIG.dayEntryOptions.length; i++) if (CONFIG.dayEntryOptions[i].id === id) {
+      var o = CONFIG.dayEntryOptions[i], lt = leaveTypeOf(id);
+      return { id: o.id, label: o.label, color: lt ? lt.color : (id === 'working' ? '#1E3A8A' : '#334155'), kind: id === 'working' ? 'work' : id === 'rdo' ? 'rdo' : 'leave' };
+    }
+    var hidden = leaveTypeOf(id);
+    return hidden ? { id: hidden.id, label: hidden.label, color: hidden.color, kind: 'leave', legacy: true } : null;
+  }
+  function dayEntryOptions(savedLeave) {
+    var list = CONFIG.dayEntryOptions.map(function (o) { return dayEntryOption(o.id); });
+    if (savedLeave && !list.some(function (x) { return x.id === savedLeave; })) {
+      var extra = dayEntryOption(savedLeave); if (extra) list.push(extra);
+    }
+    return list;
+  }
+  function defaultDayEntry(day, who, unitId) { return isRDO(day, who, unitId) ? 'rdo' : 'working'; }
+  // Selected day-sheet option from saved leave / tour + the chart default.
+  // workKind: 'ot' (extra tour), 'dd' / 'ddoff' (day for day), 'off' (workday marked not working), '' (default).
+  function dayEntryOf(day, who, opts) {
+    opts = opts || {};
+    var iso = toISO(day), rdo = isRDO(day, who, opts.unit), lv = opts.leave && opts.leave[iso], ov = opts.tours && opts.tours[iso];
+    var st = (ov && ov.status) || '', id, workKind = '';
+    if (lv && lv.type) id = lv.type;
+    else if (st === 'work') { id = 'working'; workKind = 'ot'; }
+    else if (st === 'dd') { id = 'working'; workKind = 'dd'; }
+    else if (st === 'off' || st === 'ddoff') { id = 'rdo'; workKind = st === 'ddoff' ? 'ddoff' : 'off'; }
+    else id = rdo ? 'rdo' : 'working';
+    return { id: id, rdo: rdo, workKind: workKind, status: st, leaveType: (lv && lv.type) || '', prompt: !!(rdo && id === 'working' && workKind !== 'dd' && workKind !== 'ot') };
+  }
+  function hasPaidDetail(a) {
+    if (!a || !a.pd) return false;
+    var p = a.pd;
+    return !!(p.id || p.start || p.end || p.vendor || p.address || p.durationMin);
   }
   // Next day off / next workday using the full day model (charts, overrides, D/D, extra tours).
   function nextOff(fromDay, who, opts) {
@@ -1558,12 +1631,15 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   // ---- Daily assignments: data.assignments = { 'YYYY-MM-DD': { type, detail, notes, updated } } (keyed by date, chart-independent) ----
   function assignmentType(id) { for (var i = 0; i < CONFIG.assignmentTypes.length; i++) if (CONFIG.assignmentTypes[i].id === id) return CONFIG.assignmentTypes[i]; return null; }
   function cleanAssignment(a) { // trims; returns null for "no assignment"
-    if (!a || !a.type) return null; var t = assignmentType(a.type);
-    var r = { type: a.type, detail: t && t.detail ? String(a.detail || '').trim() : '', notes: String(a.notes || '').trim() };
+    if (!a) return null; var t = assignmentType(a.type), paid = hasPaidDetail(a) || !!(t && t.paid);
+    if (!a.type && !paid) return null;
+    if (a.type && !t && !paid) return null;
+    var r = { type: a.type || (paid ? 'paiddetail' : ''), detail: t && t.detail ? String(a.detail || '').trim() : '', notes: String(a.notes || '').trim() };
     if (t && t.address) r.address = String(a.address || '').trim(); // Court / Training only
-    if (a.type === 'court') { r.place = String(a.place || '').trim(); r.boro = CONFIG.boroughs.indexOf(a.boro) >= 0 ? a.boro : ''; }
-    if (a.type === 'training') r.place = String(a.place || '').trim(); // training location name, separate from the training text (detail)
-    if (t && t.paid) r.pd = cleanPaidDetail(a.pd);
+    if (r.type === 'court') { r.place = String(a.place || '').trim(); r.boro = CONFIG.boroughs.indexOf(a.boro) >= 0 ? a.boro : ''; }
+    if (r.type === 'training') r.place = String(a.place || '').trim(); // training location name, separate from the training text (detail)
+    if (paid) r.pd = cleanPaidDetail(a.pd);
+    if (!r.type && paid) r.type = 'paiddetail';
     return r;
   }
   // ---- Paid Detail ----
@@ -1595,7 +1671,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function paidDetailNotes(assignments, day, tourFn, todayDay) {
     var out = [], tour = tourFn ? tourFn(day) : null, reg = !!(tour && tour.working && tour.regular && tour.start && tour.len);
     [-1, 0, 1].forEach(function (k) {
-      var iso = toISO(day + k), a = assignments && assignments[iso]; if (!a || !a.pd || assignmentType(a.type) && !assignmentType(a.type).paid) return;
+      var iso = toISO(day + k), a = assignments && assignments[iso]; if (!hasPaidDetail(a)) return;
       var w = paidDetailWindow(a.pd, iso); if (!w) return;
       if (todayDay != null && (w.endAbs === null ? w.startAbs : w.endAbs) < todayDay * 1440) return;
       var c = reg ? paidDetailConflict(w, tour, day) : '', n = { iso: w.date, id: a.pd.id || '', vendor: a.pd.vendor || '', start: (a.pd.start || '').replace(':', ''), end: (a.pd.end || '').replace(':', ''), window: w, conflict: c, rules: [] };
@@ -1616,7 +1692,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function paidDetailTotals(assignments, profile, fromIso, toIso, todayIso) {
     var out = { count: 0, minutes: 0, amount: 0, earned: 0, scheduled: 0, rate: paidDetailRate(profile), items: [] };
     Object.keys(assignments || {}).sort().forEach(function (iso) {
-      var a = assignments[iso], t = a && assignmentType(a.type); if (!t || !t.paid || !a.pd) return;
+      var a = assignments[iso]; if (!hasPaidDetail(a)) return;
       var d = paidDetailDay(a, iso); if ((fromIso && d < fromIso) || (toIso && d > toIso)) return;
       var p = paidDetailPay(a.pd, profile); out.count++; out.minutes += p.minutes; out.amount += p.amount;
       if (todayIso && d > todayIso) out.scheduled += p.amount; else out.earned += p.amount;
@@ -2194,10 +2270,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     }
   }
   function validateAssignment(a) {
-    if (!a || !a.type) return '';
-    var t = assignmentType(a.type); if (!t) return 'Pick an assignment type';
-    if (t.detail && t.detail.required && !String(a.detail || '').trim()) return 'Describe the assignment';
-    if (t.paid && a.pd) { var pd = a.pd; if ((pd.start && !normTime(pd.start)) || (pd.end && !normTime(pd.end))) return 'Paid Detail time: use HHMM, e.g. 0001 and 0800'; }
+    if (!a) return '';
+    var t = assignmentType(a.type);
+    if (a.type && !t) return 'Pick an assignment type';
+    if (t && t.detail && t.detail.required && !String(a.detail || '').trim()) return 'Describe the assignment';
+    if (a.pd && (hasPaidDetail(a) || (t && t.paid))) { var pd = a.pd; if ((pd.start && !normTime(pd.start)) || (pd.end && !normTime(pd.end))) return 'Paid Detail time: use HHMM, e.g. 0001 and 0800'; }
     return '';
   }
   function assignmentLabel(a) { if (!a || !a.type) return ''; var t = assignmentType(a.type), lb = t ? t.label : a.type; if (t && t.paid) return lb + (a.pd && a.pd.vendor ? ': ' + a.pd.vendor : ''); return a.detail ? lb === 'Other' ? a.detail : lb + ': ' + a.detail : lb; }
@@ -2289,7 +2366,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     unit: unit, squad: squad, cycleOffset: cycleOffset, squadsOff: squadsOff, squadsWorking: squadsWorking, isRDO: isRDO,
     nextDayOff: nextDayOff, nextWorkday: nextWorkday, countRDOs: countRDOs, isPayday: isPayday, nextPayday: nextPayday,
     periodsForPayday: periodsForPayday, regularPaydayFor: regularPaydayFor, overtimePaydayFor: overtimePaydayFor, regularPeriodFor: regularPeriodFor, overtimePeriodFor: overtimePeriodFor, payPeriodsInYear: payPeriodsInYear, hoursBetween: hoursBetween, entryHours: entryHours,
-    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, dayTour: dayTour, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, commandById: commandById, searchCommands: searchCommands, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, endCompare: endCompare, syncEndOT: syncEndOT, leaveBalances: leaveBalances, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
+    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, dayTour: dayTour, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, commandById: commandById, searchCommands: searchCommands, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, endCompare: endCompare, syncEndOT: syncEndOT, leaveBalances: leaveBalances, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
     steadyKey: steadyKey, parseChart: parseChart, validChartKey: validChartKey, chartInfo: chartInfo, sortCharts: sortCharts, chartAt: chartAt, chartChanges: chartChanges, nextOff: nextOff, nextOn: nextOn, reviewOverrides: reviewOverrides, DOW3: DOW3,
     rankAbbr: rankAbbr, rankLabel: rankLabel, displayName: displayName, migrateProfile: migrateProfile, validateProfile: validateProfile,
     icsEscape: icsEscape, foldLine: foldLine, buildEvents: buildEvents, toICS: toICS, googleLink: googleLink, TZID: TZID
@@ -2607,6 +2684,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (tr.plus15) marks += '<i class="m-p15">+15</i>';
       if (tr.countsNext) marks += '<i class="m-nx" title="Starts ' + tr.start + ': counts for the next day">' + tr.start.slice(0, 2) + '&rarr;+1</i>';
       var asg = S.assignments[iso], asgT = asg && E.assignmentType(asg.type); if (asgT) marks += '<i class="m-asg" style="background:' + asgT.color + '">' + asgT.short + '</i>';
+      if (E.hasPaidDetail(asg) && !(asgT && asgT.paid)) marks += '<i class="m-asg" style="background:#A16207">PAID</i>';
       if (tr.regular && tr.lenChanged) marks += '<i class="m-tour">' + E.fmtHM(tr.len) + '</i>';
       else if (tr.dropped) marks += '<i class="m-tour">&#9998;</i>';
       if (lt) marks += '<i class="m-lv" style="background:' + lt.color + '">' + lt.short + '</i>';
@@ -2633,7 +2711,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<span><i class="sw" style="background:#fffbe6;border:2px dashed ' + sq.color + '"></i>Extra tour on RDO (OT)</span>' +
       '<span><i class="m-dd" style="font-style:normal;font-size:10px;font-weight:800;padding:0 4px;border-radius:4px">D/D</i>Day for day swap</span>' +
       '<span><i class="m-chg" style="font-style:normal;font-size:10px;font-weight:800;padding:0 4px;border-radius:4px">&#8644;</i>Chart change</span>' +
-      C.leaveTypes.map(function (l) { return '<span><i style="font-style:normal;font-size:10px;font-weight:800;padding:1px 5px;border-radius:4px;background:' + l.color + ';color:#fff">' + l.short + '</i>' + l.label + '</span>'; }).join('') +
+      C.leaveTypes.filter(function (l) { return !l.hidden; }).map(function (l) { return '<span><i style="font-style:normal;font-size:10px;font-weight:800;padding:1px 5px;border-radius:4px;background:' + l.color + ';color:#fff">' + l.short + '</i>' + l.label + '</span>'; }).join('') +
       C.assignmentTypes.map(function (a) { return '<span><i style="font-style:normal;font-size:10px;font-weight:800;padding:1px 4px;border-radius:4px;background:' + a.color + ';color:#fff">' + a.short + '</i>' + esc(a.label) + '</span>'; }).join('') +
       '</div><div class="cfhint">Tap any day to add an assignment, leave, notes or overtime.</div>' +
       chgList.map(function (c) { var ci = E.chartInfo(c.chart, u); return '<div class="chgline"><i class="m-chg">&#8644;</i> Chart change: <b>' + esc(ci ? ci.name : c.chart) + '</b> from ' + fmt(c.day) + '</div>'; }).join('') + '</div>';
@@ -2729,7 +2807,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     Object.keys(S.leave).forEach(function (iso) { if (+iso.slice(0, 4) !== y) return; var l = S.leave[iso]; if (!l || (!l.type && !l.note)) return; entries.push([iso, l]); if (l.type) counts[l.type] = (counts[l.type] || 0) + 1; });
     entries.sort(function (a, b) { return a[0] < b[0] ? 1 : -1; });
     var html = '<div class="card"><div class="yearsel"><button class="navbtn" data-act="leaveYear" data-dir="-1" aria-label="Previous year">&lsaquo;</button><b>' + y + '</b><button class="navbtn" data-act="leaveYear" data-dir="1" aria-label="Next year">&rsaquo;</button></div>' +
-      '<div class="lv-grid">' + C.leaveTypes.map(function (l) { var n = counts[l.id] || 0; return '<div class="lv-card" style="background:' + l.color + '"><b>' + n + '</b>' + l.label + ' day' + (n === 1 ? '' : 's') + '</div>'; }).join('') + '</div></div>';
+      '<div class="lv-grid">' + C.leaveTypes.filter(function (l) { return !l.hidden || counts[l.id]; }).map(function (l) { var n = counts[l.id] || 0; return '<div class="lv-card" style="background:' + l.color + '"><b>' + n + '</b>' + l.label + '</div>'; }).join('') + '</div></div>';
     html += '<button class="btn primary block" data-act="leaveNew" style="margin-bottom:12px">+ Leave, note or assignment (any date)</button>';
     var asgs = Object.keys(S.assignments).filter(function (iso) { return +iso.slice(0, 4) === y && S.assignments[iso] && S.assignments[iso].type; }).sort().map(function (iso) { return { iso: iso, day: E.toDay(iso), a: S.assignments[iso], label: E.assignmentLabel(S.assignments[iso]) }; });
     html += '<div class="card" id="asgYear"><h3>Assignments in ' + y + (asgs.length ? ' <span class="muted" style="font-size:13px;font-weight:600">(' + asgs.length + ')</span>' : '') + '</h3>' +
@@ -2794,21 +2872,24 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       (function () { var c = E.chartChanges(myWho()).filter(function (x) { return x.day === d; })[0], ci = c && E.chartInfo(c.chart, u); return c ? '<span class="chip" style="background:#7c2d12;color:#fff;border-color:transparent">Chart change: ' + esc(ci ? ci.name : c.chart) + '</span>' : ''; })() +
       '<span class="chip">Off (patrol): ' + off.map(function (s) { return s.name; }).join(', ') + '</span><span class="chip">Working: ' + work.map(function (s) { return s.short; }).join(' & ') + '</span>' +
       '<span class="chip"><span class="cdot" style="background:' + dcol.color + '"></span>&nbsp;PDU ' + dcol.name + ': PM ' + pon.pm.short + ' · AM ' + pon.am.short + ' · ' + pon.rdo.short + ' off</span></div>';
-    var opts = [{ id: '', label: 'None', color: '#334155' }].concat(C.leaveTypes).map(function (l) {
-      var on = (lv.type || '') === l.id;
-      return '<button type="button" data-act="lvPick" data-t="' + l.id + '" class="' + (on ? 'on' : '') + '" style="' + (on ? 'background:' + l.color : '') + '" data-c="' + l.color + '">' + l.label + '</button>';
+    var entry = E.dayEntryOf(d, sq.id, tourOpts());
+    var opts = E.dayEntryOptions(entry.leaveType).map(function (l) {
+      var on = entry.id === l.id;
+      return '<button type="button" data-act="lvPick" data-t="' + l.id + '" class="' + (on ? 'on' : '') + '" style="' + (on ? 'background:' + l.color : '') + '" data-c="' + l.color + '">' + esc(l.label) + '</button>';
     }).join('');
     var ots = S.overtime.filter(function (e) { return e.date === iso; });
     openSheet(fmt(d, 'long'), status + pdNotesHtml(d, dt) +
-      asgSection(iso, d, dt) +
-      '<div class="field"><label>Leave</label><div class="lvopts" id="lvOpts" data-sel="' + esc(lv.type || '') + '">' + opts + '</div>' + (mine ? '<div class="hint">This is an RDO; leave here won\'t change days worked.</div>' : '') + '</div>' +
+      '<div class="field" id="dayEntry"><label>This day</label><div class="dayopts" id="lvOpts" data-sel="' + esc(entry.id) + '">' + opts + '</div>' +
+      '<div class="hint" id="dayEntryHint"' + (entry.id === 'rdo' && mine ? '' : ' hidden') + '>This is your RDO. Change it above if you work, take leave or add a paid detail.</div>' +
+      '<div class="hint" id="dayLeaveHint"' + (entry.leaveType && mine ? '' : ' hidden') + '>This is an RDO; leave here won\'t change days worked.</div></div>' +
       tourSection(d) +
+      asgSection(iso, d, dt) +
       '<div class="field"><label for="lvNote">Note (optional)</label><textarea id="lvNote" placeholder="e.g. Approved by Sgt. Lee">' + esc(lv.note || '') + '</textarea></div>' +
-      '<button class="btn primary block" data-act="lvSave" data-d="' + d + '">Save day</button>' +
+            '<button class="btn primary block" data-act="lvSave" data-d="' + d + '">Save day</button>' +
       '<h3 style="margin-top:18px">Overtime this day</h3>' + (ots.length ? '<div class="list">' + ots.map(otRow).join('') + '</div>' : '<div class="muted" style="margin-bottom:8px">None logged.</div>') +
       '<button class="btn block" data-act="otNew" data-date="' + iso + '" style="margin-top:6px">+ Add overtime on this day</button>' + googleDay(d) +
       (function () { var has = E.dayHasEntries(S, iso); return '<div class="daydel"><button type="button" class="btn block delbtn" id="dayDelBtn" data-act="dayDelAsk" data-d="' + d + '"' + (has ? '' : ' disabled aria-disabled="true"') + '>Delete this entry</button>' + (has ? '' : '<div class="hint" id="dayDelHint">Nothing saved for this day yet.</div>') + '</div>'; })());
-    pduKeep(); updateEnd(false); attachPlaces(); syncPicks(); loadSlipThumb(); pdRemind();
+    pduKeep(); updateEnd(false); attachPlaces(); syncPicks(); loadSlipThumb(); pdRemind(); syncDayEntry();
   }
   // ---------- Paid Detail reminders (never block saving) ----------
   function hhmm(t) { return String(t || '').replace(':', ''); }
@@ -2850,8 +2931,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   // ---------- Paid Detail fields + on-device screenshot reader ----------
   function paidBlock(a, sel, iso) {
-    var pd = (a.type === 'paiddetail' && a.pd) || {}, f = function (id, lbl, v, extra) { return '<div class="field"><label for="' + id + '">' + lbl + '</label><input id="' + id + '" value="' + esc(v || '') + '"' + (extra || '') + '></div>'; };
-    return '<div class="paidbox" id="asgPaid"' + (sel === 'paiddetail' ? '' : ' hidden') + ' data-iso="' + iso + '">' +
+    var pd = (a && a.pd) || {}, show = sel === 'paiddetail' || E.hasPaidDetail(a);
+    var f = function (id, lbl, v, extra) { return '<div class="field"><label for="' + id + '">' + lbl + '</label><input id="' + id + '" value="' + esc(v || '') + '"' + (extra || '') + '></div>'; };
+    return '<button type="button" class="btn block pdadd" id="pdAddBtn" data-act="pdAdd"' + (show ? ' hidden' : '') + '>Add paid detail</button>' +
+      '<div class="paidbox" id="asgPaid"' + (show ? '' : ' hidden') + ' data-iso="' + iso + '">' +
       '<div class="pdscan"><label class="btn sm pdup" for="pdFile">&#128247; Upload screenshot</label><input type="file" id="pdFile" accept="image/*" hidden>' +
       '<div class="hint">Reads your &ldquo;Selected Paid Details&rdquo; screen on this phone and fills the fields below. The picture is not uploaded, saved or synced.</div><div class="pdstat" id="pdStat" role="status" aria-live="polite" hidden></div></div>' +
       f('pdId', 'Paid Detail ID', pd.id, ' inputmode="numeric" autocomplete="off" placeholder="e.g. 4315816"') +
@@ -2860,7 +2943,21 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div class="field"><label for="pdEnd">End (HHMM)</label><input id="pdEnd" class="timeIn" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="0800" value="' + esc(pd.end || '') + '"></div></div>' +
       '<div class="field"><label for="pdDur">Duration (H:MM)</label><input id="pdDur" inputmode="decimal" autocomplete="off" placeholder="auto from the times" value="' + esc(pd.durationMin ? E.fmtHM(pd.durationMin) : '') + '"><div class="hint" id="pdDurHint">Worked out from the times (may cross midnight). :59 rounds up to the hour.</div></div><div class="pdpay" id="pdPay" role="status" aria-live="polite"></div><div class="pdnote" id="pdRemind" role="note" hidden></div>' +
       f('pdVendor', 'Vendor', pd.vendor, ' autocomplete="off" placeholder="e.g. Mount Sinai Health System / Brooklyn"') +
-      f('pdAddr', 'Address', pd.address, ' autocomplete="off" placeholder="Street, city, ZIP"') + '</div>';
+      f('pdAddr', 'Address', pd.address, ' autocomplete="off" placeholder="Street, city, ZIP"') +
+      '<button type="button" class="btn sm danger pdrm" data-act="pdRemove">Remove paid detail</button></div>';
+  }
+  function pdHasInput() { return E.hasPaidDetail({ pd: readPaid() }); }
+  function showPaidForm(on, clear) {
+    var box = document.getElementById('asgPaid'), btn = document.getElementById('pdAddBtn');
+    if (box) box.hidden = !on; if (btn) btn.hidden = !!on;
+    if (clear && box) {
+      ['pdId', 'pdStart', 'pdEnd', 'pdDur', 'pdVendor', 'pdAddr'].forEach(function (id) { var e = document.getElementById(id); if (e) e.value = ''; });
+      var dt = document.getElementById('pdDate'); if (dt) dt.value = box.dataset.iso || '';
+      var st = document.getElementById('pdStat'); if (st) { st.hidden = true; st.textContent = ''; }
+      pdDateCheck(); pdRemind();
+    }
+    if (on) pdRemind();
+    refreshSlip();
   }
   function readPaid() {
     var g = function (id) { var e = document.getElementById(id); return e ? e.value.trim() : ''; }, dm = E.parseHM(g('pdDur'));
@@ -3132,6 +3229,12 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (JSON.stringify(next) !== JSON.stringify(S.slips || {})) { S.slips = next; save(true); render(); }
     }).catch(function () {});
   }
+  function daySlipSel() {
+    var box = document.getElementById('asgBox'), sel = box ? box.dataset.sel : '', pd = document.getElementById('asgPaid');
+    if (E.slipKind(sel)) return sel;
+    if (pd && !pd.hidden) return 'paiddetail';
+    return sel;
+  }
   function slipLabel(iso, sel) { var k = E.slipKind(sel) || E.slipKind((S.slips[iso] || {}).kind); return k || E.slipKind('court'); }
   function slipFileName(iso, k) { return ({ court: 'court-slip-', training: 'certification-slip-', paiddetail: 'paid-detail-slip-' }[k.id] || 'slip-') + iso + '.pdf'; }
   function slipHtml(iso, sel) {
@@ -3149,7 +3252,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function fmtStamp(isoTs) { var d = new Date(isoTs); if (isNaN(d)) return ''; return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }); }
   function refreshSlip() {
-    var b = document.getElementById('slipBox'); if (!b) return; var box = document.getElementById('asgBox'), sel = box ? box.dataset.sel : '';
+    var b = document.getElementById('slipBox'); if (!b) return; var sel = daySlipSel();
     var tmp = document.createElement('div'); tmp.innerHTML = slipHtml(b.dataset.iso, sel); b.parentNode.replaceChild(tmp.firstChild, b); loadSlipThumb();
   }
   function loadSlipThumb() {
@@ -3166,7 +3269,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function slipStart(file) {
     var b = document.getElementById('slipBox'), box = document.getElementById('asgBox'); if (!b || !file) return;
-    var iso = b.dataset.iso, k = slipLabel(iso, box ? box.dataset.sel : '');
+    var iso = b.dataset.iso, k = slipLabel(iso, daySlipSel());
     toast('Finding the paper\u2026');
     loadImageFile(file).then(function (cv) {
       var x = cv.getContext('2d'), id = x.getImageData(0, 0, cv.width, cv.height), img = { data: id.data, width: cv.width, height: cv.height }, det = null;
@@ -3417,9 +3520,44 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     toast(evs.length + ' events exported' + (kind === 'apple' && !isIOS() ? '; open the file to add to Calendar' : ''));
   }
 
-  function tourSection(d) {
+  function daySel() { var o = document.getElementById('lvOpts'); return o ? o.dataset.sel : ''; }
+  function dayIsLeave(sel) { return !!(sel && sel !== 'working' && sel !== 'rdo'); }
+  function syncDayEntry() {
+    var sel = daySel(), box = document.getElementById('tourBox'), rdo = !!(box && box.dataset.rdo === '1'), st = box ? box.dataset.status : '';
+    var leave = dayIsLeave(sel), wk = document.getElementById('workKind'), lw = document.getElementById('tourLenWrap'), dp = document.getElementById('ddPicker');
+    var hint = document.getElementById('dayEntryHint'), lh = document.getElementById('dayLeaveHint');
+    if (hint) hint.hidden = !(rdo && sel === 'rdo');
+    if (lh) lh.hidden = !(rdo && leave);
+    var showPrompt = rdo && sel === 'working' && st !== 'dd' && st !== 'ddoff';
+    if (wk) wk.hidden = !showPrompt;
+    if (dp) dp.hidden = st !== 'ddnew';
+    var showTimes = false;
+    if (!leave && sel !== 'rdo') {
+      if (rdo && sel === 'working') showTimes = st === 'work' || st === 'ddnew' || st === 'dd';
+      else if (!rdo && sel === 'working') showTimes = st !== 'off';
+    }
+    if (lw) lw.hidden = !showTimes;
+    if (st === 'paid') showPaidForm(true);
+    var th = document.getElementById('tourTimeHint');
+    if (th && !th.dataset.def) th.dataset.def = th.innerHTML;
+    if (th) th.innerHTML = (rdo && st === 'work')
+      ? 'Enter the start and end of the tour. The whole span is one overtime entry (for example 01:30 to 16:00 is 14:30 of overtime). 24-hour time: type digits (130 &rarr; 01:30).'
+      : th.dataset.def;
+    var help = document.getElementById('tourHelp');
+    if (help) help.textContent = st === 'work' ? 'The hours you work are saved as one overtime tour, using the overtime rules for your rank (Cash / Time / Split, and the Captain cap).' : st === 'ddnew' || st === 'dd' ? 'Day for day: this RDO counts as a regular workday; the day you pick below becomes an RDO.' : st === 'paid' ? 'Enter the paid detail below. It is kept separate from overtime.' : 'Pick one, then enter the tour times.';
+    var now = document.getElementById('tourNow');
+    if (now) now.hidden = !!(rdo && sel === 'working' && !st);
+    if (box) {
+      Array.prototype.forEach.call(box.querySelectorAll('#workKind [data-act="tourStatus"]'), function (b) {
+        var on = b.dataset.s === st || (b.dataset.s === 'ddnew' && (st === 'dd' || st === 'ddnew'));
+        b.classList.toggle('on', on);
+      });
+    }
+    updateEnd(false);
+  }
+    function tourSection(d) {
     var iso = E.toISO(d), sq = mySquad(), t = E.dayTour(d, sq.id, tourOpts()), ov = S.tours[iso] || {}, st = t.status;
-    var html = '<div class="card" style="background:#f5f7fb;padding:12px" id="tourBox" data-status="' + st + '" data-orig="' + st + '"><h3 style="font-size:15px">Tour this day' + (t.modified ? ' <span class="chip" style="background:#0f172a;color:#fff;border-color:transparent">Modified</span>' : '') + '</h3>';
+    var html = '<div class="card" style="background:#f5f7fb;padding:12px" id="tourBox" data-status="' + st + '" data-orig="' + st + '" data-rdo="' + (t.rdo ? '1' : '0') + '"><h3 style="font-size:15px">Tour this day' + (t.modified ? ' <span class="chip" style="background:#0f172a;color:#fff;border-color:transparent">Modified</span>' : '') + '</h3>';
     var pduWork = t.pdu && (t.shift === 'pm' || t.shift === 'am');
     var pduBox = pduWork ? '<div class="pduinfo" id="pduSched" data-sl="' + t.schedLen + '" data-ss="' + t.schedStart + '" data-lbl="' + PDU.shifts[t.shift].label + '"><b>Scheduled ' + PDU.shifts[t.shift].label + ' tour</b> &middot; ' + t.schedStart + '–' + E.tourEnd(t.schedStart, t.schedLen).end + ' &middot; counts <b>' + E.fmtHM(t.schedLen) + '</b>' + (t.plus15 || (t.schedLen !== PDU.shifts[t.shift].len) ? ' <i class="m-p15" style="font-style:normal;font-size:11px;font-weight:800;padding:1px 5px;border-radius:4px">+15</i><div style="font-size:12.5px">Includes the extra 15 minutes (Detective Duty Schedule). <button type="button" class="btn sm" data-act="x15Open" data-y="' + E.parts(d).y + '" style="min-height:28px;padding:0 8px">Ranges</button></div>' : '') +
         '<div style="font-size:13px;margin-top:4px">Changing only the start time keeps <b>' + E.fmtHM(t.schedLen) + '</b>' + (t.shift === 'pm' ? ' (e.g. a PM day moved to a morning tour for court, detailed out or training).' : '.') + '</div>' +
@@ -3431,7 +3569,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div class="field"><label for="dayStart">Tour start</label><input id="dayStart" class="timeIn" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="' + esc(defStart || 'HH:MM') + '" value="' + esc(ov.start || '') + '"><div class="err" id="dayStart-err"></div></div>' +
       '<div class="field"><label for="dayEnd">Tour end</label><input id="dayEnd" class="timeIn" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="HH:MM" value="' + esc(ov.end || '') + '"><div class="err" id="dayEnd-err"></div></div></div>' +
       '<div class="picks startpicks" id="startPicks"><button type="button" class="pick" data-act="startPick" data-for="dayStart" data-v="">Scheduled' + (defStart ? ' ' + esc(defStart) : '') + '</button></div>' + // no start-time presets on the day page (Zee: 17:00 is a tour LENGTH, offered in the tour length picks)
-      '<div class="hint">24-hour time: type digits (730 &rarr; 07:30, 2300 &rarr; 23:00). Blank start = scheduled' + (defStart ? ' ' + defStart : '') + '. Blank end = scheduled end; type the actual end if you finished late or early.</div>' +
+      '<div class="hint" id="tourTimeHint">24-hour time: type digits (730 &rarr; 07:30, 2300 &rarr; 23:00). Blank start = scheduled' + (defStart ? ' ' + defStart : '') + '. Blank end = scheduled end; type the actual end if you finished late or early.</div>' +
       '<div id="endPop" class="endpop" role="status" aria-live="polite" hidden></div>' +
       '<div id="endNote" class="endnote" role="status" aria-live="polite" hidden></div>' +
       '<div id="shortBox" class="shortbox" data-sel="' + esc(ov.short && ov.short.type || '') + '" hidden><div class="sbq" id="shortQ">Which balance should be charged?</div><div class="shortopts">' +
@@ -3445,14 +3583,16 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<div class="row" style="margin-top:8px"><button type="button" class="btn sm" data-act="day" data-d="' + other + '">Open ' + fmt(other, 'md') + '</button><button type="button" class="btn sm danger" data-act="ddUndo" data-d="' + d + '">Undo D/D (both)</button></div></div>' +
         (t.ddWork ? lenFields : '<input type="hidden" id="dayLen" value=""><input type="hidden" id="dayStart" value="">');
     } else if (t.rdo) {
-      html += '<div class="seg" style="margin:6px 0 10px"><button type="button" data-act="tourStatus" data-s="" class="' + (st === '' ? 'on' : '') + '">Off (RDO)</button><button type="button" data-act="tourStatus" data-s="work" class="' + (st === 'work' ? 'on' : '') + '">Extra tour (OT)</button><button type="button" data-act="tourStatus" data-s="ddnew">Day for day</button></div>' +
-        '<div class="muted" style="font-size:12.5px;margin-bottom:8px" id="tourHelp">' + (st === 'work' ? 'Counts as overtime, linked to one entry in your Overtime log.' : 'Extra tour = overtime. Day for day = work this RDO as a regular day and take a workday off instead.') + '</div>';
+      var wkOn = function (s) { return st === s || (s === 'ddnew' && (st === 'dd' || st === 'ddnew')) ? ' on' : ''; };
+      html += '<div id="workKind" class="workkind"' + (st ? '' : ' hidden') + '><div class="wkq" id="workKindQ">How do you want to record this tour?</div>' +
+        '<div class="seg"><button type="button" data-act="tourStatus" data-s="ddnew" class="' + wkOn('ddnew') + '">Day-for-day</button><button type="button" data-act="tourStatus" data-s="work" class="' + wkOn('work') + '">Overtime</button><button type="button" data-act="tourStatus" data-s="paid" class="' + wkOn('paid') + '">Paid detail</button></div>' +
+        '<div class="muted" style="font-size:12.5px;margin:8px 0 0" id="tourHelp">' + (st === 'work' ? 'The hours you work are saved as one overtime tour, using the overtime rules for your rank.' : st === 'ddnew' || st === 'dd' ? 'Day for day: this RDO counts as a regular workday; the day you pick below becomes an RDO.' : st === 'paid' ? 'Enter the paid detail below. It is kept separate from overtime.' : 'Pick one, then enter the tour times.') + '</div></div>';
       var ws = d - E.parts(d).dow, sugg = '';
       for (var i = 0; i < 7; i++) { var x = ws + i, xt = E.dayTour(x, sq.id, tourOpts()); if (!xt.rdo && !xt.modified) sugg += '<button type="button" class="pick" data-act="ddPick" data-v="' + E.toISO(x) + '">' + fmt(x, 'short').replace(',', '') + '</button>'; }
       html += '<div id="ddPicker" hidden><div class="field"><label>Take this workday off instead (same week)</label><div class="picks" style="margin-top:0">' + (sugg || '<span class="muted" style="font-size:13px">No open workdays this week; pick any date below.</span>') + '</div></div>' +
         '<div class="field"><label for="ddSwap">Or any date</label><input type="date" id="ddSwap"><div class="hint">Must be one of your scheduled workdays.</div></div></div>' + lenFields;
     } else {
-      html += '<div class="seg" style="margin:6px 0 10px"><button type="button" data-act="tourStatus" data-s="" class="' + (st === '' ? 'on' : '') + '">Working (default)</button><button type="button" data-act="tourStatus" data-s="off" class="' + (st === 'off' ? 'on' : '') + '">Not working</button></div>' + lenFields;
+      html += lenFields;
     }
     html += '<div class="muted" style="font-size:13px" id="tourNow">' + (t.working ? 'Currently: working ' + tourText(t) + (t.extra ? ' (overtime)' : '') + (pduWork && t.startChanged && t.lenKept ? ' &middot; ' + PDU.shifts[t.shift].label + ' day, start changed, still counts ' + E.fmtHM(t.len) : '') : 'Currently: off') + '</div>' +
       (t.modified && !t.dd ? '<button type="button" class="btn sm" data-act="tourReset" data-d="' + d + '" style="margin-top:8px">Reset to default</button>' : '') + '</div>';
@@ -3461,6 +3601,22 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   // Start -> end callout: computed from the start and that day's tour length (regular, PDU PM/AM incl. +15, or the override typed below)
   function updateEnd(flash) {
     var box = document.getElementById('seBox'), si = document.getElementById('dayStart'), out = document.getElementById('dayEnd'), pop = document.getElementById('endPop'); if (!box || !si || !out) return;
+    var tb = document.getElementById('tourBox'), rawS = si.value.trim(), endRaw = out.value.trim();
+    if (tb && tb.dataset.rdo === '1' && tb.dataset.status === 'work') {
+      var sOt = rawS ? E.normTime(rawS) : '', eOt = endRaw ? E.normTime(endRaw) : '', span = sOt && eOt ? E.rdoOtSpan(sOt, eOt) : null;
+      var erS = document.getElementById('dayStart-err'), erE = document.getElementById('dayEnd-err');
+      if (erS) erS.textContent = rawS && !sOt && rawS.length >= 5 ? 'Use HH:MM, 24-hour (00:00–23:59)' : '';
+      if (erE) erE.textContent = endRaw && !eOt && endRaw.length >= 5 ? 'Use HH:MM, 24-hour (00:00–23:59)' : '';
+      var note = document.getElementById('endNote'), sb = document.getElementById('shortBox');
+      if (note) { note.hidden = true; note.innerHTML = ''; } if (sb) sb.hidden = true;
+      if (span) {
+        var dl = document.getElementById('dayLen'); if (dl) dl.value = E.fmtHM(span.len);
+        pop.hidden = false; pop.classList.toggle('nx', false);
+        pop.innerHTML = '<div class="et">Overtime tour: ' + esc(span.label) + ' (' + esc(span.start) + '&ndash;' + esc(span.end) + ')</div><div class="es">Saved as one overtime entry.</div>';
+        if (flash) { pop.classList.remove('pop'); void pop.offsetWidth; pop.classList.add('pop'); }
+        return;
+      }
+    }
     var raw = si.value.trim(), start = raw ? E.normTime(raw) : box.dataset.ss, lt = (document.getElementById('dayLen') || {}).value, len = (lt && E.parseHM(lt.trim())) || +box.dataset.sl;
     var er = document.getElementById('dayStart-err'); if (er) er.textContent = raw && !start && raw.length >= 5 ? 'Use HH:MM, 24-hour (00:00–23:59)' : '';
     var info = start && len ? E.tourEndInfo(start, len, +box.dataset.d) : null;
@@ -3752,26 +3908,46 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     lvPick: function (t) {
       var box = document.getElementById('lvOpts'); box.dataset.sel = t.dataset.t;
       Array.prototype.forEach.call(box.children, function (b) { var on = b === t; b.classList.toggle('on', on); b.style.background = on ? b.dataset.c : ''; });
+      var tb = document.getElementById('tourBox'), id = t.dataset.t, rdo = tb && tb.dataset.rdo === '1';
+      if (tb && tb.dataset.orig !== 'dd' && tb.dataset.orig !== 'ddoff') {
+        if (id === 'rdo') tb.dataset.status = rdo ? '' : 'off';
+        else if (id === 'working') {
+          if (!rdo) tb.dataset.status = (tb.dataset.status === 'off' ? '' : tb.dataset.status);
+          else if (tb.dataset.status === 'off') tb.dataset.status = '';
+        } else if (rdo && (tb.dataset.status === 'work' || tb.dataset.status === 'ddnew' || tb.dataset.status === 'paid')) tb.dataset.status = '';
+      }
+      syncDayEntry();
     },
     lvSave: function (t) {
-      var iso = E.toISO(+t.dataset.d), type = document.getElementById('lvOpts').dataset.sel, note = document.getElementById('lvNote').value.trim();
+      var iso = E.toISO(+t.dataset.d), rawType = document.getElementById('lvOpts').dataset.sel, note = document.getElementById('lvNote').value.trim();
+      var type = (rawType && rawType !== 'working' && rawType !== 'rdo') ? rawType : '';
       var asgIn = { pd: readPaid(), type: document.getElementById('asgBox').dataset.sel, detail: document.getElementById('asgDetail').value, notes: document.getElementById('asgNotes').value, address: document.getElementById('asgAddr').value, place: document.getElementById(document.getElementById('asgBox').dataset.sel === 'training' ? 'asgTrLoc' : 'asgPlace').value, boro: (function () { var be = document.getElementById('asgBoro').value, sel = document.getElementById('asgBox').dataset.sel; return (sel === 'court' && E.selectedCourts(document.getElementById('asgAddr').value, document.getElementById('asgPlace').value, be).boro) || be; })() }, asgErr = E.validateAssignment(asgIn);
       if (asgErr) { var ae = document.getElementById('asgDetail-err'); ae.textContent = asgErr; document.getElementById('asgDetail').classList.add('bad'); document.getElementById('asgDetail').focus(); return toast(asgErr); }
       var box = document.getElementById('tourBox'), status = box.dataset.status, orig = box.dataset.orig, lenTxt = document.getElementById('dayLen').value.trim(), len = lenTxt ? E.parseHM(lenTxt) : null, start = document.getElementById('dayStart').value.trim();
+      var mine = box.dataset.rdo === '1', rdoOt = null;
+      if (rawType === 'rdo') status = (orig === 'ddoff' || orig === 'dd') ? orig : (mine ? '' : 'off');
+      if (rawType === 'working' && mine) {
+        if (status === 'paid') status = '';
+        else if (status === '' || status === 'off') return toast('Is this a day-for-day, overtime or a paid detail?');
+      }
       if (start) { var ns = E.normTime(start); if (!ns) { var se = document.getElementById('dayStart-err'); if (se) se.textContent = 'Use HH:MM, 24-hour (00:00–23:59)'; return toast('Tour start must be HH:MM (24-hour)'); } start = ns; }
       if (lenTxt && !len) { tourPrev('dayLen'); return toast(E.tourLenError(lenTxt).msg || 'Tour length must be H:MM up to 24:00'); }
       var endWrap = document.getElementById('tourLenWrap'), endEl = document.getElementById('dayEnd'), endOn = !!(endEl && endWrap && !endWrap.hidden), end = endOn ? endEl.value.trim() : '', shortSel = null;
       if (end) { var ne = E.normTime(end); if (!ne) { document.getElementById('dayEnd-err').textContent = 'Use HH:MM, 24-hour (00:00–23:59)'; return toast('Tour end must be HH:MM (24-hour)'); } end = ne; }
+      if (status === 'work' && mine && start && end) {
+        rdoOt = E.rdoOtSpan(start, end); if (!rdoOt) return toast('Enter the tour start and end times');
+        len = rdoOt.len;
+      }
       var swIso = status === 'ddnew' ? document.getElementById('ddSwap').value : (S.tours[iso] || {}).swap, sc = E.schedTour(+t.dataset.d, myWho(), tourOpts(), status === 'ddnew' ? 'dd' : status, swIso);
       var effStart = start || sc.start || S.profile.tourStart || '', effLen = len || sc.len || S.profile.tourLen;
-      var ec = end && effStart ? E.endCompare(effStart, effLen, end) : null; if (ec && ec.kind === 'on') { end = ''; ec = null; } // the scheduled end isn't a change
-      if (end && !effStart) { document.getElementById('dayEnd-err').textContent = 'Set the tour start first'; return toast('Set a tour start to use a tour end'); }
+      var ec = (rdoOt || !end || !effStart) ? null : E.endCompare(effStart, effLen, end); if (ec && ec.kind === 'on') { end = ''; ec = null; } // the scheduled end isn't a change
+      if (!rdoOt && end && !effStart) { document.getElementById('dayEnd-err').textContent = 'Set the tour start first'; return toast('Set a tour start to use a tour end'); }
       if (ec && ec.kind === 'early') {
         var sbt = document.getElementById('shortBox').dataset.sel; if (!sbt) { var se2 = document.getElementById('shortErr'); se2.textContent = 'Pick Comp time, Chart time or Vacation time'; document.getElementById('shortBox').scrollIntoView({ block: 'center' }); return toast('Pick which balance to charge for leaving early'); }
         shortSel = { type: sbt, minutes: ec.shortMin };
       }
-      if (len === sc.len) len = null; if (start === sc.start) start = ''; // keep only real changes; blank = scheduled (PDU keeps the PM/AM length when only the start moves)
-      var endX = function (o) { if (end) o.end = end; if (shortSel) o.short = shortSel; return o; };
+      if (!rdoOt) { if (len === sc.len) len = null; if (start === sc.start) start = ''; } // keep only real changes; blank = scheduled (PDU keeps the PM/AM length when only the start moves)
+      var endX = function (o) { if (end && !rdoOt) o.end = end; if (shortSel) o.short = shortSel; return o; };
       var sq = mySquad(), d = +t.dataset.d, msg = '';
       if (status === 'ddnew') {
         var sw = document.getElementById('ddSwap').value; if (!sw) return toast('Pick the workday to take off');
@@ -3784,7 +3960,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       } else if (status === 'ddoff') { /* paired workday: only leave/note editable */
       } else {
         if (orig === 'dd' || orig === 'ddoff') S.tours = E.clearDayForDay(S.tours, iso);
-        if (!status && !len && !start && !end) delete S.tours[iso]; else S.tours[iso] = endX({ status: status, len: len, start: start });
+        if (rdoOt) S.tours[iso] = { status: 'work', len: rdoOt.len, start: rdoOt.start, end: rdoOt.end };
+        else if (!status && !len && !start && !end) delete S.tours[iso]; else S.tours[iso] = endX({ status: status, len: len, start: start });
       }
       var tr = E.dayTour(d, sq.id, tourOpts()), had = S.overtime.some(function (o) { return o.linkedTour === iso; });
       if (tr.extra && !had) {
@@ -3813,7 +3990,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var box = document.getElementById('asgBox'), id = t.dataset.t, ty = E.assignmentType(id); box.dataset.sel = id;
       Array.prototype.forEach.call(t.parentNode.children, function (b) { var on = b === t; b.classList.toggle('on', on); b.style.background = on ? b.dataset.c : ''; });
       var w = document.getElementById('asgDetailWrap'), inp = document.getElementById('asgDetail');
-      w.hidden = !(ty && ty.detail); document.getElementById('asgNotesWrap').hidden = !id; document.getElementById('asgPaid').hidden = id !== 'paiddetail';
+      w.hidden = !(ty && ty.detail); document.getElementById('asgNotesWrap').hidden = !id;
+      if (id === 'paiddetail') showPaidForm(true);
       if (ty && ty.detail) { document.getElementById('asgDetailLbl').textContent = ty.detail.label + (ty.detail.required ? '' : ' (optional)'); inp.placeholder = ty.detail.placeholder || ''; document.getElementById('asgSug').innerHTML = asgSuggest(id); }
       inp.value = id === box.dataset.orig ? box.dataset.odetail : ''; inp.classList.remove('bad'); document.getElementById('asgDetail-err').textContent = '';
       var aw = document.getElementById('asgAddrWrap'), ai = document.getElementById('asgAddr');
@@ -3883,16 +4061,16 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       slipPdfBlob(iso).then(function (b) { var u = URL.createObjectURL(b); if (w) w.location.href = u; else { var a = document.createElement('a'); a.href = u; a.target = '_blank'; a.rel = 'noopener'; document.body.appendChild(a); a.click(); a.remove(); } setTimeout(function () { URL.revokeObjectURL(u); }, 60000); }, function () { if (w) w.close(); toast('Slip file not found on this device'); });
     },
     slipShare: function () {
-      var iso = slipBoxIso(), k = slipLabel(iso, (document.getElementById('asgBox') || { dataset: {} }).dataset.sel);
+      var iso = slipBoxIso(), k = slipLabel(iso, daySlipSel());
       slipPdfBlob(iso).then(function (b) {
         var file = typeof File === 'function' ? new File([b], slipFileName(iso, k), { type: 'application/pdf' }) : null;
         if (file && navigator.canShare && navigator.canShare({ files: [file] })) return navigator.share({ files: [file], title: k.label + ' ' + fmt(E.toDay(iso)) }).catch(function () {});
         downloadBlob(b, slipFileName(iso, k)); toast('Sharing isn\'t available here, so the PDF was downloaded');
       }, function () { toast('Slip file not found on this device'); });
     },
-    slipDownload: function () { var iso = slipBoxIso(), k = slipLabel(iso, (document.getElementById('asgBox') || { dataset: {} }).dataset.sel); slipPdfBlob(iso).then(function (b) { downloadBlob(b, slipFileName(iso, k)); toast('PDF downloaded'); }, function () { toast('Slip file not found on this device'); }); },
+    slipDownload: function () { var iso = slipBoxIso(), k = slipLabel(iso, daySlipSel()); slipPdfBlob(iso).then(function (b) { downloadBlob(b, slipFileName(iso, k)); toast('PDF downloaded'); }, function () { toast('Slip file not found on this device'); }); },
     slipDelete: function () {
-      var iso = slipBoxIso(), k = slipLabel(iso, (document.getElementById('asgBox') || { dataset: {} }).dataset.sel); if (!confirm('Delete the ' + k.label.toLowerCase() + ' for ' + fmt(E.toDay(iso)) + '?')) return;
+      var iso = slipBoxIso(), k = slipLabel(iso, daySlipSel()); if (!confirm('Delete the ' + k.label.toLowerCase() + ' for ' + fmt(E.toDay(iso)) + '?')) return;
       slipDel(iso).then(function () { delete S.slips[iso]; slipQueue(iso, 'del'); save(); refreshSlip(); render(); toast(k.label + ' deleted'); }, function () { toast('Couldn\'t delete the slip'); });
     },
     sitePick: function (t) {
@@ -3944,11 +4122,27 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     pduStart: function (t) { document.getElementById('dayStart').value = t.dataset.v; document.getElementById('dayLen').value = ''; tourPrev('dayLen'); pduKeep(); updateEnd(true); },
     tourStatus: function (t) {
       var box = document.getElementById('tourBox'), s = t.dataset.s; box.dataset.status = s;
-      Array.prototype.forEach.call(t.parentNode.children, function (b) { b.classList.toggle('on', b === t); });
-      var dp = document.getElementById('ddPicker'), lw = document.getElementById('tourLenWrap'), help = document.getElementById('tourHelp');
-      if (dp) dp.hidden = s !== 'ddnew';
-      if (lw) lw.hidden = (s === '' && !!dp) || s === 'off';
-      if (help) help.textContent = s === 'work' ? 'Counts as overtime: saving adds one linked entry to your Overtime log (type Extra patrol detail, editable there).' : s === 'ddnew' ? 'Day for day: this RDO counts as a regular workday; the day you pick below becomes an RDO.' : 'Extra tour = overtime. Day for day = work this RDO as a regular day and take a workday off instead.';
+      var opts = document.getElementById('lvOpts');
+      if (opts && box.dataset.rdo === '1' && (s === 'work' || s === 'ddnew' || s === 'paid')) {
+        if (opts.dataset.sel !== 'working') {
+          var wb = opts.querySelector('[data-t="working"]'); opts.dataset.sel = 'working';
+          if (wb) Array.prototype.forEach.call(opts.children, function (b) { var on = b === wb; b.classList.toggle('on', on); b.style.background = on ? b.dataset.c : ''; });
+        }
+      }
+      if (s === 'paid') showPaidForm(true);
+      syncDayEntry();
+    },
+    pdAdd: function () { showPaidForm(true); var el = document.getElementById('asgPaid'); if (el) el.scrollIntoView({ block: 'center' }); },
+    pdRemove: function () {
+      if (pdHasInput() && !confirm('Remove this paid detail from the day?')) return;
+      var box = document.getElementById('asgBox');
+      if (box && box.dataset.sel === 'paiddetail') {
+        box.dataset.sel = '';
+        Array.prototype.forEach.call(box.querySelectorAll('[data-act="asgPick"]'), function (b) { var on = b.dataset.t === ''; b.classList.toggle('on', on); b.style.background = on ? b.dataset.c : ''; });
+        document.getElementById('asgDetailWrap').hidden = true; document.getElementById('asgNotesWrap').hidden = true;
+      }
+      var tb = document.getElementById('tourBox'); if (tb && tb.dataset.status === 'paid') tb.dataset.status = '';
+      showPaidForm(false, true); syncDayEntry();
     },
     ddPick: function (t) { document.getElementById('ddSwap').value = t.dataset.v; Array.prototype.forEach.call(t.parentNode.children, function (b) { b.classList.toggle('on', b === t); }); },
     ddUndo: function (t) {
