@@ -35,7 +35,7 @@ nav.tabs button svg{width:24px;height:24px}
 nav.tabs button.on{color:var(--navy)}
 nav.tabs button.on::before{content:"";position:absolute;margin-top:-58px;width:36px;height:3px;border-radius:3px;background:var(--navy)}
 .card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:0 1px 2px rgba(15,23,42,.08);border:1px solid #e1e6ee;margin-bottom:12px}
-.row{display:flex;gap:10px}
+.row{display:flex;gap:10px}.row[hidden]{display:none}
 .row>*{flex:1;min-width:0}
 .stat .lbl{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700}
 .stat .big{font-size:24px;font-weight:800;margin-top:2px;line-height:1.15}
@@ -88,7 +88,8 @@ h3{font-size:17px;margin:0 0 6px}
 .cell.today{outline:3px solid var(--navy);outline-offset:-1px}
 .cell.leave{background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.0) 0 6px,rgba(14,116,144,.14) 6px 12px)}
 .legend{display:flex;flex-wrap:wrap;gap:8px 12px;font-size:12.5px;margin-top:10px;color:#2b3546}
-.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend span{display:inline-flex;align-items:center;gap:5px}.legend[hidden]{display:none}.legend{background:#f8fafc;border:1px solid #e5e7eb;border-radius:12px;padding:10px 12px;margin-top:8px}
+.calfoot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;flex-wrap:wrap}.cfcount{font-size:13.5px;font-weight:700;color:#2b3546;min-width:0}.cfbtns{display:flex;gap:6px;margin-left:auto}.legbtn .chev{display:inline-block;transition:transform .15s;font-size:11px}.legbtn.on .chev{transform:rotate(180deg)}.legbtn.on{background:#e8eefc;border-color:#9db4f0}.cfhint{color:var(--muted);font-size:12.5px;margin-top:6px}
 .sw{width:16px;height:16px;border-radius:4px;border:1px solid rgba(0,0,0,.25);display:inline-block}
 .list{display:flex;flex-direction:column}
 .item{display:flex;gap:10px;align-items:center;padding:12px 2px;border-top:1px solid #e6eaf1;min-height:56px;cursor:pointer;background:none;border-left:0;border-right:0;border-bottom:0;width:100%;text-align:left}
@@ -236,6 +237,22 @@ h3{font-size:17px;margin:0 0 6px}
 .field{position:relative}.acdrop{position:absolute;left:0;right:0;z-index:60;margin-top:2px;background:#fff;color:#0f172a;border:1px solid #cbd5e1;border-radius:10px;box-shadow:0 10px 24px rgba(15,23,42,.18);max-height:300px;overflow:auto;-webkit-overflow-scrolling:touch}.acdrop[hidden]{display:none}.acopt{padding:10px 12px;min-height:44px;border-bottom:1px solid #eef2f7;cursor:pointer;touch-action:manipulation}.acopt b{display:block;font-size:14px;font-weight:600}.acopt span{display:block;font-size:12px;color:#64748b;margin-top:2px}.acopt.on,.acopt:hover{background:#e0f2fe}.acnote{padding:8px 12px;font-size:12px;color:#64748b}.cmdua{margin-top:8px}.cmdua .btn{margin-top:6px}.cmdcard{min-width:0;max-width:100%;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border-radius:12px;background:#ecfeff;border:1px solid #a5f3fc}.cmdcard span{display:block;font-size:12.5px;opacity:.8}
 .sebox{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:10px 10px 4px;margin-bottom:10px}
 .roIn{background:#f1f5f9!important;color:#0f172a;font-weight:800}
+.dateIn{width:100%;min-width:0;max-width:100%;box-sizing:border-box}
+.sebox .hint{font-size:12.5px;line-height:1.35}.startpicks{margin:2px 0 6px}.startpicks .pick{min-height:36px;font-size:13px}
+.endnote{margin:6px 0 8px;padding:9px 11px;border-radius:10px;font-size:13.5px;line-height:1.35;overflow-wrap:anywhere;border:1px solid transparent}
+.endnote.late{background:#fffbeb;border-color:#fcd34d;color:#78350f}.endnote.ot{background:#ecfdf5;border-color:#6ee7b7;color:#065f46}.endnote.early{background:#eff6ff;border-color:#93c5fd;color:#1e3a8a;margin-bottom:4px}
+.shortbox{margin:0 0 10px;padding:10px;border:1px solid #93c5fd;border-radius:10px;background:#f8fbff}.sbq{font-weight:800;font-size:14px;margin-bottom:6px;overflow-wrap:anywhere}
+.shortopts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.shortopts .pick{min-width:0;width:100%;min-height:44px;padding:4px 6px;font-size:13px;line-height:1.2;white-space:normal;overflow-wrap:anywhere;text-align:center}
+.daydel{margin-top:22px;padding-top:14px;border-top:1px solid var(--line,#e2e8f0)}
+.btn.delbtn{background:#dc2626;border-color:#dc2626;color:#fff;width:100%;max-width:100%;white-space:normal;overflow-wrap:anywhere;text-align:center}.btn.delbtn:active{background:#b91c1c}
+.btn.delbtn[disabled]{background:#fecaca;border-color:#fecaca;color:#7f1d1d;opacity:.75;cursor:not-allowed}
+.cfmwrap{position:fixed;inset:0;z-index:300;background:rgba(15,23,42,.55);display:flex;align-items:center;justify-content:center;padding:16px}
+.cfm{background:#fff;color:#0f172a;border-radius:16px;padding:18px 16px 14px;width:100%;max-width:380px;max-height:calc(100vh - 32px);overflow:auto;box-shadow:0 20px 50px rgba(0,0,0,.35);min-width:0}
+.cfm h3{margin:0 0 8px;font-size:18px}.cfmbody{font-size:14.5px;line-height:1.4;overflow-wrap:anywhere}.cfmbody p{margin:0 0 8px}.cfmlist{margin:0 0 10px;padding-left:20px}.cfmlist li{margin:2px 0}
+.cfmbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.cfmbtns .btn{min-width:0;padding:0 8px}
+.paycard{border:1px solid var(--line,#e5e7eb);border-radius:12px;padding:10px 12px;margin-bottom:8px;background:#f8fafc}.paygrid{display:flex;flex-direction:column}.payrow{display:grid;grid-template-columns:minmax(0,42%) minmax(0,1fr);gap:8px;padding:6px 0;border-bottom:1px solid #eef0f4;font-size:14px;align-items:baseline}.payrow:last-child{border-bottom:0}.payrow span{color:var(--muted);min-width:0;overflow-wrap:anywhere}.payrow b{min-width:0;overflow-wrap:anywhere;text-align:right}.payrow small{display:block;font-weight:400;color:var(--muted);font-size:12px}.payprompt{background:#fffbeb;border:1px solid #fde68a;color:#92400e;border-radius:10px;padding:8px 10px;font-size:13px;margin-top:6px;overflow-wrap:anywhere}.paynote{color:var(--muted);font-size:12.5px;margin-top:6px;overflow-wrap:anywhere}.paynote.ov{color:#1e3a8a;background:#eff6ff;border-radius:10px;padding:8px 10px}#stOvWrap[hidden]{display:none}.ovchk{display:flex;gap:8px;align-items:center;min-height:44px;font-size:14px}.otrate{font-size:12.5px;margin:2px 0 4px;overflow-wrap:anywhere}.ratechip{display:inline-block;background:#dcfce7;color:#166534;border-radius:999px;padding:0 7px;font-size:11.5px;font-weight:700}.ratechip.comp{background:#ede9fe;color:#5b21b6}.paidbox{margin-top:10px;border-top:1px solid #e5e7eb;padding-top:10px}.paidbox[hidden]{display:none}
+.pdnote{border:1px solid #fcd34d;background:#fffbeb;color:#713f12;border-radius:10px;padding:8px 10px;margin:8px 0;font-size:13.5px;overflow-wrap:anywhere}.pdnote[hidden]{display:none}.pdnote.bad{border-color:#f87171;background:#fef2f2;color:#7f1d1d}.pdnote ul{margin:4px 0 2px;padding-left:18px}.pdnote li{margin:2px 0}.pdnote li.bad{font-weight:600;color:#b91c1c}.pdnt{font-weight:700}.pdcard .tot{padding:8px 6px;min-width:0}.pdcard .tot b{font-size:16px;overflow-wrap:anywhere}.pdcard .tot-row{gap:6px}.pdpay{margin:6px 0 2px;font-size:14px;color:#14532d;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:7px 10px}.pdpay:empty{display:none}.pdpay span{font-size:12px;color:#166534}.pdnf{font-size:12px;opacity:.8}.pdscan{margin-bottom:8px}.pdup{display:inline-flex;align-items:center;gap:6px;cursor:pointer}.pdstat{margin-top:6px;font-size:13px;background:#ecfdf5;color:#065f46;border-radius:10px;padding:8px 10px;overflow-wrap:anywhere}.pdstat.bad{background:#fef2f2;color:#991b1b}.pdstat[hidden],.pdwarn[hidden]{display:none}.pdwarn{color:#92400e}#otComp button:disabled{opacity:.4;cursor:not-allowed}.otsplit{margin:10px 0 0}.otsplit[hidden]{display:none}#otCompNote:empty{display:none}.balgrid{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}.balrow{display:grid;grid-template-columns:minmax(0,1fr) 92px;gap:2px 10px;align-items:center}.balrow label{font-weight:700;font-size:14px;min-width:0;overflow-wrap:anywhere}.balrow input{min-width:0;width:100%;box-sizing:border-box}
+.balinfo{grid-column:1 / -1;font-size:12.5px;color:#475569}.balinfo .neg{color:#b91c1c}.baldet{margin:0 0 12px}.baldet summary{min-height:40px;font-weight:700;cursor:pointer}
 .endpop{position:relative;margin:8px 0 8px;padding:10px 12px;border-radius:12px;background:#0f172a;color:#fff;box-shadow:0 6px 18px rgba(15,23,42,.25)}
 .endpop:before{content:'';position:absolute;top:-7px;left:28px;border:7px solid transparent;border-top:0;border-bottom-color:#0f172a}
 .endpop .et{font-size:17px;font-weight:800}.endpop .es{font-size:12.5px;opacity:.8}.endpop .enx{margin-top:6px;padding:6px 8px;border-radius:8px;background:#7c3aed;font-weight:700;font-size:13.5px}
@@ -316,10 +333,302 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       { id: 'special',  label: 'Special event / outside detail' },
       { id: 'training', label: 'Training' }
     ],
+    // ---- Pay charts (DATA). Source: Zee's union pay-scale PDFs in pay/ (PO-pay-scale-2024-08-01.pdf, DET-pay-scale.pdf, SGT-pay-scale.pdf, LT-pay-scale.pdf, CAPT-and-above-pay-scale.pdf).
+    // Each row: [step/grade key, longevity bracket, annual base, NPD, longevity, service differential (SD), hourly, OT 1.5, OT night, uniform, holiday, annual total(, exchange 1 hr time)].
+    // Hourly / OT 1.5 / OT night are the PRINTED chart values (not recomputed). tests/engine.test.js recomputes hourly = (base+NPD+longevity[+SD])/2088,
+    // holiday = (base+NPD+longevity+SD)/365 x 14/10 x 12 and the annual total for every row to catch typos.
+    // Brackets are years of service from the hire date: <5, 5+, 10+, 15+, 20+ (and 25+ on the Captain-and-above charts).
+    pay: {
+      workHours: 2088,
+      compRate: 1.5, // comp time banked per OT hour taken as time
+      // Paid Detail: flat $/hr by rank. Separate from the pay charts, OT totals and the Captain 180-hr cap; no multipliers, no day/night.
+      paidDetailRates: { po: 49, dets: 49, det3: 49, det2: 49, det1: 49, sgt: 61, sds: 61, ssa: 61, lt: 68, lcd: 68, lsa: 68, capt: 87, di: 87, insp: 87, depchief: 87 },
+      charts: {
+        po: { label: 'Police Officer', eff: '2024-08-01', track: 'po', hourlyIncludesSD: true, rows: [
+          ['basic20','20+',109352,2460,12712,0,59.64,89.46,97.54,1050,5732,131306],
+          ['basic15','15+',109352,2460,11124,0,58.88,88.32,96.38,1050,5658,129644],
+          ['basic10','10+',109352,2460,9580,0,58.14,87.21,95.27,1050,5587,128029],
+          ['basic','5+',109352,2460,8032,0,57.4,86.09,94.15,1050,5516,126410],
+          ['second5','5+',65387,1471,8032,0,35.87,53.8,57.56,1050,3447,79387],
+          ['second','<5',65387,1471,0,0,32.02,48.03,51.78,1050,3077,70985],
+          ['third','<5',60363,1358,0,0,29.56,44.34,47.67,1050,2841,65612],
+          ['fourth','<5',59065,1329,0,0,28.92,43.39,46.47,1050,2780,64224],
+          ['fifth','<5',57976,1304,0,0,28.39,42.59,45.48,1050,2729,63059],
+          ['sixth','<5',55942,1259,0,0,27.4,41.09,43.72,1050,2633,60884]
+        ] },
+        det3: { label: 'Detective 3rd Grade / Det. Specialist', eff: '2026-06-01', track: 'det', hourlyIncludesSD: true, note: 'Det 3rd Grade and Det. Specialist share this chart. The 2.25% footnote on the chart is not applied (wording is ambiguous).', rows: [
+          ['1','<5',81214,0,0,0,38.9,58.34,64.18,1320,3738,86272],
+          ['2','<5',87983,0,0,0,42.14,63.21,69.53,1320,4050,93353],
+          ['3','<5',94751,0,0,0,45.38,68.07,74.88,1320,4361,100432],
+          ['3','5+',94751,0,4393,0,47.48,71.22,78.05,1320,4563,105027],
+          ['4','5+',124018,0,4393,0,61.5,92.25,101.18,1320,5910,135641],
+          ['4','10+',124018,0,4968,0,61.77,92.66,101.6,1320,5937,136243],
+          ['4','15+',124018,0,10957,0,64.64,96.96,105.91,1700,6213,142888],
+          ['4','20+',124018,0,12503,0,65.38,98.08,107.03,1700,6284,144505],
+          ['5','5+',124087,0,4393,0,61.53,92.3,101.24,1320,5914,135714],
+          ['5','10+',124087,0,4968,0,61.81,92.71,101.66,1320,5940,136315],
+          ['5','15+',124087,0,10957,0,64.68,97.01,105.97,1700,6216,142960],
+          ['5','20+',124087,0,12503,0,65.42,98.13,107.09,1700,6287,144577],
+          ['6','5+',124206,0,4393,0,61.59,92.38,101.33,1320,5919,135838],
+          ['6','10+',124206,0,4968,0,61.86,92.8,101.75,1320,5946,136440],
+          ['6','15+',124206,0,10957,0,64.73,97.1,106.06,1700,6221,143084],
+          ['6','20+',124206,0,12503,0,65.47,98.21,107.18,1700,6292,144701],
+          ['7','5+',124779,0,4393,0,61.86,92.8,101.78,1320,5945,136437],
+          ['7','10+',124779,0,4968,0,62.14,93.21,102.2,1320,5972,137039],
+          ['7','15+',124779,0,10957,0,65.01,97.51,106.51,1700,6248,143684],
+          ['7','20+',124779,0,12503,0,65.75,98.62,107.63,1700,6319,145301],
+          ['7sd','5+',124779,0,4393,2807,63.21,94.81,104,1320,6075,139374],
+          ['7sd','10+',124779,0,4968,2807,63.48,95.23,104.42,1320,6101,139975],
+          ['7sd','15+',124779,0,10957,2807,66.35,99.53,108.73,1700,6377,146620],
+          ['7sd','20+',124779,0,12503,2807,67.09,100.64,109.85,1700,6448,148237]
+        ] },
+        det1: { label: 'Detective 1st Grade', eff: '2026-06-01', track: 'det', hourlyIncludesSD: false, rows: [
+          ['1g','<5',160941,0,0,3621,77.08,115.62,130.04,1320,7574,173456],
+          ['1g','5+',160941,0,4393,3621,79.18,118.77,133.22,1320,7777,178052],
+          ['1g','10+',160941,0,4968,3621,79.46,119.19,133.64,1320,7803,178653],
+          ['1g','15+',160941,0,10957,3621,82.33,123.49,137.95,1700,8079,185298],
+          ['1g','20+',160941,0,12503,3621,83.07,124.6,139.07,1700,8150,186915]
+        ] },
+        det2: { label: 'Detective 2nd Grade', eff: '2026-06-01', track: 'det', hourlyIncludesSD: false, rows: [
+          ['2g','<5',140212,0,0,3154,67.15,100.73,113.29,1320,6599,151285],
+          ['2g','5+',140212,0,4393,3154,69.26,103.88,116.47,1320,6801,155880],
+          ['2g','10+',140212,0,4968,3154,69.53,104.3,116.89,1320,6827,156481],
+          ['2g','15+',140212,0,10957,3154,72.4,108.6,121.2,1700,7103,163126],
+          ['2g','20+',140212,0,12503,3154,73.14,109.71,122.32,1700,7174,164743]
+        ] },
+        sgtPre: { label: 'Sergeant (promoted before 1/30/2022)', eff: '2025-12-10', track: 'sgt', hourlyIncludesSD: true, rows: [
+          ['1','5+',114037,0,5227,0,57.12,85.68,93.89,980,5489,125733],
+          ['1','10+',114037,0,7992,0,58.44,87.66,95.89,980,5617,128626],
+          ['1','15+',114037,0,10158,0,59.48,89.22,97.45,980,5716,130891],
+          ['1','20+',114037,0,11239,0,60,90,98.24,980,5766,132022],
+          ['2','5+',114349,0,5227,0,57.27,85.9,94.14,980,5504,126060],
+          ['2','10+',114349,0,7992,0,58.59,87.89,96.14,980,5631,128952],
+          ['2','15+',114349,0,10158,0,59.63,89.44,97.7,980,5731,131218],
+          ['2','20+',114349,0,11239,0,60.15,90.22,98.49,980,5780,132348],
+          ['3','5+',114583,0,5227,0,57.38,86.07,94.33,980,5515,126305],
+          ['3','10+',114583,0,7992,0,58.7,88.06,96.32,980,5642,129197],
+          ['3','15+',114583,0,10158,0,59.74,89.61,97.89,980,5742,131463],
+          ['3','20+',114583,0,11239,0,60.26,90.39,98.67,980,5791,132593],
+          ['4','5+',119617,0,5227,0,59.79,89.69,98.3,980,5746,131570],
+          ['4','10+',119617,0,7992,0,61.12,91.67,100.3,980,5874,134463],
+          ['4','15+',119617,0,10158,0,62.15,93.23,101.86,980,5973,136728],
+          ['4','20+',119617,0,11239,0,62.67,94.01,102.65,980,6023,137859],
+          ['5','5+',140212,0,5227,0,69.65,104.48,114.58,980,6694,153113],
+          ['5','10+',140212,0,7992,0,70.98,106.47,116.57,980,6821,156005],
+          ['5','15+',140212,0,10158,0,72.02,108.02,118.14,980,6921,158271],
+          ['5','20+',140212,0,11239,0,72.53,108.8,118.92,980,6971,159402],
+          ['5sd','10+',140212,0,7992,1433,71.67,107.5,117.71,980,6887,157504],
+          ['5sd','15+',140212,0,10158,1433,72.7,109.05,119.27,980,6987,159770],
+          ['5sd','20+',140212,0,11239,1433,73.22,109.83,120.06,980,7037,160901]
+        ] },
+        sgtPost: { label: 'Sergeant (promoted on/after 1/30/2022)', eff: '2025-12-10', track: 'sgt', hourlyIncludesSD: true, rows: [
+          ['1','5+',114037,0,5227,0,57.12,85.68,93.89,980,5489,125733],
+          ['1','10+',114037,0,7992,0,58.44,87.66,95.89,980,5617,128626],
+          ['1','15+',114037,0,10158,0,59.48,89.22,97.45,980,5716,130891],
+          ['1','20+',114037,0,11239,0,60,90,98.24,980,5766,132022],
+          ['2','5+',114349,0,5227,0,57.27,85.9,94.14,980,5504,126060],
+          ['2','10+',114349,0,7992,0,58.59,87.89,96.14,980,5631,128952],
+          ['2','15+',114349,0,10158,0,59.63,89.44,97.7,980,5731,131218],
+          ['2','20+',114349,0,11239,0,60.15,90.22,98.49,980,5780,132348],
+          ['3','5+',114583,0,5227,0,57.38,86.07,94.33,980,5515,126305],
+          ['3','10+',114583,0,7992,0,58.7,88.06,96.32,980,5642,129197],
+          ['3','15+',114583,0,10158,0,59.74,89.61,97.89,980,5742,131463],
+          ['3','20+',114583,0,11239,0,60.26,90.39,98.67,980,5791,132593],
+          ['4','5+',119617,0,5227,0,59.79,89.69,98.3,980,5746,131570],
+          ['4','10+',119617,0,7992,0,61.12,91.67,100.3,980,5874,134463],
+          ['4','15+',119617,0,10158,0,62.15,93.23,101.86,980,5973,136728],
+          ['4','20+',119617,0,11239,0,62.67,94.01,102.65,980,6023,137859],
+          ['5','5+',125424,0,5227,0,62.57,93.86,102.89,980,6014,137645],
+          ['5','10+',125424,0,7992,0,63.9,95.84,104.89,980,6141,140537],
+          ['5','15+',125424,0,10158,0,64.93,97.4,106.45,980,6240,142802],
+          ['5','20+',125424,0,11239,0,65.45,98.18,107.24,980,6290,143933],
+          ['6','5+',140212,0,5227,1433,70.34,105.51,114.58,980,6760,154612], // FLAG: printed OT night $114.58 looks like a typo (formula gives ~$115.69; same as pre-2022 step 5). Printed value used.
+          ['6','10+',140212,0,7992,1433,71.67,107.5,117.71,980,6887,157504],
+          ['6','15+',140212,0,10158,1433,72.7,109.05,119.27,980,6987,159770],
+          ['6','20+',140212,0,11239,1433,73.22,109.83,120.06,980,7037,160901]
+        ] },
+        sds: { label: 'Sgt. Supervisor Detective Squad / Special Assignment', eff: '2025-12-10', track: 'sgt', hourlyIncludesSD: true, rows: [
+          ['1','5+',143045,0,5227,1433,71.7,107.55,117.95,980,6891,157576],
+          ['1','10+',143045,0,7992,1433,73.02,109.53,119.94,980,7018,160468],
+          ['1','15+',143045,0,10158,1433,74.06,111.09,121.51,980,7117,162733],
+          ['1','20+',143045,0,11239,1433,74.58,111.87,122.3,980,7167,163864],
+          ['2','5+',143404,0,5227,1433,71.87,107.8,118.23,980,6907,157951],
+          ['2','10+',143404,0,7992,1433,73.19,109.79,120.23,980,7034,160843],
+          ['2','15+',143404,0,10158,1433,74.23,111.35,121.79,980,7134,163109],
+          ['2','20+',143404,0,11239,1433,74.75,112.12,122.58,980,7184,164240],
+          ['3','5+',143765,0,5227,1433,72.04,108.06,118.52,980,6924,158329],
+          ['3','10+',143765,0,7992,1433,73.37,110.05,120.51,980,7051,161221],
+          ['3','15+',143765,0,10158,1433,74.4,111.61,122.08,980,7151,163487],
+          ['3','20+',143765,0,11239,1433,74.92,112.38,122.86,980,7200,164617],
+          ['4','5+',160941,0,5227,1433,80.27,120.4,132.09,980,7714,176295],
+          ['4','10+',160941,0,7992,1433,81.59,122.39,134.09,980,7842,179188],
+          ['4','15+',160941,0,10158,1433,82.63,123.95,135.65,980,7941,181453],
+          ['4','20+',160941,0,11239,1433,83.15,124.72,136.44,980,7991,182584]
+        ] },
+        lt: { label: 'Lieutenant', eff: '2026-03-16', track: 'lt', hourlyIncludesSD: true, rows: [
+          ['1','5+',147351,0,5745,0,73.32,109.98,120.59,1100,7047,161243],
+          ['1','10+',147351,0,6745,0,73.80,110.70,121.32,1100,7093,162289],
+          ['1','15+',147351,0,8245,0,74.52,111.78,122.41,1100,7162,163858],
+          ['1','20+',147351,0,10300,0,75.50,113.26,123.89,1100,7256,166007],
+          ['2','5+',147621,0,5745,0,73.45,110.18,120.81,1100,7059,161525],
+          ['2','10+',147621,0,6745,0,73.93,110.90,121.53,1100,7105,162571],
+          ['2','15+',147621,0,8245,0,74.65,111.97,122.62,1100,7174,164140],
+          ['2','20+',147621,0,10300,0,75.63,113.45,124.11,1100,7269,166290],
+          ['3','5+',147890,0,5745,0,73.58,110.37,121.02,1100,7071,161806],
+          ['3','10+',147890,0,6745,0,74.06,111.09,121.75,1100,7117,162852],
+          ['3','15+',147890,0,8245,0,74.78,112.17,122.84,1100,7186,164421],
+          ['3','20+',147890,0,10300,0,75.76,113.64,124.32,1100,7281,166571],
+          ['4','5+',160941,0,5745,0,79.83,119.75,131.33,1100,7672,175458],
+          ['4','10+',160941,0,6745,0,80.31,120.46,132.06,1100,7718,176504],
+          ['4','15+',160941,0,8245,0,81.03,121.54,133.15,1100,7787,178073],
+          ['4','20+',160941,0,10300,0,82.01,123.02,134.63,1100,7882,180223],
+          ['4sd','10+',160941,0,6745,3621,82.04,123.07,134.92,1100,7885,180292],
+          ['4sd','15+',160941,0,8245,3621,82.76,124.14,136.00,1100,7954,181861],
+          ['4sd','20+',160941,0,10300,3621,83.75,125.62,137.47,1100,8048,184010]
+        ] },
+        ltcds: { label: 'Lt Commander Detective Squad & Special Assignment', eff: '2026-03-16', track: 'lt', hourlyIncludesSD: true, rows: [
+          ['1','5+',162342,0,5745,3851,82.35,123.52,135.48,1100,7914,180952],
+          ['1','10+',162342,0,6745,3851,82.82,124.24,136.21,1100,7960,181998],
+          ['1','15+',162342,0,8245,3851,83.54,125.31,137.30,1100,8029,183567],
+          ['1','20+',162342,0,10300,3851,84.53,126.79,138.78,1100,8124,185717],
+          ['2','5+',164022,0,5745,3851,83.15,124.73,136.81,1100,7991,182709],
+          ['2','10+',164022,0,6745,3851,83.63,125.44,137.54,1100,8037,183755],
+          ['2','15+',164022,0,8245,3851,84.35,126.52,138.63,1100,8106,185324],
+          ['2','20+',164022,0,10300,3851,85.33,128.00,140.11,1100,8201,187474],
+          ['3','5+',166152,0,5745,3851,84.17,126.26,138.49,1100,8089,184937],
+          ['3','10+',166152,0,6745,3851,84.65,126.97,139.22,1100,8135,185983],
+          ['3','15+',166152,0,8245,3851,85.37,128.05,140.31,1100,8204,187552],
+          ['3','20+',166152,0,10300,3851,86.35,129.53,141.79,1100,8299,189702],
+          ['4','5+',177043,0,5745,3851,89.39,134.08,147.10,1100,8591,196330],
+          ['4','10+',177043,0,6745,3851,89.87,134.80,147.83,1100,8637,197376],
+          ['4','15+',177043,0,8245,3851,90.58,135.88,148.92,1100,8706,198945],
+          ['4','20+',177043,0,10300,3851,91.57,137.35,150.40,1100,8800,201094]
+        ] },
+        // Captain and above (eff. 9/22/26): no printed cash OT columns ("Cash Overtime = Based on Administrative Guide Procedure 324-19"), so OT 1.5 / night are null.
+        // 13th value = "Exchange 1 hour time" (= hourly / 2.7); Captain steps 1-3 print N/A (null). Brackets add 25+.
+        // Captain OT (confirmed by Zee): cash at STRAIGHT TIME (hourly) for up to 180 h per calendar year during the first 2 yrs as Captain;
+        // OT beyond the cap, and all OT after the first 2 yrs, is comp time at 1.5x (1 h worked = 1.5 h banked to Comp).
+        // DI / Inspector / Deputy Chief (confirmed by Zee): NO cash OT at all; all OT is comp time at 1.5x.
+        capt: { label: 'Captain', eff: '2026-09-22', track: 'cea', hourlyIncludesSD: true, cashOT: false, ceaOT: { straightYears: 2, capHours: 180, compRate: 1.5 }, rows: [
+          ['1','<5',172256,0,0,0,82.50,null,null,1230,7928,181414,null],
+          ['1','5+',172256,0,5745,0,85.25,null,null,1230,8193,187424,null],
+          ['1','10+',172256,0,6745,0,85.73,null,null,1230,8239,188470,null],
+          ['1','15+',172256,0,7745,0,86.21,null,null,1230,8285,189516,null],
+          ['1','20+',172256,0,8745,0,86.69,null,null,1230,8331,190562,null],
+          ['1','25+',172256,0,11893,0,88.19,null,null,1230,8476,193855,null],
+          ['2','<5',173185,0,0,0,82.94,null,null,1230,7971,182386,null],
+          ['2','5+',173185,0,5745,0,85.69,null,null,1230,8236,188396,null],
+          ['2','10+',173185,0,6745,0,86.17,null,null,1230,8282,189442,null],
+          ['2','15+',173185,0,7745,0,86.65,null,null,1230,8328,190488,null],
+          ['2','20+',173185,0,8745,0,87.13,null,null,1230,8374,191534,null],
+          ['2','25+',173185,0,11893,0,88.64,null,null,1230,8519,194827,null],
+          ['3','<5',174175,0,0,0,83.42,null,null,1230,8017,183422,null],
+          ['3','5+',174175,0,5745,0,86.17,null,null,1230,8281,189431,null],
+          ['3','10+',174175,0,6745,0,86.65,null,null,1230,8327,190477,null],
+          ['3','15+',174175,0,7745,0,87.13,null,null,1230,8373,191523,null],
+          ['3','20+',174175,0,8745,0,87.61,null,null,1230,8419,192569,null],
+          ['3','25+',174175,0,11893,0,89.11,null,null,1230,8564,195862,null],
+          ['4','<5',209563,0,0,0,100.37,null,null,1230,9646,220439,37.17],
+          ['4','5+',209563,0,5745,0,103.12,null,null,1230,9910,226448,38.19],
+          ['4','10+',209563,0,6745,0,103.60,null,null,1230,9956,227494,38.37],
+          ['4','15+',209563,0,7745,0,104.07,null,null,1230,10002,228540,38.55],
+          ['4','20+',209563,0,8745,0,104.55,null,null,1230,10048,229586,38.72],
+          ['4','25+',209563,0,11893,0,106.06,null,null,1230,10193,232879,39.28],
+          ['4sd','10+',209563,0,6745,1571,104.35,null,null,1230,10028,229137,38.65],
+          ['4sd','15+',209563,0,7745,1571,104.83,null,null,1230,10074,230183,38.82],
+          ['4sd','20+',209563,0,8745,1571,105.31,null,null,1230,10120,231229,39.00],
+          ['4sd','25+',209563,0,11893,1571,106.81,null,null,1230,10265,234522,39.56]
+        ] },
+        di: { label: 'Deputy Inspector', eff: '2026-09-22', track: 'cea', hourlyIncludesSD: true, cashOT: false, ceaOT: { straightYears: 0, capHours: 0, compRate: 1.5 }, rows: [
+          ['1','<5',183602,0,0,1687,88.74,null,null,1230,8528,195047,32.87],
+          ['1','5+',183602,0,5745,1687,91.49,null,null,1230,8793,201057,33.89],
+          ['1','10+',183602,0,6745,1687,91.97,null,null,1230,8839,202103,34.06],
+          ['1','15+',183602,0,7745,1687,92.45,null,null,1230,8885,203149,34.24],
+          ['1','20+',183602,0,8745,1687,92.93,null,null,1230,8931,204195,34.42],
+          ['1','25+',183602,0,11893,1687,94.44,null,null,1230,9076,207488,34.98],
+          ['2','<5',195926,0,0,1687,94.64,null,null,1230,9096,207939,35.05],
+          ['2','5+',195926,0,5745,1687,97.39,null,null,1230,9360,213948,36.07],
+          ['2','10+',195926,0,6745,1687,97.87,null,null,1230,9406,214994,36.25],
+          ['2','15+',195926,0,7745,1687,98.35,null,null,1230,9452,216040,36.43],
+          ['2','20+',195926,0,8745,1687,98.83,null,null,1230,9498,217086,36.60],
+          ['2','25+',195926,0,11893,1687,100.34,null,null,1230,9643,220379,37.16],
+          ['3','<5',208260,0,0,1687,100.55,null,null,1230,9663,220840,37.24],
+          ['3','5+',208260,0,5745,1687,103.30,null,null,1230,9928,226850,38.26],
+          ['3','10+',208260,0,6745,1687,103.78,null,null,1230,9974,227896,38.44],
+          ['3','15+',208260,0,7745,1687,104.26,null,null,1230,10020,228942,38.61],
+          ['3','20+',208260,0,8745,1687,104.74,null,null,1230,10066,229988,38.79],
+          ['3','25+',208260,0,11893,1687,106.25,null,null,1230,10211,233281,39.35],
+          ['4','<5',220593,0,0,1687,106.46,null,null,1230,10231,233741,39.43],
+          ['4','5+',220593,0,5745,1687,109.21,null,null,1230,10495,239750,40.45],
+          ['4','10+',220593,0,6745,1687,109.69,null,null,1230,10541,240796,40.62],
+          ['4','15+',220593,0,7745,1687,110.17,null,null,1230,10587,241842,40.80],
+          ['4','20+',220593,0,8745,1687,110.64,null,null,1230,10633,242888,40.98],
+          ['4','25+',220593,0,11893,1687,112.15,null,null,1230,10778,246181,41.54]
+        ] },
+        insp: { label: 'Inspector', eff: '2026-09-22', track: 'cea', hourlyIncludesSD: true, cashOT: false, ceaOT: { straightYears: 0, capHours: 0, compRate: 1.5 }, rows: [
+          ['1','<5',193059,0,0,1687,93.27,null,null,1230,8964,204940,34.54],
+          ['1','5+',193059,0,5745,1687,96.02,null,null,1230,9228,210949,35.56],
+          ['1','10+',193059,0,6745,1687,96.50,null,null,1230,9274,211995,35.74],
+          ['1','15+',193059,0,7745,1687,96.98,null,null,1230,9320,213041,35.92],
+          ['1','20+',193059,0,8745,1687,97.46,null,null,1230,9366,214087,36.10],
+          ['1','25+',193059,0,11893,1687,98.97,null,null,1230,9511,217380,36.65],
+          ['2','<5',206131,0,0,1687,99.53,null,null,1230,9565,218613,36.86],
+          ['2','5+',206131,0,5745,1687,102.28,null,null,1230,9830,224623,37.88],
+          ['2','10+',206131,0,6745,1687,102.76,null,null,1230,9876,225669,38.06],
+          ['2','15+',206131,0,7745,1687,103.24,null,null,1230,9922,226715,38.24],
+          ['2','20+',206131,0,8745,1687,103.72,null,null,1230,9968,227761,38.41],
+          ['2','25+',206131,0,11893,1687,105.23,null,null,1230,10113,231054,38.97],
+          ['3','<5',219212,0,0,1687,105.79,null,null,1230,10167,232296,39.18],
+          ['3','5+',219212,0,5745,1687,108.55,null,null,1230,10432,238306,40.20],
+          ['3','10+',219212,0,6745,1687,109.02,null,null,1230,10478,239352,40.38],
+          ['3','15+',219212,0,7745,1687,109.50,null,null,1230,10524,240398,40.56],
+          ['3','20+',219212,0,8745,1687,109.98,null,null,1230,10570,241444,40.73],
+          ['3','25+',219212,0,11893,1687,111.49,null,null,1230,10715,244737,41.29],
+          ['4','<5',232278,0,0,1687,112.05,null,null,1230,10769,245964,41.50],
+          ['4','5+',232278,0,5745,1687,114.80,null,null,1230,11033,251973,42.52],
+          ['4','10+',232278,0,6745,1687,115.28,null,null,1230,11079,253019,42.70],
+          ['4','15+',232278,0,7745,1687,115.76,null,null,1230,11125,254065,42.87],
+          ['4','20+',232278,0,8745,1687,116.24,null,null,1230,11171,255111,43.05],
+          ['4','25+',232278,0,11893,1687,117.75,null,null,1230,11316,258404,43.61]
+        ] },
+        dc: { label: 'Deputy Chief', eff: '2026-09-22', track: 'cea', hourlyIncludesSD: true, cashOT: false, ceaOT: { straightYears: 0, capHours: 0, compRate: 1.5 }, rows: [
+          ['1','<5',203092,0,0,1687,98.07,null,null,1230,9425,215434,36.32],
+          ['1','5+',203092,0,5745,1687,100.83,null,null,1230,9690,221444,37.34],
+          ['1','10+',203092,0,6745,1687,101.30,null,null,1230,9736,222490,37.52],
+          ['1','15+',203092,0,7745,1687,101.78,null,null,1230,9782,223536,37.70],
+          ['1','20+',203092,0,8745,1687,102.26,null,null,1230,9828,224582,37.87],
+          ['1','25+',203092,0,11893,1687,103.77,null,null,1230,9973,227875,38.43],
+          ['2','<5',216954,0,0,1687,104.71,null,null,1230,10063,229934,38.78],
+          ['2','5+',216954,0,5745,1687,107.46,null,null,1230,10328,235944,39.80],
+          ['2','10+',216954,0,6745,1687,107.94,null,null,1230,10374,236990,39.98],
+          ['2','15+',216954,0,7745,1687,108.42,null,null,1230,10420,238036,40.16],
+          ['2','20+',216954,0,8745,1687,108.90,null,null,1230,10466,239082,40.33],
+          ['2','25+',216954,0,11893,1687,110.41,null,null,1230,10611,242375,40.89],
+          ['3','<5',230809,0,0,1687,111.35,null,null,1230,10701,244427,41.24],
+          ['3','5+',230809,0,5745,1687,114.10,null,null,1230,10966,250437,42.26],
+          ['3','10+',230809,0,6745,1687,114.58,null,null,1230,11012,251483,42.44],
+          ['3','15+',230809,0,7745,1687,115.06,null,null,1230,11058,252529,42.61],
+          ['3','20+',230809,0,8745,1687,115.54,null,null,1230,11104,253575,42.79],
+          ['3','25+',230809,0,11893,1687,117.04,null,null,1230,11249,256868,43.35],
+          ['4','<5',244672,0,0,1687,117.99,null,null,1230,11339,258928,43.70],
+          ['4','5+',244672,0,5745,1687,120.74,null,null,1230,11604,264938,44.72],
+          ['4','10+',244672,0,6745,1687,121.22,null,null,1230,11650,265984,44.90],
+          ['4','15+',244672,0,7745,1687,121.70,null,null,1230,11696,267030,45.07],
+          ['4','20+',244672,0,8745,1687,122.18,null,null,1230,11742,268076,45.25],
+          ['4','25+',244672,0,11893,1687,123.68,null,null,1230,11887,271369,45.81]
+        ] }
+      },
+      // rank id -> chart family. Ranks not listed here have no chart yet (manual rate).
+      rankChart: { po: 'po', det3: 'det3', dets: 'det3', det2: 'det2', det1: 'det1', sgt: 'sgt', sds: 'sds', ssa: 'sds', lt: 'lt', lcd: 'ltcds', lsa: 'ltcds', capt: 'capt', di: 'di', insp: 'insp', depchief: 'dc' },
+      sgtSplit: '2022-01-30', // Sgts promoted before this date use the pre-2022 chart
+      detPlacementSince: '2018-01-01', // Det 3 placement rules on the chart are for POs promoted on/after this date
+      // Day OT if MORE than 50% of the scheduled tour is inside 08:00-16:00; otherwise night OT
+      dayWindow: ['08:00', '16:00']
+    },
     ranks: [
       { id: 'asstchief', label: 'Assistant Chief', abbr: 'Asst. Chief' }, { id: 'depchief', label: 'Deputy Chief', abbr: 'Dep. Chief' },
       { id: 'insp', label: 'Inspector', abbr: 'Insp.' }, { id: 'di', label: 'Deputy Inspector', abbr: 'D.I.' },
-      { id: 'capt', label: 'Captain', abbr: 'Capt.' }, { id: 'lcd', label: 'L.C.D.', abbr: 'L.C.D.' }, { id: 'lsa', label: 'L.S.A.', abbr: 'L.S.A.' },
+      { id: 'capt', label: 'Captain', abbr: 'Capt.' }, { id: 'lcd', label: 'L.C.D. (Lieutenant Commander Detective Squad)', abbr: 'L.C.D.' }, { id: 'lsa', label: 'L.S.A. (Lieutenant Special Assignment)', abbr: 'L.S.A.' },
       { id: 'lt', label: 'Lieutenant', abbr: 'Lt.' }, { id: 'sds', label: 'S.D.S.', abbr: 'S.D.S.' }, { id: 'ssa', label: 'S.S.A.', abbr: 'S.S.A.' },
       { id: 'sgt', label: 'Sergeant', abbr: 'Sgt.' }, { id: 'det1', label: 'Det. 1', abbr: 'Det. 1' }, { id: 'det2', label: 'Det. 2', abbr: 'Det. 2' },
       { id: 'det3', label: 'Det. 3', abbr: 'Det. 3' }, { id: 'dets', label: 'Det. S.', abbr: 'Det. S.' }, { id: 'po', label: 'P.O.', abbr: 'P.O.' },
@@ -345,15 +654,18 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       extra15: { anchor: '2024-12-31', cycle: 84, on: 52, stagger: 28, minutes: 15 }
     },
     // standard tours first (user's list), then the longer options that were already offered
-    tourPicks: ['8:15', '8:23', '8:30', '8:35', '8:44', '8:45', '8:57', '9:00', '9:15', '10:00', '12:00'],
+    tourPicks: ['8:15', '8:23', '8:30', '8:35', '8:44', '8:45', '8:57', '9:00', '9:15', '10:00', '12:00', '17:00'], // 17:00 = 17-hour tour
+    // Tour START presets (24-hour). 17:00 added for the upcoming 17:00 schedule; details come later.
     // Daily assignments (any date, past or future). Add new types here. `detail` = optional text field (required for Other);
     // `suggest` = remember earlier entries as quick suggestions.
+    paidDetailGap: { endBefore: 60, startAfter: 180 }, // reminder only: regular tour ends >= 1 h before a paid detail, starts >= 3 h after
     assignmentTypes: [
       { id: 'patrol',      label: 'Patrol',                short: 'PTL',  color: '#1E3A8A', detail: { label: 'Patrol assignment (sector / post)', placeholder: 'e.g. Sector C, Post 4' }, suggest: true },
       { id: 'hospital',    label: 'Hospitalized prisoner', short: 'HOSP', color: '#9F1239' },
       { id: 'transport',   label: 'Prisoner transport',    short: 'TRNS', color: '#7C2D12' },
       { id: 'walkthrough', label: 'Prisoner walkthrough',  short: 'WALK', color: '#4D7C0F' },
       { id: 'detail',      label: 'Detail',                short: 'DTL',  color: '#6D28D9' },
+      { id: 'paiddetail',  label: 'Paid Detail',           short: 'PAID', color: '#A16207', paid: true }, // fields: ID, date, time, duration, vendor, address (+ on-device OCR of the 'Selected Paid Details' screen)
       { id: 'training',    label: 'Training',              short: 'TRNG', color: '#0E7490', detail: { label: 'Training (what training)', placeholder: 'e.g. Firearms requalification' }, suggest: true, address: true, sites: true },
       { id: 'court',       label: 'Court',                 short: 'CRT',  color: '#374151', detail: { label: 'Court appearance (court, part, case)', placeholder: 'e.g. Kings Supreme, Part 30, Ind. 1234/26' }, suggest: true, address: true },
       { id: 'other',       label: 'Other',                 short: 'OTH',  color: '#57534E', detail: { label: 'Assignment', placeholder: 'Describe the assignment', required: true }, suggest: true }
@@ -647,8 +959,14 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       { id: 'vacation', label: 'Vacation',  short: 'V', color: '#0E7490' },
       { id: 'sick',     label: 'Sick',      short: 'S', color: '#9D174D' },
       { id: 'comp',     label: 'Comp time', short: 'C', color: '#15803D' },
-      { id: 'personal', label: 'Personal',  short: 'P', color: '#7C2D12' }
-    ]
+      { id: 'personal', label: 'Personal',  short: 'P', color: '#7C2D12' },
+      { id: 'chart',    label: 'Chart time', short: 'CT', color: '#B45309' }
+    ],
+    // Tour end: ending this many minutes or more past the scheduled end is overtime; 1..(this-1) minutes late earns none.
+    otThresholdMin: 15,
+    // Ending a tour early is charged to one of these balances (exact labels shown in the prompt)
+    shortLeaveTypes: ['comp', 'chart', 'vacation'],
+    shortLeaveLabels: { comp: 'Comp time', chart: 'Chart time', vacation: 'Vacation time' }
   };
 
   function mod(a, b) { return ((a % b) + b) % b; }
@@ -871,7 +1189,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   // Regular hours in a range: sum of tour lengths on working days (overrides applied), leave days excluded.
   // A tour starting 20:00 or later counts for the NEXT calendar date (hours, pay periods); it is still shown on its start date.
   function attrDay(d, t) { return t && t.countsNext ? d + 1 : d; }
-  function otDay(e) { var d = toDay(e.date); return e && e.mode === 'times' && countsNextDay(e.start) ? d + 1 : d; }
+  function otDay(e) { if (e && e.countsFor) return toDay(e.countsFor); var d = toDay(e.date); return e && e.mode === 'times' && countsNextDay(e.start) ? d + 1 : d; } // late-end OT counts with its tour
   function periodHours(start, end, squadId, opts) {
     var r = { minutes: 0, worked: 0, leave: 0, scheduled: 0, extraDays: 0, droppedDays: 0, ddWorkDays: 0, ddOffDays: 0, fromPrev: 0, toNext: 0 };
     for (var d = start - 1; d <= end; d++) {
@@ -903,6 +1221,60 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     t[rdoIso] = { status: 'dd', swap: workIso, len: (extra && extra.len) || null, start: (extra && extra.start) || '' };
     t[workIso] = { status: 'ddoff', swap: rdoIso, len: null, start: '' };
     return t;
+  }
+  // ---- Tour end override: late / early ----
+  // Compare the actual end with the scheduled end (start + tour length). The end time is placed on the start day or a
+  // following day, whichever is closest to the scheduled end (handles tours that cross midnight).
+  // kind: 'on' (exact), 'late' (1..OT threshold-1 min: no OT), 'ot' (>= threshold: all minutes past the scheduled end are OT), 'early'.
+  function endCompare(start, lenMin, end) {
+    var s = timeToMin(start), e = timeToMin(normTime(end) || ''); if (s === null || e === null || !lenMin) return null;
+    var se = s + lenMin, best = null;
+    for (var k = 0; k < 3; k++) { var a = e + k * 1440; if (a <= s) continue; if (best === null || Math.abs(a - se) < Math.abs(best - se)) best = a; }
+    var delta = best - se, T = CONFIG.otThresholdMin, hm = function (m) { return pad2(Math.floor(m / 60) % 24) + ':' + pad2(m % 60); };
+    var r = { sched: hm(se), schedDayOffset: Math.floor(se / 1440), end: hm(best), endDayOffset: Math.floor(best / 1440), delta: delta, worked: best - s };
+    r.kind = delta === 0 ? 'on' : delta < 0 ? 'early' : delta < T ? 'late' : 'ot';
+    if (r.kind === 'ot') r.otMin = delta; if (r.kind === 'early') r.shortMin = -delta;
+    return r;
+  }
+  // Keep the overtime log in step with a late tour end: one entry linked to the day (linkedEnd), counting for the same day
+  // the tour counts for (a tour starting 20:00+ counts for the next day, and so does its tail).
+  function syncEndOT(overtime, iso, start, lenMin, end, newId) {
+    var list = (overtime || []).slice(), idx = -1;
+    for (var i = 0; i < list.length; i++) if (list[i].linkedEnd === iso) { if (idx < 0) idx = i; else { list.splice(i, 1); i--; } }
+    var c = end ? endCompare(start, lenMin, end) : null;
+    if (c && c.kind === 'ot') {
+      var d = toDay(iso), base = idx >= 0 ? list[idx] : { id: newId || ('e' + iso), type: 'holdover', notes: 'Tour ended late' }, e = copy(base);
+      e.date = toISO(d + c.schedDayOffset); e.linkedEnd = iso; e.mode = 'times'; e.start = c.sched; e.end = c.end; e.hours = Math.round(c.otMin / 60 * 10000) / 10000;
+      e.countsFor = toISO(countsNextDay(start) ? d + 1 : d);
+      if (idx >= 0) list[idx] = e; else list.push(e);
+    } else if (idx >= 0) list.splice(idx, 1);
+    return list;
+  }
+  // Leave balances (minutes) minus short-tour deductions recorded on tours[iso].short = { type, minutes }
+  function leaveBalances(state) {
+    var st = state || {}, b = (st.settings && st.settings.leaveBalances) || {}, used = {}, out = {}, earned = { comp: st.profile ? otPayList(st.overtime || [], { profile: st.profile }).compMinutes : 0 }; // Captain-and-above OT banked as comp
+    Object.keys(st.tours || {}).forEach(function (iso) { var s = st.tours[iso] && st.tours[iso].short; if (s && s.type && s.minutes > 0) used[s.type] = (used[s.type] || 0) + s.minutes; });
+    CONFIG.shortLeaveTypes.forEach(function (t) { var start = +b[t] || 0; var ea = earned[t] || 0; out[t] = { start: start, used: used[t] || 0, earned: ea, left: start + ea - (used[t] || 0), set: b[t] != null && b[t] !== '' }; });
+    return out;
+  }
+  function shortLeaveEntries(state) {
+    var st = state || {}; return Object.keys(st.tours || {}).filter(function (iso) { var s = st.tours[iso] && st.tours[iso].short; return s && s.type && s.minutes > 0; }).sort().map(function (iso) { return { iso: iso, type: st.tours[iso].short.type, minutes: st.tours[iso].short.minutes, end: st.tours[iso].end || '' }; });
+  }
+  // ---- Delete everything the user entered for one date (never the base rotation / RDO chart) ----
+  // OT: entries dated that day (unless linked to another day's tour), its extra-RDO-tour entry and its late-end entry.
+  function dayOT(e, iso) { return !!e && (e.linkedEnd ? e.linkedEnd === iso : e.linkedTour ? e.linkedTour === iso : e.date === iso); }
+  function dayHasEntries(state, iso) {
+    var s = state || {};
+    return !!((s.leave || {})[iso] || (s.assignments || {})[iso] || (s.tours || {})[iso] || (s.slips || {})[iso] || (s.overtime || []).some(function (e) { return dayOT(e, iso); }));
+  }
+  function deleteDay(state, iso) {
+    var s = copy(state || {}), t = (s.tours || {})[iso];
+    var r = { leave: !!(s.leave || {})[iso], assignment: !!(s.assignments || {})[iso], tour: !!t, slip: !!(s.slips || {})[iso], overtime: 0, partner: '' };
+    ['leave', 'assignments', 'slips'].forEach(function (k) { s[k] = copy(s[k] || {}); delete s[k][iso]; });
+    if (t && (t.status === 'dd' || t.status === 'ddoff')) { r.partner = t.swap || ''; s.tours = clearDayForDay(s.tours, iso); } // a D/D pair can't stand alone
+    else { s.tours = copy(s.tours || {}); delete s.tours[iso]; }
+    var ot = s.overtime || []; s.overtime = ot.filter(function (e) { return !dayOT(e, iso); }); r.overtime = ot.length - s.overtime.length;
+    return { state: s, removed: r };
   }
   // Keep exactly one overtime entry linked to an extra RDO tour (tour = dayTour(...) for iso); remove it otherwise.
   function syncExtraOT(overtime, iso, tour, newId) {
@@ -953,6 +1325,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       q.lastName = w.length > 1 ? w.pop() : (w[0] || ''); q.firstName = w.length && q.lastName !== w[0] ? w.join(' ') : '';
     }
     ['firstName', 'lastName', 'rankOther', 'taxNumber', 'refNumber', 'shieldNumber'].forEach(function (k) { q[k] = q[k] == null ? '' : String(q[k]); });
+    ['hireDate', 'promotionDate'].forEach(function (k) { q[k] = isISODate(q[k]) ? q[k] : ''; }); // ISO YYYY-MM-DD or ''
+    // Manual hourly rate is an override (off by default). Profiles saved before the pay charts keep their typed rate switched on.
+    q.rateOverride = q.rateOverride == null ? parseFloat(q.rate) > 0 : !!q.rateOverride;
     if (!q.rank) q.rank = '';
     if (!Array.isArray(q.charts) || !q.charts.length) q.charts = q.squad != null && q.squad !== '' ? [{ id: 'c1', effective: '', chart: String(q.squad) }] : [];
     // ranks from the first rank list: Detective -> Det. 3, Chief -> Other "Chief" (po, sgt, lt, capt, di, insp ids are unchanged)
@@ -960,6 +1335,179 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (q.rank === 'chief') { q.rank = 'other'; q.rankOther = q.rankOther || 'Chief'; }
     q.name = (q.firstName + ' ' + q.lastName).trim() || q.name || '';
     return q;
+  }
+  function isISODate(v) { if (!/^\d{4}-\d{2}-\d{2}$/.test(String(v || ''))) return false; var n = toDay(v); return toISO(n) === v; }
+  // ---- Service length / time in rank (for the future pay module: pay steps by years of service, time in rank). No pay math here. ----
+  // Whole calendar years / months / days from `fromIso` to `asOfIso` (default today). Returns null if not set, invalid or in the future.
+  function serviceLength(fromIso, asOfIso) {
+    if (!isISODate(fromIso)) return null; var to = asOfIso && isISODate(asOfIso) ? asOfIso : toISO(today()); if (fromIso > to) return null;
+    var a = parts(toDay(fromIso)), b = parts(toDay(to)), months = (b.y - a.y) * 12 + (b.m - a.m);
+    var anchor = function (n) { var y = a.y + Math.floor((a.m - 1 + n) / 12), m = (a.m - 1 + n) % 12 + 1, dim = new Date(Date.UTC(y, m, 0)).getUTCDate(); return fromYMD(y, m, Math.min(a.d, dim)); }; // same day-of-month, clamped (Jan 31 + 1 mo = Feb 28/29)
+    if (anchor(months) > toDay(to)) months--;
+    var days = toDay(to) - anchor(months);
+    var y = Math.floor(months / 12), m = months % 12;
+    return { from: fromIso, asOf: to, years: y, months: m, days: days, totalMonths: months, totalDays: toDay(to) - toDay(fromIso), yearsDecimal: Math.round((toDay(to) - toDay(fromIso)) / 365.2425 * 100) / 100,
+      text: y || m ? (y ? y + (y === 1 ? ' yr' : ' yrs') : '') + (y && m ? ' ' : '') + (m ? m + (m === 1 ? ' mo' : ' mos') : '') : 'Under 1 mo' };
+  }
+  // { service: years of service from hire date, inRank: time in rank from the most recent promotion (or hire date if never promoted) }
+  function serviceInfo(profile, asOfIso) {
+    var p = profile || {}, sv = serviceLength(p.hireDate, asOfIso), pr = serviceLength(p.promotionDate, asOfIso);
+    var ir = pr ? Object.assign(pr, { source: 'promotion' }) : sv ? Object.assign(serviceLength(p.hireDate, asOfIso), { source: 'hire' }) : null;
+    return { hireDate: p.hireDate || '', promotionDate: p.promotionDate || '', service: sv, inRank: ir };
+  }
+  // ---- Pay: hourly / OT rates from the pay charts (CONFIG.pay), by rank, hire date and promotion date ----
+  var PAY_BRACKETS = ['<5', '5+', '10+', '15+', '20+', '25+'];
+  function addMonthsISO(iso, n) { var a = parts(toDay(iso)), y = a.y + Math.floor((a.m - 1 + n) / 12), m = mod(a.m - 1 + n, 12) + 1, dim = new Date(Date.UTC(y, m, 0)).getUTCDate(); return toISO(fromYMD(y, m, Math.min(a.d, dim))); }
+  function longevityBracket(hireIso, asOfIso) { var s = serviceLength(hireIso, asOfIso); if (!s) return ''; var y = s.years; return y >= 25 ? '25+' : y >= 20 ? '20+' : y >= 15 ? '15+' : y >= 10 ? '10+' : y >= 5 ? '5+' : '<5'; }
+  function payRowObj(chartId, r) { return { chart: chartId, key: r[0], bracket: r[1], base: r[2], npd: r[3], longevity: r[4], sd: r[5], hourly: r[6], ot15: r[7], otNight: r[8], uniform: r[9], holiday: r[10], total: r[11], exchange: r[12] == null ? null : r[12], eff: CONFIG.pay.charts[chartId].eff }; }
+  // Row for a step + wanted bracket: exact match, else the highest printed bracket below it, else the lowest printed bracket.
+  function payRow(chartId, key, bracket) {
+    var c = CONFIG.pay.charts[chartId]; if (!c) return null;
+    var rows = c.rows.filter(function (r) { return r[0] === key; }); if (!rows.length) return null;
+    var w = PAY_BRACKETS.indexOf(bracket), best = null, bi = -1, low = null, li = 99;
+    rows.forEach(function (r) { var i = PAY_BRACKETS.indexOf(r[1]); if (i <= w && i > bi) { best = r; bi = i; } if (i < li) { low = r; li = i; } });
+    var r = best || low, o = payRowObj(chartId, r); o.wanted = bracket; o.exact = r[1] === bracket; return o;
+  }
+  // PO grade by months of service from the hire date (chart eff. 8/1/24)
+  var PO_GRADES = [[0, 'sixth', 'Sixth Grade'], [18, 'fifth', 'Fifth Grade'], [30, 'fourth', 'Fourth Grade'], [42, 'third', 'Third Grade'], [54, 'second', 'Second Grade'], [60, 'second5', 'Second Grade + 5-yr longevity'],
+    [66, 'basic', 'Basic Grade'], [120, 'basic10', 'Basic + 10-yr longevity'], [180, 'basic15', 'Basic + 15-yr longevity'], [240, 'basic20', 'Basic + 20-yr longevity']];
+  function payStepLabel(chartId, key) {
+    if (chartId === 'po') { for (var i = 0; i < PO_GRADES.length; i++) if (PO_GRADES[i][1] === key) return PO_GRADES[i][2]; return key; }
+    if (key === '1g') return '1st Grade'; if (key === '2g') return '2nd Grade';
+    if (key === '7sd') return 'Step 7 + service differential';
+    if (key === '5sd') return 'Step 5 + service differential';
+    if (key === '4sd') return 'Step 4 + service differential';
+    return 'Step ' + key;
+  }
+  // Where the member sits on the chart on `asOfIso` (default today). { ok, chart, chartLabel, eff, key, stepLabel, bracket, row, hourly, ot15, otNight, notes[], prompts[] }
+  function payPlacement(profile, asOfIso) {
+    var p = profile || {}, P = CONFIG.pay, asOf = isISODate(asOfIso) ? asOfIso : toISO(today()), fam = P.rankChart[p.rank];
+    var out = { ok: false, rank: p.rank || '', family: fam || '', asOf: asOf, notes: [], prompts: [] };
+    if (!fam) { out.reason = 'nochart'; out.message = 'Pay chart not added yet'; return out; }
+    if (!isISODate(p.hireDate)) { out.reason = 'nohire'; out.message = 'Add your hire date so the app can work out your hourly rate from the pay chart.'; out.prompts.push('hire'); return out; }
+    if (p.hireDate > asOf) { out.reason = 'beforehire'; out.message = 'This date is before your hire date.'; return out; }
+    var bracket = longevityBracket(p.hireDate, asOf), chart, key, promo = p.promotionDate, at = asOf;
+    if (fam !== 'po' && fam !== 'det1' && fam !== 'det2') {
+      if (!isISODate(promo)) { promo = p.hireDate; out.promoFromHire = true; out.prompts.push('promo'); out.notes.push('No promotion date, so your hire date is used instead. Add your promotion date for the right step.'); }
+      if (promo < p.hireDate) promo = p.hireDate;
+      if (promo > asOf) { at = promo; out.notes.push('This date is before your promotion; your first step in this rank is used.'); }
+    }
+    if (fam === 'po') {
+      var mo = serviceLength(p.hireDate, asOf).totalMonths, g = PO_GRADES[0];
+      PO_GRADES.forEach(function (x) { if (mo >= x[0]) g = x; }); chart = 'po'; key = g[1];
+    } else if (fam === 'det1' || fam === 'det2') {
+      chart = fam; key = fam === 'det1' ? '1g' : '2g';
+    } else if (fam === 'det3') {
+      // Placement by uniformed service at promotion (chart rules for POs promoted on/after 1/1/2018); steps 1-3 move to step 4 at 5.5 yrs of service,
+      // then one step a year on the anniversary of reaching step 4, up to step 7. The SD block (step 7) applies after 5 yrs as a detective.
+      var um = serviceLength(p.hireDate, promo).totalMonths, place = um < 42 ? 1 : um < 54 ? 2 : um < 66 ? 3 : 4;
+      if (promo < P.detPlacementSince) out.notes.push('Promoted before 1/1/2018: the chart only gives placement rules for later promotions, so the same rules are used.');
+      if (um < 18) out.notes.push('Under 1.5 yrs of service at promotion: placed at step 1.');
+      var s4 = place === 4 ? promo : addMonthsISO(p.hireDate, 66), step = at < s4 ? place : Math.min(7, 4 + serviceLength(s4, at).years);
+      chart = 'det3'; key = String(step);
+      if (step === 7 && at >= addMonthsISO(promo, 60)) key = '7sd';
+      else if (step < 7 && at >= addMonthsISO(promo, 60)) out.notes.push('5+ yrs as a detective, but the chart only prints the service differential at step 7.');
+      out.step4Date = s4;
+    } else if (fam === 'sgt') {
+      var pre = promo < P.sgtSplit, yrs = serviceLength(promo, at).years;
+      chart = pre ? 'sgtPre' : 'sgtPost'; key = String(Math.min(pre ? 5 : 6, yrs + 1));
+      if (pre && key === '5' && at > addMonthsISO(promo, 60)) key = '5sd'; // more than 5 years as Sgt
+    } else if (fam === 'lt' || fam === 'capt') {
+      // steps 1-4 yearly from promotion; step 4 + SD rows ('> 5 as Lt' / '> 5 in CEA', printed for 10+ yrs only) after more than 5 years since promotion
+      chart = fam; key = String(Math.min(4, serviceLength(promo, at).years + 1));
+      var rn = fam === 'lt' ? 'as Lt' : 'in CEA';
+      if (key === '4' && at > addMonthsISO(promo, 60)) {
+        if (bracket === '<5' || bracket === '5+') out.notes.push('More than 5 yrs ' + rn + ', but the chart prints the service differential only for 10+ yrs of service; the step 4 ' + bracket + ' row (no service differential) is used.');
+        else key = '4sd';
+      }
+      if (fam === 'capt' && key === '4sd') out.notes.push('"> 5 in CEA" is counted as more than 5 yrs since your promotion to Captain (to be confirmed).');
+    } else { // sds / ssa, lcd / lsa: steps 1-4 yearly from promotion, SD on every row from the start
+      chart = fam; key = String(Math.min(4, serviceLength(promo, at).years + 1));
+    }
+    var c = P.charts[chart];
+    if (bracket === '25+' && !c.rows.some(function (x) { return x[1] === '25+'; })) bracket = '20+'; // 25+ only exists on the Captain-and-above charts
+    var r = payRow(chart, key, bracket);
+    if (!r.exact && chart !== 'po') out.notes.push('The chart has no ' + bracket + ' yrs row for ' + payStepLabel(chart, key) + '; the ' + r.bracket + ' yrs row is used.');
+    if (asOf < c.eff) out.notes.push('Before this chart took effect (' + c.eff + '); its rates are used anyway.');
+    return Object.assign(out, { ok: true, chart: chart, chartLabel: c.label, eff: c.eff, key: key, stepLabel: payStepLabel(chart, key), bracket: bracket, promoUsed: promo, row: r, hourly: r.hourly, ot15: r.ot15, otNight: r.otNight, exchange: r.exchange, cashOT: c.cashOT !== false,
+      ceaOT: c.ceaOT ? { straight: c.ceaOT.capHours > 0, cashUntil: c.ceaOT.capHours > 0 ? addMonthsISO(promo, 12 * c.ceaOT.straightYears) : '', cashEligible: c.ceaOT.capHours > 0 && at < addMonthsISO(promo, 12 * c.ceaOT.straightYears), capHours: c.ceaOT.capHours, compRate: c.ceaOT.compRate } : null });
+  }
+  // First date after asOf when the chart row (step/grade, longevity row or SD) changes, or null.
+  function payNextChange(profile, asOfIso) {
+    var cur = payPlacement(profile, asOfIso); if (!cur.ok) return null;
+    var h = profile.hireDate, pr = cur.promoUsed || h, c = [];
+    [18, 30, 42, 54, 60, 66, 120, 180, 240].forEach(function (m) { c.push(addMonthsISO(h, m)); });
+    for (var k = 1; k <= 8; k++) c.push(addMonthsISO(pr, 12 * k));
+    c.push(toISO(toDay(addMonthsISO(pr, 60)) + 1)); c.push(pr);
+    if (cur.step4Date) for (k = 1; k <= 4; k++) c.push(addMonthsISO(cur.step4Date, 12 * k));
+    c = c.filter(function (d, i) { return d > cur.asOf && c.indexOf(d) === i; }).sort();
+    for (var i = 0; i < c.length; i++) {
+      var n = payPlacement(profile, c[i]);
+      if (n.ok && (n.chart !== cur.chart || n.key !== cur.key || n.row.bracket !== cur.row.bracket || n.hourly !== cur.hourly)) return { date: c[i], placement: n, label: n.stepLabel + (n.row.bracket !== cur.row.bracket && n.key === cur.key ? ' (' + n.row.bracket + ' yrs longevity)' : '') };
+    }
+    return null;
+  }
+  // Summary for Settings / OT: chart placement, next change, and the rate in use (manual override wins when switched on).
+  function payInfo(profile, asOfIso) {
+    var p = profile || {}, pl = payPlacement(p, asOfIso), man = parseFloat(p.rate) || 0, ov = !!p.rateOverride && man > 0;
+    return { placement: pl, next: pl.ok ? payNextChange(p, asOfIso) : null, override: ov, manualRate: man,
+      hourly: ov ? man : pl.ok ? pl.hourly : man, source: ov ? 'manual' : pl.ok ? 'chart' : man > 0 ? 'fallback' : 'none' };
+  }
+  // Day OT if MORE than 50% of the scheduled tour is inside 08:00-16:00; otherwise night (a 50/50 tour is night). null if the tour is unknown.
+  function tourIsNight(start, lenMin) {
+    var s = timeToMin(start); lenMin = +lenMin; if (s == null || !(lenMin > 0)) return null;
+    var w = CONFIG.pay.dayWindow, a = timeToMin(w[0]), b = timeToMin(w[1]), day = 0;
+    for (var k = 0; k < 3; k++) { var lo = Math.max(s, a + 1440 * k), hi = Math.min(s + lenMin, b + 1440 * k); if (hi > lo) day += hi - lo; }
+    return !(day * 2 > lenMin);
+  }
+  // OT dollars for one entry: chart rate as of the entry's date; day or night OT from that day's scheduled tour (ctx.tour = {start, len}).
+  // Manual override (or no chart / no hire date with a typed rate): hours x rate x multiplier.
+  // How an OT entry may be compensated: cash, time (comp at 1.5x) or split (some hours cash, the rest comp).
+  // Own-rate override: free choice. DI / Insp / DC: time only. Captain: cash only in the first 2 yrs (and only up to the yearly cap); after that time only.
+  var OT_COMP = ['cash', 'time', 'split'];
+  function otCompOptions(profile, dateIso) {
+    var p = profile || {}, man = parseFloat(p.rate) || 0;
+    if (p.rateOverride && man > 0) return { allowed: OT_COMP.slice(), reason: '' };
+    var pl = payPlacement(p, dateIso);
+    if (pl.ok && pl.ceaOT && !pl.ceaOT.straight) return { allowed: ['time'], reason: 'No cash OT for this rank: comp time only.' };
+    if (pl.ok && pl.ceaOT && !pl.ceaOT.cashEligible) return { allowed: ['time'], reason: 'Cash OT ended ' + pl.ceaOT.cashUntil + ' (after 2 yrs as Captain): comp time only.' };
+    return { allowed: OT_COMP.slice(), reason: pl.ok && pl.ceaOT ? 'Cash OT is capped at ' + pl.ceaOT.capHours + ' h a year; hours over the cap become comp time.' : '' };
+  }
+  // entry.comp: 'cash' (default) | 'time' | 'split' (entry.cashHours = hours paid in cash, rest comp). Comp time is banked at 1.5x.
+  function otEntryPay(entry, ctx) {
+    ctx = ctx || {}; var p = ctx.profile || {}, h = entryHours(entry), mlt = parseFloat(ctx.multiplier) || 1.5, man = parseFloat(p.rate) || 0, CR = CONFIG.pay.compRate;
+    var opts = otCompOptions(p, entry && entry.date), mode = entry && OT_COMP.indexOf(entry.comp) >= 0 ? entry.comp : 'cash';
+    if (opts.allowed.indexOf(mode) < 0) mode = opts.allowed[0];
+    var want = mode === 'time' ? 0 : mode === 'split' ? Math.max(0, Math.min(h, parseFloat(entry.cashHours) || 0)) : h;
+    var res = { hours: h, pay: 0, rate: 0, kind: 'none', source: 'none', tourKnown: false, comp: mode, allowed: opts.allowed, cashHours: want, compHours: 0, compMinutes: 0 };
+    var fin = function (cashH, rateH, compRate) { var ch = Math.round((h - cashH) * 1e6) / 1e6; res.cashHours = cashH; res.compHours = ch; res.compMinutes = Math.round(ch * compRate * 60); res.pay = Math.round(cashH * rateH * 100) / 100; return res; };
+    if (p.rateOverride && man > 0) { res.source = 'manual'; res.kind = 'manual'; res.rate = Math.round(man * mlt * 100) / 100; return fin(want, man * mlt, CR); }
+    var pl = payPlacement(p, entry && entry.date);
+    if (pl.ok && pl.ceaOT) { // Captain: straight-time cash up to the yearly cap in the first 2 yrs, the rest comp at 1.5x. DI/Insp/DC: all comp at 1.5x. ctx.cashUsed = cash hours already used that calendar year
+      var cp = pl.ceaOT, left = Math.max(0, cp.capHours - (+ctx.cashUsed || 0)), cashH = cp.cashEligible ? Math.min(want, left) : 0;
+      Object.assign(res, { source: 'chart', placement: pl, rate: pl.hourly, capLeftBefore: cp.cashEligible ? left : 0, overCap: cp.cashEligible && want > left });
+      fin(cashH, pl.hourly, cp.compRate); res.kind = cashH > 0 ? (res.compHours > 0 ? 'split' : 'straight') : 'comp'; return res;
+    }
+    if (pl.ok && !pl.cashOT) { res.placement = pl; res.noCashOT = true; return fin(0, 0, CR); } // chart without any OT rule (none today)
+    if (pl.ok) {
+      var t = ctx.tour || {}, night = tourIsNight(t.start, t.len);
+      res.source = 'chart'; res.placement = pl; res.tourKnown = night !== null; res.kind = night ? 'night' : 'day';
+      res.rate = night ? pl.otNight : pl.ot15; return fin(want, res.rate, CR);
+    }
+    if (man > 0) { res.source = 'fallback'; res.kind = 'manual'; res.rate = Math.round(man * mlt * 100) / 100; return fin(want, man * mlt, CR); }
+    return fin(want, 0, CR);
+  }
+  // OT pay for a list of entries in date order, so the Captain's yearly cash cap is used up chronologically.
+  // ctx: { profile, multiplier, tourFor(iso) -> {start, len} }. Returns { byId: {id: result}, cashUsed: {year: hours}, compMinutes }
+  function otPayList(entries, ctx) {
+    ctx = ctx || {}; var used = {}, byId = {}, comp = 0;
+    (entries || []).slice().sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : String(a.start || '') < String(b.start || '') ? -1 : String(a.start || '') > String(b.start || '') ? 1 : 0; }).forEach(function (e) {
+      var y = String(e.date || '').slice(0, 4), r = otEntryPay(e, { profile: ctx.profile, multiplier: ctx.multiplier, tour: ctx.tourFor ? ctx.tourFor(e.date) : null, cashUsed: used[y] || 0 });
+      if (r.cashHours) used[y] = Math.round(((used[y] || 0) + r.cashHours) * 1e6) / 1e6;
+      if (r.compMinutes) comp += r.compMinutes;
+      byId[e.id] = r;
+    });
+    return { byId: byId, cashUsed: used, compMinutes: comp };
   }
   function rankByWord(w) {
     var a = (w[0] || '').toLowerCase().replace(/\.$/, ''), b = (w[1] || '').toLowerCase();
@@ -980,6 +1528,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var ref = String(p.refNumber || '').trim();
     if (!ref) e.refNumber = 'Reference number is required'; else if (!/^\d{7}$/.test(ref)) e.refNumber = 'Must be exactly 7 digits';
     var sh = String(p.shieldNumber || '').trim(); if (sh && !/^\d+$/.test(sh)) e.shieldNumber = 'Digits only';
+    // Hire date / most recent promotion date: optional, ISO dates, not in the future, promotion on or after hire
+    var hd = String(p.hireDate || '').trim(), pd = String(p.promotionDate || '').trim(), td = toISO(today());
+    if (hd && !isISODate(hd)) e.hireDate = 'Use a valid date'; else if (hd > td) e.hireDate = 'Hire date can\'t be in the future';
+    if (pd && !isISODate(pd)) e.promotionDate = 'Use a valid date'; else if (pd > td) e.promotionDate = 'Promotion date can\'t be in the future';
+    else if (pd && hd && isISODate(hd) && pd < hd) e.promotionDate = 'Promotion date can\'t be before the hire date';
     return e;
   }
   // ---- Calendar export: iCalendar (RFC 5545) + Google Calendar links ----
@@ -1010,7 +1563,112 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (t && t.address) r.address = String(a.address || '').trim(); // Court / Training only
     if (a.type === 'court') { r.place = String(a.place || '').trim(); r.boro = CONFIG.boroughs.indexOf(a.boro) >= 0 ? a.boro : ''; }
     if (a.type === 'training') r.place = String(a.place || '').trim(); // training location name, separate from the training text (detail)
+    if (t && t.paid) r.pd = cleanPaidDetail(a.pd);
     return r;
+  }
+  // ---- Paid Detail ----
+  // Duration from HH:MM start/end (may cross midnight). A duration ending in :59 rounds up to the next whole hour (0001-0800 = 7:59 -> 8:00).
+  function roundPaidMin(m) { m = Math.round(+m || 0); return m > 0 && m % 60 === 59 ? m + 1 : m; }
+  function paidDetailDuration(start, end) {
+    var a = timeToMin(normTime(start || '') || ''), b = timeToMin(normTime(end || '') || ''); if (a === null || b === null) return 0;
+    var d = b - a; if (d <= 0) d += 1440; return roundPaidMin(d);
+  }
+  // A Paid Detail always stays on its own start date: the 20:00+ "counts for the next day" tour rule does not apply.
+  // Reminder only (never enforced): a regular tour must END at least 1 hour before a paid detail starts, and may START no earlier
+  // than 3 hours after it ends. Minutes are absolute (day number * 1440 + minutes) so overnight details and tours compare correctly.
+  function paidDetailWindow(pd, iso) {
+    pd = pd || {}; var date = isISODate(pd.date) ? pd.date : iso, s = timeToMin(normTime(pd.start || '') || ''), e = timeToMin(normTime(pd.end || '') || '');
+    if (!isISODate(date) || s === null) return null;
+    var d0 = toDay(date) * 1440, sA = d0 + s, eA = e === null ? (pd.durationMin ? sA + pd.durationMin : null) : d0 + e + (e <= s ? 1440 : 0);
+    var at = function (m) { var d = Math.floor(m / 1440), mm = ((m % 1440) + 1440) % 1440; return { iso: toISO(d), day: d, time: pad2(Math.floor(mm / 60)) + pad2(mm % 60), abs: m }; };
+    return { date: date, startAbs: sA, endAbs: eA, endBy: at(sA - CONFIG.paidDetailGap.endBefore), startAfter: eA === null ? null : at(eA + CONFIG.paidDetailGap.startAfter) };
+  }
+  // tour: { start 'HH:MM', len (min) } on day number tourDay. Returns 'end' (tour ends too late), 'start' (starts too soon) or ''.
+  function paidDetailConflict(w, tour, tourDay) {
+    if (!w || !tour || !tour.start || !tour.len) return ''; var t = timeToMin(tour.start); if (t === null) return '';
+    var tS = tourDay * 1440 + t, tE = tS + tour.len;
+    if (tS < w.startAbs) return tE > w.endBy.abs ? 'end' : '';
+    return w.startAfter && tS < w.startAfter.abs ? 'start' : '';
+  }
+  // Reminders for day number `day`: paid details saved on the day before, the day itself and the day after, still in the future
+  // (or today). tourFn(day) -> { working, regular, start, len }. A rule shows when its time falls on this day or when the tour conflicts.
+  function paidDetailNotes(assignments, day, tourFn, todayDay) {
+    var out = [], tour = tourFn ? tourFn(day) : null, reg = !!(tour && tour.working && tour.regular && tour.start && tour.len);
+    [-1, 0, 1].forEach(function (k) {
+      var iso = toISO(day + k), a = assignments && assignments[iso]; if (!a || !a.pd || assignmentType(a.type) && !assignmentType(a.type).paid) return;
+      var w = paidDetailWindow(a.pd, iso); if (!w) return;
+      if (todayDay != null && (w.endAbs === null ? w.startAbs : w.endAbs) < todayDay * 1440) return;
+      var c = reg ? paidDetailConflict(w, tour, day) : '', n = { iso: w.date, id: a.pd.id || '', vendor: a.pd.vendor || '', start: (a.pd.start || '').replace(':', ''), end: (a.pd.end || '').replace(':', ''), window: w, conflict: c, rules: [] };
+      if (k === 0 || w.endBy.day === day || c === 'end') n.rules.push({ kind: 'end', time: w.endBy.time, iso: w.endBy.iso, bad: c === 'end' });
+      if (w.startAfter && (k === 0 || w.startAfter.day === day || c === 'start')) n.rules.push({ kind: 'start', time: w.startAfter.time, iso: w.startAfter.iso, bad: c === 'start' });
+      if (n.rules.length) out.push(n);
+    });
+    return out;
+  }
+  function paidDetailRate(profile) { var r = profile && CONFIG.pay.paidDetailRates[profile.rank]; return r > 0 ? r : null; }
+  function paidDetailMinutes(pd) { pd = pd || {}; var dm = parseInt(pd.durationMin, 10); return dm > 0 ? roundPaidMin(dm) : paidDetailDuration(pd.start || '', pd.end || ''); }
+  // Pay = rounded duration (7:59 -> 8:00) x flat rank rate.
+  function paidDetailPay(pd, profile) {
+    var m = paidDetailMinutes(pd), r = paidDetailRate(profile);
+    return { minutes: m, rate: r, amount: r ? Math.round(m / 60 * r * 100) / 100 : 0, ok: !!r };
+  }
+  // Paid detail earnings between two ISO dates (inclusive, by the detail's own date); split into worked (<= today) and scheduled.
+  function paidDetailTotals(assignments, profile, fromIso, toIso, todayIso) {
+    var out = { count: 0, minutes: 0, amount: 0, earned: 0, scheduled: 0, rate: paidDetailRate(profile), items: [] };
+    Object.keys(assignments || {}).sort().forEach(function (iso) {
+      var a = assignments[iso], t = a && assignmentType(a.type); if (!t || !t.paid || !a.pd) return;
+      var d = paidDetailDay(a, iso); if ((fromIso && d < fromIso) || (toIso && d > toIso)) return;
+      var p = paidDetailPay(a.pd, profile); out.count++; out.minutes += p.minutes; out.amount += p.amount;
+      if (todayIso && d > todayIso) out.scheduled += p.amount; else out.earned += p.amount;
+      out.items.push({ iso: iso, date: d, pd: a.pd, minutes: p.minutes, rate: p.rate, amount: p.amount });
+    });
+    ['amount', 'earned', 'scheduled'].forEach(function (k) { out[k] = Math.round(out[k] * 100) / 100; });
+    out.items.sort(function (x, y) { return x.date < y.date ? -1 : x.date > y.date ? 1 : 0; });
+    return out;
+  }
+  function paidDetailDay(a, iso) { return (a && a.pd && isISODate(a.pd.date)) ? a.pd.date : (iso || ''); }
+  function cleanPaidDetail(pd) {
+    pd = pd || {}; var st = normTime(pd.start || '') || '', en = normTime(pd.end || '') || '', dm = parseInt(pd.durationMin, 10);
+    return { id: String(pd.id || '').replace(/\D/g, ''), date: isISODate(pd.date) ? pd.date : '', start: st, end: en,
+      durationMin: dm > 0 ? roundPaidMin(dm) : paidDetailDuration(st, en), vendor: String(pd.vendor || '').replace(/\s+/g, ' ').trim(), address: String(pd.address || '').replace(/\s+/g, ' ').trim() };
+  }
+  // Pull the Paid Detail fields out of OCR text of the NYPD "Selected Paid Details" screen. Everything else on the screen (vendor notes in
+  // parentheses such as "(NO CELLPHONE USAGE)", Boro, Requested Rank, map link, status totals, unscheduling notice) is ignored.
+  var PD_LABELS = /^(boro(ugh)?|requested\s*rank|rank|status|map|view\s*map|scheduled|pending|approved|cancel+ed|total|unschedul|selected\s*paid|paid\s*details?\b(?!\s*(id|#|no))|date|time|duration|vendor|address|location|paid\s*detail\s*(id|#|no))/i;
+  var PD_CITIES = ['STATEN ISLAND', 'NEW YORK', 'MANHATTAN', 'BROOKLYN', 'BRONX', 'QUEENS', 'LONG ISLAND CITY', 'FLUSHING', 'JAMAICA', 'ASTORIA', 'FAR ROCKAWAY'];
+  function parsePaidDetail(text) {
+    var raw = String(text || '').replace(/\r/g, ''), lines = raw.split('\n').map(function (l) { return l.replace(/[|]/g, ' ').replace(/\s+/g, ' ').trim(); }).filter(Boolean), out = { id: '', date: '', start: '', end: '', durationMin: 0, vendor: '', address: '' };
+    var all = lines.join('\n'), m;
+    m = all.match(/(?:paid\s*detail\s*(?:id|#|no\.?|number)|detail\s*id|\bid\b)\s*[:#.]?\s*(\d{5,9})/i) || all.match(/(?:^|\s)(\d{7})(?=\s|$)/m);
+    if (m) out.id = m[1];
+    m = all.match(/\b(\d{1,2})\s*[\/.-]\s*(\d{1,2})\s*[\/.-]\s*(\d{4})\b/);
+    if (m) { var iso = m[3] + '-' + pad2(+m[1]) + '-' + pad2(+m[2]); if (isISODate(iso)) out.date = iso; }
+    m = all.match(/\b([01]\d|2[0-3]):?([0-5]\d)\s*(?:-|–|—|to)\s*([01]\d|2[0-4]):?([0-5]\d)\b/i);
+    if (m) { out.start = m[1] + ':' + m[2]; out.end = (m[3] === '24' ? '00' : m[3]) + ':' + m[4]; out.durationMin = paidDetailDuration(out.start, out.end); }
+    var strip = function (v) { return v.replace(/\([^)]*\)?/g, ' ').replace(/^[\s:;-]+|[\s:;,-]+$/g, '').replace(/\s+/g, ' ').trim(); };
+    var labelVal = function (re) { for (var i = 0; i < lines.length; i++) { var mm = lines[i].match(re); if (mm) { var v = lines[i].slice(mm.index + mm[0].length).replace(/^\s*[:.-]?\s*/, ''); return { i: i, v: v }; } } return null; };
+    var cityLine = function (l) { return /\b(NY|N\.Y\.|NEW YORK)\s*,?\s*\d{5}(-\d{4})?\b/i.test(l); };
+    var cut = function (l) { var k = l.search(/\b(boro(ugh)?|requested\s*rank|status|map)\b\s*:?/i); return k > 0 ? l.slice(0, k).trim() : l; };
+    // address: "Address:" label, else a street line (+ city line) ending in NY + ZIP
+    var ad = labelVal(/\b(address|location)\b/i), addr = '', ai = -1;
+    if (ad) { addr = cut(ad.v); ai = ad.i; if (!cityLine(addr) && lines[ad.i + 1] && cityLine(lines[ad.i + 1])) addr += ', ' + cut(lines[ad.i + 1]); }
+    else for (var i = 0; i < lines.length; i++) {
+      if (/^\d+[A-Z]?(-\d+)?\s+\S/i.test(lines[i]) && !/\d{1,2}\/\d{1,2}\/\d{4}/.test(lines[i]) && !/^\d{4}\s*[-–]/.test(lines[i]) && !/^\d{5,9}$/.test(lines[i])) {
+        if (cityLine(lines[i])) { addr = cut(lines[i]); ai = i; break; }
+        if (lines[i + 1] && cityLine(lines[i + 1])) { addr = cut(lines[i]) + ', ' + cut(lines[i + 1]); ai = i; break; }
+      }
+    }
+    if (addr) { // "3201 KINGS HIGHWAY BROOKLYN NY 11234" -> "3201 KINGS HIGHWAY, BROOKLYN NY 11234"
+      addr = strip(addr).replace(/(\s*,\s*)+/g, ', ').replace(/\bN\.Y\.?/i, 'NY');
+      if (addr.indexOf(',') < 0) PD_CITIES.some(function (c) { var re = new RegExp('\\s(' + c + ')\\s+(NY|NEW YORK)\\s+(\\d{5})', 'i'); if (re.test(addr)) { addr = addr.replace(re, ', $1 $2 $3'); return true; } return false; });
+      out.address = addr;
+    }
+    // vendor: "Vendor:" label, else the line before the address that isn't a label, the ID, the date or the time
+    var vd = labelVal(/\bvendor\b/i), ven = '';
+    if (vd) { ven = cut(vd.v); if (!strip(ven) && lines[vd.i + 1]) ven = lines[vd.i + 1]; else if (lines[vd.i + 1] && !PD_LABELS.test(lines[vd.i + 1]) && !cityLine(lines[vd.i + 1]) && !/^\d/.test(lines[vd.i + 1]) && /^\/|\/$/.test(lines[vd.i + 1] + '|' + ven)) ven += ' ' + lines[vd.i + 1]; }
+    else if (ai > 0) for (var j = ai - 1; j >= 0; j--) { var l = lines[j]; if (PD_LABELS.test(l) || /\d{1,2}\/\d{1,2}\/\d{4}/.test(l) || /\b\d{4}\s*[-–]\s*\d{4}\b/.test(l) || /^\d+$/.test(l)) break; ven = l + (ven ? ' ' + ven : ''); }
+    out.vendor = strip(ven).replace(/\s*\/\s*/g, ' / ');
+    return out;
   }
   // Courts: list for a borough (type order), a pick fills name + address + borough
   function courtList(boro) { var b = CONFIG.courts[boro] || {}, out = []; CONFIG.courtTypes.forEach(function (t) { (b[t.id] || []).forEach(function (c, i) { out.push({ boro: boro, type: t.id, typeLabel: t.label, i: i, name: c.name, address: c.address }); }); }); return out; }
@@ -1096,7 +1754,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     (rows || []).forEach(function (row) {
       var id = recId(row.kind, row.key), cur = m.recs[id], ts = +row.client_ts || 0;
       if (cur && cur.d && cur.t > ts) { kept++; return; }
-      if (cur && !cur.d && cur.t >= ts && !!cur.x === !!row.deleted) return; // already have it
+      if (cur && !cur.d && (cur.t > ts || (cur.t === ts && !!cur.x === !!row.deleted))) return; // already have it, or the row is older than what we have (never resurrect a deleted record)
       s = applyRecord(s, row.kind, row.key, row.data, row.deleted); changed++;
       var mine = null; syncRecords(s).forEach(function (r) { if (recId(r.kind, r.key) === id) mine = r; });
       m.recs[id] = row.deleted || !mine ? { h: '', t: ts, d: 0, x: 1 } : { h: hashStr(stableStr(mine.data)), t: ts, d: 0 };
@@ -1275,8 +1933,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function b64ToBytes(s) { s = String(s || '').replace(/^data:[^,]*,/, '').replace(/[^A-Za-z0-9+/]/g, ''); var n = Math.floor(s.length * 3 / 4), u = new Uint8Array(n), j = 0, i;
     for (i = 0; i < s.length; i += 4) { var a = B64.indexOf(s[i]), b = B64.indexOf(s[i + 1]), c = s[i + 2] ? B64.indexOf(s[i + 2]) : 0, d = s[i + 3] ? B64.indexOf(s[i + 3]) : 0, v = (a << 18) | (b << 12) | (c << 6) | d;
       if (j < n) u[j++] = v >> 16 & 255; if (j < n && s[i + 2]) u[j++] = v >> 8 & 255; if (j < n && s[i + 3]) u[j++] = v & 255; } return u.slice(0, j); }
-  function slipKind(type) { return type === 'court' ? { id: 'court', label: 'Court slip', add: 'Add court slip' } : type === 'training' ? { id: 'training', label: 'Certification slip', add: 'Add certification slip' } : null; }
-  function cleanSlipMeta(m) { if (!m || typeof m !== 'object') return null; var k = m.kind === 'training' ? 'training' : m.kind === 'court' ? 'court' : null; if (!k) return null;
+  var SLIP_KINDS = { court: { id: 'court', label: 'Court slip', add: 'Add court slip' }, training: { id: 'training', label: 'Certification slip', add: 'Add certification slip' },
+    paiddetail: { id: 'paiddetail', label: 'Paid Detail slip', add: 'Add paid detail slip' } };
+  function slipKind(type) { return Object.prototype.hasOwnProperty.call(SLIP_KINDS, type) ? SLIP_KINDS[type] : null; }
+  function cleanSlipMeta(m) { if (!m || typeof m !== 'object') return null; var k = slipKind(m.kind) ? m.kind : null; if (!k) return null;
     return { kind: k, created: String(m.created || ''), bytes: Math.max(0, +m.bytes || 0), w: Math.max(0, +m.w || 0), h: Math.max(0, +m.h || 0), enhanced: !!m.enhanced }; }
   function fmtBytes(n) { return n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB'; }
   // ---- Commands (precincts, PSAs, transit districts) ----
@@ -1537,9 +2197,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (!a || !a.type) return '';
     var t = assignmentType(a.type); if (!t) return 'Pick an assignment type';
     if (t.detail && t.detail.required && !String(a.detail || '').trim()) return 'Describe the assignment';
+    if (t.paid && a.pd) { var pd = a.pd; if ((pd.start && !normTime(pd.start)) || (pd.end && !normTime(pd.end))) return 'Paid Detail time: use HHMM, e.g. 0001 and 0800'; }
     return '';
   }
-  function assignmentLabel(a) { if (!a || !a.type) return ''; var t = assignmentType(a.type), lb = t ? t.label : a.type; return a.detail ? lb === 'Other' ? a.detail : lb + ': ' + a.detail : lb; }
+  function assignmentLabel(a) { if (!a || !a.type) return ''; var t = assignmentType(a.type), lb = t ? t.label : a.type; if (t && t.paid) return lb + (a.pd && a.pd.vendor ? ': ' + a.pd.vendor : ''); return a.detail ? lb === 'Other' ? a.detail : lb + ': ' + a.detail : lb; }
   // Earlier texts for a type, most recently used first, unique (case-insensitive).
   function assignmentSuggestions(map, type, limit) {
     var seen = {}, out = [];
@@ -1628,7 +2289,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     unit: unit, squad: squad, cycleOffset: cycleOffset, squadsOff: squadsOff, squadsWorking: squadsWorking, isRDO: isRDO,
     nextDayOff: nextDayOff, nextWorkday: nextWorkday, countRDOs: countRDOs, isPayday: isPayday, nextPayday: nextPayday,
     periodsForPayday: periodsForPayday, regularPaydayFor: regularPaydayFor, overtimePaydayFor: overtimePaydayFor, regularPeriodFor: regularPeriodFor, overtimePeriodFor: overtimePeriodFor, payPeriodsInYear: payPeriodsInYear, hoursBetween: hoursBetween, entryHours: entryHours,
-    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, dayTour: dayTour, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, commandById: commandById, searchCommands: searchCommands, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT,
+    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, dayTour: dayTour, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, commandById: commandById, searchCommands: searchCommands, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, endCompare: endCompare, syncEndOT: syncEndOT, leaveBalances: leaveBalances, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
     steadyKey: steadyKey, parseChart: parseChart, validChartKey: validChartKey, chartInfo: chartInfo, sortCharts: sortCharts, chartAt: chartAt, chartChanges: chartChanges, nextOff: nextOff, nextOn: nextOn, reviewOverrides: reviewOverrides, DOW3: DOW3,
     rankAbbr: rankAbbr, rankLabel: rankLabel, displayName: displayName, migrateProfile: migrateProfile, validateProfile: validateProfile,
     icsEscape: icsEscape, foldLine: foldLine, buildEvents: buildEvents, toICS: toICS, googleLink: googleLink, TZID: TZID
@@ -1711,12 +2372,26 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var e = sv ? E.tourEnd(sv, m) : null;
     el.style.color = ''; el.textContent = '= ' + Math.floor(m / 60) + ' h ' + (m % 60) + ' min (' + E.fmtHM(m) + ', ' + (Math.round(m / 60 * 100) / 100) + ' h)' + (e ? ' · ' + sv + ' to ' + e.end + (e.nextDay ? ' next day' : '') : '');
   }
-  function rate() { return parseFloat(S.profile.rate) || 0; }
   function mult() { return parseFloat(S.settings.multiplier) || 1.5; }
   function otType(id) { for (var i = 0; i < C.overtimeTypes.length; i++) if (C.overtimeTypes[i].id === id) return C.overtimeTypes[i]; return { id: id, label: id || 'Other' }; }
   function lvType(id) { for (var i = 0; i < C.leaveTypes.length; i++) if (C.leaveTypes[i].id === id) return C.leaveTypes[i]; return null; }
   function otInRange(a, b) { return S.overtime.filter(function (e) { var d = E.otDay(e); return d >= a && d <= b; }); } // 20:00+ starts count for the next day
-  function sumOT(list) { var h = 0; list.forEach(function (e) { h += E.entryHours(e); }); h = Math.round(h * 100) / 100; return { hours: h, pay: E.otPay(h, rate(), mult()) }; }
+  // That day's scheduled tour (start + length) decides day vs night OT.
+  function otTourFor(iso) { if (!E.isISODate(iso)) return null; var t = E.dayTour(E.toDay(iso), myWho(), tourOpts()); return t ? { start: t.start || '', len: t.len || 0 } : null; }
+  // All OT entries priced together in date order (the Captain's yearly cash cap is used up chronologically); cached for the current task only.
+  var payMemo = null;
+  function payList() { if (!payMemo) { payMemo = E.otPayList(S.overtime, { profile: S.profile, multiplier: mult(), tourFor: otTourFor }); setTimeout(function () { payMemo = null; }, 0); } return payMemo; }
+  function entryPay(e) { return (e && payList().byId[e.id]) || E.otEntryPay(e, { profile: S.profile, multiplier: mult(), tour: otTourFor(e && e.date) }); }
+  function sumOT(list) { var h = 0, pay = 0, comp = 0; list.forEach(function (e) { var r = entryPay(e); h += E.entryHours(e); pay += r.pay; comp += r.compMinutes || 0; }); return { hours: Math.round(h * 100) / 100, pay: Math.round(pay * 100) / 100, comp: comp }; }
+  function payText(s) { return s.comp && !s.pay ? E.fmtHM(s.comp) + ' comp' : money(s.pay) + (s.comp ? ' + ' + E.fmtHM(s.comp) + ' comp' : ''); }
+  function payBasisText() {
+    var pi = E.payInfo(S.profile), pl = pi.placement;
+    if (pi.source === 'chart' && pl.ceaOT) return pl.ceaOT.straight ? 'Captain OT: straight-time cash up to ' + pl.ceaOT.capHours + ' h a year in your first 2 yrs as Captain, then comp time at 1.5&times; (banked to your Comp balance).' : 'No cash OT for your rank: all OT is comp time at 1.5&times; (banked to your Comp balance).';
+    if (pi.source === 'chart' && !pl.cashOT) return 'Cash OT for your rank is per AG 324-19 and not set up yet; add your own hourly rate in Settings to estimate OT pay.';
+    if (pi.source === 'chart') return 'OT pay uses your pay chart rate on each entry\'s date, day or night from that day\'s tour (today: OT 1.5 ' + money(pl.ot15) + '/h, night ' + money(pl.otNight) + '/h).';
+    if (pi.source === 'none') return 'Add your hire date (or your own hourly rate) in Settings to estimate OT pay.';
+    return 'OT pay estimated at ' + mult() + '&times; ' + money(pi.manualRate) + '/h.';
+  }
   function otByDate() { var m = {}; S.overtime.forEach(function (e) { (m[e.date] = m[e.date] || []).push(e); }); return m; }
 
   // ---------- render ----------
@@ -1748,8 +2423,18 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var num = f[4].indexOf('numeric') === 0;
       h += '<div class="field"><label for="' + px + f[1] + '">' + f[2] + (f[0] === 'shieldNumber' ? '' : ' <span class="req">*</span>') + '</label><input id="' + px + f[1] + '" autocomplete="' + f[3] + '"' + (num ? ' inputmode="numeric" pattern="[0-9]*"' : '') + (f[4] === 'numeric7' ? ' maxlength="7" placeholder="7 digits"' : '') + (f[4] === 'numericTax' ? ' maxlength="' + C.taxNumberDigits + '" placeholder="' + C.taxNumberDigits + ' digits"' : '') + ' value="' + esc(p[f[0]] || '') + '"' + (f[0] === 'shieldNumber' ? ' placeholder="If you have one"' : '') + '><div class="err" id="' + px + f[1] + '-err"></div></div>';
     });
+    h += '<div class="field"><label for="' + px + 'Hire">Hire date (optional)</label><input id="' + px + 'Hire" type="date" class="dateIn" max="' + E.toISO(E.today()) + '" value="' + esc(p.hireDate || '') + '"><div class="err" id="' + px + 'Hire-err"></div></div>' +
+      '<div class="field"><label for="' + px + 'Promo">Most recent promotion date (optional)</label><input id="' + px + 'Promo" type="date" class="dateIn" max="' + E.toISO(E.today()) + '" value="' + esc(p.promotionDate || '') + '"><div class="err" id="' + px + 'Promo-err"></div>' +
+      '<div class="hint" id="' + px + 'SvcLine">' + svcLine(p) + '</div></div>';
     return h;
   }
+  function balancesHtml() {
+    var b = E.leaveBalances(S), list = E.shortLeaveEntries(S);
+    return '<h3 style="margin-top:6px" id="balHead">Leave balances</h3><div class="muted" style="font-size:13px;margin-bottom:6px">Starting balances (H:MM). Leaving a tour early is charged here.</div><div class="balgrid">' +
+      C.shortLeaveTypes.map(function (k) { var x = b[k]; return '<div class="balrow"><label for="lb-' + k + '">' + esc(C.shortLeaveLabels[k]) + '</label><input id="lb-' + k + '" inputmode="decimal" autocomplete="off" placeholder="0:00" value="' + (x.set ? E.fmtHM(x.start) : '') + '"><div class="balinfo">Used ' + E.fmtHM(x.used) + (x.earned ? ' &middot; Earned ' + E.fmtHM(x.earned) : '') + (x.set || x.earned ? ' &middot; Left <b' + (x.left < 0 ? ' class="neg"' : '') + '>' + (x.left < 0 ? '-' : '') + E.fmtHM(Math.abs(x.left)) + '</b>' : '') + '</div></div>'; }).join('') + '</div>' +
+      (list.length ? '<details class="baldet"><summary>Early tour ends (' + list.length + ')</summary><div class="list">' + list.map(function (e) { return '<button type="button" class="item" data-act="day" data-d="' + E.toDay(e.iso) + '"><div class="main"><div class="t1">' + esc(fmt(E.toDay(e.iso), 'md')) + ' &middot; ' + E.fmtHM(e.minutes) + '</div><div class="t2">' + esc(C.shortLeaveLabels[e.type]) + (e.end ? ' &middot; ended ' + esc(e.end) : '') + '</div></div></button>'; }).join('') + '</div></details>' : '');
+  }
+  function svcLine(p) { var si = E.serviceInfo(p); return (si.service ? 'Service: <b>' + esc(si.service.text) + '</b>' : 'Leave promotion blank if you haven\'t been promoted.') + (si.inRank && si.service ? ' &middot; In rank: <b>' + esc(si.inRank.text) + '</b>' : '') + '<br>Used for your pay step and longevity.'; }
   // Command picker (precinct / PSA / transit district, or Other)
   function cmdPicker(px, c) {
     c = c || null;
@@ -1790,10 +2475,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function checkCommand(px) { var c = readCommand(px), e = E.commandError(c), er = document.getElementById(px + 'CmdName-err'); if (er) er.textContent = e; if (e) { document.getElementById(px + 'CmdName').focus(); toast(e); return false; } return true; }
   function readProfile(px) {
     var g = function (id) { var el = document.getElementById(px + id); return el ? el.value.trim() : ''; };
-    return { rank: g('Rank'), rankOther: g('RankOther'), firstName: g('First'), lastName: g('Last'), taxNumber: g('Tax'), refNumber: g('Ref'), shieldNumber: g('Shield') };
+    return { rank: g('Rank'), rankOther: g('RankOther'), firstName: g('First'), lastName: g('Last'), taxNumber: g('Tax'), refNumber: g('Ref'), shieldNumber: g('Shield'), hireDate: g('Hire'), promotionDate: g('Promo') };
   }
   function showProfileErrors(px, errs) {
-    var map = { rank: 'Rank', rankOther: 'RankOther', firstName: 'First', lastName: 'Last', taxNumber: 'Tax', refNumber: 'Ref', shieldNumber: 'Shield' }, first = null;
+    var map = { rank: 'Rank', rankOther: 'RankOther', firstName: 'First', lastName: 'Last', taxNumber: 'Tax', refNumber: 'Ref', shieldNumber: 'Shield', hireDate: 'Hire', promotionDate: 'Promo' }, first = null;
     Object.keys(map).forEach(function (k) {
       var el = document.getElementById(px + map[k]), er = document.getElementById(px + map[k] + '-err'); if (!el || !er) return;
       er.textContent = errs[k] || ''; el.classList.toggle('bad', !!errs[k]); el.setAttribute('aria-invalid', errs[k] ? 'true' : 'false');
@@ -1869,7 +2554,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div id="onbPduInfo" class="pduinfo"' + (/^pdu:/.test(ui.onbChart || '') ? '' : ' hidden') + '><b>PDU tours are set by your chart</b><div>' + shiftText('pm') + '</div><div>' + shiftText('am') + '</div><div class="muted" style="font-size:12.5px;margin-top:4px">A PM day moved to a morning tour (court, detailed out, training) still counts 9:00. You can change any single day from the calendar.</div></div>' +
       '<div id="onbTourWrap"' + (/^pdu:/.test(ui.onbChart || '') ? ' hidden' : '') + '>' + tourField('onbTour', '', 'Regular tour length', 'onbStart') +
       '<div class="field"><label for="onbStart">Tour start time (optional)</label><input id="onbStart" type="time"><div class="hint">Lets the app show when your tour ends, including overnight tours.</div></div></div>' +
-      '<div class="field"><label for="onbRate">Hourly rate ($)</label><input id="onbRate" type="number" inputmode="decimal" min="0" step="0.01" placeholder="e.g. 42.50"><div class="hint">Used to estimate overtime pay at ' + mult() + '&times;.</div></div>' +
+      '<div class="field"><label for="onbRate">Own hourly rate ($, optional)</label><input id="onbRate" type="number" inputmode="decimal" min="0" step="0.01" placeholder="Leave blank to use the pay chart"><div class="hint">Leave blank and your rate comes from the pay chart for your rank, hire date and promotion date (P.O., Det., Sgt., S.D.S./S.S.A.). You can change this in Settings.</div></div>' +
       '<button class="btn primary block" data-act="onbSave">Get started</button></form></div>';
   }
 
@@ -1935,7 +2620,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div class="title">' + MONTHS[m - 1] + ' ' + y + '</div><button class="navbtn" data-act="calNext" aria-label="Next month">&rsaquo;</button></div>' +
       '<div class="seg" style="margin-bottom:10px"><button data-act="calView" data-v="mine" class="' + (all ? '' : 'on') + '">My schedule</button><button data-act="calView" data-v="all" class="' + (all ? 'on' : '') + '">' + (pdView ? 'All PDU teams' : 'All squads') + '</button></div>' +
       '<div class="cal">' + cells + '</div>' +
-      '<div class="legend">' +
+      '<div class="calfoot"><span class="cfcount">' + rdoCount + ' days off this month</span><span class="cfbtns">' + ((y !== tp.y || m !== tp.m) ? '<button class="btn sm" data-act="calToday">Today</button>' : '') +
+      '<button class="btn sm legbtn' + (S.settings.legendOpen ? ' on' : '') + '" data-act="legendToggle" aria-expanded="' + (S.settings.legendOpen ? 'true' : 'false') + '" aria-controls="calLegend">Legend <span class="chev" aria-hidden="true">&#9662;</span></button></span></div>' +
+      '<div class="legend" id="calLegend"' + (S.settings.legendOpen ? '' : ' hidden') + '>' +
       (all && pdView ? ['blue', 'yellow', 'green'].map(function (x) { var t = PDU.teams.filter(function (tm) { return tm.map[x] === 'rdo'; })[0]; return '<span><i class="sw" style="background:' + PDU.colors[x].color + '"></i>' + PDU.colors[x].name + ': ' + esc(t.name) + ' off</span>'; }).join('')
            : all ? E.unit(u).squads.map(function (s) { return '<span><i class="sw" style="background:' + s.color + '"></i>' + esc(s.name) + ' off</span>'; }).join('')
            : pdView ? '<span><i class="sw" style="background:' + PDU.shifts.pm.color + '"></i>PM 4p–1a (9:00)</span><span><i class="sw" style="background:#fff"></i>AM 8a–4p (8:00)</span><span><i class="sw" style="background:' + sq.color + '"></i>Your RDO (' + esc(sq.colorName) + ')</span><span><i class="sw" style="background:#fff;box-shadow:inset 0 5px 0 ' + PDU.colors.blue.color + '"></i>Top stripe = chart color</span><span><i class="m-p15" style="font-style:normal;font-size:10px;font-weight:800;padding:1px 4px;border-radius:4px">+15</i>Extra 15 min (PM 9:15, AM 8:15)</span>'
@@ -1948,8 +2635,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<span><i class="m-chg" style="font-style:normal;font-size:10px;font-weight:800;padding:0 4px;border-radius:4px">&#8644;</i>Chart change</span>' +
       C.leaveTypes.map(function (l) { return '<span><i style="font-style:normal;font-size:10px;font-weight:800;padding:1px 5px;border-radius:4px;background:' + l.color + ';color:#fff">' + l.short + '</i>' + l.label + '</span>'; }).join('') +
       C.assignmentTypes.map(function (a) { return '<span><i style="font-style:normal;font-size:10px;font-weight:800;padding:1px 4px;border-radius:4px;background:' + a.color + ';color:#fff">' + a.short + '</i>' + esc(a.label) + '</span>'; }).join('') +
-      '</div><div class="muted" style="font-size:13px;margin-top:8px">' + rdoCount + ' days off this month &middot; tap any day to add an assignment, leave, notes or overtime.' +
-      ((y !== tp.y || m !== tp.m) ? ' <button class="btn sm" data-act="calToday" style="margin-left:4px">Today</button>' : '') + '</div>' +
+      '</div><div class="cfhint">Tap any day to add an assignment, leave, notes or overtime.</div>' +
       chgList.map(function (c) { var ci = E.chartInfo(c.chart, u); return '<div class="chgline"><i class="m-chg">&#8644;</i> Chart change: <b>' + esc(ci ? ci.name : c.chart) + '</b> from ' + fmt(c.day) + '</div>'; }).join('') + '</div>';
     html += upcomingCard();
     // calendar sync lives at the bottom of the Schedule tab
@@ -1974,7 +2660,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var po = payOpts(), pp = E.overtimePeriodFor(T, po).overtime, ppPay = E.overtimePaydayFor(T, po);
     var tm = E.fromYMD(tp.y, tp.m, 1), tmEnd = E.fromYMD(tp.m === 12 ? tp.y + 1 : tp.y, tp.m === 12 ? 1 : tp.m + 1, 1) - 1;
     var a = sumOT(otInRange(pp.start, pp.end)), b = sumOT(otInRange(tm, tmEnd)), c = sumOT(otInRange(E.fromYMD(tp.y, 1, 1), E.fromYMD(tp.y, 12, 31)));
-    function tot(lbl, s, sub) { return '<div class="tot"><small>' + lbl + '</small><b>' + hrs(s.hours) + '</b><span>' + money(s.pay) + '</span><em>' + sub + '</em></div>'; }
+    function tot(lbl, s, sub) { return '<div class="tot"><small>' + lbl + '</small><b>' + hrs(s.hours) + '</b><span>' + payText(s) + '</span><em>' + sub + '</em></div>'; }
     var html = '<div class="tot-row" style="margin-bottom:12px">' + tot('OT period', a, fmt(pp.start, 'md') + '–' + fmt(pp.end, 'md') + '<br>paid ' + fmt(ppPay, 'md')) + tot('Month', b, MONTHS[tp.m - 1].slice(0, 3) + ' ' + tp.y) + tot('Year', c, String(tp.y)) + '</div>';
     html += '<div class="muted" style="font-size:12.5px;margin:-4px 2px 10px">Overtime is paid on the payday 12 days after its 2-week OT period (Sun–Sat) ends.</div><button class="btn primary block" data-act="otNew" style="margin-bottom:12px">+ Log overtime</button>';
     var y = ui.otYear, list = S.overtime.filter(function (e) { return +e.date.slice(0, 4) === y; }).sort(function (p, q) { return p.date < q.date ? 1 : p.date > q.date ? -1 : (q.start || '').localeCompare(p.start || ''); });
@@ -1989,16 +2675,30 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       list.forEach(function (e) { var k = e.date.slice(0, 7); (groups[k] = groups[k] || []).push(e); });
       Object.keys(groups).sort().reverse().forEach(function (k) {
         var g = groups[k], s = sumOT(g);
-        html += '<div class="grp"><span>' + MONTHS[+k.slice(5, 7) - 1] + '</span><span>' + hrs(s.hours) + ' &middot; ' + money(s.pay) + '</span></div><div class="list">' + g.map(otRow).join('') + '</div>';
+        html += '<div class="grp"><span>' + MONTHS[+k.slice(5, 7) - 1] + '</span><span>' + hrs(s.hours) + ' &middot; ' + payText(s) + '</span></div><div class="list">' + g.map(otRow).join('') + '</div>';
       });
     }
-    return html + '</div>';
+    return html + '</div>' + paidDetailCard(y);
+  }
+  // Paid Detail earnings: its own card, never mixed into the OT totals above.
+  function paidDetailCard(y) {
+    var t = E.paidDetailTotals(S.assignments, S.profile, y + '-01-01', y + '-12-31', E.toISO(T));
+    var h = '<div class="card pdcard" id="pdEarn"><h3 style="margin-top:0">Paid Details ' + y + '</h3>';
+    if (!t.count) return h + '<div class="empty">No paid details in ' + y + '. Pick &ldquo;Paid Detail&rdquo; as a day&rsquo;s assignment to add one.</div></div>';
+    h += '<div class="tot-row" style="margin-bottom:8px"><div class="tot"><small>Total</small><b>' + E.fmtHM(t.minutes) + '</b><span>' + money(t.amount) + '</span><em>' + t.count + ' detail' + (t.count === 1 ? '' : 's') + '</em></div>' +
+      '<div class="tot"><small>Worked</small><b>' + money(t.earned) + '</b><em>through today</em></div><div class="tot"><small>Scheduled</small><b>' + money(t.scheduled) + '</b><em>after today</em></div></div>';
+    h += '<div class="muted" style="font-size:12.5px;margin:0 2px 8px">' + (t.rate ? 'Flat ' + money(t.rate) + '/hr for your rank' : 'Set your rank in Profile to see pay') + '. Kept separate from overtime and the Captain 180-hour cap.</div><div class="list">';
+    t.items.slice().reverse().forEach(function (x) {
+      h += '<button class="item" data-act="day" data-d="' + E.toDay(x.iso) + '"><div class="main"><div class="t1">' + esc(x.pd.vendor || 'Paid Detail') + '</div><div class="t2">' + fmt(E.toDay(x.date)) +
+        (x.pd.start ? ' &middot; ' + esc(hhmm(x.pd.start)) + (x.pd.end ? '–' + esc(hhmm(x.pd.end)) : '') : '') + (x.pd.id ? ' &middot; #' + esc(x.pd.id) : '') + '</div></div><div class="right">' + E.fmtHM(x.minutes) + '<small>' + (x.rate ? money(x.amount) : '') + '</small></div></button>';
+    });
+    return h + '</div></div>';
   }
   function otRow(e) {
     var h = E.entryHours(e), d = E.toDay(e.date);
     var when = fmt(d) + (e.mode === 'times' && e.start ? ' &middot; ' + esc(e.start) + '–' + esc(e.end) : '') + (E.otDay(e) !== d ? ' &middot; <b class="nxtxt">counts for ' + fmt(d + 1) + '</b>' : '');
-    return '<button class="item" data-act="otEdit" data-id="' + esc(e.id) + '"><div class="main"><div class="t1">' + esc(otType(e.type).label) + (e.linkedTour ? ' <span class="chip" style="font-size:11px;padding:1px 6px;background:#fffbe6;border:1.5px dashed ' + mySquad().color + '">RDO tour</span>' : '') + '</div><div class="t2">' + when + (e.notes ? ' &middot; ' + esc(e.notes) : '') + '</div><div class="t2" style="color:var(--pay);font-weight:700">Paid ' + fmt(E.overtimePaydayFor(d, payOpts())) + '</div></div>' +
-      '<div class="right">' + hrs(h) + '<small>' + money(E.otPay(h, rate(), mult())) + '</small></div></button>';
+    return '<button class="item" data-act="otEdit" data-id="' + esc(e.id) + '"><div class="main"><div class="t1">' + esc(otType(e.type).label) + (e.linkedTour ? ' <span class="chip" style="font-size:11px;padding:1px 6px;background:#fffbe6;border:1.5px dashed ' + mySquad().color + '">RDO tour</span>' : e.linkedEnd ? ' <span class="chip" style="font-size:11px;padding:1px 6px;background:#fff7ed;border:1.5px dashed #c2410c">Late end</span>' : '') + '</div><div class="t2">' + when + (e.notes ? ' &middot; ' + esc(e.notes) : '') + '</div><div class="t2" style="color:var(--pay);font-weight:700">Paid ' + fmt(E.overtimePaydayFor(d, payOpts())) + '</div></div>' +
+      '<div class="right">' + hrs(h) + '<small>' + (function (r) { return payText({ pay: r.pay, comp: r.compMinutes || 0 }); })(entryPay(e)) + '</small></div></button>';
   }
 
   function viewPay() {
@@ -2020,7 +2720,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     th = Math.round(th * 100) / 100;
     return '<div class="card"><div class="yearsel"><button class="navbtn" data-act="payYear" data-dir="-1" aria-label="Previous year">&lsaquo;</button><b>' + y + '</b><button class="navbtn" data-act="payYear" data-dir="1" aria-label="Next year">&rsaquo;</button></div>' +
       '<div class="tot-row"><div class="tot"><small>Paydays</small><b>' + periods.length + '</b></div><div class="tot"><small>OT hours paid</small><b>' + hrs(th) + '</b></div><div class="tot"><small>Est. OT pay</small><b style="font-size:17px">' + money(tpay) + '</b></div></div>' +
-      '<div class="muted" style="font-size:12.5px;margin-top:8px">Work weeks run Sun–Sat. Each payday covers a <b>regular period</b> (target ' + E.fmtHM(regTarget()) + ') ending the Saturday 5 days before payday, and an <b>overtime period</b> one week earlier, ending 12 days before payday. Regular hours = your tour length on each workday (with per-day changes and day-for-day swaps), excluding leave days. Extra tours on RDOs count as overtime. OT pay estimated at ' + mult() + '&times; ' + money(rate()) + '/h.</div>' +
+      '<div class="muted" style="font-size:12.5px;margin-top:8px">Work weeks run Sun–Sat. Each payday covers a <b>regular period</b> (target ' + E.fmtHM(regTarget()) + ') ending the Saturday 5 days before payday, and an <b>overtime period</b> one week earlier, ending 12 days before payday. Regular hours = your tour length on each workday (with per-day changes and day-for-day swaps), excluding leave days. Extra tours on RDOs count as overtime. ' + payBasisText() + '</div>' +
       (y !== tp.y ? '' : '<button class="btn sm" data-act="payJump" style="margin-top:8px">Jump to current periods</button>') + '</div>' + cards;
   }
 
@@ -2099,15 +2799,86 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       return '<button type="button" data-act="lvPick" data-t="' + l.id + '" class="' + (on ? 'on' : '') + '" style="' + (on ? 'background:' + l.color : '') + '" data-c="' + l.color + '">' + l.label + '</button>';
     }).join('');
     var ots = S.overtime.filter(function (e) { return e.date === iso; });
-    openSheet(fmt(d, 'long'), status +
+    openSheet(fmt(d, 'long'), status + pdNotesHtml(d, dt) +
       asgSection(iso, d, dt) +
       '<div class="field"><label>Leave</label><div class="lvopts" id="lvOpts" data-sel="' + esc(lv.type || '') + '">' + opts + '</div>' + (mine ? '<div class="hint">This is an RDO; leave here won\'t change days worked.</div>' : '') + '</div>' +
       tourSection(d) +
       '<div class="field"><label for="lvNote">Note (optional)</label><textarea id="lvNote" placeholder="e.g. Approved by Sgt. Lee">' + esc(lv.note || '') + '</textarea></div>' +
       '<button class="btn primary block" data-act="lvSave" data-d="' + d + '">Save day</button>' +
       '<h3 style="margin-top:18px">Overtime this day</h3>' + (ots.length ? '<div class="list">' + ots.map(otRow).join('') + '</div>' : '<div class="muted" style="margin-bottom:8px">None logged.</div>') +
-      '<button class="btn block" data-act="otNew" data-date="' + iso + '" style="margin-top:6px">+ Add overtime on this day</button>' + googleDay(d));
-    pduKeep(); updateEnd(false); attachPlaces(); syncPicks(); loadSlipThumb();
+      '<button class="btn block" data-act="otNew" data-date="' + iso + '" style="margin-top:6px">+ Add overtime on this day</button>' + googleDay(d) +
+      (function () { var has = E.dayHasEntries(S, iso); return '<div class="daydel"><button type="button" class="btn block delbtn" id="dayDelBtn" data-act="dayDelAsk" data-d="' + d + '"' + (has ? '' : ' disabled aria-disabled="true"') + '>Delete this entry</button>' + (has ? '' : '<div class="hint" id="dayDelHint">Nothing saved for this day yet.</div>') + '</div>'; })());
+    pduKeep(); updateEnd(false); attachPlaces(); syncPicks(); loadSlipThumb(); pdRemind();
+  }
+  // ---------- Paid Detail reminders (never block saving) ----------
+  function hhmm(t) { return String(t || '').replace(':', ''); }
+  function pdRuleText(r, refDay) { var when = r.iso !== E.toISO(refDay) ? ' (' + fmt(E.toDay(r.iso)) + ')' : ''; return r.kind === 'end' ? 'Regular tour must end by ' + r.time + when : 'Regular tour can\'t start before ' + r.time + when; }
+  function pdConfText(kind, dt, w, showDay) {
+    var on = showDay ? ' ' + fmt(E.toDay(dt.iso)) : '', tt = hhmm(dt.start) + '–' + hhmm(dt.end);
+    return '&#9888; Your tour' + on + ' ' + tt + (kind === 'end' ? ' ends after ' + w.endBy.time : ' starts before ' + w.startAfter.time);
+  }
+  function pdTour(day) { return E.dayTour(day, mySquad(day).id, tourOpts()); }
+  function pdNoteHtml(title, lines, bad, id) {
+    return '<div class="pdnote' + (bad ? ' bad' : '') + '"' + (id ? ' id="' + id + '"' : '') + ' role="note"><div class="pdnt">' + title + '</div><ul>' + lines.join('') + '</ul><div class="pdnf">Reminder only &middot; saving is never blocked.</div></div>';
+  }
+  // Day sheet: reminders from paid details on the day before / after (the day's own detail shows inside its form).
+  function pdNotesHtml(d, dt) {
+    if (!dt || !dt.working || !dt.regular) return '';
+    return E.paidDetailNotes(S.assignments, d, pdTour, E.today()).filter(function (n) { return n.iso !== E.toISO(d); }).map(function (n) {
+      var lines = n.rules.map(function (r) { return '<li class="' + (r.bad ? 'bad' : '') + '">' + esc(pdRuleText(r, d)) + (r.bad ? '<br>' + pdConfText(r.kind, dt, n.window) : '') + '</li>'; });
+      return pdNoteHtml('Paid Detail ' + esc(fmt(E.toDay(n.iso))) + ' ' + esc(n.start) + (n.end ? '–' + esc(n.end) : '') + (n.vendor ? ' &middot; ' + esc(n.vendor) : ''), lines, !!n.conflict, 'pdNotes');
+    }).join('');
+  }
+  // Inside the Paid Detail form: live as the times change; checks the regular tours the day before, of, and after.
+  function pdPayLine() {
+    var el = document.getElementById('pdPay'); if (!el) return; var p = E.paidDetailPay(readPaid(), S.profile);
+    el.innerHTML = !p.minutes ? '' : p.ok ? 'Paid Detail pay: <b>' + E.fmtHM(p.minutes) + ' &times; ' + money(p.rate) + '/hr = ' + money(p.amount) + '</b><br><span>Flat rank rate &middot; not overtime, not in OT totals</span>'
+      : 'Paid Detail pay: set your rank in Profile to see it (' + E.fmtHM(p.minutes) + ').';
+  }
+  function pdRemind() {
+    pdPayLine();
+    var box = document.getElementById('pdRemind'), pb = document.getElementById('asgPaid'); if (!box || !pb) return;
+    var pd = readPaid(), w = E.paidDetailWindow(pd, pb.dataset.iso), T = E.today();
+    if (!w || (w.endAbs === null ? w.startAbs : w.endAbs) < T * 1440) { box.hidden = true; box.innerHTML = ''; return; }
+    var ref = E.toDay(w.date), lines = [], bad = false, confl = [];
+    for (var k = -1; k <= 1; k++) { var dt = pdTour(ref + k); if (!dt.working || !dt.regular || !dt.start) continue; var c = E.paidDetailConflict(w, dt, ref + k); if (c) { bad = true; confl.push(pdConfText(c, dt, w, true)); } }
+    lines.push('<li>' + esc(pdRuleText({ kind: 'end', time: w.endBy.time, iso: w.endBy.iso }, ref)) + '</li>');
+    if (w.startAfter) lines.push('<li>' + esc(pdRuleText({ kind: 'start', time: w.startAfter.time, iso: w.startAfter.iso }, ref)) + '</li>');
+    confl.forEach(function (c) { lines.push('<li class="bad">' + c + '</li>'); });
+    box.innerHTML = pdNoteHtml('Regular tour around this detail', lines, bad).replace(/^<div class="pdnote( bad)?" role="note">/, '').replace(/<\/div>$/, '');
+    box.className = 'pdnote' + (bad ? ' bad' : ''); box.hidden = false;
+  }
+  // ---------- Paid Detail fields + on-device screenshot reader ----------
+  function paidBlock(a, sel, iso) {
+    var pd = (a.type === 'paiddetail' && a.pd) || {}, f = function (id, lbl, v, extra) { return '<div class="field"><label for="' + id + '">' + lbl + '</label><input id="' + id + '" value="' + esc(v || '') + '"' + (extra || '') + '></div>'; };
+    return '<div class="paidbox" id="asgPaid"' + (sel === 'paiddetail' ? '' : ' hidden') + ' data-iso="' + iso + '">' +
+      '<div class="pdscan"><label class="btn sm pdup" for="pdFile">&#128247; Upload screenshot</label><input type="file" id="pdFile" accept="image/*" hidden>' +
+      '<div class="hint">Reads your &ldquo;Selected Paid Details&rdquo; screen on this phone and fills the fields below. The picture is not uploaded, saved or synced.</div><div class="pdstat" id="pdStat" role="status" aria-live="polite" hidden></div></div>' +
+      f('pdId', 'Paid Detail ID', pd.id, ' inputmode="numeric" autocomplete="off" placeholder="e.g. 4315816"') +
+      '<div class="field"><label for="pdDate">Date</label><input id="pdDate" type="date" value="' + esc(pd.date || iso) + '"><div class="hint pdwarn" id="pdDateWarn" hidden></div></div>' +
+      '<div class="row"><div class="field"><label for="pdStart">Start (HHMM)</label><input id="pdStart" class="timeIn" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="0001" value="' + esc(pd.start || '') + '"></div>' +
+      '<div class="field"><label for="pdEnd">End (HHMM)</label><input id="pdEnd" class="timeIn" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="0800" value="' + esc(pd.end || '') + '"></div></div>' +
+      '<div class="field"><label for="pdDur">Duration (H:MM)</label><input id="pdDur" inputmode="decimal" autocomplete="off" placeholder="auto from the times" value="' + esc(pd.durationMin ? E.fmtHM(pd.durationMin) : '') + '"><div class="hint" id="pdDurHint">Worked out from the times (may cross midnight). :59 rounds up to the hour.</div></div><div class="pdpay" id="pdPay" role="status" aria-live="polite"></div><div class="pdnote" id="pdRemind" role="note" hidden></div>' +
+      f('pdVendor', 'Vendor', pd.vendor, ' autocomplete="off" placeholder="e.g. Mount Sinai Health System / Brooklyn"') +
+      f('pdAddr', 'Address', pd.address, ' autocomplete="off" placeholder="Street, city, ZIP"') + '</div>';
+  }
+  function readPaid() {
+    var g = function (id) { var e = document.getElementById(id); return e ? e.value.trim() : ''; }, dm = E.parseHM(g('pdDur'));
+    return { id: g('pdId'), date: g('pdDate'), start: g('pdStart'), end: g('pdEnd'), durationMin: dm || 0, vendor: g('pdVendor'), address: g('pdAddr') };
+  }
+  function pdAutoDur() { var d = E.paidDetailDuration(document.getElementById('pdStart').value, document.getElementById('pdEnd').value); if (d) document.getElementById('pdDur').value = E.fmtHM(d); }
+  function pdDateCheck() { var w = document.getElementById('pdDateWarn'), box = document.getElementById('asgPaid'); if (!w || !box) return; var v = document.getElementById('pdDate').value, iso = box.dataset.iso; w.hidden = !v || v === iso; if (!w.hidden) w.textContent = 'This detail is dated ' + fmt(E.toDay(v), 'mdy') + '. It will be saved on ' + fmt(E.toDay(iso), 'mdy') + ' (the day you opened). Open ' + fmt(E.toDay(v), 'md') + ' to save it there.'; }
+  var OCR_SRC = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+  function loadOCR() { if (window.__PATROL_OCR__) return Promise.resolve(window.__PATROL_OCR__); if (window.Tesseract) return Promise.resolve(window.Tesseract); return new Promise(function (res, rej) { var sc = document.createElement('script'); sc.src = OCR_SRC; sc.onload = function () { res(window.Tesseract); }; sc.onerror = function () { rej(new Error('load')); }; document.head.appendChild(sc); }); }
+  function pdScan(file) {
+    var st = document.getElementById('pdStat'), say = function (t, bad) { st.hidden = false; st.className = 'pdstat' + (bad ? ' bad' : ''); st.textContent = t; };
+    say('Reading the screenshot on this phone…');
+    var slow = new Promise(function (res, rej) { setTimeout(function () { rej(new Error('slow')); }, 180000); });
+    Promise.race([loadOCR().then(function (T) { return T.recognize(file, 'eng'); }), slow]).then(function (r) {
+      var x = E.parsePaidDetail(r && r.data ? r.data.text : ''), n = 0, set = function (id, v) { if (v) { document.getElementById(id).value = v; n++; } };
+      set('pdId', x.id); set('pdDate', x.date); set('pdStart', x.start); set('pdEnd', x.end); set('pdDur', x.durationMin ? E.fmtHM(x.durationMin) : ''); set('pdVendor', x.vendor); set('pdAddr', x.address);
+      pdDateCheck(); pdRemind(); say(n ? 'Filled ' + n + ' fields from the screenshot. Check each one, then tap Save day.' : 'Couldn\'t read the details. Type them in, or try a clearer screenshot.', !n);
+    }).catch(function () { say('The screenshot reader needs an internet connection the first time. You can type the details instead.', true); });
   }
   // ---------- daily assignment (day sheet) ----------
   function asgSection(iso, d, dt) {
@@ -2118,7 +2889,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     return '<div class="card asgbox" id="asgBox" data-sel="' + esc(sel) + '" data-orig="' + esc(sel) + '" data-odetail="' + esc(a.detail || '') + '"><h3 style="font-size:15px;margin-top:0">Assignment</h3><div class="asgopts">' + opts + '</div>' +
       '<div class="field" id="asgDetailWrap" style="margin-top:10px"' + (t && t.detail ? '' : ' hidden') + '><label for="asgDetail" id="asgDetailLbl">' + esc(t && t.detail ? t.detail.label + (t.detail.required ? '' : ' (optional)') : '') + '</label>' +
       '<input id="asgDetail" list="asgSug" autocomplete="off" placeholder="' + esc(t && t.detail ? t.detail.placeholder : '') + '" value="' + esc(a.detail || '') + '"><datalist id="asgSug">' + asgSuggest(sel) + '</datalist><div class="err" id="asgDetail-err"></div></div>' +
-      addrBlock(a, sel, iso, st) + slipHtml(iso, sel) +
+      paidBlock(a, sel, iso) + addrBlock(a, sel, iso, st) + slipHtml(iso, sel) +
       '<div class="field" id="asgNotesWrap" style="margin-top:10px"' + (sel ? '' : ' hidden') + '><label for="asgNotes">Assignment notes (optional)</label><textarea id="asgNotes" placeholder="e.g. report to 1 Police Plaza, bring vest">' + esc(a.notes || '') + '</textarea></div>' +
       '<div class="hint">Assignments don\'t change hours. You can plan any date ahead, even a year or more out. Saved with "Save day" below.</div></div>';
   }
@@ -2255,6 +3026,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         if (rows.length) {
           var m = E.mergeRemote(S, SM, rows), before = SM; SM = Object.assign(m.meta, { owner: before.owner, cursor: rows[rows.length - 1].server_ts, slipQ: before.slipQ || {}, migrating: before.migrating, lastSync: before.lastSync });
           if (m.changed) { S = normalize(m.state); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} CL.pulled = (CL.pulled || 0) + m.changed; }
+          rows.forEach(function (r) { if (r.kind === 'slips' && r.deleted && !(S.slips || {})[r.key]) { slipDel(r.key).catch(function () {}); if (SM.slipQ && SM.slipQ[r.key] === 'up') delete SM.slipQ[r.key]; } });
           saveSM();
         }
         return rows.length === 500 && n < 40 ? pullPage(n + 1) : null;
@@ -2361,7 +3133,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     }).catch(function () {});
   }
   function slipLabel(iso, sel) { var k = E.slipKind(sel) || E.slipKind((S.slips[iso] || {}).kind); return k || E.slipKind('court'); }
-  function slipFileName(iso, k) { return (k.id === 'court' ? 'court-slip-' : 'certification-slip-') + iso + '.pdf'; }
+  function slipFileName(iso, k) { return ({ court: 'court-slip-', training: 'certification-slip-', paiddetail: 'paid-detail-slip-' }[k.id] || 'slip-') + iso + '.pdf'; }
   function slipHtml(iso, sel) {
     var m = S.slips[iso], k = slipLabel(iso, sel), show = !!(m || E.slipKind(sel));
     var inner = m ?
@@ -2476,7 +3248,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function slipRestore(files) { // replace all stored slips with the ones from a backup
     return slipClear().then(function () {
       return Promise.all(Object.keys(files || {}).map(function (iso) { var f = files[iso]; if (!f || !f.pdf || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return null; var u = E.b64ToBytes(f.pdf); if (u.length < 8 || String.fromCharCode(u[0], u[1], u[2], u[3], u[4]) !== '%PDF-') return null;
-        return slipPut(iso, { kind: f.kind === 'training' ? 'training' : 'court', created: f.created || '', pdf: new Blob([u], { type: 'application/pdf' }), thumb: /^data:image\//.test(f.thumb || '') ? f.thumb : '', w: +f.w || 0, h: +f.h || 0, enhanced: !!f.enhanced }); }));
+        return slipPut(iso, { kind: E.slipKind(f.kind) ? f.kind : 'court', created: f.created || '', pdf: new Blob([u], { type: 'application/pdf' }), thumb: /^data:image\//.test(f.thumb || '') ? f.thumb : '', w: +f.w || 0, h: +f.h || 0, enhanced: !!f.enhanced }); }));
     });
   }
   // ---------- addresses, navigation, arrival time ----------
@@ -2657,9 +3429,14 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var defStart = (t.pdu ? t.schedStart : (t.schedStart || S.profile.tourStart)) || '';
     var startEnd = '<div class="sebox" id="seBox" data-d="' + d + '" data-sl="' + (t.schedLen || S.profile.tourLen || '') + '" data-ss="' + esc(defStart) + '"><div class="row">' +
       '<div class="field"><label for="dayStart">Tour start</label><input id="dayStart" class="timeIn" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="' + esc(defStart || 'HH:MM') + '" value="' + esc(ov.start || '') + '"><div class="err" id="dayStart-err"></div></div>' +
-      '<div class="field"><label for="dayEnd">Tour end</label><input id="dayEnd" class="roIn" readonly tabindex="-1" aria-readonly="true" value=""></div></div>' +
-      '<div class="hint" style="margin-top:-4px">24-hour time: type digits (730 &rarr; 07:30, 2300 &rarr; 23:00). Blank = scheduled' + (defStart ? ' ' + defStart : '') + '. The end is set from the tour length; change the length below for a different end.</div>' +
-      '<div id="endPop" class="endpop" role="status" aria-live="polite" hidden></div></div>';
+      '<div class="field"><label for="dayEnd">Tour end</label><input id="dayEnd" class="timeIn" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="HH:MM" value="' + esc(ov.end || '') + '"><div class="err" id="dayEnd-err"></div></div></div>' +
+      '<div class="picks startpicks" id="startPicks"><button type="button" class="pick" data-act="startPick" data-for="dayStart" data-v="">Scheduled' + (defStart ? ' ' + esc(defStart) : '') + '</button></div>' + // no start-time presets on the day page (Zee: 17:00 is a tour LENGTH, offered in the tour length picks)
+      '<div class="hint">24-hour time: type digits (730 &rarr; 07:30, 2300 &rarr; 23:00). Blank start = scheduled' + (defStart ? ' ' + defStart : '') + '. Blank end = scheduled end; type the actual end if you finished late or early.</div>' +
+      '<div id="endPop" class="endpop" role="status" aria-live="polite" hidden></div>' +
+      '<div id="endNote" class="endnote" role="status" aria-live="polite" hidden></div>' +
+      '<div id="shortBox" class="shortbox" data-sel="' + esc(ov.short && ov.short.type || '') + '" hidden><div class="sbq" id="shortQ">Which balance should be charged?</div><div class="shortopts">' +
+        C.shortLeaveTypes.map(function (k) { var on = ov.short && ov.short.type === k; return '<button type="button" class="pick' + (on ? ' on' : '') + '" aria-pressed="' + !!on + '" data-act="shortPick" data-t="' + k + '">' + esc(C.shortLeaveLabels[k]) + '</button>'; }).join('') +
+        '</div><div class="err" id="shortErr"></div></div></div>';
     var lenFields = '<div id="tourLenWrap"' + ((t.rdo && !st) || t.ddOff || st === 'off' ? ' hidden' : '') + '>' + startEnd + pduBox +
       tourField('dayLen', ov.len ? E.fmtHM(ov.len) : '', 'Tour length (blank = ' + regLbl + ')', 'dayStart') + '</div>';
     if (t.dd) {
@@ -2687,11 +3464,43 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var raw = si.value.trim(), start = raw ? E.normTime(raw) : box.dataset.ss, lt = (document.getElementById('dayLen') || {}).value, len = (lt && E.parseHM(lt.trim())) || +box.dataset.sl;
     var er = document.getElementById('dayStart-err'); if (er) er.textContent = raw && !start && raw.length >= 5 ? 'Use HH:MM, 24-hour (00:00–23:59)' : '';
     var info = start && len ? E.tourEndInfo(start, len, +box.dataset.d) : null;
-    out.value = info ? info.end + (info.nextDay ? ' (+1 day)' : '') : '';
+    out.placeholder = info ? info.end : 'HH:MM'; endCheck(start, len);
+    Array.prototype.forEach.call(document.querySelectorAll('#startPicks .pick'), function (b) { setOn(b, (b.dataset.v || '') === (raw ? E.normTime(raw) || '-' : '')); });
     if (!info) { pop.hidden = true; return; }
     pop.hidden = false; pop.classList.toggle('nx', !!info.countsNext);
     pop.innerHTML = '<div class="et">' + esc(info.text) + '</div>' + (raw ? '' : '<div class="es">Scheduled start ' + esc(start) + '</div>') + (info.note ? '<div class="enx">' + esc(info.note) + '</div>' : '');
     if (flash) { pop.classList.remove('pop'); void pop.offsetWidth; pop.classList.add('pop'); }
+  }
+  // Typed tour end vs scheduled end: 1-14 min late = note only (no OT); 15+ = overtime; early = pick the balance to charge
+  function endCheck(start, len) {
+    var ei = document.getElementById('dayEnd'), note = document.getElementById('endNote'), sb = document.getElementById('shortBox'), er = document.getElementById('dayEnd-err'); if (!ei || !note || !sb) return null;
+    var raw = ei.value.trim(), end = raw ? E.normTime(raw) : '', c = end && start && len ? E.endCompare(start, len, end) : null;
+    if (er) er.textContent = raw && !end && raw.length >= 5 ? 'Use HH:MM, 24-hour (00:00–23:59)' : '';
+    note.className = 'endnote' + (c ? ' ' + c.kind : ''); sb.hidden = !(c && c.kind === 'early');
+    var mm = function (m) { return m < 60 ? m + ' min' : E.fmtHM(m); };
+    if (c && c.kind === 'late') note.innerHTML = '<b>Ended ' + mm(c.delta) + ' late</b> (scheduled ' + esc(c.sched) + '). No overtime: OT starts at ' + C.otThresholdMin + ' minutes past the scheduled end.';
+    else if (c && c.kind === 'ot') note.innerHTML = '<b>Overtime: ' + E.fmtHM(c.otMin) + '</b> (' + esc(c.sched) + '&ndash;' + esc(c.end) + '). Saved to your Overtime log for this day.';
+    else if (c && c.kind === 'early') { note.innerHTML = '<b>Ended ' + mm(c.shortMin) + ' early</b> (scheduled ' + esc(c.sched) + ').'; document.getElementById('shortQ').textContent = 'Charge ' + E.fmtHM(c.shortMin) + ' to which balance?'; }
+    else note.innerHTML = '';
+    note.hidden = !(c && c.kind !== 'on');
+    return c;
+  }
+  function slipKindOf(iso) { var m = (S.slips || {})[iso], k = m && E.slipKind ? E.slipKind(m.kind) : null; return k && k.label ? k.label : 'Slip'; }
+  function deleteDayNow(d) {
+    var iso = E.toISO(d), r = E.deleteDay(S, iso); ['leave', 'assignments', 'slips', 'tours', 'overtime'].forEach(function (k) { S[k] = r.state[k]; });
+    var fin = function () { save(); closeSheet(); render(); toast('Deleted everything for ' + fmt(d, 'md')); };
+    slipDel(iso).then(function () { if (r.removed.slip) slipQueue(iso, 'del'); }, function () {}).then(fin, fin); // slip PDF: this device (IndexedDB) and the cloud bucket
+  }
+  // Small in-app confirm (native confirm() can't be styled and blocks the page)
+  function confirmDlg(o) {
+    var old = document.getElementById('cfmDlg'); if (old) old.remove();
+    var w = document.createElement('div'); w.id = 'cfmDlg'; w.className = 'cfmwrap';
+    w.innerHTML = '<div class="cfm" role="alertdialog" aria-modal="true" aria-labelledby="cfmT"><h3 id="cfmT">' + esc(o.title) + '</h3><div class="cfmbody">' + o.body + '</div><div class="cfmbtns"><button type="button" class="btn" id="cfmNo">Cancel</button><button type="button" class="btn ' + (o.danger ? 'delbtn' : 'primary') + '" id="cfmYes">' + esc(o.ok || 'OK') + '</button></div></div>';
+    document.body.appendChild(w);
+    var close = function () { w.remove(); document.removeEventListener('keydown', key, true); }, key = function (e) { if (e.key === 'Escape') { e.stopPropagation(); close(); } };
+    document.addEventListener('keydown', key, true);
+    w.addEventListener('click', function (e) { if (e.target === w || e.target.id === 'cfmNo') close(); else if (e.target.id === 'cfmYes') { close(); o.onOk && o.onOk(); } });
+    document.getElementById('cfmNo').focus();
   }
   function pduKeep() {
     var box = document.getElementById('pduSched'), el = document.getElementById('pduKeep'); if (!box || !el) return;
@@ -2701,37 +3510,116 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function otSheet(entry, dateISO) {
     var e = entry || { id: '', date: dateISO || E.toISO(T), mode: 'times', start: '', end: '', hours: '', type: C.overtimeTypes[0].id, notes: '' };
-    var times = e.mode !== 'hours', lk = !!e.linkedTour, ro = lk ? ' disabled' : '';
+    var times = e.mode !== 'hours', lkEnd = !e.linkedTour && !!e.linkedEnd, lk = !!e.linkedTour || lkEnd, lkIso = e.linkedTour || e.linkedEnd, ro = lk ? ' disabled' : '';
     openSheet(entry ? 'Edit overtime' : 'Log overtime',
-      '<form id="otForm" onsubmit="return false" data-id="' + esc(e.id) + '" data-linked="' + esc(e.linkedTour || '') + '">' +
-      (lk ? '<div class="ddpair" style="border-color:' + mySquad().color + '"><b>Extra tour on RDO</b> &middot; ' + fmt(E.toDay(e.linkedTour)) + '<div class="muted" style="font-size:12.5px">Date and hours come from that day\'s tour. Change them from the day itself.</div><button type="button" class="btn sm" data-act="day" data-d="' + E.toDay(e.linkedTour) + '" style="margin-top:6px">Edit tour</button></div>' : '') +
+      '<form id="otForm" onsubmit="return false" data-id="' + esc(e.id) + '" data-linked="' + esc(lkIso || '') + '" data-lkind="' + (lkEnd ? 'end' : lk ? 'tour' : '') + '">' +
+      (lk ? '<div class="ddpair" style="border-color:' + mySquad().color + '"><b>' + (lkEnd ? 'Tour ended late' : 'Extra tour on RDO') + '</b> &middot; ' + fmt(E.toDay(lkIso)) + '<div class="muted" style="font-size:12.5px">Date and hours come from that day\'s tour' + (lkEnd ? ' end' : '') + '. Change them from the day itself.</div><button type="button" class="btn sm" data-act="day" data-d="' + E.toDay(lkIso) + '" style="margin-top:6px">Edit tour</button></div>' : '') +
       '<div class="field"><label for="otDate">Date</label><input type="date" id="otDate" value="' + esc(e.date) + '" required' + ro + '></div>' +
       '<div class="field"><label for="otType">Type</label><select id="otType">' + C.overtimeTypes.map(function (t) { return '<option value="' + t.id + '"' + (t.id === e.type ? ' selected' : '') + '>' + esc(t.label) + '</option>'; }).join('') + '</select></div>' +
       (lk ? '<div hidden>' : '<div>') + '<div class="field"><label>Enter as</label><div class="seg" id="otMode" data-mode="' + (times ? 'times' : 'hours') + '"><button type="button" data-act="otMode" data-m="times" class="' + (times ? 'on' : '') + '">Start / end time</button><button type="button" data-act="otMode" data-m="hours" class="' + (times ? '' : 'on') + '">Total hours</button></div></div></div>' +
       '<div class="row" id="otTimes"' + (times ? '' : ' hidden') + '><div class="field"><label for="otStart">Start</label><input type="time" id="otStart" value="' + esc(e.start || '') + '"' + ro + '></div><div class="field"><label for="otEnd">End</label><input type="time" id="otEnd" value="' + esc(e.end || '') + '"' + ro + '></div></div>' +
       '<div class="field" id="otHoursWrap"' + (times ? ' hidden' : '') + '><label for="otHours">Hours (H:MM)</label><input id="otHours" inputmode="decimal" autocomplete="off" placeholder="e.g. 4:30" value="' + esc(e.hours ? E.fmtHM(Math.round(parseFloat(e.hours) * 60)) : '') + '"' + ro + '></div>' +
-      '<div class="card" style="background:#f5f7fb;margin-bottom:12px"><b id="otPreview">0 h &middot; $0.00</b><div class="muted" style="font-size:12.5px">Estimated at ' + mult() + '&times; ' + money(rate()) + '/h. Shifts ending after midnight are counted overnight.</div></div>' +
+      otCompField(e) +
+      '<div class="card otpaycard" style="background:#f5f7fb;margin-bottom:12px"><b id="otPreview">0 h &middot; $0.00</b><div class="muted otrate" id="otRateLine"></div><div class="muted" style="font-size:12.5px">Shifts ending after midnight are counted overnight.</div></div>' +
       '<div class="field"><label for="otNotes">Notes</label><textarea id="otNotes" placeholder="Case #, location, approving supervisor...">' + esc(e.notes || '') + '</textarea></div>' +
       '<button class="btn primary block" data-act="otSave">' + (entry ? 'Save changes' : 'Add overtime') + '</button>' +
       (entry ? '<button class="btn danger block" data-act="otDelete" style="margin-top:8px">Delete entry</button>' : '') + '</form>');
     otPreview();
   }
+  function otCompField(e) {
+    var c = e.comp || 'cash', ch = e.comp === 'split' && e.cashHours ? E.fmtHM(Math.round(parseFloat(e.cashHours) * 60)) : '';
+    return '<div class="field" id="otCompWrap"><label>Paid as</label><div class="seg" id="otComp" data-comp="' + esc(c) + '">' +
+      [['cash', 'Cash'], ['time', 'Time'], ['split', 'Split']].map(function (x) { return '<button type="button" data-act="otComp" data-c="' + x[0] + '" class="' + (c === x[0] ? 'on' : '') + '">' + x[1] + '</button>'; }).join('') + '</div>' +
+      '<div class="field otsplit" id="otSplitWrap"' + (c === 'split' ? '' : ' hidden') + '><label for="otCashH">Hours to cash (H:MM)</label><input id="otCashH" inputmode="decimal" autocomplete="off" placeholder="e.g. 2:00" value="' + esc(ch) + '"><div class="hint" id="otSplitHint">The rest becomes comp time at 1.5&times;.</div></div>' +
+      '<div class="hint" id="otCompNote"></div></div>';
+  }
+  // Enable only the choices the rank allows on that date; fall back to the first allowed one.
+  function otCompSync() {
+    var seg = document.getElementById('otComp'); if (!seg) return; var dv = (document.getElementById('otDate') || {}).value, o = E.otCompOptions(S.profile, dv), cur = seg.dataset.comp;
+    if (o.allowed.indexOf(cur) < 0) cur = seg.dataset.comp = o.allowed[0];
+    Array.prototype.forEach.call(seg.children, function (b) { var ok = o.allowed.indexOf(b.dataset.c) >= 0; b.disabled = !ok; b.classList.toggle('on', b.dataset.c === cur); b.setAttribute('aria-pressed', b.dataset.c === cur ? 'true' : 'false'); });
+    document.getElementById('otSplitWrap').hidden = cur !== 'split';
+    var n = document.getElementById('otCompNote'); if (n) n.textContent = o.reason ? o.reason.replace(/ended (\d{4}-\d{2}-\d{2})/, function (m, d) { return 'ended ' + fmt(E.toDay(d), 'mdy'); }) : '';
+  }
   function otFormEntry() {
     var mode = document.getElementById('otMode').dataset.mode;
-    return { mode: mode, start: document.getElementById('otStart').value, end: document.getElementById('otEnd').value, hours: (function () { var m = E.parseHM(document.getElementById('otHours').value); return m ? m / 60 : ''; })() };
+    var cs = document.getElementById('otComp'), comp = cs ? cs.dataset.comp : 'cash', chm = E.parseHM((document.getElementById('otCashH') || { value: '' }).value);
+    return { mode: mode, start: document.getElementById('otStart').value, end: document.getElementById('otEnd').value, hours: (function () { var m = E.parseHM(document.getElementById('otHours').value); return m ? m / 60 : ''; })(), comp: comp, cashHours: comp === 'split' && chm ? chm / 60 : '' };
   }
-  function otPreview() { var el = document.getElementById('otPreview'); if (!el) return; var fe = otFormEntry(), h = E.entryHours(fe), dv = (document.getElementById('otDate') || {}).value; el.innerHTML = hrs(h) + ' (' + dec(h) + ') &middot; ' + money(E.otPay(h, rate(), mult())) + (fe.mode === 'times' && E.countsNextDay(fe.start) ? '<div class="nxtxt">Starts 20:00 or later: counts for ' + (dv ? fmt(E.toDay(dv) + 1) : 'the next day') + ' (hours and pay period)</div>' : ''); }
+  function otPreview() { var el = document.getElementById('otPreview'); if (!el) return; otCompSync(); var fe = otFormEntry(), h = E.entryHours(fe), dv = (document.getElementById('otDate') || {}).value; var fid = (document.getElementById('otForm') || { dataset: {} }).dataset.id, pr = E.otPayList(S.overtime.filter(function (o) { return o.id !== fid; }).concat([Object.assign({ id: '__form', date: dv }, fe)]), { profile: S.profile, multiplier: mult(), tourFor: otTourFor }).byId.__form, rl = document.getElementById('otRateLine'); if (rl) rl.innerHTML = otRateLine(pr, dv);
+    el.innerHTML = hrs(h) + ' (' + dec(h) + ') &middot; ' + payText({ pay: pr.pay, comp: pr.compMinutes || 0 }) + (fe.mode === 'times' && E.countsNextDay(fe.start) ? '<div class="nxtxt">Starts 20:00 or later: counts for ' + (dv ? fmt(E.toDay(dv) + 1) : 'the next day') + ' (hours and pay period)</div>' : ''); }
 
+  function otRateLine(r, iso) { var b = otRateLineBase(r, iso); return b + (r.compMinutes && !(r.source === 'chart' && r.placement && r.placement.ceaOT) ? '<br>Comp time: <b>' + E.fmtHM(r.compMinutes) + '</b> banked to Comp (1.5&times;)' + (r.comp === 'split' ? ' &middot; ' + E.fmtHM(Math.round(r.cashHours * 60)) + ' paid in cash' : '') : ''); }
+  function otRateLineBase(r, iso) {
+    var p = S.profile, pl = r.placement;
+    if (r.source === 'chart' && pl.ceaOT) {
+      var cp = pl.ceaOT, yr = String(iso || '').slice(0, 4), who = esc(E.rankAbbr(p)) + ' ' + esc(pl.stepLabel);
+      if (r.cashHours > 0) return '<span class="ratechip">Auto rate</span> Straight time <b>' + money(r.rate) + '/h</b> (no 1.5&times;) &middot; ' + who +
+        '<br>Cash OT left in ' + yr + ': <b id="capLeft">' + E.fmtHM(Math.round((r.capLeftBefore - r.cashHours) * 60)) + '</b> of ' + cp.capHours + ' h' + (r.compHours > 0 ? ' &middot; over the cap: ' + E.fmtHM(r.compMinutes) + ' comp (1.5&times;)' : '') +
+        '<br>Cash OT ends ' + esc(fmt(E.toDay(cp.cashUntil), 'mdy')) + ' (2 yrs as Captain)';
+      return '<span class="ratechip comp">Comp time</span> Banks <b>' + E.fmtHM(r.compMinutes || 0) + '</b> to Comp (1.5&times;) &middot; ' + who + '<br>' +
+        (!cp.straight ? 'No cash OT for this rank: all OT is comp time.' : cp.cashEligible ? 'The ' + cp.capHours + ' h cash OT for ' + yr + ' is used up.' : 'Cash OT ended ' + esc(fmt(E.toDay(cp.cashUntil), 'mdy')) + ' (after 2 yrs as Captain).');
+    }
+    if (r.source === 'chart') {
+      var t = otTourFor(iso), tt = t && t.start ? t.start + '&ndash;' + E.tourEnd(t.start, t.len).end : '';
+      return '<span class="ratechip">Auto rate</span> ' + (r.kind === 'night' ? 'Night OT' : 'OT 1.5') + ' <b>' + money(r.rate) + '/h</b> &middot; ' + esc(E.rankAbbr(p)) + ' ' + esc(pl.stepLabel) +
+        '<br>' + (r.tourKnown ? (r.kind === 'night' ? 'Night' : 'Day') + ' tour that day (' + tt + ')' : 'Add your tour start time in Settings to get night OT') + (pl.asOf ? ' &middot; rate as of ' + esc(fmt(E.toDay(pl.asOf), 'mdy')) : '');
+    }
+    if (r.source === 'manual') return 'Your own rate: ' + mult() + '&times; ' + money(p.rate) + '/h';
+    if (r.source === 'fallback') return 'Estimated at ' + mult() + '&times; ' + money(p.rate) + '/h (' + (r.noCashOT ? 'cash OT per AG 324-19 not set up yet' : pl && pl.reason === 'nohire' ? 'add your hire date in Settings for the pay chart rate' : 'pay chart not added yet') + ')';
+    if (r.noCashOT) return 'Cash OT for your rank is per AG 324-19 and not set up yet. Tick &ldquo;Use my own hourly rate&rdquo; in Settings to estimate it.';
+    return pl && pl.reason === 'nohire' ? 'Add your hire date in Settings to calculate overtime pay.' : 'Add your hourly rate in Settings to estimate overtime pay.';
+  }
+  // Settings pay summary (rank, chart, step, longevity, rates, next step change)
+  function payFormProfile() {
+    var pf = readProfile('st'), r = document.getElementById('stRate'), o = document.getElementById('stOverride');
+    return Object.assign({}, S.profile, pf, { rate: r ? parseFloat(r.value) || 0 : S.profile.rate, rateOverride: o ? o.checked : S.profile.rateOverride });
+  }
+  function payCardHtml(p) {
+    var pi = E.payInfo(p), pl = pi.placement, row = function (k, v, id) { return '<div class="payrow"' + (id ? ' id="' + id + '"' : '') + '><span>' + k + '</span><b>' + v + '</b></div>'; }, h = '';
+    var rk = E.rankLabel(p) || 'No rank chosen';
+    if (pl.ok) {
+      var sv = E.serviceLength(p.hireDate), nx = pi.next;
+      h += '<div class="paygrid">' + row('Rank', esc(rk)) + row('Pay chart', esc(pl.chartLabel) + '<small>Effective ' + esc(fmt(E.toDay(pl.eff), 'mdy')) + '</small>') +
+        row('Step / grade', esc(pl.stepLabel)) + row('Longevity', esc(pl.bracket) + ' yrs' + (sv ? '<small>' + esc(sv.text) + ' of service</small>' : '')) +
+        row('Hourly', money(pl.hourly), 'payHourly') + (pl.cashOT ? row('OT 1.5', money(pl.ot15)) + row('OT night', money(pl.otNight)) :
+          row('Exchange 1 hr time', pl.exchange == null ? 'N/A' : money(pl.exchange)) + row('Overtime', ceaOTText(pl))) +
+        row('Next step change', nx ? esc(fmt(E.toDay(nx.date), 'mdy')) + '<small>' + esc(nx.label) + '</small>' : 'Top of chart') + '</div>';
+      if (!pl.cashOT && !pl.ceaOT && !pi.override) h += '<div class="payprompt">The chart has no cash overtime rates for this rank. To estimate OT pay, tick &ldquo;Use my own hourly rate&rdquo; below.</div>';
+      if (pl.prompts.indexOf('promo') >= 0) h += '<div class="payprompt">Add your promotion date above for the right step. Your hire date is being used for now.</div>';
+      pl.notes.filter(function (n) { return !/^No promotion date/.test(n); }).forEach(function (n) { h += '<div class="paynote">' + esc(n) + '</div>'; });
+    } else if (pl.reason === 'nohire') {
+      h += '<div class="payprompt">Add your hire date above and the app will work out your hourly and overtime rates from the pay chart.</div>';
+    } else if (pl.reason === 'nochart') {
+      h += '<div class="paygrid">' + row('Rank', esc(rk)) + '</div><div class="payprompt">' + (p.rank ? 'Pay chart not added yet. ' : 'Choose your rank above. ') + 'Enter your own hourly rate below.</div>';
+    } else h += '<div class="payprompt">' + esc(pl.message || '') + '</div>';
+    if (pi.override) h += '<div class="paynote ov">Using your own rate: <b>' + money(pi.manualRate) + '/h</b>' + (pl.ok ? '. Chart rate: ' + money(pl.hourly) + '/h &mdash; untick below to use it.' : '.') + '</div>';
+    return h;
+  }
+  function ceaOTText(pl) {
+    var cp = pl.ceaOT; if (!cp) return 'Per AG 324-19<small>not set up</small>';
+    if (!cp.straight) return 'Comp time 1.5&times;<small>No cash OT for this rank</small>';
+    if (!cp.cashEligible) return 'Comp time 1.5&times;<small>Cash OT ended ' + esc(fmt(E.toDay(cp.cashUntil), 'mdy')) + ' (2 yrs as Captain)</small>';
+    var yr = String(pl.asOf).slice(0, 4), used = payList().cashUsed[yr] || 0;
+    return 'Straight time ' + money(pl.hourly) + '<small id="capCounter">' + E.fmtHM(Math.round(Math.max(0, cp.capHours - used) * 60)) + ' of ' + cp.capHours + ' cash h left in ' + yr + ', then comp 1.5&times;. Cash OT ends ' + esc(fmt(E.toDay(cp.cashUntil), 'mdy')) + '.</small>';
+  }
+  function refreshPay() {
+    var c = document.getElementById('payCard'); if (!c) return; var p = payFormProfile(); c.innerHTML = payCardHtml(p);
+    var w = document.getElementById('stOvWrap'), o = document.getElementById('stOverride'), pl = E.payPlacement(p); if (w && o) w.hidden = !o.checked && pl.ok && (pl.cashOT || !!pl.ceaOT);
+  }
   function reopenMaps() { var sc = window.scrollY; settingsSheet(); var h = document.getElementById('mapsHead'); if (h && h.scrollIntoView) h.scrollIntoView({ block: 'start' }); }
   function settingsSheet() {
     var p = S.profile, s = S.settings;
     openSheet('Settings',
       accountPanel() + '<h3 style="margin-top:' + (CL.enabled ? '18px' : '0') + '">Profile</h3>' + profileFields('st', p) + cmdPicker('st', p.command) + homeField('st', p) +
       '<h3 id="chartHead">My chart</h3><div id="chartWrap">' + chartPanel() + '</div>' +
-      '<div class="row"><div class="field"><label for="stRate">Hourly rate ($)</label><input id="stRate" type="number" inputmode="decimal" min="0" step="0.01" value="' + esc(p.rate) + '"></div>' +
-      '<div class="field"><label for="stMult">OT multiplier</label><input id="stMult" type="number" inputmode="decimal" min="1" step="0.05" value="' + esc(s.multiplier) + '"></div></div>' +
+      '<h3 id="payHead">Pay</h3><div class="paycard" id="payCard">' + payCardHtml(p) + '</div>' +
+      '<label class="chk ovchk"><input type="checkbox" id="stOverride"' + (p.rateOverride ? ' checked' : '') + '> Use my own hourly rate instead of the pay chart</label>' +
+      '<div class="row" id="stOvWrap"' + (p.rateOverride || !E.payPlacement(p).ok || !(E.payPlacement(p).cashOT || E.payPlacement(p).ceaOT) ? '' : ' hidden') + '><div class="field"><label for="stRate">Own hourly rate ($)</label><input id="stRate" type="number" inputmode="decimal" min="0" step="0.01" value="' + esc(p.rate) + '"></div>' +
+      '<div class="field"><label for="stMult">OT multiplier</label><input id="stMult" type="number" inputmode="decimal" min="1" step="0.05" value="' + esc(s.multiplier) + '"><div class="hint">Only used with your own rate.</div></div></div>' +
       '<h3 style="margin-top:6px">Regular tour</h3>' + (S.profile.charts.some(function (c) { return /^pdu:/.test(c.chart); }) ? '<div class="pduinfo" style="font-size:13px">PDU days use your chart: ' + shiftText('pm') + ', ' + shiftText('am') + '. The regular tour below is used for patrol and steady charts.</div>' : '') + tourField('stTour', E.fmtHM(p.tourLen), 'Tour length', 'stStart') +
-      '<div class="field"><label for="stStart">Tour start time (optional)</label><input id="stStart" type="time" value="' + esc(p.tourStart || '') + '"></div>' +
+      '<div class="field"><label for="stStart">Tour start time (optional)</label><input id="stStart" type="time" value="' + esc(p.tourStart || '') + '"><div class="hint">For a 17-hour tour, pick 17:00 as the tour length above.</div></div>' +
+      balancesHtml() +
       '<div class="field"><label for="stReg">Regular hours target per pay period (H:MM)</label><input id="stReg" inputmode="decimal" autocomplete="off" value="' + E.fmtHM(regTarget()) + '"><div class="hint">Default 80:00.</div></div>' +
       '<div class="field"><label for="stPay">Payday anchor (any known payday)</label><input id="stPay" type="date" value="' + esc(s.paydayAnchor) + '"><div class="hint">Paydays repeat every ' + C.payday.intervalDays + ' days from this date (default Thu, Jan 1, 2026). Regular period ends the Saturday 5 days before payday; OT period ends 12 days before.</div></div>' +
       '<button class="btn primary block" data-act="stSave">Save settings</button>' +
@@ -2836,7 +3724,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       save(); render(); refreshChart(); toast('Change removed');
     },
     onbSave: function () {
-      var pf = readProfile('onb'), r = parseFloat(document.getElementById('onbRate').value);
+      var pf = readProfile('onb'), rv = document.getElementById('onbRate').value.trim(), r = rv ? parseFloat(rv) : 0;
       if (!showProfileErrors('onb', E.validateProfile(pf))) return toast('Please fix the highlighted fields');
       if (!checkCommand('onb')) return;
       var ck = document.getElementById('onbChart').value;
@@ -2844,8 +3732,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var tl = E.parseHM(document.getElementById('onbTour').value);
       if (/^pdu:/.test(ck) && !document.getElementById('onbTour').value.trim()) tl = PDU.shifts.am.len; // PDU: chart sets PM/AM tours; regular tour only used for other charts
       if (!tl) { tourPrev('onbTour'); document.getElementById('onbTour').focus(); return toast(E.tourLenError(document.getElementById('onbTour').value).msg || 'Enter your tour length, e.g. 8:15'); }
-      if (!(r >= 0)) return toast('Enter your hourly rate');
-      S.profile = { charts: [{ id: uid(), effective: '', chart: ck }], rank: pf.rank, rankOther: pf.rank === 'other' ? pf.rankOther : '', firstName: pf.firstName, lastName: pf.lastName, name: pf.firstName + ' ' + pf.lastName, taxNumber: pf.taxNumber, refNumber: pf.refNumber, shieldNumber: pf.shieldNumber, squad: ck, rate: r, tourLen: tl, tourStart: /^pdu:/.test(ck) ? '' : (document.getElementById('onbStart').value || ''), command: E.cleanCommand(readCommand('onb')) }; save(); render(); toast(S.profile.command ? 'You\'re all set' : 'You\'re all set. Tip: add your command in Settings for drive times from your command.');
+      if (!(r >= 0)) return toast('Hourly rate must be a number, or leave it blank');
+      S.profile = { charts: [{ id: uid(), effective: '', chart: ck }], rank: pf.rank, rankOther: pf.rank === 'other' ? pf.rankOther : '', firstName: pf.firstName, lastName: pf.lastName, name: pf.firstName + ' ' + pf.lastName, taxNumber: pf.taxNumber, refNumber: pf.refNumber, shieldNumber: pf.shieldNumber, hireDate: pf.hireDate, promotionDate: pf.promotionDate, squad: ck, rate: r, rateOverride: r > 0, tourLen: tl, tourStart: /^pdu:/.test(ck) ? '' : (document.getElementById('onbStart').value || ''), command: E.cleanCommand(readCommand('onb')) }; save(); render(); toast(S.profile.command ? 'You\'re all set' : 'You\'re all set. Tip: add your command in Settings for drive times from your command.');
     },
     cmdPick: function (t) {
       var px = t.dataset.px, id = t.dataset.id, box = document.getElementById(px + 'Cmd'), c = id === 'other' ? { id: 'other' } : E.commandById(id); box.dataset.id = id;
@@ -2867,13 +3755,23 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     },
     lvSave: function (t) {
       var iso = E.toISO(+t.dataset.d), type = document.getElementById('lvOpts').dataset.sel, note = document.getElementById('lvNote').value.trim();
-      var asgIn = { type: document.getElementById('asgBox').dataset.sel, detail: document.getElementById('asgDetail').value, notes: document.getElementById('asgNotes').value, address: document.getElementById('asgAddr').value, place: document.getElementById(document.getElementById('asgBox').dataset.sel === 'training' ? 'asgTrLoc' : 'asgPlace').value, boro: (function () { var be = document.getElementById('asgBoro').value, sel = document.getElementById('asgBox').dataset.sel; return (sel === 'court' && E.selectedCourts(document.getElementById('asgAddr').value, document.getElementById('asgPlace').value, be).boro) || be; })() }, asgErr = E.validateAssignment(asgIn);
+      var asgIn = { pd: readPaid(), type: document.getElementById('asgBox').dataset.sel, detail: document.getElementById('asgDetail').value, notes: document.getElementById('asgNotes').value, address: document.getElementById('asgAddr').value, place: document.getElementById(document.getElementById('asgBox').dataset.sel === 'training' ? 'asgTrLoc' : 'asgPlace').value, boro: (function () { var be = document.getElementById('asgBoro').value, sel = document.getElementById('asgBox').dataset.sel; return (sel === 'court' && E.selectedCourts(document.getElementById('asgAddr').value, document.getElementById('asgPlace').value, be).boro) || be; })() }, asgErr = E.validateAssignment(asgIn);
       if (asgErr) { var ae = document.getElementById('asgDetail-err'); ae.textContent = asgErr; document.getElementById('asgDetail').classList.add('bad'); document.getElementById('asgDetail').focus(); return toast(asgErr); }
       var box = document.getElementById('tourBox'), status = box.dataset.status, orig = box.dataset.orig, lenTxt = document.getElementById('dayLen').value.trim(), len = lenTxt ? E.parseHM(lenTxt) : null, start = document.getElementById('dayStart').value.trim();
       if (start) { var ns = E.normTime(start); if (!ns) { var se = document.getElementById('dayStart-err'); if (se) se.textContent = 'Use HH:MM, 24-hour (00:00–23:59)'; return toast('Tour start must be HH:MM (24-hour)'); } start = ns; }
       if (lenTxt && !len) { tourPrev('dayLen'); return toast(E.tourLenError(lenTxt).msg || 'Tour length must be H:MM up to 24:00'); }
+      var endWrap = document.getElementById('tourLenWrap'), endEl = document.getElementById('dayEnd'), endOn = !!(endEl && endWrap && !endWrap.hidden), end = endOn ? endEl.value.trim() : '', shortSel = null;
+      if (end) { var ne = E.normTime(end); if (!ne) { document.getElementById('dayEnd-err').textContent = 'Use HH:MM, 24-hour (00:00–23:59)'; return toast('Tour end must be HH:MM (24-hour)'); } end = ne; }
       var swIso = status === 'ddnew' ? document.getElementById('ddSwap').value : (S.tours[iso] || {}).swap, sc = E.schedTour(+t.dataset.d, myWho(), tourOpts(), status === 'ddnew' ? 'dd' : status, swIso);
+      var effStart = start || sc.start || S.profile.tourStart || '', effLen = len || sc.len || S.profile.tourLen;
+      var ec = end && effStart ? E.endCompare(effStart, effLen, end) : null; if (ec && ec.kind === 'on') { end = ''; ec = null; } // the scheduled end isn't a change
+      if (end && !effStart) { document.getElementById('dayEnd-err').textContent = 'Set the tour start first'; return toast('Set a tour start to use a tour end'); }
+      if (ec && ec.kind === 'early') {
+        var sbt = document.getElementById('shortBox').dataset.sel; if (!sbt) { var se2 = document.getElementById('shortErr'); se2.textContent = 'Pick Comp time, Chart time or Vacation time'; document.getElementById('shortBox').scrollIntoView({ block: 'center' }); return toast('Pick which balance to charge for leaving early'); }
+        shortSel = { type: sbt, minutes: ec.shortMin };
+      }
       if (len === sc.len) len = null; if (start === sc.start) start = ''; // keep only real changes; blank = scheduled (PDU keeps the PM/AM length when only the start moves)
+      var endX = function (o) { if (end) o.end = end; if (shortSel) o.short = shortSel; return o; };
       var sq = mySquad(), d = +t.dataset.d, msg = '';
       if (status === 'ddnew') {
         var sw = document.getElementById('ddSwap').value; if (!sw) return toast('Pick the workday to take off');
@@ -2882,11 +3780,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         if (stt.rdo) return toast(fmt(sd) + ' is already an RDO; pick a scheduled workday');
         if (stt.modified) return toast(fmt(sd) + ' already has a change; reset it first');
         S.tours = E.setDayForDay(S.tours, iso, sw, { len: len, start: start }); msg = 'Day for day set: off ' + fmt(sd);
-      } else if (status === 'dd') { S.tours[iso] = { status: 'dd', swap: S.tours[iso].swap, len: len, start: start };
+      } else if (status === 'dd') { S.tours[iso] = endX({ status: 'dd', swap: S.tours[iso].swap, len: len, start: start });
       } else if (status === 'ddoff') { /* paired workday: only leave/note editable */
       } else {
         if (orig === 'dd' || orig === 'ddoff') S.tours = E.clearDayForDay(S.tours, iso);
-        if (!status && !len && !start) delete S.tours[iso]; else S.tours[iso] = { status: status, len: len, start: start };
+        if (!status && !len && !start && !end) delete S.tours[iso]; else S.tours[iso] = endX({ status: status, len: len, start: start });
       }
       var tr = E.dayTour(d, sq.id, tourOpts()), had = S.overtime.some(function (o) { return o.linkedTour === iso; });
       if (tr.extra && !had) {
@@ -2896,6 +3794,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       S.overtime = E.syncExtraOT(S.overtime, iso, tr, uid());
       if (tr.extra) msg = (had ? 'Overtime updated: ' : 'Added to overtime: ') + E.fmtHM(tr.len);
       else if (had) msg = 'Linked overtime entry removed';
+      var hadEnd = S.overtime.some(function (o) { return o.linkedEnd === iso; }), tEnd = (S.tours[iso] || {}).end || '';
+      S.overtime = E.syncEndOT(S.overtime, iso, tr.start || effStart, tr.len || effLen, tr.working ? tEnd : '', uid());
+      if (ec && ec.kind === 'ot' && tr.working) msg = (hadEnd ? 'Overtime updated: ' : 'Overtime added: ') + E.fmtHM(ec.otMin) + ' (tour ended ' + ec.end + ')';
+      else if (hadEnd && !S.overtime.some(function (o) { return o.linkedEnd === iso; })) msg = msg || 'Late-end overtime removed';
+      if (shortSel && tr.working) msg = E.fmtHM(shortSel.minutes) + ' charged to ' + C.shortLeaveLabels[shortSel.type];
       if (!type && !note) delete S.leave[iso]; else S.leave[iso] = { type: type, note: note };
       var hadAsg = !!S.assignments[iso], ca = E.cleanAssignment(asgIn);
       if (ca) { var prevA = S.assignments[iso]; if (!prevA || prevA.type !== ca.type || prevA.detail !== ca.detail || prevA.notes !== ca.notes || (prevA.address || '') !== (ca.address || '') || (prevA.place || '') !== (ca.place || '') || (prevA.boro || '') !== (ca.boro || '')) { ca.updated = new Date().toISOString(); S.assignments[iso] = ca; if (!msg) msg = (hadAsg ? 'Assignment updated: ' : 'Assignment saved: ') + E.assignmentLabel(ca); } }
@@ -2910,7 +3813,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var box = document.getElementById('asgBox'), id = t.dataset.t, ty = E.assignmentType(id); box.dataset.sel = id;
       Array.prototype.forEach.call(t.parentNode.children, function (b) { var on = b === t; b.classList.toggle('on', on); b.style.background = on ? b.dataset.c : ''; });
       var w = document.getElementById('asgDetailWrap'), inp = document.getElementById('asgDetail');
-      w.hidden = !(ty && ty.detail); document.getElementById('asgNotesWrap').hidden = !id;
+      w.hidden = !(ty && ty.detail); document.getElementById('asgNotesWrap').hidden = !id; document.getElementById('asgPaid').hidden = id !== 'paiddetail';
       if (ty && ty.detail) { document.getElementById('asgDetailLbl').textContent = ty.detail.label + (ty.detail.required ? '' : ' (optional)'); inp.placeholder = ty.detail.placeholder || ''; document.getElementById('asgSug').innerHTML = asgSuggest(id); }
       inp.value = id === box.dataset.orig ? box.dataset.odetail : ''; inp.classList.remove('bad'); document.getElementById('asgDetail-err').textContent = '';
       var aw = document.getElementById('asgAddrWrap'), ai = document.getElementById('asgAddr');
@@ -3026,6 +3929,18 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       save(); render(); x15Sheet(y); toast('Extra 15 range saved');
     },
     x15Reset: function (t) { var y = +t.dataset.y; delete S.extra15[E.extra15Key(y, +t.dataset.m, t.dataset.t)]; save(); render(); x15Sheet(y); toast('Back to the rule'); },
+    startPick: function (t) { var el = document.getElementById(t.dataset.for); if (!el) return; el.value = t.dataset.v; if (el.id === 'dayStart') { pduKeep(); updateEnd(true); } else Array.prototype.forEach.call(document.querySelectorAll('[data-act="startPick"][data-for="' + el.id + '"]'), function (b) { setOn(b, b.dataset.v === el.value); }); },
+    shortPick: function (t) { var b = document.getElementById('shortBox'); b.dataset.sel = t.dataset.t; Array.prototype.forEach.call(b.querySelectorAll('[data-act="shortPick"]'), function (x) { setOn(x, x === t); }); document.getElementById('shortErr').textContent = ''; },
+    dayDelAsk: function (t) {
+      var d = +t.dataset.d, iso = E.toISO(d); if (!E.dayHasEntries(S, iso)) return toast('Nothing saved for this day');
+      var a = S.assignments[iso], lv = S.leave[iso], tr = S.tours[iso], ots = S.overtime.filter(function (e) { return e.linkedEnd ? e.linkedEnd === iso : e.linkedTour ? e.linkedTour === iso : e.date === iso; }), items = [];
+      if (a) items.push('Assignment: ' + E.assignmentLabel(a));
+      if (lv && lv.type) items.push('Leave: ' + lvType(lv.type).label); if (lv && lv.note) items.push('Note');
+      if (tr) items.push(tr.status === 'dd' || tr.status === 'ddoff' ? 'Day-for-day swap (also clears ' + fmt(E.toDay(tr.swap), 'md') + ')' : 'Tour changes' + (tr.short ? ' (refunds ' + E.fmtHM(tr.short.minutes) + ' ' + C.shortLeaveLabels[tr.short.type] + ')' : ''));
+      if (ots.length) items.push(ots.length + ' overtime entr' + (ots.length === 1 ? 'y' : 'ies'));
+      if ((S.slips || {})[iso]) items.push(slipKindOf(iso) + ' (PDF)');
+      confirmDlg({ title: 'Delete this entry?', body: '<p>Everything you entered for <b>' + esc(fmt(d, 'long')) + '</b> will be deleted' + (CL.enabled && CS.uid ? ', on all your devices' : '') + ':</p><ul class="cfmlist">' + items.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul><p class="muted">Your regular chart and RDOs don\'t change. This can\'t be undone.</p>', ok: 'Delete', danger: true, onOk: function () { deleteDayNow(d); } });
+    },
     pduStart: function (t) { document.getElementById('dayStart').value = t.dataset.v; document.getElementById('dayLen').value = ''; tourPrev('dayLen'); pduKeep(); updateEnd(true); },
     tourStatus: function (t) {
       var box = document.getElementById('tourBox'), s = t.dataset.s; box.dataset.status = s;
@@ -3051,6 +3966,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     syncExport: function (t) { doSyncExport(t.dataset.k); },
     otNew: function (t) { otSheet(null, t.dataset.date); },
     otEdit: function (t) { var e = S.overtime.filter(function (x) { return x.id === t.dataset.id; })[0]; if (e) otSheet(e); },
+    otComp: function (t) { if (t.disabled) return; var seg = document.getElementById('otComp'); seg.dataset.comp = t.dataset.c; otPreview(); if (t.dataset.c === 'split') { var ci = document.getElementById('otCashH'); if (ci && !ci.value) ci.focus(); } },
     otMode: function (t) {
       var seg = document.getElementById('otMode'); seg.dataset.mode = t.dataset.m;
       Array.prototype.forEach.call(seg.children, function (b) { b.classList.toggle('on', b === t); });
@@ -3060,27 +3976,32 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var f = document.getElementById('otForm'), x = otFormEntry(), date = document.getElementById('otDate').value;
       if (!date) return toast('Pick a date');
       if (f.dataset.linked) { // only type and notes are editable on an entry linked to an RDO extra tour
-        S.overtime.forEach(function (o) { if (o.id === f.dataset.id) { o.type = document.getElementById('otType').value; o.notes = document.getElementById('otNotes').value.trim(); o.updated = new Date().toISOString(); } });
+        var lh = 0; S.overtime.forEach(function (o) { if (o.id === f.dataset.id) lh = E.entryHours(o); });
+        if (x.comp === 'split' && !(x.cashHours > 0 && x.cashHours < lh)) return toast('Split: enter the hours to cash (less than ' + hrs(lh) + ')');
+        S.overtime.forEach(function (o) { if (o.id === f.dataset.id) { o.type = document.getElementById('otType').value; o.notes = document.getElementById('otNotes').value.trim(); o.comp = x.comp; o.cashHours = x.comp === 'split' ? x.cashHours : ''; o.updated = new Date().toISOString(); } });
         save(); closeSheet(); render(); return toast('Overtime updated');
       }
       if (!f.dataset.id && S.overtime.some(function (o) { return o.linkedTour === date; }) && !confirm('This day already has an extra RDO tour in your overtime log. Add a separate entry anyway? Only do this for different hours so nothing is counted twice.')) return;
       if (x.mode === 'times' && (!x.start || !x.end)) return toast('Enter start and end times');
       var h = E.entryHours(x); if (!(h > 0)) return toast('Enter the hours worked');
+      if (x.comp === 'split' && !(x.cashHours > 0 && x.cashHours < h)) { var ce = document.getElementById('otCashH'); if (ce) ce.focus(); return toast('Split: enter the hours to cash (less than ' + hrs(h) + ')'); }
       var e = { id: f.dataset.id || uid(), date: date, mode: x.mode, start: x.mode === 'times' ? x.start : '', end: x.mode === 'times' ? x.end : '', hours: x.mode === 'times' ? h : h,
-        type: document.getElementById('otType').value, notes: document.getElementById('otNotes').value.trim(), updated: new Date().toISOString() };
+        type: document.getElementById('otType').value, notes: document.getElementById('otNotes').value.trim(), comp: x.comp, cashHours: x.comp === 'split' ? x.cashHours : '', updated: new Date().toISOString() };
       var i = -1; S.overtime.forEach(function (o, k) { if (o.id === e.id) i = k; });
       if (i >= 0) S.overtime[i] = e; else S.overtime.push(e);
       save(); closeSheet(); render(); toast((i >= 0 ? 'Updated: ' : 'Logged: ') + hrs(h));
     },
     otDelete: function () {
-      var f = document.getElementById('otForm'), id = f.dataset.id, lk = f.dataset.linked;
-      if (!confirm(lk ? 'Delete this entry? This also removes the extra tour from ' + fmt(E.toDay(lk)) + ' on your calendar.' : 'Delete this overtime entry?')) return;
+      var f = document.getElementById('otForm'), id = f.dataset.id, lk = f.dataset.linked, le = f.dataset.lkind === 'end';
+      if (!confirm(le ? 'Delete this entry? This also clears the late tour end on ' + fmt(E.toDay(lk)) + '.' : lk ? 'Delete this entry? This also removes the extra tour from ' + fmt(E.toDay(lk)) + ' on your calendar.' : 'Delete this overtime entry?')) return;
       S.overtime = S.overtime.filter(function (o) { return o.id !== id; });
-      if (lk && S.tours[lk] && S.tours[lk].status === 'work') delete S.tours[lk];
+      if (le && S.tours[lk]) { var tt = copy(S.tours[lk]); delete tt.end; delete tt.short; if (!tt.status && !tt.len && !tt.start) delete S.tours[lk]; else S.tours[lk] = tt; }
+      else if (lk && S.tours[lk] && S.tours[lk].status === 'work') delete S.tours[lk];
       save(); closeSheet(); render(); toast('Entry deleted');
     },
     otYear: function (t) { ui.otYear += +t.dataset.dir; render(); },
     payYear: function (t) { ui.payYear += +t.dataset.dir; render(); },
+    legendToggle: function () { S.settings.legendOpen = !S.settings.legendOpen; save(true); var lg = document.getElementById('calLegend'), b = document.querySelector('[data-act="legendToggle"]'); if (lg) lg.hidden = !S.settings.legendOpen; if (b) { b.classList.toggle('on', !!S.settings.legendOpen); b.setAttribute('aria-expanded', S.settings.legendOpen ? 'true' : 'false'); } },
     payJump: function () { var c = document.getElementById('curPeriod'); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
     leaveYear: function (t) { ui.leaveYear += +t.dataset.dir; render(); },
     lkShift: function (t) { ui.lookup += +t.dataset.n; render(); },
@@ -3090,13 +4011,17 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var pf = readProfile('st'), r = parseFloat(document.getElementById('stRate').value), m = parseFloat(document.getElementById('stMult').value), pa = document.getElementById('stPay').value;
       if (!showProfileErrors('st', E.validateProfile(pf))) return toast('Please fix the highlighted fields');
       if (!checkCommand('st')) return;
-      if (!(r >= 0)) return toast('Enter a valid hourly rate');
+      var ov = document.getElementById('stOverride').checked; if (!(r >= 0)) r = 0;
+      if (ov && !(r > 0)) { document.getElementById('stOvWrap').hidden = false; document.getElementById('stRate').focus(); return toast('Enter your own hourly rate, or untick "Use my own hourly rate"'); }
       if (!(m >= 1)) return toast('Multiplier must be at least 1');
       var tl = E.parseHM(document.getElementById('stTour').value); if (!tl) { tourPrev('stTour'); return toast(E.tourLenError(document.getElementById('stTour').value).msg || 'Tour length must be H:MM up to 24:00'); }
-      Object.assign(S.profile, { rank: pf.rank, rankOther: pf.rank === 'other' ? pf.rankOther : '', firstName: pf.firstName, lastName: pf.lastName, name: pf.firstName + ' ' + pf.lastName, taxNumber: pf.taxNumber, refNumber: pf.refNumber, shieldNumber: pf.shieldNumber, homeAddress: (document.getElementById('stHome') || { value: '' }).value.trim(), command: E.cleanCommand(readCommand('st')) }); S.profile.rate = r;
+      Object.assign(S.profile, { rank: pf.rank, rankOther: pf.rank === 'other' ? pf.rankOther : '', firstName: pf.firstName, lastName: pf.lastName, name: pf.firstName + ' ' + pf.lastName, taxNumber: pf.taxNumber, refNumber: pf.refNumber, shieldNumber: pf.shieldNumber, hireDate: pf.hireDate, promotionDate: pf.promotionDate, homeAddress: (document.getElementById('stHome') || { value: '' }).value.trim(), command: E.cleanCommand(readCommand('st')) }); S.profile.rate = r; S.profile.rateOverride = ov;
       S.settings.multiplier = m; if (pa) S.settings.paydayAnchor = pa; var rt = String(document.getElementById('stReg').value).trim().match(/^(\d{1,3}):([0-5]\d)$/), rtd = parseFloat(document.getElementById('stReg').value);
       if (rt) S.settings.regularTargetMin = +rt[1] * 60 + +rt[2]; else if (rtd > 0 && /^\d+(\.\d+)?$/.test(document.getElementById('stReg').value.trim())) S.settings.regularTargetMin = Math.round(rtd * 60);
       S.profile.tourLen = tl; S.profile.tourStart = document.getElementById('stStart').value || '';
+      var lb = {}, lbBad = ''; C.shortLeaveTypes.forEach(function (k) { var v = document.getElementById('lb-' + k).value.trim(); if (!v) return; var mn = /^\d{1,4}:[0-5]\d$/.test(v) ? +v.split(':')[0] * 60 + +v.split(':')[1] : /^\d+(\.\d+)?$/.test(v) ? Math.round(parseFloat(v) * 60) : null; if (mn === null) lbBad = C.shortLeaveLabels[k]; else lb[k] = mn; });
+      if (lbBad) return toast(lbBad + ' balance: use H:MM (e.g. 40:00)');
+      S.settings.leaveBalances = lb;
       save(); closeSheet(); render(); toast('Settings saved');
     },
     export: function () {
@@ -3243,7 +4168,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   document.addEventListener('mousedown', function (ev) { if (ev.target.closest && ev.target.closest('.acdrop')) ev.preventDefault(); });
   document.addEventListener('focusout', function (ev) { var inp = ev.target; if (inp.classList && inp.classList.contains('acIn')) setTimeout(function () { if (document.activeElement !== inp) acClose(inp); }, 150); });
   document.addEventListener('input', function (ev) {
-    if (/^ot(Start|End|Hours)$/.test(ev.target.id)) otPreview();
+    if (/^ot(Start|End|Hours|Date|CashH)$/.test(ev.target.id)) otPreview();
+    if (ev.target.id === 'pdStart' || ev.target.id === 'pdEnd') pdAutoDur();
+    if (ev.target.id === 'pdDate') pdDateCheck();
+    if (/^pd(Start|End|Date|Dur)$/.test(ev.target.id)) pdRemind();
     if (ev.target.classList.contains('tourIn')) {
       // auto-colon; keep the caret after the same number of digits it followed before formatting
       var inp = ev.target, raw = inp.value, pos = inp.selectionStart == null ? raw.length : inp.selectionStart;
@@ -3261,6 +4189,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (ev.target.classList.contains('cmdq')) cmdResults(ev.target.dataset.px, ev.target.value);
     if (ev.target.classList.contains('timeIn')) { var tv = ev.target.value, tf = E.formatTimeInput(tv, /^delete/.test(ev.inputType || '')); if (tf !== tv) ev.target.value = tf; }
     if (ev.target.id === 'dayStart' || ev.target.id === 'dayLen') { pduKeep(); updateEnd(true); }
+    if (ev.target.id === 'dayEnd') updateEnd(false);
+    if (/^st(Rank|Hire|Promo|Rate|Override)$/.test(ev.target.id)) refreshPay();
+    if (/^(onb|st)(Hire|Promo)$/.test(ev.target.id)) { var spx = ev.target.id.replace(/(Hire|Promo)$/, ''), sl = document.getElementById(spx + 'SvcLine'); if (sl) sl.innerHTML = svcLine(readProfile(spx)); }
     if (ev.target.id === 'asgAddr') refreshNav();
     if (ev.target.id === 'asgPlace') { ev.target.dataset.auto = ''; syncPicks(); }
     if (ev.target.id === 'asgTrLoc') { // choosing a known location (preset or used before) fills its address when the address is blank or another known one; never touches the training text
@@ -3271,6 +4202,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (/^(onbStart|stStart|dayStart)$/.test(ev.target.id)) { var ti = document.querySelector('.tourIn[data-start="' + ev.target.id + '"]'); if (ti) tourPrev(ti.id); }
   });
   document.addEventListener('change', function (ev) {
+    if (/^st(Rank|Hire|Promo|Override)$/.test(ev.target.id)) refreshPay();
+    if (ev.target.id === 'otDate') otPreview();
+    if (ev.target.id === 'pdDur') { var dm = E.parseHM(ev.target.value); if (dm) ev.target.value = E.fmtHM(E.roundPaidMin(dm)); pdRemind(); } // :59 rounds up
+    if (ev.target.id === 'pdDate') pdDateCheck();
+    if (ev.target.id === 'pdFile' && ev.target.files && ev.target.files[0]) { var pf = ev.target.files[0]; ev.target.value = ''; pdScan(pf); } // file stays in memory only
     if (ev.target.dataset && ev.target.dataset.pf === 'rank') { var w = document.getElementById(ev.target.id + 'OtherWrap'); if (w) w.hidden = ev.target.value !== 'other'; }
     if (/SteadyOther$/.test(ev.target.id) && ev.target.value) { var px = ev.target.dataset.px, fake = document.createElement('button'); fake.dataset.px = px; fake.dataset.key = ev.target.value; A.chartPick(fake); }
     if (ev.target.dataset && ev.target.dataset.sync) { var inc = Object.assign({}, (S.sync || {}).include || {}); inc[ev.target.dataset.sync] = ev.target.checked; S.sync = Object.assign({}, S.sync || {}, { include: inc }); save(true); refreshSync(); }
