@@ -27,8 +27,30 @@ header.top .sub{font-size:13px;color:#c7d3e6;margin-top:2px}
 .badge-sq{display:inline-block;padding:1px 8px;border-radius:999px;font-weight:700;font-size:12px;margin-left:4px;border:1px solid rgba(255,255,255,.35)}
 .iconbtn{background:transparent;border:0;color:#fff;width:48px;height:48px;border-radius:12px;display:grid;place-items:center;cursor:pointer}
 .iconbtn:active{background:var(--navy2)}
+.headacts{display:flex;align-items:center;gap:4px}
+.hdrchip{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:#fff;min-height:36px;padding:0 12px;border-radius:999px;font-weight:800;font-size:13px;cursor:pointer}
+.hdrchip:active{background:rgba(255,255,255,.28)}
+.inboxbtn{position:relative}
+.inbadge{position:absolute;top:4px;right:4px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#dc2626;color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;line-height:1}
+#adminInboxBtn,#inboxOpenSheet{position:relative}
+#inboxBadgeSheet{position:static;display:inline-grid;margin-left:6px;vertical-align:middle}
+.sugbar{display:flex;justify-content:flex-end;margin:0 0 10px}
+.suggestbtn{min-height:36px;padding:0 12px;font-size:13px;background:#fff;border-color:#9db4f0;color:var(--navy)}
+.shead-acts{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.shead-acts .suggestbtn{min-height:36px}
+.sugpop{position:fixed;inset:0;background:rgba(5,15,30,.45);z-index:70;display:flex;align-items:flex-end;justify-content:center;padding:0}
+.sugpop .sugcard{background:#fff;width:100%;max-width:560px;border-radius:18px 18px 0 0;padding:16px 16px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -8px 24px rgba(15,23,42,.2)}
+.sugcard h3{margin:0 0 6px}
+.sugcard p{margin:0 0 12px;font-size:14.5px;white-space:pre-wrap;overflow-wrap:anywhere}
+.sugprev{display:block;width:100%;max-height:180px;object-fit:contain;border-radius:10px;border:1px solid var(--line);margin:8px 0;background:#f8fafc}
+.suglist .item{align-items:flex-start}
+.sugthumb{width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid var(--line);background:#eef1f6;flex-shrink:0}
+.sugunread{background:#f8fafc}
+.sugunread .t1{font-weight:800}
+.pushhint{font-size:12.5px;color:var(--muted);margin:6px 0 10px}
+.chkline{display:flex;gap:10px;align-items:center;min-height:44px;font-weight:700}
 main{flex:1;padding:14px 14px calc(var(--tabh) + 24px + env(safe-area-inset-bottom))}
-nav.tabs[hidden],#btnSettings[hidden]{display:none!important}nav.tabs{position:fixed;bottom:0;left:0;right:0;z-index:20;background:#fff;border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs[hidden],#headActs[hidden],#btnSettings[hidden],#btnInbox[hidden],#inboxBadge[hidden],#inboxBadgeSheet[hidden],#sugPop[hidden],#sugPreview[hidden]{display:none!important}nav.tabs{position:fixed;bottom:0;left:0;right:0;z-index:20;background:#fff;border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom)}
 nav.tabs .wrap{display:flex;width:100%;max-width:560px}
 nav.tabs button{flex:1;height:var(--tabh);border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:12px;font-weight:600;color:#5b6678;cursor:pointer}
 nav.tabs button svg{width:24px;height:24px}
@@ -273,9 +295,16 @@ h3{font-size:17px;margin:0 0 6px}
 <div id="app">
   <header class="top">
     <div><h1>Patrol Schedule</h1><div class="sub" id="hdrSub"></div></div>
-    <button class="iconbtn" id="btnSettings" data-act="settings" aria-label="Settings" hidden>
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-    </button>
+    <div class="headacts" id="headActs" hidden>
+      <button type="button" class="hdrchip" id="btnSuggest" data-act="suggestOpen">Suggest</button>
+      <button type="button" class="iconbtn inboxbtn" id="btnInbox" data-act="inboxOpen" hidden aria-label="Suggestion inbox">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"/><path d="m4 8 8 6 8-6"/></svg>
+        <span class="inbadge" id="inboxBadge" hidden></span>
+      </button>
+      <button class="iconbtn" id="btnSettings" data-act="settings" aria-label="Settings">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
   </header>
   <main id="view"></main>
 </div>
@@ -288,6 +317,7 @@ h3{font-size:17px;margin:0 0 6px}
 </div></nav>
 <div id="sheetRoot"></div>
 <div id="toast" role="status" aria-live="polite"></div>
+<div id="sugPop" class="sugpop" hidden role="dialog" aria-label="New suggestion"></div>
 
 <!-- ===== Schedule engine: pure date logic + config (also loaded by tests/engine.test.js) ===== -->
 <!-- Cloud settings: edit config.js (Supabase URL + anon key). -->
@@ -2476,7 +2506,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (cloudGate()) return;
     var onb = !S.profile;
     document.getElementById('tabs').hidden = onb;
-    document.getElementById('btnSettings').hidden = onb;
+    var ha = document.getElementById('headActs'); if (ha) ha.hidden = onb;
     if (onb) { document.getElementById('hdrSub').textContent = 'Set up your schedule'; view.innerHTML = viewOnboarding(); chartHint('onb'); return; }
     var sq = mySquad();
     document.getElementById('hdrSub').innerHTML = esc(E.displayName(S.profile)) + ' &middot; <button class="badge-sq" data-act="chartOpen" aria-label="My chart: ' + esc(sq.name) + '" style="background:' + sq.color + ';color:' + sq.ink + ';cursor:pointer;font:inherit;font-weight:700;font-size:12px">' + esc(sq.name) + ' &#9662;</button>';
@@ -2653,7 +2683,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var todayLine = '<div class="card" style="padding:10px 14px"><b>Today:</b> ' + (tt.working ? (tt.onLeave ? 'On leave' : 'Working ' + tourText(tt)) + (tt.extra ? ' (extra tour, overtime)' : tt.ddWork ? ' (day for day)' : '') : 'Off' + (tt.dropped ? ' (not working)' : tt.ddOff ? ' (day for day)' : '')) +
       '<div class="muted" style="font-size:12.5px">' + (sq.type === 'pdu' ? esc(sq.name) + ' &middot; ' + (tt.pdu ? '<span class="cdot" style="background:' + pduColorInfo(T).color + '"></span> ' + pduColorInfo(T).name + ' day &middot; ' : '') + shiftText('pm') + ' &middot; ' + shiftText('am') : 'Regular tour ' + E.fmtHM(S.profile.tourLen) + (S.profile.tourStart ? ' from ' + S.profile.tourStart : '')) + '</div></div>';
     if (Object.keys(E.validateProfile(S.profile)).length) todayLine = '<div class="ddpair" style="border-color:#b45309;background:#fffbeb;margin:0 0 12px"><b>Finish your profile</b><div style="font-size:13.5px">Rank, first and last name, tax number and reference number are required.</div><button class="btn sm" data-act="settings" style="margin-top:6px">Open settings</button></div>' + todayLine;
-    var html = todayLine + '<div class="row"><div class="card stat"><div class="lbl">Next day off</div>' + cd + '</div><div class="card stat"><div class="lbl">Next payday</div>' + pd + '</div></div>';
+    var html = suggestBar('Calendar') + todayLine + '<div class="row"><div class="card stat"><div class="lbl">Next day off</div>' + cd + '</div><div class="card stat"><div class="lbl">Next payday</div>' + pd + '</div></div>';
 
     // calendar
     var y = ui.calY, m = ui.calM, first = E.fromYMD(y, m, 1), last = E.fromYMD(m === 12 ? y + 1 : y, m === 12 ? 1 : m + 1, 1) - 1;
@@ -2739,7 +2769,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var tm = E.fromYMD(tp.y, tp.m, 1), tmEnd = E.fromYMD(tp.m === 12 ? tp.y + 1 : tp.y, tp.m === 12 ? 1 : tp.m + 1, 1) - 1;
     var a = sumOT(otInRange(pp.start, pp.end)), b = sumOT(otInRange(tm, tmEnd)), c = sumOT(otInRange(E.fromYMD(tp.y, 1, 1), E.fromYMD(tp.y, 12, 31)));
     function tot(lbl, s, sub) { return '<div class="tot"><small>' + lbl + '</small><b>' + hrs(s.hours) + '</b><span>' + payText(s) + '</span><em>' + sub + '</em></div>'; }
-    var html = '<div class="tot-row" style="margin-bottom:12px">' + tot('OT period', a, fmt(pp.start, 'md') + '–' + fmt(pp.end, 'md') + '<br>paid ' + fmt(ppPay, 'md')) + tot('Month', b, MONTHS[tp.m - 1].slice(0, 3) + ' ' + tp.y) + tot('Year', c, String(tp.y)) + '</div>';
+    var html = suggestBar('Overtime') + '<div class="tot-row" style="margin-bottom:12px">' + tot('OT period', a, fmt(pp.start, 'md') + '–' + fmt(pp.end, 'md') + '<br>paid ' + fmt(ppPay, 'md')) + tot('Month', b, MONTHS[tp.m - 1].slice(0, 3) + ' ' + tp.y) + tot('Year', c, String(tp.y)) + '</div>';
     html += '<div class="muted" style="font-size:12.5px;margin:-4px 2px 10px">Overtime is paid on the payday 12 days after its 2-week OT period (Sun–Sat) ends.</div><button class="btn primary block" data-act="otNew" style="margin-bottom:12px">+ Log overtime</button>';
     var y = ui.otYear, list = S.overtime.filter(function (e) { return +e.date.slice(0, 4) === y; }).sort(function (p, q) { return p.date < q.date ? 1 : p.date > q.date ? -1 : (q.start || '').localeCompare(p.start || ''); });
     html += '<div class="card"><div class="yearsel"><button class="navbtn" data-act="otYear" data-dir="-1" aria-label="Previous year">&lsaquo;</button><b>' + y + '</b><button class="navbtn" data-act="otYear" data-dir="1" aria-label="Next year">&rsaquo;</button></div>';
@@ -2761,7 +2791,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   // Paid Detail earnings: its own card, never mixed into the OT totals above.
   function paidDetailCard(y) {
     var t = E.paidDetailTotals(S.assignments, S.profile, y + '-01-01', y + '-12-31', E.toISO(T));
-    var h = '<div class="card pdcard" id="pdEarn"><h3 style="margin-top:0">Paid Details ' + y + '</h3>';
+    var h = '<div class="card pdcard" id="pdEarn"><div class="shead" style="margin-bottom:6px"><h3 style="margin:0">Paid Details ' + y + '</h3>' + suggestBtnHtml('Paid Detail') + '</div>';
     if (!t.count) return h + '<div class="empty">No paid details in ' + y + '. Pick &ldquo;Paid Detail&rdquo; as a day&rsquo;s assignment to add one.</div></div>';
     h += '<div class="tot-row" style="margin-bottom:8px"><div class="tot"><small>Total</small><b>' + E.fmtHM(t.minutes) + '</b><span>' + money(t.amount) + '</span><em>' + t.count + ' detail' + (t.count === 1 ? '' : 's') + '</em></div>' +
       '<div class="tot"><small>Worked</small><b>' + money(t.earned) + '</b><em>through today</em></div><div class="tot"><small>Scheduled</small><b>' + money(t.scheduled) + '</b><em>after today</em></div></div>';
@@ -2796,7 +2826,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<div class="grid3"><div><small>OT entries</small><b>' + otInRange(p.overtime.start, p.overtime.end).length + '</b></div><div><small>OT hours</small><b>' + hrs(s.hours) + '</b></div><div><small>Est. OT pay</small><b style="color:var(--pay)">' + money(s.pay) + '</b></div></div></div></div>';
     }).join('');
     th = Math.round(th * 100) / 100;
-    return '<div class="card"><div class="yearsel"><button class="navbtn" data-act="payYear" data-dir="-1" aria-label="Previous year">&lsaquo;</button><b>' + y + '</b><button class="navbtn" data-act="payYear" data-dir="1" aria-label="Next year">&rsaquo;</button></div>' +
+    return suggestBar('Pay') + '<div class="card"><div class="yearsel"><button class="navbtn" data-act="payYear" data-dir="-1" aria-label="Previous year">&lsaquo;</button><b>' + y + '</b><button class="navbtn" data-act="payYear" data-dir="1" aria-label="Next year">&rsaquo;</button></div>' +
       '<div class="tot-row"><div class="tot"><small>Paydays</small><b>' + periods.length + '</b></div><div class="tot"><small>OT hours paid</small><b>' + hrs(th) + '</b></div><div class="tot"><small>Est. OT pay</small><b style="font-size:17px">' + money(tpay) + '</b></div></div>' +
       '<div class="muted" style="font-size:12.5px;margin-top:8px">Work weeks run Sun–Sat. Each payday covers a <b>regular period</b> (target ' + E.fmtHM(regTarget()) + ') ending the Saturday 5 days before payday, and an <b>overtime period</b> one week earlier, ending 12 days before payday. Regular hours = your tour length on each workday (with per-day changes and day-for-day swaps), excluding leave days. Extra tours on RDOs count as overtime. ' + payBasisText() + '</div>' +
       (y !== tp.y ? '' : '<button class="btn sm" data-act="payJump" style="margin-top:8px">Jump to current periods</button>') + '</div>' + cards;
@@ -2806,7 +2836,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var y = ui.leaveYear, counts = {}, entries = [];
     Object.keys(S.leave).forEach(function (iso) { if (+iso.slice(0, 4) !== y) return; var l = S.leave[iso]; if (!l || (!l.type && !l.note)) return; entries.push([iso, l]); if (l.type) counts[l.type] = (counts[l.type] || 0) + 1; });
     entries.sort(function (a, b) { return a[0] < b[0] ? 1 : -1; });
-    var html = '<div class="card"><div class="yearsel"><button class="navbtn" data-act="leaveYear" data-dir="-1" aria-label="Previous year">&lsaquo;</button><b>' + y + '</b><button class="navbtn" data-act="leaveYear" data-dir="1" aria-label="Next year">&rsaquo;</button></div>' +
+    var html = suggestBar('Leave') + '<div class="card"><div class="yearsel"><button class="navbtn" data-act="leaveYear" data-dir="-1" aria-label="Previous year">&lsaquo;</button><b>' + y + '</b><button class="navbtn" data-act="leaveYear" data-dir="1" aria-label="Next year">&rsaquo;</button></div>' +
       '<div class="lv-grid">' + C.leaveTypes.filter(function (l) { return !l.hidden || counts[l.id]; }).map(function (l) { var n = counts[l.id] || 0; return '<div class="lv-card" style="background:' + l.color + '"><b>' + n + '</b>' + l.label + '</div>'; }).join('') + '</div></div>';
     html += '<button class="btn primary block" data-act="leaveNew" style="margin-bottom:12px">+ Leave, note or assignment (any date)</button>';
     var asgs = Object.keys(S.assignments).filter(function (iso) { return +iso.slice(0, 4) === y && S.assignments[iso] && S.assignments[iso].type; }).sort().map(function (iso) { return { iso: iso, day: E.toDay(iso), a: S.assignments[iso], label: E.assignmentLabel(S.assignments[iso]) }; });
@@ -2824,7 +2854,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
 
   function viewLookup() {
     var u = U(), d = ui.lookup, off = E.squadsOff(d, u), work = E.squadsWorking(d, u), sq = mySquad(ui.lookup), o = off[0];
-    var html = '<div class="card"><div class="field" style="margin-bottom:8px"><label for="lkDate">Pick a date</label><input type="date" id="lkDate" value="' + E.toISO(d) + '"></div>' +
+    var html = suggestBar('Lookup') + '<div class="card"><div class="field" style="margin-bottom:8px"><label for="lkDate">Pick a date</label><input type="date" id="lkDate" value="' + E.toISO(d) + '"></div>' +
       '<div class="row"><button class="btn sm" data-act="lkShift" data-n="-1">&lsaquo; Prev day</button><button class="btn sm" data-act="lkToday">Today</button><button class="btn sm" data-act="lkShift" data-n="1">Next day &rsaquo;</button></div></div>';
     var headLen = html.length;
     html += '<div class="bigoff" style="background:' + o.color + ';color:' + o.ink + '"><div class="l1">' + fmt(d, 'long') + '</div><div class="l2">' + off.map(function (s) { return esc(s.name); }).join(' & ') + ' off</div>' +
@@ -2856,8 +2886,15 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
 
   // ---------- sheets ----------
-  function openSheet(title, body) {
-    sheetRoot.innerHTML = '<div class="sheet-bg" data-act="sheetBg"><div class="sheet" role="dialog" aria-modal="true" aria-label="' + esc(title) + '"><div class="grab"></div><div class="shead"><h3>' + esc(title) + '</h3><button class="x" data-act="closeSheet" aria-label="Close">&times;</button></div>' + body + '</div></div>';
+  function suggestBtnHtml(section) {
+    return '<button type="button" class="btn sm suggestbtn" data-act="suggestOpen" data-section="' + esc(section) + '">Suggest</button>';
+  }
+  function suggestBar(section) {
+    return '<div class="sugbar">' + suggestBtnHtml(section) + '</div>';
+  }
+  function openSheet(title, body, section) {
+    var sug = section === false ? '' : suggestBtnHtml(section || title);
+    sheetRoot.innerHTML = '<div class="sheet-bg" data-act="sheetBg"><div class="sheet" role="dialog" aria-modal="true" aria-label="' + esc(title) + '"><div class="grab"></div><div class="shead"><h3>' + esc(title) + '</h3><div class="shead-acts">' + sug + '<button class="x" data-act="closeSheet" aria-label="Close">&times;</button></div></div>' + body + '</div></div>';
   }
   function closeSheet() { sheetRoot.innerHTML = ''; }
 
@@ -2935,6 +2972,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var f = function (id, lbl, v, extra) { return '<div class="field"><label for="' + id + '">' + lbl + '</label><input id="' + id + '" value="' + esc(v || '') + '"' + (extra || '') + '></div>'; };
     return '<button type="button" class="btn block pdadd" id="pdAddBtn" data-act="pdAdd"' + (show ? ' hidden' : '') + '>Add paid detail</button>' +
       '<div class="paidbox" id="asgPaid"' + (show ? '' : ' hidden') + ' data-iso="' + iso + '">' +
+      '<div class="shead" style="margin-bottom:8px"><h3 style="margin:0">Paid Detail</h3>' + suggestBtnHtml('Paid Detail') + '</div>' +
       '<div class="pdscan"><label class="btn sm pdup" for="pdFile">&#128247; Upload screenshot</label><input type="file" id="pdFile" accept="image/*" hidden>' +
       '<div class="hint">Reads your &ldquo;Selected Paid Details&rdquo; screen on this phone and fills the fields below. The picture is not uploaded, saved or synced.</div><div class="pdstat" id="pdStat" role="status" aria-live="polite" hidden></div></div>' +
       f('pdId', 'Paid Detail ID', pd.id, ' inputmode="numeric" autocomplete="off" placeholder="e.g. 4315816"') +
@@ -3031,7 +3069,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function cloudGate() {
     if (!CL.enabled) return false;
     var blocked = !CS.uid || CS.status !== 'approved';
-    document.getElementById('tabs').hidden = blocked || !S.profile; document.getElementById('btnSettings').hidden = blocked || !S.profile;
+    document.getElementById('tabs').hidden = blocked || !S.profile; var _ha = document.getElementById('headActs'); if (_ha) _ha.hidden = blocked || !S.profile; refreshInboxChrome();
     if (!blocked) return false;
     document.getElementById('hdrSub').textContent = !CS.uid ? 'Beta: sign in to continue' : CS.status === 'pending' ? 'Waiting for approval' : 'Access not approved';
     view.innerHTML = !CS.uid ? (ui.authTab === 'request' ? viewRequest() : viewSignIn()) : CS.status === 'pending' ? viewPending() : viewDenied();
@@ -3086,14 +3124,14 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function afterAuth(uid) {
     return fetchProfile(uid).then(function (p) {
       setProfile(p, uid);
-      if (CS.status === 'approved') { if (!adoptDevice(uid)) return signOutLocal(); render(); if (SM.migrating) toast('Uploading the schedule saved on this device to your account\u2026'); return syncNow('signin'); }
+      if (CS.status === 'approved') { if (!adoptDevice(uid)) return signOutLocal(); render(); if (CS.role === 'admin') inboxListen(); if (CS.role === 'admin' && /(?:\?|&)inbox=1(?:&|$)/.test(location.search || '')) setTimeout(function () { inboxSheet(); }, 200); if (SM.migrating) toast('Uploading the schedule saved on this device to your account\u2026'); return syncNow('signin'); }
       render();
     });
   }
   function signOutLocal() { CS = {}; saveCS(); render(); }
   // On start: show the cached state right away (works offline), then check the session and approval in the background.
   function cloudBoot() {
-    render(); if (cloudReady()) slipReconcile();
+    render(); if (cloudReady()) { slipReconcile(); if (CS.role === 'admin') inboxListen(); if (CS.role === 'admin' && /(?:\?|&)inbox=1(?:&|$)/.test(location.search || '')) setTimeout(function () { inboxSheet(); }, 200); }
     var c = cloudClient();
     Promise.resolve(c.auth.getSession()).then(function (r) {
       var sess = r && r.data && r.data.session;
@@ -3185,8 +3223,260 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (!CL.enabled) return '';
     return '<h3 style="margin-top:0" id="acctHead">Account</h3><div class="acct"><div><b>' + esc(CS.username || '') + '</b>' + (CS.role === 'admin' ? ' <span class="betatag">admin</span>' : '') + '<div class="muted" id="syncLine" style="font-size:13px">' + esc(syncLine()) + '</div></div></div>' +
       '<div class="privnote">&#128274; Your schedule, overtime, leave, assignments, slips and settings sync to your private account so they\'re on every device you sign in to. <b>Tax number, reference number, shield number, home address and your Google Maps key stay on this device only and are never uploaded.</b></div>' +
-      '<div class="row" style="margin-bottom:6px"><button class="btn sm" data-act="syncNowBtn">Sync now</button>' + (CS.role === 'admin' ? '<button class="btn sm" data-act="adminOpen" id="adminBtn">Admin: beta users</button>' : '') + '<button class="btn sm" data-act="authSignOut">Sign out</button></div>';
+      '<div class="row" style="margin-bottom:6px"><button class="btn sm" data-act="syncNowBtn">Sync now</button>' + (CS.role === 'admin' ? '<button class="btn sm" data-act="inboxOpen" id="adminInboxBtn">Suggestions<span class="inbadge" id="inboxBadgeSheet"' + (ui.inboxUnread ? '' : ' hidden') + '>' + (ui.inboxUnread > 9 ? '9+' : (ui.inboxUnread || '')) + '</span></button><button class="btn sm" data-act="adminOpen" id="adminBtn">Admin: beta users</button>' : '') + '<button class="btn sm" data-act="authSignOut">Sign out</button></div>';
   }
+
+  // ---------- Beta suggestions (send to the admin) ----------
+  function sectionName(explicit) {
+    if (explicit) return String(explicit).slice(0, 80);
+    var btn = document.querySelector('#sheetRoot .sheet [data-act="suggestOpen"]');
+    if (btn && btn.dataset.section) return btn.dataset.section;
+    var h = document.querySelector('#sheetRoot .sheet .shead h3');
+    if (h && h.textContent) return h.textContent.trim().slice(0, 80);
+    return ({ schedule: 'Calendar', overtime: 'Overtime', pay: 'Pay', leave: 'Leave', lookup: 'Lookup' })[ui.tab] || 'App';
+  }
+  function functionsUrl(name) { return String((CL.cfg && CL.cfg.SUPABASE_URL) || '').replace(/\/$/, '') + '/functions/v1/' + name; }
+  function sugUid() { try { return (crypto.randomUUID && crypto.randomUUID()) || ''; } catch (e) { return ''; } }
+  function sugNewId() {
+    var u = sugUid(); if (u) return u;
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) { var r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 3 | 8)).toString(16); });
+  }
+  function setSugFile(file, url) {
+    ui.sugFile = file || null; ui.sugUrl = url || '';
+    var img = document.getElementById('sugPreview'), clr = document.getElementById('sugClear');
+    if (img) { if (url) { img.src = url; img.hidden = false; } else { img.removeAttribute('src'); img.hidden = true; } }
+    if (clr) clr.hidden = !url;
+  }
+  function shrinkImage(file) {
+    return new Promise(function (res) {
+      if (!file || file.size < 250000 || !/^image\//.test(file.type || 'image/jpeg')) return res(file);
+      var done = false, finish = function (f) { if (done) return; done = true; try { URL.revokeObjectURL(url); } catch (e) {} res(f || file); };
+      var url = URL.createObjectURL(file), img = new Image(), t = setTimeout(function () { finish(file); }, 2500);
+      img.onload = function () {
+        try {
+          var max = 1600, w = img.naturalWidth || img.width, h = img.naturalHeight || img.height, s = Math.min(1, max / Math.max(w, h));
+          var c = document.createElement('canvas'); c.width = Math.max(1, Math.round(w * s)); c.height = Math.max(1, Math.round(h * s));
+          c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+          c.toBlob(function (b) { clearTimeout(t); finish(b || file); }, 'image/jpeg', 0.82);
+        } catch (e) { clearTimeout(t); finish(file); }
+      };
+      img.onerror = function () { clearTimeout(t); finish(file); };
+      img.src = url;
+    });
+  }
+  function loadHtml2Canvas() {
+    if (window.html2canvas) return Promise.resolve(window.html2canvas);
+    return new Promise(function (res, rej) {
+      var s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
+      s.onload = function () { window.html2canvas ? res(window.html2canvas) : rej(new Error('missing')); };
+      s.onerror = function () { rej(new Error('load')); };
+      document.head.appendChild(s);
+    });
+  }
+  function suggestSheet(section) {
+    section = sectionName(section);
+    ui.sugSection = section; setSugFile(null, '');
+    var signedIn = cloudReady();
+    openSheet('Send a suggestion',
+      '<div class="field"><label for="sugSection">Section</label><input id="sugSection" value="' + esc(section) + '" readonly></div>' +
+      '<div class="field"><label for="sugMsg">Your suggestion</label><textarea id="sugMsg" maxlength="4000" placeholder="What should we add or change?"></textarea></div>' +
+      '<div class="field"><label>Screenshot (optional)</label>' +
+        '<div class="row" style="margin-bottom:6px"><label class="btn sm" for="sugLib">Photo library</label><label class="btn sm" for="sugCam">Camera</label>' +
+        '<button type="button" class="btn sm" data-act="sugCapture" id="sugCaptureBtn">Capture this screen</button></div>' +
+        '<input type="file" id="sugLib" accept="image/*" hidden><input type="file" id="sugCam" accept="image/*" capture="environment" hidden>' +
+        '<img id="sugPreview" class="sugprev" alt="Screenshot preview" hidden>' +
+        '<button type="button" class="btn sm" data-act="sugClear" id="sugClear" hidden>Remove screenshot</button>' +
+        '<div class="hint">The screenshot is sent only to the admin. Capture this screen uses a library loaded when you tap it; if that fails, attach a photo instead.</div></div>' +
+      (signedIn ? '<button type="button" class="btn primary block" data-act="sugSend" id="sugSendBtn">Send</button>' : '<div class="hint">Sign in with an approved beta account to send this to the admin.</div><button type="button" class="btn primary block" data-act="sugSend" id="sugSendBtn" disabled>Send</button>'),
+      false);
+    var bind = function (id) { var el = document.getElementById(id); if (el) el.addEventListener('change', onSugFile); };
+    bind('sugLib'); bind('sugCam');
+  }
+  function onSugFile(ev) {
+    var f = ev.target.files && ev.target.files[0]; ev.target.value = '';
+    if (!f) return;
+    if (ui.sugUrl && String(ui.sugUrl).indexOf('blob:') === 0) try { URL.revokeObjectURL(ui.sugUrl); } catch (e) {}
+    setSugFile(f, URL.createObjectURL(f));
+  }
+  function sugCapture() {
+    var btn = document.getElementById('sugCaptureBtn'); if (btn) { btn.disabled = true; btn.textContent = 'Capturing…'; }
+    var root = document.getElementById('app'), hide = [];
+    ['sheetRoot', 'sugPop', 'toast'].forEach(function (id) { var el = document.getElementById(id); if (el) { hide.push([el, el.style.visibility]); el.style.visibility = 'hidden'; } });
+    loadHtml2Canvas().then(function (h2c) {
+      return h2c(root || document.body, { useCORS: true, logging: false, scale: Math.min(2, window.devicePixelRatio || 1), backgroundColor: '#eef1f6' });
+    }).then(function (canvas) {
+      return new Promise(function (res) { canvas.toBlob(function (b) { res(b); }, 'image/jpeg', 0.82); });
+    }).then(function (blob) {
+      hide.forEach(function (p) { p[0].style.visibility = p[1]; });
+      if (!blob) throw new Error('empty');
+      var file = new File([blob], 'screen.jpg', { type: 'image/jpeg' });
+      if (ui.sugUrl && String(ui.sugUrl).indexOf('blob:') === 0) try { URL.revokeObjectURL(ui.sugUrl); } catch (e) {}
+      setSugFile(file, URL.createObjectURL(file));
+      toast('Screen captured');
+    }).catch(function () {
+      hide.forEach(function (p) { p[0].style.visibility = p[1]; });
+      var cap = document.getElementById('sugCaptureBtn'); if (cap) cap.hidden = true;
+      toast('Couldn\'t capture the screen. Attach a photo instead.');
+    }).then(function () { if (btn) { btn.disabled = false; btn.textContent = 'Capture this screen'; } });
+  }
+  function sugSend() {
+    if (!cloudReady()) return toast('Sign in with an approved account to send a suggestion');
+    var section = (document.getElementById('sugSection') && document.getElementById('sugSection').value || ui.sugSection || sectionName()).trim().slice(0, 80);
+    var message = (document.getElementById('sugMsg') && document.getElementById('sugMsg').value || '').trim().slice(0, 4000);
+    if (!section || !message) return toast('Write a suggestion first');
+    var btn = document.getElementById('sugSendBtn'); if (btn) btn.disabled = true;
+    var path = null;
+    var go = (ui.sugFile ? shrinkImage(ui.sugFile).then(function (blob) {
+      path = CS.uid + '/' + sugNewId() + '.jpg';
+      return Promise.resolve(cloudClient().storage.from('suggestions').upload(path, blob, { contentType: 'image/jpeg', upsert: false })).then(q);
+    }) : Promise.resolve()).then(function () {
+      return Promise.resolve(cloudClient().from('suggestions').insert({ section: section, message: message, screenshot_path: path })).then(q);
+    }).then(function () {
+      closeSheet(); toast('Sent to the admin. Thank you.');
+    }).catch(function (e) {
+      if (path) Promise.resolve(cloudClient().storage.from('suggestions').remove([path])).catch(function () {});
+      if (btn) btn.disabled = false;
+      toast('Couldn\'t send: ' + errText(e));
+    });
+    return go;
+  }
+  function refreshInboxChrome() {
+    var n = ui.inboxUnread || 0, label = n > 9 ? '9+' : String(n);
+    ['inboxBadge', 'inboxBadgeSheet'].forEach(function (id) {
+      var el = document.getElementById(id); if (!el) return;
+      el.textContent = n ? label : ''; el.hidden = !n;
+    });
+    var inbox = document.getElementById('btnInbox');
+    if (inbox) inbox.hidden = !(CS && CS.role === 'admin' && cloudReady());
+  }
+  function inboxListen() {
+    if (!cloudReady() || CS.role !== 'admin' || !cloudClient().channel) return;
+    if (CL.sugChan) return;
+    try {
+      CL.sugChan = cloudClient().channel('suggestions-inbox')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'suggestions' }, function (payload) {
+          var rec = payload && payload.new; ui.inboxUnread = (ui.inboxUnread || 0) + 1; refreshInboxChrome();
+          if (document.getElementById('inboxList')) inboxSheet();
+          else if (rec) showSugPop(rec);
+        })
+        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'suggestions' }, function () { inboxCount(); if (document.getElementById('inboxList')) inboxSheet(); })
+        .subscribe();
+    } catch (e) {}
+    inboxCount();
+  }
+  function inboxCount() {
+    if (!cloudReady() || CS.role !== 'admin') { ui.inboxUnread = 0; refreshInboxChrome(); return Promise.resolve(); }
+    return Promise.resolve(cloudClient().from('suggestions').select('id,read_at').then(q)).then(function (rows) {
+      ui.inboxUnread = (rows || []).filter(function (r) { return !r.read_at; }).length;
+      refreshInboxChrome();
+    }).catch(function () {});
+  }
+  function showSugPop(rec) {
+    var el = document.getElementById('sugPop'); if (!el) return;
+    el.hidden = false;
+    el.innerHTML = '<div class="sugcard"><h3>New suggestion</h3><p><b>' + esc(rec.section || '') + '</b> · ' + esc(rec.username || '') + '</p><p>' + esc((rec.message || '').slice(0, 280)) + '</p>' +
+      '<div class="row"><button type="button" class="btn primary sm" data-act="inboxOpen">Open inbox</button><button type="button" class="btn sm" data-act="sugPopDismiss">Dismiss</button></div></div>';
+  }
+  function hideSugPop() { var el = document.getElementById('sugPop'); if (el) { el.hidden = true; el.innerHTML = ''; } }
+  function fmtInboxTime(ts) { var d = new Date(ts); if (isNaN(d)) return ''; return d.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); }
+  function inboxSheet() {
+    inboxListen();
+    hideSugPop();
+    openSheet('Suggestions',
+      '<label class="chkline"><input type="checkbox" id="pushToggle"> Enable notifications</label>' +
+      '<div class="pushhint">When the app is closed, new suggestions can pop up as a notification. On iPhone this needs iOS 16.4 or later, and FINEST HQ must be added to your Home Screen.</div>' +
+      '<div id="inboxList" class="muted">Loading…</div>',
+      false);
+    pushToggleState();
+    var pten = document.getElementById('pushToggle');
+    if (pten && !pten._bound) { pten._bound = true; pten.addEventListener('change', function () { setPushEnabled(!!pten.checked); }); }
+    Promise.resolve(cloudClient().from('suggestions').select('id,user_id,username,section,message,screenshot_path,created_at,read_at').order('created_at', { ascending: false }).then(q)).then(function (rows) {
+      var el = document.getElementById('inboxList'); if (!el) return;
+      ui.inboxRows = rows || [];
+      ui.inboxUnread = ui.inboxRows.filter(function (r) { return !r.read_at; }).length; refreshInboxChrome();
+      el.classList.remove('muted');
+      if (!ui.inboxRows.length) { el.innerHTML = '<div class="empty">No suggestions yet.</div>'; return; }
+      el.innerHTML = '<div class="list suglist">' + ui.inboxRows.map(function (r) {
+        return '<div class="item' + (r.read_at ? '' : ' sugunread') + '" data-id="' + esc(r.id) + '">' +
+          (r.screenshot_path ? '<img class="sugthumb" data-path="' + esc(r.screenshot_path) + '" alt="">' : '<div class="sugthumb" aria-hidden="true"></div>') +
+          '<div class="main"><div class="t1">' + esc(r.section || '') + ' · ' + esc(r.username || '') + '</div>' +
+          '<div class="t2">' + esc(fmtInboxTime(r.created_at)) + (r.read_at ? '' : ' · unread') + '</div>' +
+          '<div style="font-size:14px;margin-top:4px;white-space:pre-wrap;overflow-wrap:anywhere">' + esc(r.message || '') + '</div>' +
+          (r.read_at ? '' : '<button type="button" class="btn sm" data-act="sugMark" data-id="' + esc(r.id) + '" style="margin-top:8px">Mark read</button>') +
+          '</div></div>';
+      }).join('') + '</div>';
+      ui.inboxRows.forEach(function (r) { if (r.screenshot_path) inboxThumb(r.screenshot_path); });
+    }).catch(function (e) { var el = document.getElementById('inboxList'); if (el) el.textContent = 'Couldn\'t load suggestions: ' + errText(e); });
+  }
+  function inboxThumb(path) {
+    Promise.resolve(cloudClient().storage.from('suggestions').createSignedUrl(path, 120)).then(function (res) {
+      var url = res && res.data && res.data.signedUrl; if (!url) return;
+      Array.prototype.forEach.call(document.querySelectorAll('.sugthumb[data-path="' + CSS.escape(path) + '"]'), function (img) { img.src = url; });
+    }).catch(function () {});
+  }
+  function sugMark(id) {
+    Promise.resolve(cloudClient().from('suggestions').update({ read_at: new Date().toISOString() }).eq('id', id).then(q)).then(function () {
+      inboxCount(); inboxSheet();
+    }).catch(function (e) { toast('Couldn\'t mark read: ' + errText(e)); });
+  }
+  function urlB64ToU8(s) {
+    var p = (s || '').replace(/-/g, '+').replace(/_/g, '/');
+    var pad = p + '===='.slice((p.length % 4) || 4);
+    var bin = atob(pad), u = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+    return u;
+  }
+  function pushSupported() { return !!(navigator.serviceWorker && window.PushManager && document.querySelector('link[rel="manifest"]') && /^(https:|http:\/\/(localhost|127\.0\.0\.1))/.test(location.href)); }
+  function sessionAccessToken() {
+    return Promise.resolve(cloudClient().auth.getSession()).then(function (r) { return r && r.data && r.data.session && r.data.session.access_token; });
+  }
+  function fetchVapidPublicKey() {
+    return sessionAccessToken().then(function (tok) {
+      if (!tok) throw new Error('Sign in again');
+      return fetch(functionsUrl('notify-suggestion'), { method: 'GET', headers: { Authorization: 'Bearer ' + tok, apikey: (CL.cfg && CL.cfg.SUPABASE_ANON_KEY) || '' } });
+    }).then(function (r) { return r.json().then(function (j) { if (!r.ok || !j.publicKey) throw new Error((j && j.error) || 'Couldn\'t get a notification key'); return j.publicKey; }); });
+  }
+  function currentPushSub() {
+    if (!pushSupported()) return Promise.resolve(null);
+    return navigator.serviceWorker.ready.then(function (reg) { return reg.pushManager.getSubscription(); }).catch(function () { return null; });
+  }
+  function pushToggleState() {
+    var el = document.getElementById('pushToggle'); if (!el) return;
+    if (!pushSupported()) { el.disabled = true; el.checked = false; return; }
+    currentPushSub().then(function (sub) { if (document.getElementById('pushToggle') === el) el.checked = !!sub; }).catch(function () {});
+  }
+  function setPushEnabled(on) {
+    var el = document.getElementById('pushToggle');
+    if (!cloudReady() || CS.role !== 'admin') { if (el) el.checked = false; return toast('Only the admin can enable notifications'); }
+    if (!pushSupported()) { if (el) el.checked = false; return toast('Add FINEST HQ to your Home Screen (and use iOS 16.4 or later on iPhone) to enable notifications'); }
+    if (!on) {
+      return currentPushSub().then(function (sub) {
+        var ep = sub && sub.endpoint;
+        return (sub ? sub.unsubscribe() : Promise.resolve()).then(function () {
+          return ep ? Promise.resolve(cloudClient().from('push_subscriptions').delete().eq('endpoint', ep).then(q)) : null;
+        }).then(function () { toast('Notifications off'); pushToggleState(); });
+      }).catch(function (e) { toast('Couldn\'t turn off notifications: ' + errText(e)); pushToggleState(); });
+    }
+    return Notification.requestPermission().then(function (perm) {
+      if (perm !== 'granted') throw new Error('Notifications were not allowed');
+      return fetchVapidPublicKey();
+    }).then(function (key) {
+      return navigator.serviceWorker.ready.then(function (reg) {
+        return reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlB64ToU8(key) });
+      });
+    }).then(function (sub) {
+      var json = sub.toJSON(), keys = json.keys || {};
+      if (!json.endpoint || !keys.p256dh || !keys.auth) throw new Error('Subscription was incomplete');
+      return Promise.resolve(cloudClient().from('push_subscriptions').upsert({
+        user_id: CS.uid, endpoint: json.endpoint, p256dh: keys.p256dh, auth: keys.auth, user_agent: (navigator.userAgent || '').slice(0, 400), last_seen: new Date().toISOString()
+      }, { onConflict: 'endpoint' }).then(q)).then(function () { return sessionAccessToken(); }).then(function (tok) {
+        if (!tok) return;
+        return fetch(functionsUrl('notify-suggestion'), { method: 'POST', headers: { Authorization: 'Bearer ' + tok, apikey: (CL.cfg && CL.cfg.SUPABASE_ANON_KEY) || '', 'Content-Type': 'application/json' }, body: JSON.stringify({ test: true }) }).catch(function () {});
+      }).then(function () { toast('Notifications on. You\'ll get a notice when a tester sends a suggestion.'); pushToggleState(); });
+    }).catch(function (e) { if (el) el.checked = false; toast('Couldn\'t enable notifications: ' + errText(e)); });
+  }
+
   function adminSheet() {
     openSheet('Beta users', '<div id="adminList" class="muted">Loading\u2026</div>');
     Promise.resolve(cloudClient().from('profiles').select('id,username,full_name,command,status,role,created_at,decided_at').order('created_at', { ascending: false })).then(q).then(function (rows) {
@@ -4252,6 +4542,14 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         return Promise.resolve(cloudClient().auth.signOut()).catch(function () {}).then(function () { ui.lastUser = CS.username; CS = {}; saveCS(); render(); toast('Removed from this device'); });
       }
       if (!confirm('Erase ALL data on this device? This cannot be undone.')) return; localStorage.removeItem(KEY); setMapsKey(''); slipClear().catch(function () {}); S = defaultState(); ui.onbChart = null; closeSheet(); render(); },
+    suggestOpen: function (t) { suggestSheet(t && t.dataset && t.dataset.section); },
+    sugCapture: function () { sugCapture(); },
+    sugClear: function () { if (ui.sugUrl && String(ui.sugUrl).indexOf('blob:') === 0) try { URL.revokeObjectURL(ui.sugUrl); } catch (e) {} setSugFile(null, ''); },
+    sugSend: function () { sugSend(); },
+    inboxOpen: function () { inboxSheet(); },
+    sugPopDismiss: function () { hideSugPop(); },
+    sugMark: function (t) { sugMark(t.dataset.id); },
+    pushToggle: function (t) { setPushEnabled(!!t.checked); },
     sheetBg: function (t, ev) { if (ev.target === t) closeSheet(); },
     closeSheet: closeSheet
   };
@@ -4417,7 +4715,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   document.addEventListener('visibilitychange', function () { if (!document.hidden && E.today() !== T) { T = E.today(); tp = E.parts(T); render(); } });
 
   if (CL.enabled) cloudBoot(); else { render(); slipReconcile(); }
-  if ('serviceWorker' in navigator && document.querySelector('link[rel="manifest"]') && /^(https:|http:\/\/(localhost|127\.0\.0\.1))/.test(location.href)) navigator.serviceWorker.register('sw.js').catch(function () {});
+  if ('serviceWorker' in navigator && document.querySelector('link[rel="manifest"]') && /^(https:|http:\/\/(localhost|127\.0\.0\.1))/.test(location.href)) {
+    navigator.serviceWorker.register('sw.js').catch(function () {});
+    navigator.serviceWorker.addEventListener('message', function (ev) { if (ev.data && ev.data.type === 'open-inbox' && CS && CS.role === 'admin') inboxSheet(); });
+  }
 })();
 </script>
 </body>
