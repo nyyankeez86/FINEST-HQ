@@ -9,6 +9,8 @@
 <title>Patrol Schedule</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -22,7 +24,7 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 -apple-sy
 button,input,select,textarea{font:inherit;color:inherit}
 #app{max-width:560px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
 header.top{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 6px rgba(0,0,0,.25)}
-header.top h1{margin:0;font-size:20px;letter-spacing:.2px}
+header.top .brand{display:flex;align-items:center;gap:10px;min-width:0}header.top .hdrlogo{width:36px;height:36px;border-radius:8px;background:#0b1f3a;flex-shrink:0;display:block;object-fit:cover}header.top h1{margin:0;font-size:20px;letter-spacing:.2px}
 header.top .sub{font-size:13px;color:#c7d3e6;margin-top:2px}
 .badge-sq{display:inline-block;padding:1px 8px;border-radius:999px;font-weight:700;font-size:12px;margin-left:4px;border:1px solid rgba(255,255,255,.35)}
 .iconbtn{background:transparent;border:0;color:#fff;width:48px;height:48px;border-radius:12px;display:grid;place-items:center;cursor:pointer}
@@ -176,9 +178,26 @@ h3{font-size:17px;margin:0 0 6px}
 .lvopts{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
 .lvopts button{min-height:52px;border-radius:10px;border:2px solid var(--line);background:#fff;font-size:12.5px;font-weight:800;cursor:pointer;padding:2px}
 .lvopts button.on{border-color:var(--ink);color:#fff}
-.dayopts{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:2px}
-.dayopts button{min-height:44px;border-radius:10px;border:2px solid var(--line);background:#fff;font-size:12.5px;font-weight:800;cursor:pointer;padding:4px 8px;line-height:1.2;text-align:center}
-.dayopts button.on{border-color:var(--ink);color:#fff}
+.daysel{position:relative;margin-top:2px}
+.daysel-btn{width:100%;min-height:48px;border-radius:12px;border:2px solid var(--line);background:#fff;display:flex;align-items:center;gap:10px;padding:8px 12px;font-weight:800;font-size:15px;cursor:pointer;text-align:left;color:var(--ink)}
+.daysel.open .daysel-btn,.daysel-btn:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(29,78,216,.12)}
+.daysel-swatch{width:14px;height:14px;border-radius:4px;flex-shrink:0}
+.daysel-label{flex:1}
+.daysel-caret{color:var(--muted);font-size:11px;margin-left:4px}
+.daysel-list{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:45;background:#fff;border:2px solid var(--ink);border-radius:12px;max-height:min(52vh,420px);overflow:auto;box-shadow:0 10px 28px rgba(15,23,42,.2);padding:4px}
+.daysel-list button{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;border:0;background:transparent;font-weight:800;font-size:14px;padding:8px 10px;border-radius:8px;cursor:pointer;text-align:left;color:var(--ink)}
+.daysel-list button.on{color:#fff}
+.daysel-list button:not(.on):active{background:#f1f5f9}
+.retire{padding:12px 14px;margin:0 0 12px}
+.retire h3{margin:0 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:800}
+.retire .rlive{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:flex-end;font-variant-numeric:tabular-nums}
+.retire .rseg{text-align:center;min-width:2.8em}
+.retire .rseg b{display:block;font-size:22px;font-weight:800;line-height:1.1}
+.retire .rseg span{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.retire .rclock{margin-left:auto;font-size:22px;font-weight:800;letter-spacing:.06em;font-variant-numeric:tabular-nums;line-height:1.1;padding-bottom:14px}
+.retire .rsub{font-size:12.5px;color:var(--muted);margin-top:6px}
+.retire.need{border:1px solid var(--line)}
+.retire.need p{margin:0 0 8px;font-size:13.5px}
 .workkind{margin:8px 0 10px}
 .workkind .wkq{font-size:13.5px;font-weight:800;margin-bottom:8px;color:#0f172a}
 .workkind .seg{margin:0}
@@ -230,7 +249,7 @@ h3{font-size:17px;margin:0 0 6px}
 .etaout{margin-top:8px;padding:10px 12px;border-radius:12px;background:#ecfeff;border:1px solid #a5f3fc}
 .etaout.bad{background:#fff7ed;border-color:#fed7aa}.etabig{font-size:18px;font-weight:800}.etaleave{margin-top:6px;font-weight:700;color:#0E7490}.etamsg{font-size:14px}
 .pac-container{z-index:10000}
-.authcard{max-width:460px;margin:8px auto}.authcard h2{margin:4px 0 6px;font-size:22px}.authlogo{font-size:34px}.betatag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;background:#e0e7ff;color:#3730a3;border-radius:6px;padding:2px 6px;vertical-align:middle}
+.authcard{max-width:460px;margin:8px auto}.authcard h2{margin:4px 0 6px;font-size:22px}.authlogo{font-size:34px;text-align:center;margin:4px 0 8px}.authlogo img{width:72px;height:72px;border-radius:16px;display:block;margin:0 auto;background:#0b1f3a;object-fit:cover}.betatag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;background:#e0e7ff;color:#3730a3;border-radius:6px;padding:2px 6px;vertical-align:middle}
 .authtabs{display:flex;gap:4px;background:#e2e8f0;border-radius:12px;padding:4px;margin:12px 0}.authtabs button{flex:1;min-height:40px;border:0;border-radius:9px;background:transparent;font:inherit;font-weight:700;color:#334155;cursor:pointer}.authtabs button.on{background:#fff;color:#0f172a;box-shadow:0 1px 3px rgba(0,0,0,.15)}
 .authfoot{margin-top:12px;font-size:14px;text-align:center}.linkbtn{border:0;background:none;color:#0E7490;font:inherit;font-weight:700;cursor:pointer;padding:4px;min-height:32px}
 .authwarn{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px 10px;font-size:13.5px;margin-bottom:10px}
@@ -294,7 +313,7 @@ h3{font-size:17px;margin:0 0 6px}
 <body>
 <div id="app">
   <header class="top">
-    <div><h1>Patrol Schedule</h1><div class="sub" id="hdrSub"></div></div>
+    <div class="brand"><img class="hdrlogo" src="icons/icon-192.png" alt="FINEST HQ"><div><h1>Patrol Schedule</h1><div class="sub" id="hdrSub"></div></div></div>
     <div class="headacts" id="headActs" hidden>
       <button type="button" class="hdrchip" id="btnSuggest" data-act="suggestOpen">Suggest</button>
       <button type="button" class="iconbtn inboxbtn" id="btnInbox" data-act="inboxOpen" hidden aria-label="Suggestion inbox">
@@ -1428,7 +1447,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       q.lastName = w.length > 1 ? w.pop() : (w[0] || ''); q.firstName = w.length && q.lastName !== w[0] ? w.join(' ') : '';
     }
     ['firstName', 'lastName', 'rankOther', 'taxNumber', 'refNumber', 'shieldNumber'].forEach(function (k) { q[k] = q[k] == null ? '' : String(q[k]); });
-    ['hireDate', 'promotionDate'].forEach(function (k) { q[k] = isISODate(q[k]) ? q[k] : ''; }); // ISO YYYY-MM-DD or ''
+    ['hireDate', 'promotionDate', 'retirementDate'].forEach(function (k) { q[k] = isISODate(q[k]) ? q[k] : ''; }); // ISO YYYY-MM-DD or ''
     // Manual hourly rate is an override (off by default). Profiles saved before the pay charts keep their typed rate switched on.
     q.rateOverride = q.rateOverride == null ? parseFloat(q.rate) > 0 : !!q.rateOverride;
     if (!q.rank) q.rank = '';
@@ -1461,6 +1480,43 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   // ---- Pay: hourly / OT rates from the pay charts (CONFIG.pay), by rank, hire date and promotion date ----
   var PAY_BRACKETS = ['<5', '5+', '10+', '15+', '20+', '25+'];
   function addMonthsISO(iso, n) { var a = parts(toDay(iso)), y = a.y + Math.floor((a.m - 1 + n) / 12), m = mod(a.m - 1 + n, 12) + 1, dim = new Date(Date.UTC(y, m, 0)).getUTCDate(); return toISO(fromYMD(y, m, Math.min(a.d, dim))); }
+  function addYearsISO(iso, n) { return addMonthsISO(iso, (n || 0) * 12); }
+  // Scheduled retirement date if set; otherwise hire date + 20 years. source: 'manual' | 'hire' | 'none'.
+  function retirementDateOf(p) {
+    p = p || {};
+    if (isISODate(p.retirementDate)) return { iso: p.retirementDate, source: 'manual' };
+    if (isISODate(p.hireDate)) return { iso: addYearsISO(p.hireDate, 20), source: 'hire' };
+    return { iso: '', source: 'none' };
+  }
+  // Calendar countdown from `now` (local Date) to local midnight of targetIso.
+  function retirementRemain(targetIso, now) {
+    now = now || new Date();
+    var empty = { iso: targetIso || '', reached: false, years: 0, months: 0, days: 0, hours: 0, minutes: 0, seconds: 0, ms: 0 };
+    if (!isISODate(targetIso)) return empty;
+    var t = parts(toDay(targetIso)), target = new Date(t.y, t.m - 1, t.d, 0, 0, 0);
+    var ms = target.getTime() - now.getTime();
+    var out = { iso: targetIso, reached: ms <= 0, years: 0, months: 0, days: 0, hours: 0, minutes: 0, seconds: 0, ms: Math.max(0, ms) };
+    if (out.reached) return out;
+    var y = now.getFullYear(), m = now.getMonth() + 1, d = now.getDate();
+    var sec = 0 - now.getSeconds(), min = 0 - now.getMinutes(), hr = 0 - now.getHours();
+    var day = t.d - d, mon = t.m - m, yr = t.y - y;
+    if (sec < 0) { sec += 60; min--; }
+    if (min < 0) { min += 60; hr--; }
+    if (hr < 0) { hr += 24; day--; }
+    if (day < 0) {
+      mon--;
+      var pm = t.m - 1, py = t.y; if (pm < 1) { pm = 12; py--; }
+      day += new Date(py, pm, 0).getDate();
+    }
+    if (mon < 0) { mon += 12; yr--; }
+    out.years = yr; out.months = mon; out.days = day; out.hours = hr; out.minutes = min; out.seconds = sec;
+    return out;
+  }
+  function retirementCountdown(p, now) {
+    var d = retirementDateOf(p), r = retirementRemain(d.iso, now || new Date());
+    r.source = d.source;
+    return r;
+  }
   function longevityBracket(hireIso, asOfIso) { var s = serviceLength(hireIso, asOfIso); if (!s) return ''; var y = s.years; return y >= 25 ? '25+' : y >= 20 ? '20+' : y >= 15 ? '15+' : y >= 10 ? '10+' : y >= 5 ? '5+' : '<5'; }
   function payRowObj(chartId, r) { return { chart: chartId, key: r[0], bracket: r[1], base: r[2], npd: r[3], longevity: r[4], sd: r[5], hourly: r[6], ot15: r[7], otNight: r[8], uniform: r[9], holiday: r[10], total: r[11], exchange: r[12] == null ? null : r[12], eff: CONFIG.pay.charts[chartId].eff }; }
   // Row for a step + wanted bracket: exact match, else the highest printed bracket below it, else the lowest printed bracket.
@@ -1636,6 +1692,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (hd && !isISODate(hd)) e.hireDate = 'Use a valid date'; else if (hd > td) e.hireDate = 'Hire date can\'t be in the future';
     if (pd && !isISODate(pd)) e.promotionDate = 'Use a valid date'; else if (pd > td) e.promotionDate = 'Promotion date can\'t be in the future';
     else if (pd && hd && isISODate(hd) && pd < hd) e.promotionDate = 'Promotion date can\'t be before the hire date';
+    var rd = String(p.retirementDate || '').trim();
+    if (rd && !isISODate(rd)) e.retirementDate = 'Use a valid date';
+    else if (rd && hd && isISODate(hd) && rd < hd) e.retirementDate = 'Retirement date can\'t be before the hire date';
     return e;
   }
   // ---- Calendar export: iCalendar (RFC 5545) + Google Calendar links ----
@@ -2396,7 +2455,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     unit: unit, squad: squad, cycleOffset: cycleOffset, squadsOff: squadsOff, squadsWorking: squadsWorking, isRDO: isRDO,
     nextDayOff: nextDayOff, nextWorkday: nextWorkday, countRDOs: countRDOs, isPayday: isPayday, nextPayday: nextPayday,
     periodsForPayday: periodsForPayday, regularPaydayFor: regularPaydayFor, overtimePaydayFor: overtimePaydayFor, regularPeriodFor: regularPeriodFor, overtimePeriodFor: overtimePeriodFor, payPeriodsInYear: payPeriodsInYear, hoursBetween: hoursBetween, entryHours: entryHours,
-    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, dayTour: dayTour, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, commandById: commandById, searchCommands: searchCommands, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, endCompare: endCompare, syncEndOT: syncEndOT, leaveBalances: leaveBalances, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
+    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, dayTour: dayTour, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, commandById: commandById, searchCommands: searchCommands, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, addYearsISO: addYearsISO, retirementDateOf: retirementDateOf, retirementRemain: retirementRemain, retirementCountdown: retirementCountdown, endCompare: endCompare, syncEndOT: syncEndOT, leaveBalances: leaveBalances, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
     steadyKey: steadyKey, parseChart: parseChart, validChartKey: validChartKey, chartInfo: chartInfo, sortCharts: sortCharts, chartAt: chartAt, chartChanges: chartChanges, nextOff: nextOff, nextOn: nextOn, reviewOverrides: reviewOverrides, DOW3: DOW3,
     rankAbbr: rankAbbr, rankLabel: rankLabel, displayName: displayName, migrateProfile: migrateProfile, validateProfile: validateProfile,
     icsEscape: icsEscape, foldLine: foldLine, buildEvents: buildEvents, toICS: toICS, googleLink: googleLink, TZID: TZID
@@ -2503,17 +2562,18 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
 
   // ---------- render ----------
   function render() {
-    if (cloudGate()) return;
+    if (cloudGate()) { stopRetireTick(); return; }
     var onb = !S.profile;
     document.getElementById('tabs').hidden = onb;
     var ha = document.getElementById('headActs'); if (ha) ha.hidden = onb;
-    if (onb) { document.getElementById('hdrSub').textContent = 'Set up your schedule'; view.innerHTML = viewOnboarding(); chartHint('onb'); return; }
+    if (onb) { stopRetireTick(); document.getElementById('hdrSub').textContent = 'Set up your schedule'; view.innerHTML = viewOnboarding(); chartHint('onb'); return; }
     var sq = mySquad();
     document.getElementById('hdrSub').innerHTML = esc(E.displayName(S.profile)) + ' &middot; <button class="badge-sq" data-act="chartOpen" aria-label="My chart: ' + esc(sq.name) + '" style="background:' + sq.color + ';color:' + sq.ink + ';cursor:pointer;font:inherit;font-weight:700;font-size:12px">' + esc(sq.name) + ' &#9662;</button>';
     Array.prototype.forEach.call(document.querySelectorAll('nav.tabs button'), function (b) { b.classList.toggle('on', b.dataset.tab === ui.tab); b.setAttribute('aria-current', b.dataset.tab === ui.tab ? 'page' : 'false'); });
     view.innerHTML = ({ schedule: viewSchedule, overtime: viewOvertime, pay: viewPay, leave: viewLeave, lookup: viewLookup })[ui.tab]();
     if (CL.enabled && S.profile && !S.profile.taxNumber && !ui.privDismiss) view.insertAdjacentHTML('afterbegin', '<div class="privbanner" id="privBanner">&#128274; Add your tax and reference numbers in Settings. They\'re kept on this device only and never synced, so each new device asks once. <button class="btn sm" data-act="settings">Settings</button> <button class="linkbtn" data-act="privDismiss">Later</button></div>');
     if (ui.tab === 'pay' && ui.scrollCurrent) { ui.scrollCurrent = false; var c = document.getElementById('curPeriod'); if (c) c.scrollIntoView({ block: 'start' }); }
+    if (!onb && ui.tab === 'schedule') startRetireTick(); else stopRetireTick();
   }
 
   var PF = [['firstName', 'First', 'First name', 'given-name', 'text'], ['lastName', 'Last', 'Last name', 'family-name', 'text'],
@@ -2532,7 +2592,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     });
     h += '<div class="field"><label for="' + px + 'Hire">Hire date (optional)</label><input id="' + px + 'Hire" type="date" class="dateIn" max="' + E.toISO(E.today()) + '" value="' + esc(p.hireDate || '') + '"><div class="err" id="' + px + 'Hire-err"></div></div>' +
       '<div class="field"><label for="' + px + 'Promo">Most recent promotion date (optional)</label><input id="' + px + 'Promo" type="date" class="dateIn" max="' + E.toISO(E.today()) + '" value="' + esc(p.promotionDate || '') + '"><div class="err" id="' + px + 'Promo-err"></div>' +
-      '<div class="hint" id="' + px + 'SvcLine">' + svcLine(p) + '</div></div>';
+      '<div class="hint" id="' + px + 'SvcLine">' + svcLine(p) + '</div></div>' +
+      '<div class="field"><label for="' + px + 'Retire">Scheduled retirement date (optional)</label><input id="' + px + 'Retire" type="date" class="dateIn" value="' + esc(p.retirementDate || '') + '"><div class="err" id="' + px + 'Retire-err"></div>' +
+      '<div class="hint">Leave blank to count 20 years from your hire date. Used for the countdown on the Schedule page.</div></div>';
     return h;
   }
   function balancesHtml() {
@@ -2582,10 +2644,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function checkCommand(px) { var c = readCommand(px), e = E.commandError(c), er = document.getElementById(px + 'CmdName-err'); if (er) er.textContent = e; if (e) { document.getElementById(px + 'CmdName').focus(); toast(e); return false; } return true; }
   function readProfile(px) {
     var g = function (id) { var el = document.getElementById(px + id); return el ? el.value.trim() : ''; };
-    return { rank: g('Rank'), rankOther: g('RankOther'), firstName: g('First'), lastName: g('Last'), taxNumber: g('Tax'), refNumber: g('Ref'), shieldNumber: g('Shield'), hireDate: g('Hire'), promotionDate: g('Promo') };
+    return { rank: g('Rank'), rankOther: g('RankOther'), firstName: g('First'), lastName: g('Last'), taxNumber: g('Tax'), refNumber: g('Ref'), shieldNumber: g('Shield'), hireDate: g('Hire'), promotionDate: g('Promo'), retirementDate: g('Retire') };
   }
   function showProfileErrors(px, errs) {
-    var map = { rank: 'Rank', rankOther: 'RankOther', firstName: 'First', lastName: 'Last', taxNumber: 'Tax', refNumber: 'Ref', shieldNumber: 'Shield', hireDate: 'Hire', promotionDate: 'Promo' }, first = null;
+    var map = { rank: 'Rank', rankOther: 'RankOther', firstName: 'First', lastName: 'Last', taxNumber: 'Tax', refNumber: 'Ref', shieldNumber: 'Shield', hireDate: 'Hire', promotionDate: 'Promo', retirementDate: 'Retire' }, first = null;
     Object.keys(map).forEach(function (k) {
       var el = document.getElementById(px + map[k]), er = document.getElementById(px + map[k] + '-err'); if (!el || !er) return;
       er.textContent = errs[k] || ''; el.classList.toggle('bad', !!errs[k]); el.setAttribute('aria-invalid', errs[k] ? 'true' : 'false');
@@ -2746,6 +2808,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '</div><div class="cfhint">Tap any day to add an assignment, leave, notes or overtime.</div>' +
       chgList.map(function (c) { var ci = E.chartInfo(c.chart, u); return '<div class="chgline"><i class="m-chg">&#8644;</i> Chart change: <b>' + esc(ci ? ci.name : c.chart) + '</b> from ' + fmt(c.day) + '</div>'; }).join('') + '</div>';
     html += upcomingCard();
+    html += retireCard();
     // calendar sync lives at the bottom of the Schedule tab
     html += '<button class="btn block" data-act="syncOpen" id="syncBottom" style="margin:4px 0 12px">&#128197; Sync to Apple / Google Calendar</button>';
     return html;
@@ -2755,6 +2818,43 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var a = x.a, t = E.assignmentType(a.type), sm = S.slips[E.toISO(x.day)], sk = sm && E.slipKind(sm.kind), sub = [t && t.detail && a.detail && a.type !== 'other' ? t.label : '', a.notes, sk ? '\ud83d\udcce ' + sk.label : ''].filter(Boolean).map(esc).join(' &middot; ');
     var row = '<button class="item asgrow" data-act="day" data-d="' + x.day + '">' + asgChip(a) + '<div class="main"><div class="t1">' + esc(x.label) + '</div><div class="t2">' + fmt(x.day, showYear ? 'mdy' : undefined) + (x.day === T ? ' &middot; <b>today</b>' : '') + (sub ? ' &middot; ' + sub : '') + '</div>' + (E.assignmentLocation(a) ? '<div class="t2 addr">' + esc(E.assignmentLocation(a)) + '</div>' : '') + '</div></button>';
     return a.address ? '<div class="asgwrap">' + row + navLinks(a.address, 'inrow') + '</div>' : row;
+  }
+  function pad2n(n) { return (n < 10 ? '0' : '') + n; }
+  function retireLiveHtml(r) {
+    return '<div class="rlive" id="retireLive">' +
+      '<div class="rseg"><b>' + r.years + '</b><span>' + (r.years === 1 ? 'Year' : 'Years') + '</span></div>' +
+      '<div class="rseg"><b>' + r.months + '</b><span>' + (r.months === 1 ? 'Month' : 'Months') + '</span></div>' +
+      '<div class="rseg"><b>' + r.days + '</b><span>' + (r.days === 1 ? 'Day' : 'Days') + '</span></div>' +
+      '<div class="rclock" id="retireClock">' + pad2n(r.hours) + ':' + pad2n(r.minutes) + ':' + pad2n(r.seconds) + '</div></div>';
+  }
+  function retireCard() {
+    var r = E.retirementCountdown(S.profile, new Date());
+    if (r.source === 'none') {
+      return '<div class="card retire need" id="retireCard"><h3>Retirement</h3><p>Add your hire date in Settings to see a countdown to 20 years, or enter a scheduled retirement date.</p>' +
+        '<button type="button" class="btn sm" data-act="settings">Settings</button></div>';
+    }
+    var when = fmt(E.toDay(r.iso), 'mdy');
+    var sub = r.source === 'manual' ? 'Scheduled retirement date' : '20 years from your hire date';
+    if (r.reached) {
+      return '<div class="card retire" id="retireCard"><h3>Retirement</h3><div class="rlive" id="retireLive" data-done="1"><div class="rseg"><b>0</b><span>Years</span></div><div class="rseg"><b>0</b><span>Months</span></div><div class="rseg"><b>0</b><span>Days</span></div><div class="rclock">00:00:00</div></div>' +
+        '<div class="rsub">Reached ' + esc(when) + ' &middot; ' + esc(sub) + '</div></div>';
+    }
+    return '<div class="card retire" id="retireCard"><h3>Retirement countdown</h3>' + retireLiveHtml(r) +
+      '<div class="rsub">' + esc(when) + ' &middot; ' + esc(sub) + '</div></div>';
+  }
+  var retireTick = 0;
+  function stopRetireTick() { if (retireTick) { clearInterval(retireTick); retireTick = 0; } }
+  function startRetireTick() {
+    stopRetireTick();
+    var live = document.getElementById('retireLive');
+    if (!live || live.dataset.done === '1') return;
+    retireTick = setInterval(function () {
+      var el = document.getElementById('retireLive');
+      if (!el || el.dataset.done === '1') { stopRetireTick(); return; }
+      var r = E.retirementCountdown(S.profile, new Date());
+      if (r.source === 'none' || r.reached) { stopRetireTick(); render(); return; }
+      el.outerHTML = retireLiveHtml(r);
+    }, 1000);
   }
   function upcomingCard() {
     var all = E.upcomingAssignments(S.assignments, T), show = all.slice(0, 6);
@@ -2910,13 +3010,17 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<span class="chip">Off (patrol): ' + off.map(function (s) { return s.name; }).join(', ') + '</span><span class="chip">Working: ' + work.map(function (s) { return s.short; }).join(' & ') + '</span>' +
       '<span class="chip"><span class="cdot" style="background:' + dcol.color + '"></span>&nbsp;PDU ' + dcol.name + ': PM ' + pon.pm.short + ' · AM ' + pon.am.short + ' · ' + pon.rdo.short + ' off</span></div>';
     var entry = E.dayEntryOf(d, sq.id, tourOpts());
+    var curOpt = E.dayEntryOption(entry.id) || { id: entry.id, label: entry.id, color: '#334155' };
     var opts = E.dayEntryOptions(entry.leaveType).map(function (l) {
       var on = entry.id === l.id;
-      return '<button type="button" data-act="lvPick" data-t="' + l.id + '" class="' + (on ? 'on' : '') + '" style="' + (on ? 'background:' + l.color : '') + '" data-c="' + l.color + '">' + esc(l.label) + '</button>';
+      return '<button type="button" role="option" data-act="lvPick" data-t="' + l.id + '" class="' + (on ? 'on' : '') + '" style="' + (on ? 'background:' + l.color : '') + '" data-c="' + l.color + '" aria-selected="' + on + '"><span class="daysel-swatch" style="background:' + l.color + '"></span>' + esc(l.label) + '</button>';
     }).join('');
     var ots = S.overtime.filter(function (e) { return e.date === iso; });
     openSheet(fmt(d, 'long'), status + pdNotesHtml(d, dt) +
-      '<div class="field" id="dayEntry"><label>This day</label><div class="dayopts" id="lvOpts" data-sel="' + esc(entry.id) + '">' + opts + '</div>' +
+      '<div class="field" id="dayEntry"><label for="lvOptsBtn">This day</label><div class="daysel" id="lvOpts" data-sel="' + esc(entry.id) + '">' +
+        '<button type="button" class="daysel-btn" id="lvOptsBtn" data-act="daySelToggle" aria-haspopup="listbox" aria-expanded="false" aria-controls="lvOptsList">' +
+        '<span class="daysel-swatch" style="background:' + curOpt.color + '"></span><span class="daysel-label">' + esc(curOpt.label) + '</span><span class="daysel-caret" aria-hidden="true">&#9662;</span></button>' +
+        '<div class="daysel-list" id="lvOptsList" role="listbox" hidden>' + opts + '</div></div>' +
       '<div class="hint" id="dayEntryHint"' + (entry.id === 'rdo' && mine ? '' : ' hidden') + '>This is your RDO. Change it above if you work, take leave or add a paid detail.</div>' +
       '<div class="hint" id="dayLeaveHint"' + (entry.leaveType && mine ? '' : ' hidden') + '>This is an RDO; leave here won\'t change days worked.</div></div>' +
       tourSection(d) +
@@ -3079,7 +3183,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function authTabs(on) { return '<div class="authtabs" role="tablist"><button type="button" role="tab" aria-selected="' + (on === 'signin') + '" class="' + (on === 'signin' ? 'on' : '') + '" data-act="authTab" data-t="signin">Sign in</button><button type="button" role="tab" aria-selected="' + (on === 'request') + '" class="' + (on === 'request' ? 'on' : '') + '" data-act="authTab" data-t="request">Request beta access</button></div>'; }
   function offlineNote() { return online() ? '' : '<div class="authwarn" id="authOffline">You\'re offline. Signing in needs a connection the first time on this device.</div>'; }
   function viewSignIn() {
-    return '<div class="card authcard" id="authSignIn"><div class="authlogo">&#128737;&#65039;</div><h2>Patrol Schedule <span class="betatag">beta</span></h2><p class="muted">Invite-only. Sign in with the username and password you requested.</p>' + authTabs('signin') + offlineNote() +
+    return '<div class="card authcard" id="authSignIn"><div class="authlogo"><img src="icons/icon-192.png" alt="FINEST HQ"></div><h2>Patrol Schedule <span class="betatag">beta</span></h2><p class="muted">Invite-only. Sign in with the username and password you requested.</p>' + authTabs('signin') + offlineNote() +
       '<form id="siForm" data-act-submit="authSignIn" autocomplete="on" onsubmit="return false">' +
       '<div class="field"><label for="siUser">Username</label><input id="siUser" name="username" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" value="' + esc(ui.lastUser || '') + '"><div class="err" id="siUser-err"></div></div>' +
       '<div class="field"><label for="siPass">Password</label><input id="siPass" name="password" type="password" autocomplete="current-password"><div class="err" id="siPass-err"></div></div>' +
@@ -3087,7 +3191,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div class="authfoot">No account yet? <button type="button" class="linkbtn" data-act="authTab" data-t="request">Request beta access</button></div></div>';
   }
   function viewRequest() {
-    return '<div class="card authcard" id="authRequest"><h2>Request beta access</h2><p class="muted">Pick a username and password. The admin approves each request; you can sign in once you\'re approved.</p>' + authTabs('request') + offlineNote() +
+    return '<div class="card authcard" id="authRequest"><div class="authlogo"><img src="icons/icon-192.png" alt="FINEST HQ"></div><h2>Request beta access</h2><p class="muted">Pick a username and password. The admin approves each request; you can sign in once you\'re approved.</p>' + authTabs('request') + offlineNote() +
       '<form id="rqForm" onsubmit="return false" autocomplete="on">' +
       '<div class="field"><label for="rqUser">Username <span class="req">*</span></label><input id="rqUser" name="username" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="24" placeholder="e.g. jsmith"><div class="hint">3&ndash;24 letters, numbers, dot, dash or underscore. Not your email.</div><div class="err" id="rqUser-err"></div></div>' +
       '<div class="field"><label for="rqPass">Password <span class="req">*</span></label><input id="rqPass" type="password" autocomplete="new-password" maxlength="72" placeholder="At least 8 characters"><div class="err" id="rqPass-err"></div></div>' +
@@ -3812,6 +3916,41 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
 
   function daySel() { var o = document.getElementById('lvOpts'); return o ? o.dataset.sel : ''; }
   function dayIsLeave(sel) { return !!(sel && sel !== 'working' && sel !== 'rdo'); }
+  function closeDaySel() {
+    var box = document.getElementById('lvOpts'), list = document.getElementById('lvOptsList'), btn = document.getElementById('lvOptsBtn');
+    if (!box) return;
+    box.classList.remove('open');
+    if (list) list.hidden = true;
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+  }
+  function setDaySel(id) {
+    var box = document.getElementById('lvOpts'); if (!box) return;
+    box.dataset.sel = id;
+    var o = E.dayEntryOption(id) || { id: id, label: id, color: '#334155' };
+    var btn = document.getElementById('lvOptsBtn');
+    if (btn) btn.innerHTML = '<span class="daysel-swatch" style="background:' + o.color + '"></span><span class="daysel-label">' + esc(o.label) + '</span><span class="daysel-caret" aria-hidden="true">&#9662;</span>';
+    Array.prototype.forEach.call(box.querySelectorAll('[data-act="lvPick"]'), function (b) {
+      var on = b.dataset.t === id;
+      b.classList.toggle('on', on);
+      b.style.background = on ? (b.dataset.c || o.color) : '';
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+  }
+  function openRdoKindPrompt() {
+    var box = document.getElementById('tourBox');
+    if (!box || box.dataset.rdo !== '1') return false;
+    var sel = daySel();
+    if (dayIsLeave(sel)) return false;
+    var st = box.dataset.status || '';
+    if (st === 'work' || st === 'dd' || st === 'ddnew' || st === 'paid' || st === 'ddoff') return false;
+    if (box.dataset.asked === '1' && sel === 'working') return false;
+    setDaySel('working');
+    box.dataset.asked = '1';
+    syncDayEntry();
+    var wk = document.getElementById('workKind');
+    if (wk && !wk.hidden) wk.scrollIntoView({ block: 'center' });
+    return true;
+  }
   function syncDayEntry() {
     var sel = daySel(), box = document.getElementById('tourBox'), rdo = !!(box && box.dataset.rdo === '1'), st = box ? box.dataset.status : '';
     var leave = dayIsLeave(sel), wk = document.getElementById('workKind'), lw = document.getElementById('tourLenWrap'), dp = document.getElementById('ddPicker');
@@ -3821,12 +3960,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var showPrompt = rdo && sel === 'working' && st !== 'dd' && st !== 'ddoff';
     if (wk) wk.hidden = !showPrompt;
     if (dp) dp.hidden = st !== 'ddnew';
-    var showTimes = false;
-    if (!leave && sel !== 'rdo') {
-      if (rdo && sel === 'working') showTimes = st === 'work' || st === 'ddnew' || st === 'dd';
-      else if (!rdo && sel === 'working') showTimes = st !== 'off';
-    }
-    if (lw) lw.hidden = !showTimes;
+    if (lw) lw.hidden = false;
     if (st === 'paid') showPaidForm(true);
     var th = document.getElementById('tourTimeHint');
     if (th && !th.dataset.def) th.dataset.def = th.innerHTML;
@@ -3865,7 +3999,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div id="shortBox" class="shortbox" data-sel="' + esc(ov.short && ov.short.type || '') + '" hidden><div class="sbq" id="shortQ">Which balance should be charged?</div><div class="shortopts">' +
         C.shortLeaveTypes.map(function (k) { var on = ov.short && ov.short.type === k; return '<button type="button" class="pick' + (on ? ' on' : '') + '" aria-pressed="' + !!on + '" data-act="shortPick" data-t="' + k + '">' + esc(C.shortLeaveLabels[k]) + '</button>'; }).join('') +
         '</div><div class="err" id="shortErr"></div></div></div>';
-    var lenFields = '<div id="tourLenWrap"' + ((t.rdo && !st) || t.ddOff || st === 'off' ? ' hidden' : '') + '>' + startEnd + pduBox +
+    var lenFields = '<div id="tourLenWrap">' + startEnd + pduBox +
       tourField('dayLen', ov.len ? E.fmtHM(ov.len) : '', 'Tour length (blank = ' + regLbl + ')', 'dayStart') + '</div>';
     if (t.dd) {
       var other = E.toDay(t.swap), rdoDay = t.ddWork ? d : other, offDay = t.ddWork ? other : d;
@@ -4179,7 +4313,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (/^pdu:/.test(ck) && !document.getElementById('onbTour').value.trim()) tl = PDU.shifts.am.len; // PDU: chart sets PM/AM tours; regular tour only used for other charts
       if (!tl) { tourPrev('onbTour'); document.getElementById('onbTour').focus(); return toast(E.tourLenError(document.getElementById('onbTour').value).msg || 'Enter your tour length, e.g. 8:15'); }
       if (!(r >= 0)) return toast('Hourly rate must be a number, or leave it blank');
-      S.profile = { charts: [{ id: uid(), effective: '', chart: ck }], rank: pf.rank, rankOther: pf.rank === 'other' ? pf.rankOther : '', firstName: pf.firstName, lastName: pf.lastName, name: pf.firstName + ' ' + pf.lastName, taxNumber: pf.taxNumber, refNumber: pf.refNumber, shieldNumber: pf.shieldNumber, hireDate: pf.hireDate, promotionDate: pf.promotionDate, squad: ck, rate: r, rateOverride: r > 0, tourLen: tl, tourStart: /^pdu:/.test(ck) ? '' : (document.getElementById('onbStart').value || ''), command: E.cleanCommand(readCommand('onb')) }; save(); render(); toast(S.profile.command ? 'You\'re all set' : 'You\'re all set. Tip: add your command in Settings for drive times from your command.');
+      S.profile = { charts: [{ id: uid(), effective: '', chart: ck }], rank: pf.rank, rankOther: pf.rank === 'other' ? pf.rankOther : '', firstName: pf.firstName, lastName: pf.lastName, name: pf.firstName + ' ' + pf.lastName, taxNumber: pf.taxNumber, refNumber: pf.refNumber, shieldNumber: pf.shieldNumber, hireDate: pf.hireDate, promotionDate: pf.promotionDate, retirementDate: pf.retirementDate, squad: ck, rate: r, rateOverride: r > 0, tourLen: tl, tourStart: /^pdu:/.test(ck) ? '' : (document.getElementById('onbStart').value || ''), command: E.cleanCommand(readCommand('onb')) }; save(); render(); toast(S.profile.command ? 'You\'re all set' : 'You\'re all set. Tip: add your command in Settings for drive times from your command.');
     },
     cmdPick: function (t) {
       var px = t.dataset.px, id = t.dataset.id, box = document.getElementById(px + 'Cmd'), c = id === 'other' ? { id: 'other' } : E.commandById(id); box.dataset.id = id;
@@ -4195,17 +4329,25 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     calToday: function () { ui.calY = tp.y; ui.calM = tp.m; render(); },
     calView: function (t) { S.settings.calendarView = t.dataset.v; save(); render(); },
     day: function (t) { daySheet(+t.dataset.d); },
+    daySelToggle: function () {
+      var box = document.getElementById('lvOpts'), list = document.getElementById('lvOptsList'), btn = document.getElementById('lvOptsBtn');
+      if (!box || !list) return;
+      var open = !box.classList.contains('open');
+      if (open) { box.classList.add('open'); list.hidden = false; if (btn) btn.setAttribute('aria-expanded', 'true'); }
+      else closeDaySel();
+    },
     lvPick: function (t) {
-      var box = document.getElementById('lvOpts'); box.dataset.sel = t.dataset.t;
-      Array.prototype.forEach.call(box.children, function (b) { var on = b === t; b.classList.toggle('on', on); b.style.background = on ? b.dataset.c : ''; });
       var tb = document.getElementById('tourBox'), id = t.dataset.t, rdo = tb && tb.dataset.rdo === '1';
+      setDaySel(id);
       if (tb && tb.dataset.orig !== 'dd' && tb.dataset.orig !== 'ddoff') {
-        if (id === 'rdo') tb.dataset.status = rdo ? '' : 'off';
+        if (id === 'rdo') { tb.dataset.status = rdo ? '' : 'off'; tb.dataset.asked = ''; }
         else if (id === 'working') {
           if (!rdo) tb.dataset.status = (tb.dataset.status === 'off' ? '' : tb.dataset.status);
           else if (tb.dataset.status === 'off') tb.dataset.status = '';
+          if (rdo) tb.dataset.asked = '1';
         } else if (rdo && (tb.dataset.status === 'work' || tb.dataset.status === 'ddnew' || tb.dataset.status === 'paid')) tb.dataset.status = '';
       }
+      closeDaySel();
       syncDayEntry();
     },
     lvSave: function (t) {
@@ -4216,13 +4358,14 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var box = document.getElementById('tourBox'), status = box.dataset.status, orig = box.dataset.orig, lenTxt = document.getElementById('dayLen').value.trim(), len = lenTxt ? E.parseHM(lenTxt) : null, start = document.getElementById('dayStart').value.trim();
       var mine = box.dataset.rdo === '1', rdoOt = null;
       if (rawType === 'rdo') status = (orig === 'ddoff' || orig === 'dd') ? orig : (mine ? '' : 'off');
+      if (rawType === 'rdo' && status !== 'dd' && status !== 'ddoff') { start = ''; end = ''; len = null; lenTxt = ''; }
       if (rawType === 'working' && mine) {
         if (status === 'paid') status = '';
         else if (status === '' || status === 'off') return toast('Is this a day-for-day, overtime or a paid detail?');
       }
       if (start) { var ns = E.normTime(start); if (!ns) { var se = document.getElementById('dayStart-err'); if (se) se.textContent = 'Use HH:MM, 24-hour (00:00–23:59)'; return toast('Tour start must be HH:MM (24-hour)'); } start = ns; }
       if (lenTxt && !len) { tourPrev('dayLen'); return toast(E.tourLenError(lenTxt).msg || 'Tour length must be H:MM up to 24:00'); }
-      var endWrap = document.getElementById('tourLenWrap'), endEl = document.getElementById('dayEnd'), endOn = !!(endEl && endWrap && !endWrap.hidden), end = endOn ? endEl.value.trim() : '', shortSel = null;
+      var endWrap = document.getElementById('tourLenWrap'), endEl = document.getElementById('dayEnd'), useTimes = !dayIsLeave(rawType) && rawType !== 'rdo', endOn = !!(endEl && useTimes), end = endOn ? endEl.value.trim() : '', shortSel = null;
       if (end) { var ne = E.normTime(end); if (!ne) { document.getElementById('dayEnd-err').textContent = 'Use HH:MM, 24-hour (00:00–23:59)'; return toast('Tour end must be HH:MM (24-hour)'); } end = ne; }
       if (status === 'work' && mine && start && end) {
         rdoOt = E.rdoOtSpan(start, end); if (!rdoOt) return toast('Enter the tour start and end times');
@@ -4397,7 +4540,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       save(); render(); x15Sheet(y); toast('Extra 15 range saved');
     },
     x15Reset: function (t) { var y = +t.dataset.y; delete S.extra15[E.extra15Key(y, +t.dataset.m, t.dataset.t)]; save(); render(); x15Sheet(y); toast('Back to the rule'); },
-    startPick: function (t) { var el = document.getElementById(t.dataset.for); if (!el) return; el.value = t.dataset.v; if (el.id === 'dayStart') { pduKeep(); updateEnd(true); } else Array.prototype.forEach.call(document.querySelectorAll('[data-act="startPick"][data-for="' + el.id + '"]'), function (b) { setOn(b, b.dataset.v === el.value); }); },
+    startPick: function (t) { var el = document.getElementById(t.dataset.for); if (!el) return; el.value = t.dataset.v; if (el.id === 'dayStart') { if (el.value) openRdoKindPrompt(); pduKeep(); updateEnd(true); } else Array.prototype.forEach.call(document.querySelectorAll('[data-act="startPick"][data-for="' + el.id + '"]'), function (b) { setOn(b, b.dataset.v === el.value); }); },
     shortPick: function (t) { var b = document.getElementById('shortBox'); b.dataset.sel = t.dataset.t; Array.prototype.forEach.call(b.querySelectorAll('[data-act="shortPick"]'), function (x) { setOn(x, x === t); }); document.getElementById('shortErr').textContent = ''; },
     dayDelAsk: function (t) {
       var d = +t.dataset.d, iso = E.toISO(d); if (!E.dayHasEntries(S, iso)) return toast('Nothing saved for this day');
@@ -4414,10 +4557,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var box = document.getElementById('tourBox'), s = t.dataset.s; box.dataset.status = s;
       var opts = document.getElementById('lvOpts');
       if (opts && box.dataset.rdo === '1' && (s === 'work' || s === 'ddnew' || s === 'paid')) {
-        if (opts.dataset.sel !== 'working') {
-          var wb = opts.querySelector('[data-t="working"]'); opts.dataset.sel = 'working';
-          if (wb) Array.prototype.forEach.call(opts.children, function (b) { var on = b === wb; b.classList.toggle('on', on); b.style.background = on ? b.dataset.c : ''; });
-        }
+        setDaySel('working');
+        box.dataset.asked = '1';
       }
       if (s === 'paid') showPaidForm(true);
       syncDayEntry();
@@ -4499,7 +4640,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (ov && !(r > 0)) { document.getElementById('stOvWrap').hidden = false; document.getElementById('stRate').focus(); return toast('Enter your own hourly rate, or untick "Use my own hourly rate"'); }
       if (!(m >= 1)) return toast('Multiplier must be at least 1');
       var tl = E.parseHM(document.getElementById('stTour').value); if (!tl) { tourPrev('stTour'); return toast(E.tourLenError(document.getElementById('stTour').value).msg || 'Tour length must be H:MM up to 24:00'); }
-      Object.assign(S.profile, { rank: pf.rank, rankOther: pf.rank === 'other' ? pf.rankOther : '', firstName: pf.firstName, lastName: pf.lastName, name: pf.firstName + ' ' + pf.lastName, taxNumber: pf.taxNumber, refNumber: pf.refNumber, shieldNumber: pf.shieldNumber, hireDate: pf.hireDate, promotionDate: pf.promotionDate, homeAddress: (document.getElementById('stHome') || { value: '' }).value.trim(), command: E.cleanCommand(readCommand('st')) }); S.profile.rate = r; S.profile.rateOverride = ov;
+      Object.assign(S.profile, { rank: pf.rank, rankOther: pf.rank === 'other' ? pf.rankOther : '', firstName: pf.firstName, lastName: pf.lastName, name: pf.firstName + ' ' + pf.lastName, taxNumber: pf.taxNumber, refNumber: pf.refNumber, shieldNumber: pf.shieldNumber, hireDate: pf.hireDate, promotionDate: pf.promotionDate, retirementDate: pf.retirementDate, homeAddress: (document.getElementById('stHome') || { value: '' }).value.trim(), command: E.cleanCommand(readCommand('st')) }); S.profile.rate = r; S.profile.rateOverride = ov;
       S.settings.multiplier = m; if (pa) S.settings.paydayAnchor = pa; var rt = String(document.getElementById('stReg').value).trim().match(/^(\d{1,3}):([0-5]\d)$/), rtd = parseFloat(document.getElementById('stReg').value);
       if (rt) S.settings.regularTargetMin = +rt[1] * 60 + +rt[2]; else if (rtd > 0 && /^\d+(\.\d+)?$/.test(document.getElementById('stReg').value.trim())) S.settings.regularTargetMin = Math.round(rtd * 60);
       S.profile.tourLen = tl; S.profile.tourStart = document.getElementById('stStart').value || '';
@@ -4555,6 +4696,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   };
 
   document.addEventListener('click', function (ev) {
+    var box = document.getElementById('lvOpts');
+    if (box && box.classList.contains('open') && !box.contains(ev.target)) closeDaySel();
     var t = ev.target.closest('[data-act]'); if (!t) return;
     var fn = A[t.dataset.act]; if (!fn) return;
     if (t.dataset.act !== 'sheetBg') ev.preventDefault();
@@ -4680,6 +4823,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (ev.target.maxLength > 0 && ev.target.getAttribute('inputmode') === 'numeric' && ev.target.value.length > ev.target.maxLength) ev.target.value = ev.target.value.slice(0, ev.target.maxLength); // paste can exceed maxlength
     if (ev.target.classList.contains('cmdq')) cmdResults(ev.target.dataset.px, ev.target.value);
     if (ev.target.classList.contains('timeIn')) { var tv = ev.target.value, tf = E.formatTimeInput(tv, /^delete/.test(ev.inputType || '')); if (tf !== tv) ev.target.value = tf; }
+    if (ev.target.id === 'dayStart' || ev.target.id === 'dayEnd') {
+      if (String(ev.target.value || '').trim()) openRdoKindPrompt();
+    }
     if (ev.target.id === 'dayStart' || ev.target.id === 'dayLen') { pduKeep(); updateEnd(true); }
     if (ev.target.id === 'dayEnd') updateEnd(false);
     if (/^st(Rank|Hire|Promo|Rate|Override)$/.test(ev.target.id)) refreshPay();
@@ -4710,7 +4856,12 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (ev.target.id === 'sfEnh' && slipF) { slipF.enhance = ev.target.checked; slipPreview(); }
     if (ev.target.id === 'importFile' && ev.target.files[0]) { var r = new FileReader(); r.onload = function () { importData(r.result); }; r.readAsText(ev.target.files[0]); }
   });
-  document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { if (document.getElementById('slipFlow')) slipClose(); else closeSheet(); } });
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key !== 'Escape') return;
+    var box = document.getElementById('lvOpts');
+    if (box && box.classList.contains('open')) { closeDaySel(); ev.preventDefault(); return; }
+    if (document.getElementById('slipFlow')) slipClose(); else closeSheet();
+  });
   // Refresh "today" if the app is left open past midnight.
   document.addEventListener('visibilitychange', function () { if (!document.hidden && E.today() !== T) { T = E.today(); tp = E.parts(T); render(); } });
 
