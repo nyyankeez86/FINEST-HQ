@@ -1,5 +1,5 @@
 // Offline cache for the home-screen app. The version changes with every build, so updates replace the old copy.
-const CACHE = 'patrol-08004f8637f6';
+const CACHE = 'patrol-1c4873606e00';
 const FILES = ['./', './index.html', './config.js', './manifest.webmanifest', './icons/favicon-16.png', './icons/favicon-32.png', './icons/apple-touch-icon.png', './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
