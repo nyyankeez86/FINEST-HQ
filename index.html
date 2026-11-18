@@ -164,6 +164,15 @@ h3{font-size:17px;margin:0 0 6px}
 .sheet{background:#fff;width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:8px 16px calc(18px + env(safe-area-inset-bottom));animation:up .18s ease-out}
 .sheet .grab{width:44px;height:5px;border-radius:5px;background:#c8cfdb;margin:4px auto 10px}
 .sheet .shead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.sheet .sback{min-height:40px;padding:0 12px 0 8px;margin-right:8px;border-radius:10px;border:0;background:#eef1f6;font-weight:800;font-size:15px;color:var(--ink,#0f172a);cursor:pointer;flex-shrink:0}
+.sheet .shead h3{flex:1;min-width:0}
+.travsum{display:block;font-size:11.5px;color:#0f766e;font-weight:600}.travchip{background:#ecfdf5;border:1px solid #99f6e4;color:#0f766e}
+.travbox{border:1.5px solid var(--line);border-radius:12px;padding:10px 12px 2px;margin-bottom:12px;background:#fbfcfe}
+.travsug{font-size:13px;margin:2px 0 4px}.cmdpct{color:#0f766e;font-weight:700}.travline{margin-top:4px}
+.ratechip.trav{background:#0e7490;color:#fff}
+body.beta [data-sec]{position:relative}
+body.beta [data-sec]::after{content:attr(data-sec);position:absolute;top:2px;right:2px;z-index:5;font:800 9.5px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.02em;color:#7c3aed;background:rgba(245,243,255,.92);border:1px solid #ddd6fe;border-radius:5px;padding:2px 4px;pointer-events:none}
+body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after{top:-4px;left:0;right:auto;font-size:10.5px}
 .sheet .x{width:44px;height:44px;border-radius:10px;border:0;background:#eef1f6;font-size:22px;cursor:pointer}
 @keyframes up{from{transform:translateY(40px);opacity:.5}to{transform:none;opacity:1}}
 @keyframes fade{from{opacity:0}}
@@ -205,6 +214,10 @@ h3{font-size:17px;margin:0 0 6px}
 .pdadd[hidden], .paidbox[hidden]{display:none !important}
 .paidbox .pdrm{margin-top:8px}
 .asgbox{background:#f8fafc;padding:12px}
+.asgbox.rdomin .asgopts,.asgbox.rdomin #asgDetailWrap,.asgbox.rdomin #asgNotesWrap,.asgbox.rdomin #asgAddrWrap,.asgbox.rdomin #asgCourt,.asgbox.rdomin #asgSites{display:none!important}
+.asgbox .rdominhint{display:none}.asgbox.rdomin .rdominhint{display:block;margin:0 0 8px}
+.asgold{display:flex;gap:10px;align-items:center;border:1.5px dashed #94a3b8;border-radius:12px;padding:8px 10px;margin-bottom:8px}
+.asgold-sw{min-width:40px;height:30px;border-radius:8px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px;padding:0 4px}
 .asgopts{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .asgopts button{min-height:46px;border-radius:10px;border:2px solid var(--line);background:#fff;font-size:12.5px;font-weight:800;cursor:pointer;padding:2px 4px;line-height:1.15}
 .asgopts button.on{border-color:var(--ink);color:#fff}
@@ -381,10 +394,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         ]
       }
     },
-    // Paydays every 14 days. Work weeks run Sun-Sat. For each payday there are two 14-day periods:
-    //   regular period (80 regular hours): ends the Saturday 5 days before payday
-    //   overtime period: one week earlier, ends 12 days before payday
-    payday: { anchor: '2026-01-01', intervalDays: 14, periodDays: 14, regularEndsDaysBefore: 5, overtimeEndsDaysBefore: 12, regularHours: 80 },
+    // Paydays every other FRIDAY from Fri Jan 2, 2026 (Zee 2026-11-18: was Thu Jan 1). Work weeks run Sun-Sat. For each payday there are two 14-day periods:
+    //   regular period (80 regular hours): ends the Saturday 6 days before payday (Sun-Sat periods unchanged)
+    //   overtime period: one week earlier, ends the Saturday 13 days before payday
+    payday: { anchor: '2026-01-02', intervalDays: 14, periodDays: 14, regularEndsDaysBefore: 6, overtimeEndsDaysBefore: 13, regularHours: 80 },
     overtimeTypes: [
       { id: 'holdover', label: 'Holdover / late call' },
       { id: 'extra',    label: 'Extra patrol detail' },
@@ -718,11 +731,12 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     // Daily assignments (any date, past or future). Add new types here. `detail` = optional text field (required for Other);
     // `suggest` = remember earlier entries as quick suggestions.
     paidDetailGap: { endBefore: 60, startAfter: 180 }, // reminder only: regular tour ends >= 1 h before a paid detail, starts >= 3 h after
+    // retired: true = no longer offered on the day page (Zee 2026-11-18); kept so older saved days still show their label.
     assignmentTypes: [
-      { id: 'patrol',      label: 'Patrol',                short: 'PTL',  color: '#1E3A8A', detail: { label: 'Patrol assignment (sector / post)', placeholder: 'e.g. Sector C, Post 4' }, suggest: true },
-      { id: 'hospital',    label: 'Hospitalized prisoner', short: 'HOSP', color: '#9F1239' },
-      { id: 'transport',   label: 'Prisoner transport',    short: 'TRNS', color: '#7C2D12' },
-      { id: 'walkthrough', label: 'Prisoner walkthrough',  short: 'WALK', color: '#4D7C0F' },
+      { id: 'patrol',      label: 'Patrol',                short: 'PTL',  color: '#1E3A8A', detail: { label: 'Patrol assignment (sector / post)', placeholder: 'e.g. Sector C, Post 4' }, suggest: true, retired: true },
+      { id: 'hospital',    label: 'Hospitalized prisoner', short: 'HOSP', color: '#9F1239', retired: true },
+      { id: 'transport',   label: 'Prisoner transport',    short: 'TRNS', color: '#7C2D12', retired: true },
+      { id: 'walkthrough', label: 'Prisoner walkthrough',  short: 'WALK', color: '#4D7C0F', retired: true },
       { id: 'detail',      label: 'Detail',                short: 'DTL',  color: '#6D28D9' },
       { id: 'paiddetail',  label: 'Paid Detail',           short: 'PAID', color: '#A16207', paid: true }, // fields: ID, date, time, duration, vendor, address (+ on-device OCR of the 'Selected Paid Details' screen)
       { id: 'training',    label: 'Training',              short: 'TRNG', color: '#0E7490', detail: { label: 'Training (what training)', placeholder: 'e.g. Firearms requalification' }, suggest: true, address: true, sites: true },
@@ -1710,7 +1724,14 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     return { allowed: OT_COMP.slice(), reason: pl.ok && pl.ceaOT ? 'Cash OT is capped at ' + pl.ceaOT.capHours + ' h a year; hours over the cap become comp time.' : '' };
   }
   // entry.comp: 'cash' (default) | 'time' | 'split' (entry.cashHours = hours paid in cash, rest comp). Comp time is banked at 1.5x.
+  // Overtime pay plus travel time (its own line: res.travel; res.otPay / res.otCompMinutes = the overtime alone).
   function otEntryPay(entry, ctx) {
+    ctx = ctx || {}; var r = otEntryPayBase(entry, ctx), tv = travelPay(entry, ctx.profile, ctx.multiplier);
+    r.otPay = r.pay; r.otCompMinutes = r.compMinutes;
+    if (tv) { r.travel = tv; if (!tv.ineligible) { r.pay = Math.round((r.pay + tv.pay) * 100) / 100; r.compMinutes += tv.compMinutes; } }
+    return r;
+  }
+  function otEntryPayBase(entry, ctx) {
     ctx = ctx || {}; var p = ctx.profile || {}, h = entryHours(entry), mlt = parseFloat(ctx.multiplier) || 1.5, man = parseFloat(p.rate) || 0, CR = CONFIG.pay.compRate;
     var opts = otCompOptions(p, entry && entry.date), mode = entry && OT_COMP.indexOf(entry.comp) >= 0 ? entry.comp : 'cash';
     if (opts.allowed.indexOf(mode) < 0) mode = opts.allowed[0];
@@ -1743,7 +1764,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (r.compMinutes) comp += r.compMinutes;
       byId[e.id] = r;
     });
-    return { byId: byId, cashUsed: used, compMinutes: comp };
+    var tm = 0, tp = 0, tc = 0; Object.keys(byId).forEach(function (k) { var t = byId[k].travel; if (t && !t.ineligible) { tm += t.minutes; tp += t.pay; tc += t.compMinutes; } });
+    return { byId: byId, cashUsed: used, compMinutes: comp, travel: { minutes: tm, pay: Math.round(tp * 100) / 100, compMinutes: tc } };
   }
   function rankByWord(w) {
     var a = (w[0] || '').toLowerCase().replace(/\.$/, ''), b = (w[1] || '').toLowerCase();
@@ -2215,6 +2237,114 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     CONFIG.commands = CONFIG.commands.concat(pds, CONFIG.unitCommands);
   })();
   CONFIG.commandGroups = { pct: 'Precinct', psa: 'Housing PSA', td: 'Transit District', pds: 'Precinct Detective Squad', gls: 'Grand Larceny', svs: 'Special Victims', narc: 'Narcotics', warr: 'Warrant Division', srg: 'Strategic Response Group', crc: 'Critical Response Command', spec: 'Specialty unit', boro: 'Bureau / Patrol Borough' };
+  // ---- Patrol boroughs and overtime travel time ----
+  // Precinct -> patrol borough (Zee, 2026-11-18). The Bronx was one patrol borough (PBBX) until it split into PBXS / PBXN on 2026-05-20.
+  CONFIG.bronxSplit = '2026-05-20';
+  CONFIG.patrolBoroughs = [
+    { id: 'pbms', abbr: 'PBMS', name: 'Patrol Borough Manhattan South', pcts: [1, 5, 6, 7, 9, 10, 13, 14, 17, 18] },
+    { id: 'pbmn', abbr: 'PBMN', name: 'Patrol Borough Manhattan North', pcts: [19, 20, 22, 23, 24, 25, 26, 28, 30, 32, 33, 34] },
+    { id: 'pbbx', abbr: 'PBBX', name: 'Patrol Borough Bronx', until: '2026-05-20', pcts: [40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 52] },
+    { id: 'pbxs', abbr: 'PBXS', name: 'Patrol Borough Bronx South', from: '2026-05-20', pcts: [40, 41, 42, 43, 44, 45] },
+    { id: 'pbxn', abbr: 'PBXN', name: 'Patrol Borough Bronx North', from: '2026-05-20', pcts: [46, 47, 48, 49, 50, 52] },
+    { id: 'pbbs', abbr: 'PBBS', name: 'Patrol Borough Brooklyn South', pcts: [60, 61, 62, 63, 66, 67, 68, 69, 70, 71, 72, 76, 78] },
+    { id: 'pbbn', abbr: 'PBBN', name: 'Patrol Borough Brooklyn North', pcts: [73, 75, 77, 79, 81, 83, 84, 88, 90, 94] },
+    { id: 'pbqs', abbr: 'PBQS', name: 'Patrol Borough Queens South', pcts: [100, 101, 102, 103, 105, 106, 107, 113, 116] },
+    { id: 'pbqn', abbr: 'PBQN', name: 'Patrol Borough Queens North', pcts: [104, 108, 109, 110, 111, 112, 114, 115] },
+    { id: 'pbsi', abbr: 'PBSI', name: 'Patrol Borough Staten Island', pcts: [120, 121, 122, 123] }
+  ];
+  // Travel time on an overtime entry (ranks below Captain only): suggested minutes EACH WAY. Cash is paid at the DAY overtime rate;
+  // Time is banked to Comp at compRate (same 1.5x as overtime comp time).
+  CONFIG.travel = { sameMin: 45, diffMin: 75, picks: [45, 75], compRate: 1.5,
+    ranks: ['lcd', 'lsa', 'lt', 'sds', 'ssa', 'sgt', 'det1', 'det2', 'det3', 'dets', 'po'] }; // below Captain ('other' is not assumed)
+  // Precinct boundaries: NYC Open Data "Police Precincts" (dataset y76i-bdw7, public, no key, CORS *). Geocoding: NYC GeoSearch, then Photon.
+  CONFIG.precinctData = { query: 'https://data.cityofnewyork.us/resource/y76i-bdw7.json', geojson: 'https://data.cityofnewyork.us/resource/y76i-bdw7.geojson?$limit=500',
+    geosearch: 'https://geosearch.planninglabs.nyc/v2/search', nycBox: { s: 40.47, n: 40.93, w: -74.27, e: -73.68 } };
+  var PCT_NAMED = { 'midtown-south': 14, 'midtown-north': 18, 'central-park': 22 };
+  function pctNumFromId(id) { var m = String(id || '').match(/^pct-(.+)$/); if (!m) return null; return /^\d+$/.test(m[1]) ? +m[1] : PCT_NAMED[m[1]] || null; }
+  function isPrecinctNum(n) { n = +n; return n > 0 && CONFIG.patrolBoroughs.some(function (b) { return b.pcts.indexOf(n) >= 0; }); }
+  // Patrol borough for a precinct number on a date (no date = today's map).
+  function patrolBoroughOf(pct, iso) {
+    var n = +pct, d = isISODate(iso) ? iso : toISO(today()); if (!(n > 0)) return null;
+    for (var i = 0; i < CONFIG.patrolBoroughs.length; i++) { var b = CONFIG.patrolBoroughs[i]; if (b.pcts.indexOf(n) >= 0 && (!b.from || d >= b.from) && (!b.until || d < b.until)) return b; }
+    return null;
+  }
+  // Precinct number of a command: precincts and precinct squads directly; anything else from the precinct resolved from its address
+  // (stored on the command as pct, with pctFor = the address it came from; pct 0 = outside NYC / no precinct).
+  function commandPrecinct(c) {
+    if (!c || !c.id) return null; var k = c.id !== 'other' ? commandById(c.id) : null;
+    if (k && k.kind === 'pct') return pctNumFromId(k.id);
+    if (k && k.kind === 'pds' && k.precinct) return pctNumFromId(k.precinct);
+    var addr = String(c.address || (k && k.address) || '').trim();
+    if (c.pct != null && c.pctFor != null && normAddr(c.pctFor) === normAddr(addr)) return isPrecinctNum(c.pct) ? +c.pct : 0;
+    return null; // not resolved yet
+  }
+  function commandAddress(c) { if (!c) return ''; var k = c.id && c.id !== 'other' ? commandById(c.id) : null; return String((k && k.address) || c.address || '').trim(); }
+  // A command needs an address lookup when its precinct isn't known from the list.
+  function commandNeedsPrecinct(c) { return !!(c && c.id && commandPrecinct(c) === null && commandAddress(c)); }
+  function travelEligible(profile) { return !!(profile && CONFIG.travel.ranks.indexOf(profile.rank) >= 0); }
+  // Suggested travel time between the permanent command and the overtime location on a date.
+  function travelSuggest(perm, ot, iso) {
+    var a = commandPrecinct(perm), b = commandPrecinct(ot), r = { ok: false, permPct: a, otPct: b };
+    if (!a || !b) { r.reason = !perm ? 'nocmd' : !ot ? 'nootcmd' : a === 0 || b === 0 ? 'outside' : 'unknown'; return r; }
+    var ba = patrolBoroughOf(a, iso), bb = patrolBoroughOf(b, iso); if (!ba || !bb) { r.reason = 'unknown'; return r; }
+    var same = ba.id === bb.id, each = same ? CONFIG.travel.sameMin : CONFIG.travel.diffMin;
+    return Object.assign(r, { ok: true, same: same, each: each, both: each * 2, permBoro: ba, otBoro: bb });
+  }
+  function travelMinutes(dir, each) { each = Math.max(0, Math.round(+each || 0)); return dir === 'both' ? each * 2 : each; }
+  // entry.travel = { on: true, comp: 'cash' | 'time', dir: 'one' | 'both', minutes: total minutes, each: minutes each way }
+  function cleanTravel(t) {
+    if (!t || !t.on) return null; var m = Math.round(+t.minutes || 0); if (!(m > 0)) return null;
+    return { on: true, comp: t.comp === 'time' ? 'time' : 'cash', dir: t.dir === 'both' ? 'both' : 'one', minutes: Math.min(m, 1440), each: Math.max(0, Math.round(+t.each || 0)) || (t.dir === 'both' ? Math.round(m / 2) : m) };
+  }
+  // Travel time pay: Cash at the DAY overtime rate (never the night rate); Time = comp minutes x compRate. Not eligible (Captain and up) = nothing.
+  function travelPay(entry, profile, multiplier) {
+    var t = cleanTravel(entry && entry.travel); if (!t) return null;
+    var p = profile || {}, res = { minutes: t.minutes, comp: t.comp, dir: t.dir, rate: 0, pay: 0, compMinutes: 0, source: 'none' };
+    if (!travelEligible(p)) { res.ineligible = true; return res; }
+    if (t.comp === 'time') { res.compMinutes = Math.round(t.minutes * CONFIG.travel.compRate); res.source = 'comp'; return res; }
+    var mlt = parseFloat(multiplier) || 1.5, man = parseFloat(p.rate) || 0, pl = p.rateOverride && man > 0 ? null : payPlacement(p, entry && entry.date);
+    if (p.rateOverride && man > 0) { res.rate = Math.round(man * mlt * 100) / 100; res.source = 'manual'; }
+    else if (pl && pl.ok && pl.ot15) { res.rate = pl.ot15; res.source = 'chart'; res.placement = pl; }
+    else if (man > 0) { res.rate = Math.round(man * mlt * 100) / 100; res.source = 'fallback'; }
+    res.pay = Math.round(t.minutes / 60 * res.rate * 100) / 100; return res;
+  }
+  // Point in polygon (ray casting) for GeoJSON Polygon / MultiPolygon coordinates ([lon, lat]); holes respected.
+  function ringHas(ring, x, y) { var inside = false; for (var i = 0, j = ring.length - 1; i < ring.length; j = i++) { var xi = ring[i][0], yi = ring[i][1], xj = ring[j][0], yj = ring[j][1]; if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) inside = !inside; } return inside; }
+  function polyHas(poly, x, y) { if (!poly || !poly.length || !ringHas(poly[0], x, y)) return false; for (var h = 1; h < poly.length; h++) if (ringHas(poly[h], x, y)) return false; return true; }
+  function geomHas(g, x, y) { if (!g) return false; if (g.type === 'Polygon') return polyHas(g.coordinates, x, y); if (g.type === 'MultiPolygon') return (g.coordinates || []).some(function (p) { return polyHas(p, x, y); }); return false; }
+  // features: GeoJSON features with properties.precinct. Returns the precinct number or 0 (none).
+  function precinctAt(features, lon, lat) {
+    var f = (features || []).filter(function (x) { return x && geomHas(x.geometry || x.the_geom, +lon, +lat); })[0];
+    var n = f ? +((f.properties || f).precinct) : 0; return isPrecinctNum(n) ? n : 0;
+  }
+  function inNycBox(lon, lat) { var b = CONFIG.precinctData.nycBox; return lat >= b.s && lat <= b.n && lon >= b.w && lon <= b.e; }
+  // Address -> { pct (0 = outside NYC / none), lon, lat, via } using only public, keyless data. o: { fetch, features (cached boundaries, optional) }.
+  // Resolves null when the address can't be found or a service is down (nothing is stored then; the user can still pick an amount).
+  function precinctForAddress(addr, o) {
+    o = o || {}; var P = o.Promise || Promise, text = String(addr || '').trim(), D = CONFIG.precinctData;
+    if (!text || !o.fetch) return P.resolve(null);
+    var get = function (url) { return o.fetch(url, { headers: { Accept: 'application/json' } }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }); };
+    var zip = (text.match(/\b(\d{5})(?:-\d{4})?\s*$/) || [])[1];
+    var geo = get(D.geosearch + '?size=1&text=' + encodeURIComponent(text)).then(function (j) {
+      var f = j && j.features && j.features[0], p = (f && f.properties) || {};
+      if (!f || !(p.match_type === 'exact' || +p.confidence >= 0.9) || (zip && p.postalcode && p.postalcode !== zip)) return null;
+      return { lon: f.geometry.coordinates[0], lat: f.geometry.coordinates[1], via: 'geosearch' };
+    }).catch(function () { return null; }).then(function (pt) {
+      if (pt) return pt;
+      return get(CONFIG.geo.photon + '?q=' + encodeURIComponent(text) + '&limit=1&lang=en').then(function (j) { var f = j && j.features && j.features[0]; return f ? { lon: f.geometry.coordinates[0], lat: f.geometry.coordinates[1], via: 'photon' } : null; }).catch(function () { return null; });
+    });
+    return geo.then(function (pt) {
+      if (!pt) return null;
+      if (!inNycBox(pt.lon, pt.lat)) return Object.assign(pt, { pct: 0 });
+      if (o.features) return Object.assign(pt, { pct: precinctAt(o.features, pt.lon, pt.lat) });
+      var url = D.query + '?$select=precinct&$where=' + encodeURIComponent("intersects(the_geom,'POINT(" + pt.lon + ' ' + pt.lat + ")')");
+      return get(url).then(function (rows) { var n = rows && rows[0] ? +rows[0].precinct : 0; return Object.assign(pt, { pct: isPrecinctNum(n) ? n : 0 }); }, function () {
+        return get(D.geojson).then(function (g) { return Object.assign(pt, { pct: precinctAt(g && g.features, pt.lon, pt.lat), boundaries: g && g.features }); }, function () { return null; });
+      });
+    });
+  }
+  // Typed 24-hour time when the box loses focus: 3 digits = H:MM (130 -> 01:30), 1-2 digits = whole hour (7 -> 07:00). Invalid stays as typed.
+  function finishTimeInput(raw) { var v = String(raw || '').trim(); if (!v) return ''; var d = v.replace(/\D/g, ''); var n = normTime(d.length && d.length <= 4 && /^[\d:]+$/.test(v) ? d : v); return n || v; }
   function commandById(id) { for (var i = 0; i < CONFIG.commands.length; i++) if (CONFIG.commands[i].id === id) return CONFIG.commands[i]; return null; }
   function searchCommands(q, limit) {
     var s = String(q || '').toLowerCase().replace(/[.#]/g, ' ').replace(/\s+/g, ' ').trim(), n = (s.match(/\d+/) || [])[0], kind = /detective|\bsquad\b|\bpds\b|\bpdu\b/.test(s) && /\d/.test(s) ? 'pds' : /\bpsa\b|^psa\d|housing ?\d/.test(s) ? 'psa' : /\btd\b|transit( district)? ?\d/.test(s) ? 'td' : /pct|precinct/.test(s) && !/detective/.test(s) ? 'pct' : '';
@@ -2233,10 +2363,12 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function cleanCommand(c) {
     if (!c || !c.id) return null;
-    if (c.id === 'other') { var nm = String(c.name || '').trim(), ad = String(c.address || '').trim(); return nm || ad ? { id: 'other', name: nm, address: ad } : null; }
+    if (c.id === 'other') { var nm = String(c.name || '').trim(), ad = String(c.address || '').trim(); return nm || ad ? withPct({ id: 'other', name: nm, address: ad }, c) : null; }
     var k = commandById(c.id); if (!k) return null;
-    return { id: k.id, name: k.name, address: k.address || String(c.address || '').trim() }; // unpublished address: only what the user typed
+    return withPct({ id: k.id, name: k.name, address: k.address || String(c.address || '').trim() }, c); // unpublished address: only what the user typed
   }
+  // Keep a resolved precinct (pct + the address it came from) only while the address is unchanged.
+  function withPct(r, c) { if (c && c.pct != null && c.pctFor != null && normAddr(c.pctFor) === normAddr(r.address)) { r.pct = isPrecinctNum(c.pct) ? +c.pct : 0; r.pctFor = String(c.pctFor); } return r; }
   function commandShort(c) { var k = c && commandById(c.id); return (k && k.abbr) || (c && c.name) || ''; }
   function commandNeedsAddress(id) { var k = commandById(id); return !!(k && !k.address); }
   function commandError(c) { return c && c.id === 'other' && !String(c.name || '').trim() ? 'Enter the command name' : ''; }
@@ -2563,7 +2695,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     stripAddrLabels: stripAddrLabels, paidAddressSuggestions: paidAddressSuggestions,
     rankAbbr: rankAbbr, rankLabel: rankLabel, displayName: displayName, migrateProfile: migrateProfile, validateProfile: validateProfile,
     sortHist: sortHist, histAt: histAt, cleanHistRec: cleanHistRec, histCharts: histCharts, profileAt: profileAt, migrateHist: migrateHist, syncHist: syncHist, histChanges: histChanges, validateHistRec: validateHistRec, sameRank: sameRank, sameCommand: sameCommand,
-    icsEscape: icsEscape, foldLine: foldLine, buildEvents: buildEvents, toICS: toICS, googleLink: googleLink, TZID: TZID
+    icsEscape: icsEscape, foldLine: foldLine, buildEvents: buildEvents, toICS: toICS, googleLink: googleLink, TZID: TZID,
+    patrolBoroughOf: patrolBoroughOf, pctNumFromId: pctNumFromId, isPrecinctNum: isPrecinctNum, commandPrecinct: commandPrecinct, commandAddress: commandAddress, commandNeedsPrecinct: commandNeedsPrecinct,
+    travelEligible: travelEligible, travelSuggest: travelSuggest, travelMinutes: travelMinutes, cleanTravel: cleanTravel, travelPay: travelPay, precinctAt: precinctAt, precinctForAddress: precinctForAddress, inNycBox: inNycBox,
+    finishTimeInput: finishTimeInput, otEntryPayBase: otEntryPayBase
   };
 })(typeof window !== 'undefined' ? window : globalThis);
 </script>
@@ -2649,7 +2784,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function tourPrev(id) {
     var inp = document.getElementById(id), el = document.getElementById(id + 'Prev'); if (!inp || !el) return;
-    var m = E.parseHM(inp.value), st = inp.dataset.start && document.getElementById(inp.dataset.start), sv = st ? st.value : '';
+    var m = E.parseHM(inp.value), st = inp.dataset.start && document.getElementById(inp.dataset.start), sv = st ? E.normTime(st.value) || '' : '';
     Array.prototype.forEach.call(inp.parentNode.querySelectorAll('.pick'), function (b) { b.classList.toggle('on', m !== null && E.parseHM(b.dataset.v) === m); });
     if (!inp.value.trim()) { el.textContent = 'Tap a standard tour or type digits: 815 → 8:15, 1700 → 17:00 (up to 24:00).'; el.style.color = ''; return; }
     var er = E.tourLenError(inp.value);
@@ -2667,7 +2802,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   var payMemo = null;
   function payList() { if (!payMemo) { payMemo = E.otPayList(S.overtime, { profile: S.profile, profileAt: profAt, multiplier: mult(), tourFor: otTourFor }); setTimeout(function () { payMemo = null; }, 0); } return payMemo; }
   function entryPay(e) { return (e && payList().byId[e.id]) || E.otEntryPay(e, { profile: profAt(e && e.date), multiplier: mult(), tour: otTourFor(e && e.date) }); }
-  function sumOT(list) { var h = 0, pay = 0, comp = 0; list.forEach(function (e) { var r = entryPay(e); h += E.entryHours(e); pay += r.pay; comp += r.compMinutes || 0; }); return { hours: Math.round(h * 100) / 100, pay: Math.round(pay * 100) / 100, comp: comp }; }
+  function sumOT(list) { var h = 0, pay = 0, comp = 0, tm = 0, tp = 0, tc = 0; list.forEach(function (e) { var r = entryPay(e), t = r.travel; h += E.entryHours(e); pay += r.pay; comp += r.compMinutes || 0; if (t && !t.ineligible && t.minutes) { tm += t.minutes; tp += t.pay || 0; tc += t.compMinutes || 0; } }); return { hours: Math.round(h * 100) / 100, pay: Math.round(pay * 100) / 100, comp: comp, travel: { minutes: tm, pay: Math.round(tp * 100) / 100, comp: tc } }; }
+  // Travel time as its own line (already included in the pay / comp totals next to it).
+  function travelSumText(s) { var t = s && s.travel; if (!t || !t.minutes) return ''; return '<span class="travsum">incl. travel ' + E.fmtHM(t.minutes) + (t.pay ? ' &middot; ' + money(t.pay) : '') + (t.comp ? ' &middot; ' + E.fmtHM(t.comp) + ' comp' : '') + '</span>'; }
   function payText(s) { return s.comp && !s.pay ? E.fmtHM(s.comp) + ' comp' : money(s.pay) + (s.comp ? ' + ' + E.fmtHM(s.comp) + ' comp' : ''); }
   function payBasisText() {
     var pi = E.payInfo(profNow()), pl = pi.placement;
@@ -2680,7 +2817,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function otByDate() { var m = {}; S.overtime.forEach(function (e) { (m[e.date] = m[e.date] || []).push(e); }); return m; }
 
   // ---------- render ----------
+  // Beta testers (profiles.beta, set by the admin) see section numbers (1a, 2b...) on every page; everyone else never does.
+  function isBeta() { return !!(CL.enabled && CS && CS.uid && CS.status === 'approved' && CS.beta === true); }
   function render() {
+    document.body.classList.toggle('beta', isBeta());
     if (cloudGate()) { stopRetireTick(); return; }
     if (S.profile && !(Array.isArray(S.profile.assignHist) && S.profile.assignHist.length)) S.profile = E.migrateHist(S.profile, S.profile.hireDate || earliestEntry(S)); // e.g. a profile pulled from an older device
     var onb = !S.profile;
@@ -2720,21 +2860,56 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function balancesHtml() {
     var b = E.leaveBalances(S), list = E.shortLeaveEntries(S);
-    return '<h3 style="margin-top:6px" id="balHead">Leave balances</h3><div class="muted" style="font-size:13px;margin-bottom:6px">Starting balances (H:MM). Leaving a tour early is charged here.</div><div class="balgrid">' +
+    return '<h3 style="margin-top:6px" id="balHead" data-sec="9e">Leave balances</h3><div class="muted" style="font-size:13px;margin-bottom:6px">Starting balances (H:MM). Leaving a tour early is charged here.</div><div class="balgrid">' +
       C.shortLeaveTypes.map(function (k) { var x = b[k]; return '<div class="balrow"><label for="lb-' + k + '">' + esc(C.shortLeaveLabels[k]) + '</label><input id="lb-' + k + '" inputmode="decimal" autocomplete="off" placeholder="0:00" value="' + (x.set ? E.fmtHM(x.start) : '') + '"><div class="balinfo">Used ' + E.fmtHM(x.used) + (x.earned ? ' &middot; Earned ' + E.fmtHM(x.earned) : '') + (x.set || x.earned ? ' &middot; Left <b' + (x.left < 0 ? ' class="neg"' : '') + '>' + (x.left < 0 ? '-' : '') + E.fmtHM(Math.abs(x.left)) + '</b>' : '') + '</div></div>'; }).join('') + '</div>' +
       (list.length ? '<details class="baldet"><summary>Early tour ends (' + list.length + ')</summary><div class="list">' + list.map(function (e) { return '<button type="button" class="item" data-act="day" data-d="' + E.toDay(e.iso) + '"><div class="main"><div class="t1">' + esc(fmt(E.toDay(e.iso), 'md')) + ' &middot; ' + E.fmtHM(e.minutes) + '</div><div class="t2">' + esc(C.shortLeaveLabels[e.type]) + (e.end ? ' &middot; ended ' + esc(e.end) : '') + '</div></div></button>'; }).join('') + '</div></details>' : '');
   }
   function svcLine(p) { var si = E.serviceInfo(p); return (si.service ? 'Service: <b>' + esc(si.service.text) + '</b>' : 'Leave promotion blank if you haven\'t been promoted.') + (si.inRank && si.service ? ' &middot; In rank: <b>' + esc(si.inRank.text) + '</b>' : '') + '<br>Used for your pay step and longevity.'; }
   // Command picker (precinct / PSA / transit district, or Other)
-  function cmdPicker(px, c) {
-    c = c || null;
-    return '<div class="field cmdpick" id="' + px + 'Cmd" data-id="' + esc(c ? c.id : '') + '"><label for="' + px + 'CmdQ">Command <span class="rec">recommended</span></label>' +
+  function cmdPicker(px, c, o) {
+    c = c || null; o = o || {};
+    return '<div class="field cmdpick" id="' + px + 'Cmd"' + (o.sec ? ' data-sec="' + o.sec + '"' : '') + ' data-id="' + esc(c ? c.id : '') + '"><label for="' + px + 'CmdQ">' + (o.label || 'Command <span class="rec">recommended</span>') + '</label>' +
       '<div id="' + px + 'CmdSel">' + cmdSelHtml(px, c) + '</div>' +
       '<input id="' + px + 'CmdQ" class="cmdq" data-px="' + px + '" autocomplete="off" placeholder="Search: 75, PSA 2, TD 33, 75 detective, SRG, Harbor&hellip;"' + (c ? ' hidden' : '') + '>' +
       '<div class="cmdlist" id="' + px + 'CmdList"></div>' +
       '<div id="' + px + 'CmdOther"' + (c && c.id === 'other' ? '' : ' hidden') + '><div class="field"><label for="' + px + 'CmdName">Command name</label><input id="' + px + 'CmdName" value="' + esc(c && c.id === 'other' ? c.name : '') + '" placeholder="e.g. Strategic Response Group 2"><div class="err" id="' + px + 'CmdName-err"></div></div>' +
       '<div class="field"><label for="' + px + 'CmdAddr">Command address</label><input id="' + px + 'CmdAddr" class="acIn" data-ac="cmd" autocomplete="off" value="' + esc(c && c.id === 'other' ? c.address : '') + '" placeholder="Street, city, ZIP"></div></div>' +
-      '<div class="hint">Optional. Used to show drive times from your command and "report to command first" estimates.</div></div>';
+      '<div class="hint cmdpct" id="' + px + 'CmdPct" role="status" aria-live="polite"></div>' +
+      '<div class="hint">' + (o.hint || 'Optional. Used to show drive times from your command and "report to command first" estimates, and to suggest overtime travel time.') + '</div></div>';
+  }
+  // ---------- Precinct lookup for commands that aren't precincts (public NYC data only; see E.precinctForAddress) ----------
+  var PCT_CACHE = {}, PCT_BOUNDS = null, PCT_BUSY = {};
+  function pctKey(a) { return String(a || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim(); }
+  function withPctCache(c) { if (!c || !E.commandNeedsPrecinct(c)) return c; var a = E.commandAddress(c), h = PCT_CACHE[pctKey(a)]; return h ? Object.assign({}, c, { pct: h.pct, pctFor: a }) : c; }
+  function resolvePct(c) {
+    if (!c || !E.commandNeedsPrecinct(c)) return Promise.resolve(c);
+    var a = E.commandAddress(c), k = pctKey(a); if (PCT_CACHE[k]) return Promise.resolve(withPctCache(c));
+    if (navigator.onLine === false || !window.fetch) return Promise.resolve(c);
+    if (!PCT_BUSY[k]) PCT_BUSY[k] = E.precinctForAddress(a, { fetch: window.fetch.bind(window), features: PCT_BOUNDS }).then(function (r) {
+      delete PCT_BUSY[k]; if (r) { PCT_CACHE[k] = { pct: r.pct }; if (r.boundaries) PCT_BOUNDS = r.boundaries; } return r;
+    }, function () { delete PCT_BUSY[k]; return null; });
+    return PCT_BUSY[k].then(function () { return withPctCache(c); });
+  }
+  function pctPending(c) { return !!(c && E.commandNeedsPrecinct(c) && PCT_BUSY[pctKey(E.commandAddress(c))]); }
+  function pctText(c, iso) {
+    if (!c) return ''; var n = E.commandPrecinct(withPctCache(c)); if (n === null) return pctPending(c) ? 'Finding the precinct for this address\u2026' : '';
+    if (!n) return 'Outside NYC: no precinct.';
+    var b = E.patrolBoroughOf(n, iso), k = E.commandById('pct-' + n) || C.commands.filter(function (x) { return E.pctNumFromId(x.id) === n; })[0];
+    return 'In the ' + (k ? k.name.replace(/ \(.*\)$/, '') : n + ' Precinct') + (b ? ' &middot; ' + esc(b.name) + ' (' + b.abbr + ')' : '');
+  }
+  function cmdPctRefresh(px, iso) { var el = document.getElementById(px + 'CmdPct'); if (!el) return; var c = E.cleanCommand(readCommand(px)); el.innerHTML = pctText(c, iso); el.hidden = !el.innerHTML; }
+  // Look up and store the precinct on every history record whose command isn't a precinct (stored with the record; re-done if the address changes).
+  function resolveHistPcts() {
+    var l = (S.profile && S.profile.assignHist) || [];
+    l.forEach(function (r) {
+      if (!r.command || !E.commandNeedsPrecinct(r.command)) return;
+      resolvePct(r.command).then(function (c) {
+        if (!c || c.pct == null) return; var cur = ((S.profile && S.profile.assignHist) || []).filter(function (x) { return x.id === r.id; })[0];
+        if (!cur || !cur.command || E.commandAddress(cur.command) !== c.pctFor) return;
+        cur.command.pct = c.pct; cur.command.pctFor = c.pctFor; syncProfileHist(); save(true);
+        cmdPctRefresh('he'); otTravSync();
+      });
+    });
   }
   function homeField(px, p) {
     return '<div class="field"><label for="' + px + 'Home">Home address (optional)</label><input id="' + px + 'Home" class="acIn" data-ac="home" autocomplete="off" autocapitalize="words" placeholder="Street, city, ZIP" value="' + esc((p && p.homeAddress) || '') + '">' +
@@ -2761,6 +2936,12 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (id === 'other') return { id: 'other', name: document.getElementById(px + 'CmdName').value, address: document.getElementById(px + 'CmdAddr').value };
     if (id && E.commandNeedsAddress(id)) { var ua = document.getElementById(px + 'CmdUAddr'); return { id: id, address: ua ? ua.value : '' }; }
     return id ? { id: id } : null;
+  }
+  // A command was picked / cleared / its address typed: find its precinct (if needed) and refresh the precinct line and travel suggestion.
+  function cmdChanged(px) {
+    var c = E.cleanCommand(readCommand(px)), iso = px === 'ot' ? otTravDay() : px === 'he' ? ((document.getElementById('heEff') || {}).value || '') : '';
+    cmdPctRefresh(px, iso); if (px === 'ot') otPreview();
+    if (c && E.commandNeedsPrecinct(c)) resolvePct(c).then(function () { cmdPctRefresh(px, iso); if (px === 'ot') otPreview(); });
   }
   function checkCommand(px) { var c = readCommand(px), e = E.commandError(c), er = document.getElementById(px + 'CmdName-err'); if (er) er.textContent = e; if (e) { document.getElementById(px + 'CmdName').focus(); toast(e); return false; } return true; }
   function readProfile(px) {
@@ -2844,7 +3025,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div id="onbPduInfo" class="pduinfo"' + (/^pdu:/.test(ui.onbChart || '') ? '' : ' hidden') + '><b>PDU tours are set by your chart</b><div>' + shiftText('pm') + '</div><div>' + shiftText('am') + '</div><div class="muted" style="font-size:12.5px;margin-top:4px">A PM day moved to a morning tour (court, detailed out, training) still counts 9:00. You can change any single day from the calendar.</div></div>' +
       '<div class="field"><label for="onbEff">Effective date</label><input id="onbEff" type="date" class="dateIn" value=""><div class="hint">The date this rank, command and chart started. Leave blank to use your hire date. Add promotions and transfers later in Settings.</div><div class="err" id="onbEff-err"></div></div>' +
       '<div id="onbTourWrap"' + (/^pdu:/.test(ui.onbChart || '') ? ' hidden' : '') + '>' + tourField('onbTour', '', 'Regular tour length', 'onbStart') +
-      '<div class="field"><label for="onbStart">Tour start time (optional)</label><input id="onbStart" type="time"><div class="hint">Lets the app show when your tour ends, including overnight tours.</div></div></div>' +
+      '<div class="field"><label for="onbStart">Tour start time (optional)</label><input id="onbStart" class="timeIn" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="HH:MM"><div class="hint">Lets the app show when your tour ends, including overnight tours.</div></div></div>' +
       '<div class="field"><label for="onbRate">Own hourly rate ($, optional)</label><input id="onbRate" type="number" inputmode="decimal" min="0" step="0.01" placeholder="Leave blank to use the pay chart"><div class="hint">Leave blank and your rate comes from the pay chart for your rank, hire date and promotion date (P.O., Det., Sgt., S.D.S./S.S.A.). You can change this in Settings.</div></div>' +
       '<button class="btn primary block" data-act="onbSave">Get started</button></form></div>';
   }
@@ -2864,10 +3045,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var np = E.nextPayday(T, po), pn = np - T;
     var pd = '<div class="big">' + (pn === 0 ? 'Today' : pn === 1 ? 'Tomorrow' : 'In ' + pn + ' days') + '</div><div class="small">' + fmt(np) + '</div>';
     var tt = E.dayTour(T, sq.id, tourOpts());
-    var todayLine = '<div class="card" style="padding:10px 14px"><b>Today:</b> ' + (tt.working ? (tt.onLeave ? 'On leave' : 'Working ' + tourText(tt)) + (tt.extra ? ' (extra tour, overtime)' : tt.ddWork ? ' (day for day)' : '') : 'Off' + (tt.dropped ? ' (not working)' : tt.ddOff ? ' (day for day)' : '')) +
+    var todayLine = '<div class="card" style="padding:10px 14px" data-sec="1a"><b>Today:</b> ' + (tt.working ? (tt.onLeave ? 'On leave' : 'Working ' + tourText(tt)) + (tt.extra ? ' (extra tour, overtime)' : tt.ddWork ? ' (day for day)' : '') : 'Off' + (tt.dropped ? ' (not working)' : tt.ddOff ? ' (day for day)' : '')) +
       '<div class="muted" style="font-size:12.5px">' + (sq.type === 'pdu' ? esc(sq.name) + ' &middot; ' + (tt.pdu ? '<span class="cdot" style="background:' + pduColorInfo(T).color + '"></span> ' + pduColorInfo(T).name + ' day &middot; ' : '') + shiftText('pm') + ' &middot; ' + shiftText('am') : 'Regular tour ' + E.fmtHM(S.profile.tourLen) + (S.profile.tourStart ? ' from ' + S.profile.tourStart : '')) + '</div></div>';
-    if (Object.keys(E.validateProfile(S.profile)).length) todayLine = '<div class="ddpair" style="border-color:#b45309;background:#fffbeb;margin:0 0 12px"><b>Finish your profile</b><div style="font-size:13.5px">Rank, first and last name, tax number and reference number are required.</div><button class="btn sm" data-act="settings" style="margin-top:6px">Open settings</button></div>' + todayLine;
-    var html = suggestBar('Calendar') + todayLine + '<div class="row"><div class="card stat"><div class="lbl">Next day off</div>' + cd + '</div><div class="card stat"><div class="lbl">Next payday</div>' + pd + '</div></div>';
+    if (Object.keys(E.validateProfile(S.profile)).length) todayLine = '<div class="ddpair" data-sec="1h" style="border-color:#b45309;background:#fffbeb;margin:0 0 12px"><b>Finish your profile</b><div style="font-size:13.5px">Rank, first and last name, tax number and reference number are required.</div><button class="btn sm" data-act="settings" style="margin-top:6px">Open settings</button></div>' + todayLine;
+    var html = suggestBar('Calendar') + todayLine + '<div class="row"><div class="card stat" data-sec="1b"><div class="lbl">Next day off</div>' + cd + '</div><div class="card stat" data-sec="1c"><div class="lbl">Next payday</div>' + pd + '</div></div>';
 
     // calendar
     var y = ui.calY, m = ui.calM, first = E.fromYMD(y, m, 1), last = E.fromYMD(m === 12 ? y + 1 : y, m === 12 ? 1 : m + 1, 1) - 1;
@@ -2908,7 +3089,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<span class="dn">' + E.parts(d).d + '</span>' + (tag ? '<span class="tag">' + tag + '</span>' : '') +
         '<span class="marks">' + marks + '</span></button>';
     }
-    html += '<div class="card"><div class="monthnav"><button class="navbtn" data-act="calPrev" aria-label="Previous month">&lsaquo;</button>' +
+    html += '<div class="card" data-sec="1d"><div class="monthnav"><button class="navbtn" data-act="calPrev" aria-label="Previous month">&lsaquo;</button>' +
       '<div class="title">' + MONTHS[m - 1] + ' ' + y + '</div><button class="navbtn" data-act="calNext" aria-label="Next month">&rsaquo;</button></div>' +
       '<div class="seg" style="margin-bottom:10px"><button data-act="calView" data-v="mine" class="' + (all ? '' : 'on') + '">My schedule</button><button data-act="calView" data-v="all" class="' + (all ? 'on' : '') + '">' + (pdView ? 'All PDU teams' : 'All squads') + '</button></div>' +
       '<div class="cal">' + cells + '</div>' +
@@ -2926,13 +3107,13 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<span><i class="m-dd" style="font-style:normal;font-size:10px;font-weight:800;padding:0 4px;border-radius:4px">D/D</i>Day for day swap</span>' +
       '<span><i class="m-chg" style="font-style:normal;font-size:10px;font-weight:800;padding:0 4px;border-radius:4px">&#8644;</i>Chart change</span>' +
       C.leaveTypes.filter(function (l) { return !l.hidden; }).map(function (l) { return '<span><i style="font-style:normal;font-size:10px;font-weight:800;padding:1px 5px;border-radius:4px;background:' + l.color + ';color:#fff">' + l.short + '</i>' + l.label + '</span>'; }).join('') +
-      C.assignmentTypes.map(function (a) { return '<span><i style="font-style:normal;font-size:10px;font-weight:800;padding:1px 4px;border-radius:4px;background:' + a.color + ';color:#fff">' + a.short + '</i>' + esc(a.label) + '</span>'; }).join('') +
+      C.assignmentTypes.filter(function (a) { return !a.retired || Object.keys(S.assignments).some(function (k) { return S.assignments[k] && S.assignments[k].type === a.id; }); }).map(function (a) { return '<span><i style="font-style:normal;font-size:10px;font-weight:800;padding:1px 4px;border-radius:4px;background:' + a.color + ';color:#fff">' + a.short + '</i>' + esc(a.label) + '</span>'; }).join('') +
       '</div><div class="cfhint">Tap any day to add an assignment, leave, notes or overtime.</div>' +
       chgList.map(function (c) { var ci = E.chartInfo(c.chart, u); return '<div class="chgline"><i class="m-chg">&#8644;</i> Chart change: <b>' + esc(ci ? ci.name : c.chart) + '</b> from ' + fmt(c.day) + '</div>'; }).join('') + '</div>';
     html += upcomingCard();
     html += retireCard();
     // calendar sync lives at the bottom of the Schedule tab
-    html += '<button class="btn block" data-act="syncOpen" id="syncBottom" style="margin:4px 0 12px">&#128197; Sync to Apple / Google Calendar</button>';
+    html += '<button class="btn block" data-act="syncOpen" id="syncBottom" data-sec="1g" style="margin:4px 0 12px">&#128197; Sync to Apple / Google Calendar</button>';
     return html;
   }
   function asgChip(a, big) { var t = E.assignmentType(a.type) || { short: '?', color: '#64748b' }; return '<span class="sw" style="background:' + t.color + '">' + esc(t.short) + '</span>'; }
@@ -2952,16 +3133,16 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function retireCard() {
     var r = E.retirementCountdown(S.profile, new Date());
     if (r.source === 'none') {
-      return '<div class="card retire need" id="retireCard"><h3>Retirement</h3><p>Add your hire date in Settings to see a countdown to 20 years, or enter a scheduled retirement date.</p>' +
+      return '<div class="card retire need" id="retireCard" data-sec="1f"><h3>Retirement</h3><p>Add your hire date in Settings to see a countdown to 20 years, or enter a scheduled retirement date.</p>' +
         '<button type="button" class="btn sm" data-act="settings">Settings</button></div>';
     }
     var when = fmt(E.toDay(r.iso), 'mdy');
     var sub = r.source === 'manual' ? 'Scheduled retirement date' : '20 years from your hire date';
     if (r.reached) {
-      return '<div class="card retire" id="retireCard"><h3>Retirement</h3><div class="rlive" id="retireLive" data-done="1"><div class="rseg"><b>0</b><span>Years</span></div><div class="rseg"><b>0</b><span>Months</span></div><div class="rseg"><b>0</b><span>Days</span></div><div class="rclock">00:00:00</div></div>' +
+      return '<div class="card retire" id="retireCard" data-sec="1f"><h3>Retirement</h3><div class="rlive" id="retireLive" data-done="1"><div class="rseg"><b>0</b><span>Years</span></div><div class="rseg"><b>0</b><span>Months</span></div><div class="rseg"><b>0</b><span>Days</span></div><div class="rclock">00:00:00</div></div>' +
         '<div class="rsub">Reached ' + esc(when) + ' &middot; ' + esc(sub) + '</div></div>';
     }
-    return '<div class="card retire" id="retireCard"><h3>Retirement countdown</h3>' + retireLiveHtml(r) +
+    return '<div class="card retire" id="retireCard" data-sec="1f"><h3>Retirement countdown</h3>' + retireLiveHtml(r) +
       '<div class="rsub">' + esc(when) + ' &middot; ' + esc(sub) + '</div></div>';
   }
   var retireTick = 0;
@@ -2980,7 +3161,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function upcomingCard() {
     var all = E.upcomingAssignments(S.assignments, T), show = all.slice(0, 6);
-    return '<div class="card" id="upcomingAsg"><h3 style="margin-top:0">Upcoming assignments</h3>' +
+    return '<div class="card" id="upcomingAsg" data-sec="1e"><h3 style="margin-top:0">Upcoming assignments</h3>' +
       (show.length ? '<div class="list">' + show.map(function (x) { return asgRow(x, true); }).join('') + '</div>' : '<div class="muted" style="font-size:13.5px;margin-bottom:8px">None yet. Tap any day, even a year or more ahead, to set training, court, details and more.</div>') +
       (all.length > show.length ? '<button class="btn sm" data-act="tab" data-tab="leave" style="margin-top:6px">See all ' + all.length + ' in Leave &amp; notes</button> ' : '') +
       '<button class="btn sm" data-act="leaveNew" data-kind="asg" style="margin-top:6px">+ Add assignment</button></div>';
@@ -2990,22 +3171,22 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var po = payOpts(), pp = E.overtimePeriodFor(T, po).overtime, ppPay = E.overtimePaydayFor(T, po);
     var tm = E.fromYMD(tp.y, tp.m, 1), tmEnd = E.fromYMD(tp.m === 12 ? tp.y + 1 : tp.y, tp.m === 12 ? 1 : tp.m + 1, 1) - 1;
     var a = sumOT(otInRange(pp.start, pp.end)), b = sumOT(otInRange(tm, tmEnd)), c = sumOT(otInRange(E.fromYMD(tp.y, 1, 1), E.fromYMD(tp.y, 12, 31)));
-    function tot(lbl, s, sub) { return '<div class="tot"><small>' + lbl + '</small><b>' + hrs(s.hours) + '</b><span>' + payText(s) + '</span><em>' + sub + '</em></div>'; }
-    var html = suggestBar('Overtime') + '<div class="tot-row" style="margin-bottom:12px">' + tot('OT period', a, fmt(pp.start, 'md') + '–' + fmt(pp.end, 'md') + '<br>paid ' + fmt(ppPay, 'md')) + tot('Month', b, MONTHS[tp.m - 1].slice(0, 3) + ' ' + tp.y) + tot('Year', c, String(tp.y)) + '</div>';
-    html += '<div class="muted" style="font-size:12.5px;margin:-4px 2px 10px">Overtime is paid on the payday 12 days after its 2-week OT period (Sun–Sat) ends.</div><button class="btn primary block" data-act="otNew" style="margin-bottom:12px">+ Log overtime</button>';
+    function tot(lbl, s, sub) { return '<div class="tot"><small>' + lbl + '</small><b>' + hrs(s.hours) + '</b><span>' + payText(s) + '</span>' + travelSumText(s) + '<em>' + sub + '</em></div>'; }
+    var html = suggestBar('Overtime') + '<div class="tot-row" data-sec="2a" style="margin-bottom:12px">' + tot('OT period', a, fmt(pp.start, 'md') + '–' + fmt(pp.end, 'md') + '<br>paid ' + fmt(ppPay, 'md')) + tot('Month', b, MONTHS[tp.m - 1].slice(0, 3) + ' ' + tp.y) + tot('Year', c, String(tp.y)) + '</div>';
+    html += '<div class="muted" style="font-size:12.5px;margin:-4px 2px 10px">Overtime is paid on the Friday payday 13 days after its 2-week OT period (Sun–Sat) ends.</div><button class="btn primary block" data-act="otNew" data-sec="2b" style="margin-bottom:12px">+ Log overtime</button>';
     var y = ui.otYear, list = S.overtime.filter(function (e) { return +e.date.slice(0, 4) === y; }).sort(function (p, q) { return p.date < q.date ? 1 : p.date > q.date ? -1 : (q.start || '').localeCompare(p.start || ''); });
-    html += '<div class="card"><div class="yearsel"><button class="navbtn" data-act="otYear" data-dir="-1" aria-label="Previous year">&lsaquo;</button><b>' + y + '</b><button class="navbtn" data-act="otYear" data-dir="1" aria-label="Next year">&rsaquo;</button></div>';
+    html += '<div class="card" data-sec="2c"><div class="yearsel"><button class="navbtn" data-act="otYear" data-dir="-1" aria-label="Previous year">&lsaquo;</button><b>' + y + '</b><button class="navbtn" data-act="otYear" data-dir="1" aria-label="Next year">&rsaquo;</button></div>';
     if (!list.length) html += '<div class="empty">No overtime logged in ' + y + '.</div>';
     else {
       var ys = sumOT(list);
       var byType = {}; list.forEach(function (e) { byType[e.type] = (byType[e.type] || 0) + E.entryHours(e); });
-      html += '<div style="margin-bottom:6px"><b>' + y + ' total: ' + hrs(ys.hours) + ' &middot; ' + money(ys.pay) + '</b></div><div>' +
+      html += '<div style="margin-bottom:6px"><b>' + y + ' total: ' + hrs(ys.hours) + ' &middot; ' + money(ys.pay) + '</b>' + (ys.travel.minutes ? ' <span class="muted" id="otYearTravel">(' + travelSumText(ys).replace(/<[^>]+>/g, '') + ')</span>' : '') + '</div><div>' +
         C.overtimeTypes.filter(function (t) { return byType[t.id]; }).map(function (t) { return '<span class="chip">' + esc(t.label) + ': ' + hrs(byType[t.id]) + '</span>'; }).join('') + '</div>';
       var groups = {};
       list.forEach(function (e) { var k = e.date.slice(0, 7); (groups[k] = groups[k] || []).push(e); });
       Object.keys(groups).sort().reverse().forEach(function (k) {
         var g = groups[k], s = sumOT(g);
-        html += '<div class="grp"><span>' + MONTHS[+k.slice(5, 7) - 1] + '</span><span>' + hrs(s.hours) + ' &middot; ' + payText(s) + '</span></div><div class="list">' + g.map(otRow).join('') + '</div>';
+        html += '<div class="grp"><span>' + MONTHS[+k.slice(5, 7) - 1] + '</span><span>' + hrs(s.hours) + ' &middot; ' + payText(s) + (s.travel.minutes ? ' &middot; travel ' + E.fmtHM(s.travel.minutes) : '') + '</span></div><div class="list">' + g.map(otRow).join('') + '</div>';
       });
     }
     return html + '</div>' + paidDetailCard(y);
@@ -3013,7 +3194,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   // Paid Detail earnings: its own card, never mixed into the OT totals above.
   function paidDetailCard(y) {
     var t = E.paidDetailTotals(S.assignments, S.profile, y + '-01-01', y + '-12-31', E.toISO(T));
-    var h = '<div class="card pdcard" id="pdEarn"><div class="shead" style="margin-bottom:6px"><h3 style="margin:0">Paid Details ' + y + '</h3>' + suggestBtnHtml('Paid Detail') + '</div>';
+    var h = '<div class="card pdcard" id="pdEarn" data-sec="2d"><div class="shead" style="margin-bottom:6px"><h3 style="margin:0">Paid Details ' + y + '</h3>' + suggestBtnHtml('Paid Detail') + '</div>';
     if (!t.count) return h + '<div class="empty">No paid details in ' + y + '. Pick &ldquo;Paid Detail&rdquo; as a day&rsquo;s assignment to add one.</div></div>';
     h += '<div class="tot-row" style="margin-bottom:8px"><div class="tot"><small>Total</small><b>' + E.fmtHM(t.minutes) + '</b><span>' + money(t.amount) + '</span><em>' + t.count + ' detail' + (t.count === 1 ? '' : 's') + '</em></div>' +
       '<div class="tot"><small>Worked</small><b>' + money(t.earned) + '</b><em>through today</em></div><div class="tot"><small>Scheduled</small><b>' + money(t.scheduled) + '</b><em>after today</em></div></div>';
@@ -3027,30 +3208,30 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function otRow(e) {
     var h = E.entryHours(e), d = E.toDay(e.date);
     var when = fmt(d) + (e.mode === 'times' && e.start ? ' &middot; ' + esc(e.start) + '–' + esc(e.end) : '') + (E.otDay(e) !== d ? ' &middot; <b class="nxtxt">counts for ' + fmt(d + 1) + '</b>' : '');
-    return '<button class="item" data-act="otEdit" data-id="' + esc(e.id) + '"><div class="main"><div class="t1">' + esc(otType(e.type).label) + (e.linkedTour ? ' <span class="chip" style="font-size:11px;padding:1px 6px;background:#fffbe6;border:1.5px dashed ' + mySquad().color + '">RDO tour</span>' : e.linkedEnd ? ' <span class="chip" style="font-size:11px;padding:1px 6px;background:#fff7ed;border:1.5px dashed #c2410c">Late end</span>' : '') + '</div><div class="t2">' + when + (e.notes ? ' &middot; ' + esc(e.notes) : '') + '</div><div class="t2" style="color:var(--pay);font-weight:700">Paid ' + fmt(E.overtimePaydayFor(d, payOpts())) + '</div></div>' +
+    return '<button class="item" data-act="otEdit" data-id="' + esc(e.id) + '"><div class="main"><div class="t1">' + esc(otType(e.type).label) + (e.linkedTour ? ' <span class="chip" style="font-size:11px;padding:1px 6px;background:#fffbe6;border:1.5px dashed ' + mySquad().color + '">RDO tour</span>' : e.linkedEnd ? ' <span class="chip" style="font-size:11px;padding:1px 6px;background:#fff7ed;border:1.5px dashed #c2410c">Late end</span>' : '') + (function (t) { return t && !t.ineligible && t.minutes ? ' <span class="chip travchip" style="font-size:11px;padding:1px 6px">Travel ' + E.fmtHM(t.minutes) + (t.comp === 'time' ? ' comp' : '') + '</span>' : ''; })(entryPay(e).travel) + '</div><div class="t2">' + when + (e.notes ? ' &middot; ' + esc(e.notes) : '') + '</div><div class="t2" style="color:var(--pay);font-weight:700">Paid ' + fmt(E.overtimePaydayFor(d, payOpts())) + '</div></div>' +
       '<div class="right">' + hrs(h) + '<small>' + (function (r) { return payText({ pay: r.pay, comp: r.compMinutes || 0 }); })(entryPay(e)) + '</small></div></button>';
   }
 
   function viewPay() {
     var po = payOpts(), sq = mySquad(), y = ui.payYear, periods = E.payPeriodsInYear(y, po);
-    var curReg = E.regularPaydayFor(T, po), curOT = E.overtimePaydayFor(T, po), th = 0, tpay = 0;
+    var curReg = E.regularPaydayFor(T, po), curOT = E.overtimePaydayFor(T, po), th = 0, tpay = 0, ttr = 0, ttrp = 0;
     var cards = periods.map(function (p) {
       var w = E.periodHours(p.regular.start, p.regular.end, sq.id, tourOpts()), diff = w.minutes - regTarget(), s = sumOT(otInRange(p.overtime.start, p.overtime.end));
-      th += s.hours; tpay += s.pay;
+      th += s.hours; tpay += s.pay; ttr += s.travel.minutes; ttrp += s.travel.pay;
       var isReg = p.payday === curReg, isOT = p.payday === curOT, past = p.payday < T;
-      return '<div class="card period' + (isReg || isOT ? ' current' : '') + '"' + (isReg ? ' id="curPeriod"' : '') + '>' +
+      return '<div class="card period' + (isReg || isOT ? ' current' : '') + '" data-sec="3b"' + (isReg ? ' id="curPeriod"' : '') + '>' +
         '<div class="head"><div><b>Payday ' + fmt(p.payday, 'mdy') + '</b>' + (p.payday >= T && p.payday - T < 14 ? '<span class="nowtag">NEXT</span>' : past ? ' <span class="muted" style="font-size:12px">paid</span>' : '') + '</div></div>' +
         '<div class="pblock' + (isReg ? ' on' : '') + '"><div class="ph"><span>Regular period' + (isReg ? ' <em>CURRENT</em>' : '') + '</span><span>' + fmt(p.regular.start, 'md') + ' – ' + fmt(p.regular.end, 'md') + '</span></div>' +
         '<div class="grid3"><div><small>Days worked</small><b>' + w.worked + '</b><span class="muted" style="font-size:11.5px">of ' + w.scheduled + ' sched' + (w.leave ? ', ' + w.leave + ' leave' : '') + '</span></div>' +
         '<div><small>Reg. hours</small><b>' + E.fmtHM(w.minutes) + '</b><span class="muted" style="font-size:11.5px">of ' + E.fmtHM(regTarget()) + '</span></div>' +
         '<div><small>vs target</small><b style="color:' + (diff < 0 ? 'var(--danger)' : diff > 0 ? 'var(--pay)' : 'inherit') + '">' + (diff > 0 ? '+' : '') + E.fmtHM(diff) + '</b><span class="muted" style="font-size:11.5px">' + ([w.ddWorkDays || w.ddOffDays ? 'D/D +' + w.ddWorkDays + '/−' + w.ddOffDays : '', w.extraDays ? w.extraDays + ' extra OT tour' + (w.extraDays > 1 ? 's' : '') : '', w.leave ? w.leave + ' leave' : ''].filter(Boolean).join(', ') || '&nbsp;') + '</span></div></div></div>' +
         '<div class="pblock' + (isOT ? ' on' : '') + '"><div class="ph"><span>Overtime period' + (isOT ? ' <em>CURRENT</em>' : '') + '</span><span>' + fmt(p.overtime.start, 'md') + ' – ' + fmt(p.overtime.end, 'md') + '</span></div>' +
-        '<div class="grid3"><div><small>OT entries</small><b>' + otInRange(p.overtime.start, p.overtime.end).length + '</b></div><div><small>OT hours</small><b>' + hrs(s.hours) + '</b></div><div><small>Est. OT pay</small><b style="color:var(--pay)">' + money(s.pay) + '</b></div></div></div></div>';
+        '<div class="grid3"><div><small>OT entries</small><b>' + otInRange(p.overtime.start, p.overtime.end).length + '</b></div><div><small>OT hours</small><b>' + hrs(s.hours) + '</b></div><div><small>Est. OT pay</small><b style="color:var(--pay)">' + money(s.pay) + '</b></div></div>' + (s.travel.minutes ? '<div class="muted travper" style="font-size:12px;margin-top:4px">Travel time: ' + E.fmtHM(s.travel.minutes) + (s.travel.pay ? ' &middot; ' + money(s.travel.pay) + ' cash' : '') + (s.travel.comp ? ' &middot; ' + E.fmtHM(s.travel.comp) + ' comp' : '') + ' (included above)</div>' : '') + '</div></div>';
     }).join('');
     th = Math.round(th * 100) / 100;
-    return suggestBar('Pay') + '<div class="card"><div class="yearsel"><button class="navbtn" data-act="payYear" data-dir="-1" aria-label="Previous year">&lsaquo;</button><b>' + y + '</b><button class="navbtn" data-act="payYear" data-dir="1" aria-label="Next year">&rsaquo;</button></div>' +
-      '<div class="tot-row"><div class="tot"><small>Paydays</small><b>' + periods.length + '</b></div><div class="tot"><small>OT hours paid</small><b>' + hrs(th) + '</b></div><div class="tot"><small>Est. OT pay</small><b style="font-size:17px">' + money(tpay) + '</b></div></div>' +
-      '<div class="muted" style="font-size:12.5px;margin-top:8px">Work weeks run Sun–Sat. Each payday covers a <b>regular period</b> (target ' + E.fmtHM(regTarget()) + ') ending the Saturday 5 days before payday, and an <b>overtime period</b> one week earlier, ending 12 days before payday. Regular hours = your tour length on each workday (with per-day changes and day-for-day swaps), excluding leave days. Extra tours on RDOs count as overtime. ' + payBasisText() + '</div>' +
+    return suggestBar('Pay') + '<div class="card" data-sec="3a"><div class="yearsel"><button class="navbtn" data-act="payYear" data-dir="-1" aria-label="Previous year">&lsaquo;</button><b>' + y + '</b><button class="navbtn" data-act="payYear" data-dir="1" aria-label="Next year">&rsaquo;</button></div>' +
+      '<div class="tot-row"><div class="tot"><small>Paydays</small><b>' + periods.length + '</b></div><div class="tot"><small>OT hours paid</small><b>' + hrs(th) + '</b></div><div class="tot"><small>Est. OT pay</small><b style="font-size:17px">' + money(tpay) + '</b>' + (ttr ? '<span class="travsum" id="payYearTravel">incl. travel ' + E.fmtHM(ttr) + (ttrp ? ' &middot; ' + money(ttrp) : '') + '</span>' : '') + '</div></div>' +
+      '<div class="muted" style="font-size:12.5px;margin-top:8px">Work weeks run Sun–Sat. Each payday covers a <b>regular period</b> (target ' + E.fmtHM(regTarget()) + ') ending the Saturday 6 days before the Friday payday, and an <b>overtime period</b> one week earlier, ending 13 days before payday. Regular hours = your tour length on each workday (with per-day changes and day-for-day swaps), excluding leave days. Extra tours on RDOs count as overtime. ' + payBasisText() + '</div>' +
       (y !== tp.y ? '' : '<button class="btn sm" data-act="payJump" style="margin-top:8px">Jump to current periods</button>') + '</div>' + cards;
   }
 
@@ -3058,13 +3239,13 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var y = ui.leaveYear, counts = {}, entries = [];
     Object.keys(S.leave).forEach(function (iso) { if (+iso.slice(0, 4) !== y) return; var l = S.leave[iso]; if (!l || (!l.type && !l.note)) return; entries.push([iso, l]); if (l.type) counts[l.type] = (counts[l.type] || 0) + 1; });
     entries.sort(function (a, b) { return a[0] < b[0] ? 1 : -1; });
-    var html = suggestBar('Leave') + '<div class="card"><div class="yearsel"><button class="navbtn" data-act="leaveYear" data-dir="-1" aria-label="Previous year">&lsaquo;</button><b>' + y + '</b><button class="navbtn" data-act="leaveYear" data-dir="1" aria-label="Next year">&rsaquo;</button></div>' +
+    var html = suggestBar('Leave') + '<div class="card" data-sec="4a"><div class="yearsel"><button class="navbtn" data-act="leaveYear" data-dir="-1" aria-label="Previous year">&lsaquo;</button><b>' + y + '</b><button class="navbtn" data-act="leaveYear" data-dir="1" aria-label="Next year">&rsaquo;</button></div>' +
       '<div class="lv-grid">' + C.leaveTypes.filter(function (l) { return !l.hidden || counts[l.id]; }).map(function (l) { var n = counts[l.id] || 0; return '<div class="lv-card" style="background:' + l.color + '"><b>' + n + '</b>' + l.label + '</div>'; }).join('') + '</div></div>';
-    html += '<button class="btn primary block" data-act="leaveNew" style="margin-bottom:12px">+ Leave, note or assignment (any date)</button>';
+    html += '<button class="btn primary block" data-act="leaveNew" data-sec="4b" style="margin-bottom:12px">+ Leave, note or assignment (any date)</button>';
     var asgs = Object.keys(S.assignments).filter(function (iso) { return +iso.slice(0, 4) === y && S.assignments[iso] && S.assignments[iso].type; }).sort().map(function (iso) { return { iso: iso, day: E.toDay(iso), a: S.assignments[iso], label: E.assignmentLabel(S.assignments[iso]) }; });
-    html += '<div class="card" id="asgYear"><h3>Assignments in ' + y + (asgs.length ? ' <span class="muted" style="font-size:13px;font-weight:600">(' + asgs.length + ')</span>' : '') + '</h3>' +
+    html += '<div class="card" id="asgYear" data-sec="4c"><h3>Assignments in ' + y + (asgs.length ? ' <span class="muted" style="font-size:13px;font-weight:600">(' + asgs.length + ')</span>' : '') + '</h3>' +
       (asgs.length ? '<div class="list">' + asgs.map(function (x) { return asgRow(x, false); }).join('') + '</div>' : '<div class="empty">No assignments in ' + y + '. Tap any day to add one.</div>') + '</div>';
-    html += '<div class="card"><h3>Leave &amp; notes in ' + y + '</h3>';
+    html += '<div class="card" data-sec="4d"><h3>Leave &amp; notes in ' + y + '</h3>';
     if (!entries.length) html += '<div class="empty">Nothing marked yet. Tap a day on the Schedule tab, or use the button above.</div>';
     else html += '<div class="list">' + entries.map(function (en) {
       var d = E.toDay(en[0]), l = en[1], lt = lvType(l.type), rdo = E.isRDO(d, mySquad().id, U());
@@ -3076,20 +3257,20 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
 
   function viewLookup() {
     var u = U(), d = ui.lookup, off = E.squadsOff(d, u), work = E.squadsWorking(d, u), sq = mySquad(ui.lookup), o = off[0];
-    var html = suggestBar('Lookup') + '<div class="card"><div class="field" style="margin-bottom:8px"><label for="lkDate">Pick a date</label><input type="date" id="lkDate" value="' + E.toISO(d) + '"></div>' +
+    var html = suggestBar('Lookup') + '<div class="card" data-sec="5a"><div class="field" style="margin-bottom:8px"><label for="lkDate">Pick a date</label><input type="date" id="lkDate" value="' + E.toISO(d) + '"></div>' +
       '<div class="row"><button class="btn sm" data-act="lkShift" data-n="-1">&lsaquo; Prev day</button><button class="btn sm" data-act="lkToday">Today</button><button class="btn sm" data-act="lkShift" data-n="1">Next day &rsaquo;</button></div></div>';
     var headLen = html.length;
-    html += '<div class="bigoff" style="background:' + o.color + ';color:' + o.ink + '"><div class="l1">' + fmt(d, 'long') + '</div><div class="l2">' + off.map(function (s) { return esc(s.name); }).join(' & ') + ' off</div>' +
+    html += '<div class="bigoff" data-sec="5b" style="background:' + o.color + ';color:' + o.ink + '"><div class="l1">' + fmt(d, 'long') + '</div><div class="l2">' + off.map(function (s) { return esc(s.name); }).join(' & ') + ' off</div>' +
       '<div>Working: ' + work.map(function (s) { return esc(s.name); }).join(' & ') + '</div></div>';
     var mine = E.isRDO(d, sq.id, u), lv = S.leave[E.toISO(d)], lt = lv && lvType(lv.type), tr = E.dayTour(d, sq.id, tourOpts());
-    html += '<div class="card"><b>You (' + esc(sq.name) + '):</b> ' + (tr.working ? (tr.extra ? 'Extra tour on RDO (overtime)' : tr.ddWork ? 'Day for day: working this RDO' : 'Scheduled to work') + ', tour ' + tourText(tr) : tr.dropped ? 'Not working (changed)' : tr.ddOff ? 'Day for day: off' : 'Regular day off') + (lt ? ' &middot; ' + lt.label + ' leave' : '') + (E.isPayday(d, payOpts()) ? ' &middot; <b style="color:var(--pay)">Payday</b>' : '') +
+    html += '<div class="card" data-sec="5c"><b>You (' + esc(sq.name) + '):</b> ' + (tr.working ? (tr.extra ? 'Extra tour on RDO (overtime)' : tr.ddWork ? 'Day for day: working this RDO' : 'Scheduled to work') + ', tour ' + tourText(tr) : tr.dropped ? 'Not working (changed)' : tr.ddOff ? 'Day for day: off' : 'Regular day off') + (lt ? ' &middot; ' + lt.label + ' leave' : '') + (E.isPayday(d, payOpts()) ? ' &middot; <b style="color:var(--pay)">Payday</b>' : '') +
       '<div class="muted" style="font-size:13px;margin-top:4px">' + (tr.pdu ? 'PDU ' + pduColorInfo(d).name + ' day (day ' + E.pduCycleDay(d) + ' of 6)' + (tr.shift === 'pm' || tr.shift === 'am' ? ' &middot; your ' + PDU.shifts[tr.shift].label + ' tour' : '') : 'Cycle day ' + (E.cycleOffset(d, u) + 1) + ' of ' + E.unit(u).pattern.cycleLength + ' (' + esc(E.unit(u).pattern.description) + ')') + '</div></div>';
     var ws = d - E.parts(d).dow, strip = '';
     for (var i = 0; i < 7; i++) {
       var x = ws + i, s = E.squadsOff(x, u)[0], p = E.parts(x);
       strip += '<button class="wd' + (x === d ? ' sel' : '') + '" data-act="lkSet" data-d="' + x + '" style="background:' + s.color + ';color:' + s.ink + '" aria-label="' + esc(fmt(x, 'long') + ': ' + s.name + ' off') + '"><div class="a">' + DOW[p.dow] + '</div><div class="b">' + p.d + '</div><div class="c">S' + s.short + ' off</div></button>';
     }
-    html += '<div class="card"><div class="monthnav"><button class="navbtn" data-act="lkShift" data-n="-7" aria-label="Previous week">&lsaquo;</button><div class="title" style="font-size:16px">Who\'s off: week of ' + fmt(ws, 'md') + '</div><button class="navbtn" data-act="lkShift" data-n="7" aria-label="Next week">&rsaquo;</button></div><div class="week">' + strip + '</div>' +
+    html += '<div class="card" data-sec="5d"><div class="monthnav"><button class="navbtn" data-act="lkShift" data-n="-7" aria-label="Previous week">&lsaquo;</button><div class="title" style="font-size:16px">Who\'s off: week of ' + fmt(ws, 'md') + '</div><button class="navbtn" data-act="lkShift" data-n="7" aria-label="Next week">&rsaquo;</button></div><div class="week">' + strip + '</div>' +
       '<div class="legend">' + E.unit(u).squads.map(function (s) { return '<span><i class="sw" style="background:' + s.color + '"></i>' + esc(s.name) + '</span>'; }).join('') + '</div></div>';
     // PDU teams
     var pon = E.pduTeamsOn(d), dc = pduColorInfo(d), cd = E.pduCycleDay(d), pstrip = '';
@@ -3097,13 +3278,13 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var y2 = ws + j, c2 = pduColorInfo(y2), o2 = E.pduTeamsOn(y2), p2 = E.parts(y2);
       pstrip += '<button class="wd' + (y2 === d ? ' sel' : '') + '" data-act="lkSet" data-d="' + y2 + '" style="background:' + c2.color + ';color:' + c2.ink + '" aria-label="' + esc(fmt(y2, 'long') + ': ' + c2.name + ' day, PM ' + o2.pm.name + ', AM ' + o2.am.name + ', ' + o2.rdo.name + ' off') + '"><div class="a">' + DOW[p2.dow] + '</div><div class="b">' + p2.d + '</div><div class="c">PM ' + o2.pm.short + '<br>AM ' + o2.am.short + '<br>' + o2.rdo.short + ' off</div></button>';
     }
-    html += '<div class="card" id="pduLookup"><h3 style="margin-top:0">PDU teams</h3><div class="bigoff" style="background:' + dc.color + ';color:' + dc.ink + ';padding:12px;margin-bottom:10px"><div class="l1">' + dc.name + ' day &middot; ' + (cd % 2 ? 'day 1 of 2' : 'day 2 of 2') + '</div><div style="font-size:20px;font-weight:900">' + esc(pon.rdo.name) + ' off</div></div>' +
+    html += '<div class="card" id="pduLookup" data-sec="5e"><h3 style="margin-top:0">PDU teams</h3><div class="bigoff" style="background:' + dc.color + ';color:' + dc.ink + ';padding:12px;margin-bottom:10px"><div class="l1">' + dc.name + ' day &middot; ' + (cd % 2 ? 'day 1 of 2' : 'day 2 of 2') + '</div><div style="font-size:20px;font-weight:900">' + esc(pon.rdo.name) + ' off</div></div>' +
       '<div class="list">' + ['pm', 'am'].map(function (k) { return '<div class="item" style="cursor:default"><span class="sw" style="width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-weight:900;font-size:12px;background:' + PDU.shifts[k].color + ';color:' + PDU.shifts[k].ink + ';border:1px solid #cbd5e1">' + PDU.shifts[k].label + '</span><div class="main"><div class="t1">' + esc(pon[k].name) + '</div><div class="t2">' + shiftText(k) + '</div></div></div>'; }).join('') +
       '<div class="item" style="cursor:default"><span class="sw" style="width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-weight:900;font-size:10px;background:' + dc.color + ';color:' + dc.ink + '">RDO</span><div class="main"><div class="t1">' + esc(pon.rdo.name) + '</div><div class="t2">Regular day off</div></div></div></div>' +
       '<div class="title" style="font-size:15px;font-weight:800;margin:10px 0 6px">Week of ' + fmt(ws, 'md') + '</div><div class="week pdustrip">' + pstrip + '</div>' +
       '<div class="legend">' + ['blue', 'yellow', 'green'].map(function (x) { var t = PDU.teams.filter(function (tm) { return tm.map[x] === 'rdo'; })[0]; return '<span><i class="sw" style="background:' + PDU.colors[x].color + '"></i>' + PDU.colors[x].name + ' = ' + esc(t.short) + ' off</span>'; }).join('') + '</div>' +
       '<div class="muted" style="font-size:12.5px;margin-top:6px">' + esc(PDU.description) + '. Each team: PM, PM, AM, AM, RDO, RDO.</div></div>';
-    if (sq.type === 'pdu') { var pi = html.indexOf('<div class="card" id="pduLookup">'); html = html.slice(0, headLen) + html.slice(pi) + html.slice(headLen, pi); } // PDU members see their teams first
+    if (sq.type === 'pdu') { var pi = html.indexOf('<div class="card" id="pduLookup" data-sec="5e">'); html = html.slice(0, headLen) + html.slice(pi) + html.slice(headLen, pi); } // PDU members see their teams first
     return html;
   }
 
@@ -3112,19 +3293,59 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     return '<button type="button" class="btn sm suggestbtn" data-act="suggestOpen" data-section="' + esc(section) + '">Suggest</button>';
   }
   function suggestBar(section) {
-    return '<div class="sugbar">' + suggestBtnHtml(section) + '</div>';
+    return '<div class="sugbar" data-sec="' + (TAB_PAGES[ui.tab] || '') + '">' + suggestBtnHtml(section) + '</div>';
+  }
+  // ---------- Sheet navigation ----------
+  // A sheet opened from another sheet is a sub-page: it gets a Back button, and Back / X / Escape / tapping outside return to the
+  // page it came from (kept as it was, typed values included). Saving in a sub-page returns to a fresh copy of the page before it.
+  // Only a top-level sheet closes to the main screen.
+  var NAV = { stack: [], cur: null, pending: null };
+  // Beta section numbers: pages 1-5 are the bottom tabs; sheets have fixed numbers here (see SECTION-NUMBERS.md). Never computed from order.
+  var SHEET_PAGES = { day: '6', sum: '7', ot: '8', settings: '9', hist: '10', suggest: '11', inbox: '12', admin: '13', leaveNew: '14', sync: '15', x15: '16', x15ed: '17', chart: '18' };
+  var TAB_PAGES = { schedule: '1', overtime: '2', pay: '3', leave: '4', lookup: '5' };
+  function navable(name, f, keyFn) {
+    return function () {
+      var a = arguments, prev = NAV.pending, me = { key: name + '|' + (keyFn ? keyFn.apply(null, a) : String(a[0] == null ? '' : a[0])) };
+      // re-opening later (Back / after a save) goes through the same key, so the stack stays right
+      me.fn = function () { var pv = NAV.pending; NAV.pending = { key: me.key, fn: me.fn }; try { return f.apply(null, a); } finally { NAV.pending = pv; } };
+      NAV.pending = { key: me.key, fn: me.fn };
+      try { return f.apply(null, a); } finally { NAV.pending = prev; }
+    };
   }
   function openSheet(title, body, section) {
-    var sug = section === false ? '' : suggestBtnHtml(section || title);
-    sheetRoot.innerHTML = '<div class="sheet-bg" data-act="sheetBg"><div class="sheet" role="dialog" aria-modal="true" aria-label="' + esc(title) + '"><div class="grab"></div><div class="shead"><h3>' + esc(title) + '</h3><div class="shead-acts">' + sug + '<button class="x" data-act="closeSheet" aria-label="Close">&times;</button></div></div>' + body + '</div></div>';
+    var sug = section === false ? '' : suggestBtnHtml(section || title), p = NAV.pending, open = !!sheetRoot.firstElementChild;
+    if (!open) NAV.stack = [];
+    else if (NAV.cur && p && NAV.cur.key !== p.key) {
+      var top = NAV.stack[NAV.stack.length - 1];
+      if (top && top.key === p.key) NAV.stack.pop(); // going back to the page under this one
+      else { var node = sheetRoot.firstElementChild, sh = node && node.querySelector('.sheet'); NAV.cur.node = node; NAV.cur.scroll = sh ? sh.scrollTop : 0; NAV.stack.push(NAV.cur); }
+    }
+    NAV.cur = p || { key: 'anon|' + title, fn: null };
+    var pg = SHEET_PAGES[(NAV.cur.key || '').split('|')[0]] || '';
+    var back = NAV.stack.length ? '<button type="button" class="sback" data-act="navBack" id="sheetBack" aria-label="Back">&lsaquo; Back</button>' : '';
+    sheetRoot.innerHTML = '<div class="sheet-bg" data-act="sheetBg"><div class="sheet' + (back ? ' sub' : '') + '" role="dialog" aria-modal="true" aria-label="' + esc(title) + '"><div class="grab"></div><div class="shead"' + (pg ? ' data-sec="' + pg + '"' : '') + '>' + back + '<h3>' + esc(title) + '</h3><div class="shead-acts">' + sug + '<button class="x" data-act="closeSheet" aria-label="' + (back ? 'Close and go back' : 'Close') + '">&times;</button></div></div>' + body + '</div></div>';
   }
-  function closeSheet() { sheetRoot.innerHTML = ''; }
+  // Back / X / Escape: the previous page exactly as it was left (or close, at the top level).
+  function navBack() {
+    var prev = NAV.stack.pop();
+    if (!prev) { closeAll(); return; }
+    NAV.cur = prev; sheetRoot.innerHTML = '';
+    if (prev.node) { sheetRoot.appendChild(prev.node); var sh = prev.node.querySelector('.sheet'); if (sh) sh.scrollTop = prev.scroll || 0; prev.node = null; }
+    else if (prev.fn) { NAV.stack.push(prev); NAV.cur = { key: '' }; sheetRoot.innerHTML = '<div></div>'; prev.fn(); }
+  }
+  // After a save / delete in a sheet: a sub-page returns to a fresh copy of the page it came from; a top-level sheet closes.
+  function closeSheet() {
+    var prev = NAV.stack[NAV.stack.length - 1];
+    if (prev && prev.fn) { NAV.cur = { key: '' }; prev.node = null; sheetRoot.innerHTML = '<div></div>'; prev.fn(); return; }
+    closeAll();
+  }
+  function closeAll() { NAV.stack = []; NAV.cur = null; sheetRoot.innerHTML = ''; }
 
   function daySheet(d) {
     var iso = E.toISO(d), u = U(), sq = mySquad(d), mine = E.isRDO(d, sq.id, u), lv = S.leave[iso] || {}, off = E.squadsOff(d, u), work = E.squadsWorking(d, u);
     var dt = E.dayTour(d, sq.id, tourOpts()), offNow = !dt.working, lbl = dt.extra ? 'Your RDO · extra tour (OT)' : dt.ddWork ? 'Your RDO · worked D/D' : dt.ddOff ? 'Your workday · off D/D' : dt.dropped ? 'Your workday · not working' : mine ? 'Your RDO' : dt.pdu ? 'Your ' + PDU.shifts[dt.shift].label + ' tour' : 'Your workday';
     var pon = E.pduTeamsOn(d), dcol = pduColorInfo(d);
-    var status = '<div class="status-line"><span class="chip" style="' + (offNow || dt.extra ? 'background:' + sq.color + ';color:' + sq.ink + ';border-color:transparent' : '') + '">' + lbl + '</span>' +
+    var status = '<div class="status-line" data-sec="6a"><span class="chip" style="' + (offNow || dt.extra ? 'background:' + sq.color + ';color:' + sq.ink + ';border-color:transparent' : '') + '">' + lbl + '</span>' +
       (E.isPayday(d, payOpts()) ? '<span class="chip" style="background:var(--pay);color:#fff;border-color:transparent">Payday</span>' : '') +
       (dt.countsNext ? '<span class="chip nxchip" id="nxChip">' + esc(E.tourEndInfo(dt.start, dt.len, d).note) + '</span>' : '') +
       (dt.plus15 ? '<span class="chip" style="background:#B45309;color:#fff;border-color:transparent">+15 &middot; tour ' + E.fmtHM(dt.len) + '</span>' : '') +
@@ -3139,7 +3360,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     }).join('');
     var ots = S.overtime.filter(function (e) { return e.date === iso; });
     openSheet(fmt(d, 'long'), status + pdNotesHtml(d, dt) +
-      '<div class="field" id="dayEntry"><label for="lvOptsBtn">This day</label><div class="daysel" id="lvOpts" data-sel="' + esc(entry.id) + '">' +
+      '<div class="field" id="dayEntry" data-sec="6b"><label for="lvOptsBtn">This day</label><div class="daysel" id="lvOpts" data-sel="' + esc(entry.id) + '">' +
         '<button type="button" class="daysel-btn" id="lvOptsBtn" data-act="daySelToggle" aria-haspopup="listbox" aria-expanded="false" aria-controls="lvOptsList">' +
         '<span class="daysel-swatch" style="background:' + curOpt.color + '"></span><span class="daysel-label">' + esc(curOpt.label) + '</span><span class="daysel-caret" aria-hidden="true">&#9662;</span></button>' +
         '<div class="daysel-list" id="lvOptsList" role="listbox" hidden>' + opts + '</div></div>' +
@@ -3147,11 +3368,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div class="hint" id="dayLeaveHint"' + (entry.leaveType && mine ? '' : ' hidden') + '>This is an RDO; leave here won\'t change days worked.</div></div>' +
       tourSection(d) +
       asgSection(iso, d, dt) +
-      '<div class="field"><label for="lvNote">Note (optional)</label><textarea id="lvNote" placeholder="e.g. Approved by Sgt. Lee">' + esc(lv.note || '') + '</textarea></div>' +
+      '<div class="field" data-sec="6f"><label for="lvNote">Note (optional)</label><textarea id="lvNote" placeholder="e.g. Approved by Sgt. Zee">' + esc(lv.note || '') + '</textarea></div>' +
             '<button class="btn primary block" data-act="lvSave" data-d="' + d + '">Save day</button>' +
-      '<h3 style="margin-top:18px">Overtime this day</h3>' + (ots.length ? '<div class="list">' + ots.map(otRow).join('') + '</div>' : '<div class="muted" style="margin-bottom:8px">None logged.</div>') +
-      '<button class="btn block" data-act="otNew" data-date="' + iso + '" style="margin-top:6px">+ Add overtime on this day</button>' + googleDay(d) +
-      (function () { var has = E.dayHasEntries(S, iso); return '<div class="daydel"><button type="button" class="btn block delbtn" id="dayDelBtn" data-act="dayDelAsk" data-d="' + d + '"' + (has ? '' : ' disabled aria-disabled="true"') + '>Delete this entry</button>' + (has ? '' : '<div class="hint" id="dayDelHint">Nothing saved for this day yet.</div>') + '</div>'; })());
+      '<h3 style="margin-top:18px" data-sec="6g">Overtime this day</h3>' + (ots.length ? '<div class="list">' + ots.map(otRow).join('') + '</div>' : '<div class="muted" style="margin-bottom:8px">None logged. Log overtime from the Overtime tab.</div>') +
+      googleDay(d) +
+      (function () { var has = E.dayHasEntries(S, iso); return '<div class="daydel" data-sec="6h"><button type="button" class="btn block delbtn" id="dayDelBtn" data-act="dayDelAsk" data-d="' + d + '"' + (has ? '' : ' disabled aria-disabled="true"') + '>Delete this entry</button>' + (has ? '' : '<div class="hint" id="dayDelHint">Nothing saved for this day yet.</div>') + '</div>'; })());
     pduKeep(); updateEnd(false); attachPlaces(); syncPicks(); loadSlipThumb(); pdRemind(); syncDayEntry();
   }
   // ---------- Paid Detail reminders (never block saving) ----------
@@ -3197,7 +3418,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var pd = (a && a.pd) || {}, show = sel === 'paiddetail' || E.hasPaidDetail(a);
     var f = function (id, lbl, v, extra) { return '<div class="field"><label for="' + id + '">' + lbl + '</label><input id="' + id + '" value="' + esc(v || '') + '"' + (extra || '') + '></div>'; };
     return '<button type="button" class="btn block pdadd" id="pdAddBtn" data-act="pdAdd"' + (show ? ' hidden' : '') + '>Add paid detail</button>' +
-      '<div class="paidbox" id="asgPaid"' + (show ? '' : ' hidden') + ' data-iso="' + iso + '">' +
+      '<div class="paidbox" id="asgPaid" data-sec="6e"' + (show ? '' : ' hidden') + ' data-iso="' + iso + '">' +
       '<div class="shead" style="margin-bottom:8px"><h3 style="margin:0">Paid Detail</h3>' + suggestBtnHtml('Paid Detail') + '</div>' +
       '<div class="pdscan"><label class="btn sm pdup" for="pdFile">&#128247; Upload screenshot</label><input type="file" id="pdFile" accept="image/*" hidden>' +
       '<div class="hint">Reads your &ldquo;Selected Paid Details&rdquo; screen on this phone and fills the fields below. The picture is not uploaded, saved or synced.</div><div class="pdstat" id="pdStat" role="status" aria-live="polite" hidden></div></div>' +
@@ -3242,12 +3463,18 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     }).catch(function () { say('The screenshot reader needs an internet connection the first time. You can type the details instead.', true); });
   }
   // ---------- daily assignment (day sheet) ----------
+  function asgExpand() { var b = document.getElementById('asgBox'); if (b && b.classList.contains('rdomin')) b.classList.remove('rdomin'); }
   function asgSection(iso, d, dt) {
     var a = S.assignments[iso] || {}, sel = a.type || '', t = E.assignmentType(sel), st = dt && dt.working && (dt.start || dt.schedStart) ? (dt.start || dt.schedStart) : '';
-    var opts = [{ id: '', label: 'None', color: '#334155' }].concat(C.assignmentTypes).map(function (x) {
+    var opts = [{ id: '', label: 'None', color: '#334155' }].concat(C.assignmentTypes.filter(function (x) { return !x.retired; })).map(function (x) {
       var on = sel === x.id; return '<button type="button" data-act="asgPick" data-t="' + x.id + '" data-c="' + x.color + '" class="' + (on ? 'on' : '') + '" style="' + (on ? 'background:' + x.color : '') + '">' + esc(x.label) + '</button>';
     }).join('');
-    return '<div class="card asgbox" id="asgBox" data-sel="' + esc(sel) + '" data-orig="' + esc(sel) + '" data-odetail="' + esc(a.detail || '') + '"><h3 style="font-size:15px;margin-top:0">Assignment</h3><div class="asgopts">' + opts + '</div>' +
+    // A day saved with a type that is no longer offered keeps it, shown read-only until another type is picked.
+    var old = t && t.retired ? '<div class="asgold" id="asgOld"><span class="asgold-sw" style="background:' + t.color + '">' + esc(t.short) + '</span><div><b>' + esc(E.assignmentLabel(a)) + '</b><div class="muted" style="font-size:12.5px">Saved earlier. This type is no longer offered; pick another to change it.</div></div></div>' : '';
+    // Scheduled RDO: only "Add paid detail" until a tour start is typed (then Detail, Training, Court, Paid Detail, Other).
+    var tb = S.tours[iso] || {}, rdoMin = !!(dt && dt.rdo) && !sel && !E.hasPaidDetail(a) && !tb.start && !tb.status;
+    return '<div class="card asgbox' + (rdoMin ? ' rdomin' : '') + '" id="asgBox" data-sec="6d" data-sel="' + esc(sel) + '" data-orig="' + esc(sel) + '" data-odetail="' + esc(a.detail || '') + '"><h3 style="font-size:15px;margin-top:0">Assignment</h3>' + old +
+      '<div class="hint rdominhint" id="asgRdoHint">RDO: no assignment. Type a tour start above if you\'re working, or add a paid detail.</div><div class="asgopts" id="asgOpts">' + opts + '</div>' +
       '<div class="field" id="asgDetailWrap" style="margin-top:10px"' + (t && t.detail ? '' : ' hidden') + '><label for="asgDetail" id="asgDetailLbl">' + esc(t && t.detail ? t.detail.label + (t.detail.required ? '' : ' (optional)') : '') + '</label>' +
       '<input id="asgDetail" list="asgSug" autocomplete="off" placeholder="' + esc(t && t.detail ? t.detail.placeholder : '') + '" value="' + esc(a.detail || '') + '"><datalist id="asgSug">' + asgSuggest(sel) + '</datalist><div class="err" id="asgDetail-err"></div></div>' +
       paidBlock(a, sel, iso) + addrBlock(a, sel, iso, st) + slipHtml(iso, sel) +
@@ -3335,8 +3562,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function fieldErr(id, msg) { var e = document.getElementById(id + '-err'), i = document.getElementById(id); if (e) e.textContent = msg || ''; if (i) i.classList.toggle('bad', !!msg); return !!msg; }
   function busy(id, on, txt) { var b = document.getElementById(id); if (b) { b.disabled = on; if (txt) b.textContent = txt; } }
-  function fetchProfile(uid) { return Promise.resolve(cloudClient().from('profiles').select('id,username,full_name,command,status,role').eq('id', uid).maybeSingle()).then(q); }
-  function setProfile(p, uid) { CS = { uid: uid, username: p ? p.username : CS.username, fullName: p ? p.full_name || '' : '', command: p ? p.command || '' : '', status: p ? p.status : 'pending', role: p ? p.role : 'user', checked: new Date().toISOString() }; saveCS(); }
+  function fetchProfile(uid) { var c = cloudClient(); return Promise.resolve(c.from('profiles').select('id,username,full_name,command,status,role,beta').eq('id', uid).maybeSingle()).then(q).catch(function (e) { if (!/beta/i.test(errText(e))) throw e; return Promise.resolve(c.from('profiles').select('id,username,full_name,command,status,role').eq('id', uid).maybeSingle()).then(q); }); } // older schema without the beta column: no tags
+  function setProfile(p, uid) { CS = { uid: uid, username: p ? p.username : CS.username, fullName: p ? p.full_name || '' : '', command: p ? p.command || '' : '', status: p ? p.status : 'pending', role: p ? p.role : 'user', beta: !!(p && p.beta === true), checked: new Date().toISOString() }; saveCS(); }
   // A device holds one account's data. Signing in as someone else clears the other account's copy (after a warning if it has changes not uploaded yet).
   function adoptDevice(uid) {
     if (SM.owner && SM.owner !== uid) {
@@ -3447,7 +3674,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function refreshSyncLine() { var e = document.getElementById('syncLine'); if (e) e.textContent = syncLine(); }
   function accountPanel() {
     if (!CL.enabled) return '';
-    return '<h3 style="margin-top:0" id="acctHead">Account</h3><div class="acct"><div><b>' + esc(CS.username || '') + '</b>' + (CS.role === 'admin' ? ' <span class="betatag">admin</span>' : '') + '<div class="muted" id="syncLine" style="font-size:13px">' + esc(syncLine()) + '</div></div></div>' +
+    return '<h3 style="margin-top:0" id="acctHead" data-sec="9a">Account</h3><div class="acct"><div><b>' + esc(CS.username || '') + '</b>' + (CS.role === 'admin' ? ' <span class="betatag">admin</span>' : '') + '<div class="muted" id="syncLine" style="font-size:13px">' + esc(syncLine()) + '</div></div></div>' +
       '<div class="privnote">&#128274; Your schedule, overtime, leave, assignments, slips and settings sync to your private account so they\'re on every device you sign in to. <b>Tax number, reference number, shield number, home address and your Google Maps key stay on this device only and are never uploaded.</b></div>' +
       '<div class="row" style="margin-bottom:6px"><button class="btn sm" data-act="syncNowBtn">Sync now</button>' + (CS.role === 'admin' ? '<button class="btn sm" data-act="inboxOpen" id="adminInboxBtn">Suggestions<span class="inbadge" id="inboxBadgeSheet"' + (ui.inboxUnread ? '' : ' hidden') + '>' + (ui.inboxUnread > 9 ? '9+' : (ui.inboxUnread || '')) + '</span></button><button class="btn sm" data-act="adminOpen" id="adminBtn">Admin: beta users</button>' : '') + '<button class="btn sm" data-act="authSignOut">Sign out</button></div>';
   }
@@ -3500,14 +3727,14 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       document.head.appendChild(s);
     });
   }
-  function suggestSheet(section) {
-    section = sectionName(section);
+  function suggestSheet(section, secTag) {
+    section = sectionName(section); if (secTag && isBeta()) section = (secTag + ' \u00b7 ' + section).slice(0, 80); // beta: which numbered section it came from
     ui.sugSection = section; setSugFile(null, '');
     var signedIn = cloudReady();
     openSheet('Send a suggestion',
-      '<div class="field"><label for="sugSection">Section</label><input id="sugSection" value="' + esc(section) + '" readonly></div>' +
-      '<div class="field"><label for="sugMsg">Your suggestion</label><textarea id="sugMsg" maxlength="4000" placeholder="What should we add or change?"></textarea></div>' +
-      '<div class="field"><label>Screenshot (optional)</label>' +
+      '<div class="field" data-sec="11a"><label for="sugSection">Section</label><input id="sugSection" value="' + esc(section) + '" readonly></div>' +
+      '<div class="field" data-sec="11b"><label for="sugMsg">Your suggestion</label><textarea id="sugMsg" maxlength="4000" placeholder="What should we add or change?"></textarea></div>' +
+      '<div class="field" data-sec="11c"><label>Screenshot (optional)</label>' +
         '<div class="row" style="margin-bottom:6px"><label class="btn sm" for="sugLib">Photo library</label><label class="btn sm" for="sugCam">Camera</label>' +
         '<button type="button" class="btn sm" data-act="sugCapture" id="sugCaptureBtn">Capture this screen</button></div>' +
         '<input type="file" id="sugLib" accept="image/*" hidden><input type="file" id="sugCam" accept="image/*" capture="environment" hidden>' +
@@ -3704,17 +3931,18 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
 
   function adminSheet() {
-    openSheet('Beta users', '<div id="adminList" class="muted">Loading\u2026</div>');
-    Promise.resolve(cloudClient().from('profiles').select('id,username,full_name,command,status,role,created_at,decided_at').order('created_at', { ascending: false })).then(q).then(function (rows) {
+    openSheet('Beta users', '<div id="adminList" data-sec="13a" class="muted">Loading\u2026</div>');
+    Promise.resolve(cloudClient().from('profiles').select('id,username,full_name,command,status,role,beta,created_at,decided_at').order('created_at', { ascending: false })).then(q).then(function (rows) {
       ui.adminRows = rows || []; var el = document.getElementById('adminList'); if (!el) return; el.classList.remove('muted');
       var groups = [['pending', 'Pending'], ['approved', 'Approved'], ['denied', 'Denied'], ['revoked', 'Revoked']];
       el.innerHTML = groups.map(function (g) {
         var list = ui.adminRows.filter(function (r) { return r.status === g[0]; });
         return '<h3 class="admh" data-g="' + g[0] + '">' + g[1] + ' <span class="muted">(' + list.length + ')</span></h3>' + (list.length ? '<div class="list">' + list.map(function (r) {
-          var me = r.id === CS.uid, b = me ? '<span class="muted" style="font-size:12px">you</span>' :
+          var bt = g[0] === 'approved' ? '<button class="btn sm' + (r.beta ? ' on' : '') + '" data-act="adminBeta" data-id="' + r.id + '" aria-pressed="' + !!r.beta + '">Beta tags ' + (r.beta ? 'on' : 'off') + '</button>' : '';
+          var me = r.id === CS.uid, b = me ? bt + '<span class="muted" style="font-size:12px">you</span>' : bt + (
             g[0] === 'pending' ? '<button class="btn sm primary" data-act="adminSet" data-id="' + r.id + '" data-s="approved">Approve</button><button class="btn sm danger" data-act="adminSet" data-id="' + r.id + '" data-s="denied">Deny</button>' :
             g[0] === 'approved' ? '<button class="btn sm danger" data-act="adminSet" data-id="' + r.id + '" data-s="revoked">Revoke</button>' :
-            '<button class="btn sm" data-act="adminSet" data-id="' + r.id + '" data-s="approved">Approve</button>';
+            '<button class="btn sm" data-act="adminSet" data-id="' + r.id + '" data-s="approved">Approve</button>');
           return '<div class="item admrow" data-u="' + esc(r.username) + '"><div class="main"><div class="t1">' + esc(r.username) + (r.role === 'admin' ? ' <span class="betatag">admin</span>' : '') + '</div><div class="t2">' + esc([r.full_name, r.command].filter(Boolean).join(' \u00b7 ') || 'No name given') + '</div><div class="t2">Requested ' + esc(fmtStamp(r.created_at)) + (r.decided_at && g[0] !== 'pending' ? ' \u00b7 ' + g[1].toLowerCase() + ' ' + esc(fmtStamp(r.decided_at)) : '') + '</div></div><div class="admbtns">' + b + '</div></div>';
         }).join('') + '</div>' : '<div class="empty">None</div>');
       }).join('') + '<div class="hint">Approving lets the person sign in and sync their own data. Revoke stops their access (their device keeps its local copy). Nobody can see anyone else\'s data, including the admin.</div>';
@@ -4110,7 +4338,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
     function tourSection(d) {
     var iso = E.toISO(d), sq = mySquad(), t = E.dayTour(d, sq.id, tourOpts()), ov = S.tours[iso] || {}, st = t.status;
-    var html = '<div class="card" style="background:#f5f7fb;padding:12px" id="tourBox" data-status="' + st + '" data-orig="' + st + '" data-rdo="' + (t.rdo ? '1' : '0') + '"><h3 style="font-size:15px">Tour this day' + (t.modified ? ' <span class="chip" style="background:#0f172a;color:#fff;border-color:transparent">Modified</span>' : '') + '</h3>';
+    var html = '<div class="card" style="background:#f5f7fb;padding:12px" id="tourBox" data-sec="6c" data-status="' + st + '" data-orig="' + st + '" data-rdo="' + (t.rdo ? '1' : '0') + '"><h3 style="font-size:15px">Tour this day' + (t.modified ? ' <span class="chip" style="background:#0f172a;color:#fff;border-color:transparent">Modified</span>' : '') + '</h3>';
     var pduWork = t.pdu && (t.shift === 'pm' || t.shift === 'am');
     var pduBox = pduWork ? '<div class="pduinfo" id="pduSched" data-sl="' + t.schedLen + '" data-ss="' + t.schedStart + '" data-lbl="' + PDU.shifts[t.shift].label + '"><b>Scheduled ' + PDU.shifts[t.shift].label + ' tour</b> &middot; ' + t.schedStart + '–' + E.tourEnd(t.schedStart, t.schedLen).end + ' &middot; counts <b>' + E.fmtHM(t.schedLen) + '</b>' + (t.plus15 || (t.schedLen !== PDU.shifts[t.shift].len) ? ' <i class="m-p15" style="font-style:normal;font-size:11px;font-weight:800;padding:1px 5px;border-radius:4px">+15</i><div style="font-size:12.5px">Includes the extra 15 minutes (Detective Duty Schedule). <button type="button" class="btn sm" data-act="x15Open" data-y="' + E.parts(d).y + '" style="min-height:28px;padding:0 8px">Ranges</button></div>' : '') +
         '<div style="font-size:13px;margin-top:4px">Changing only the start time keeps <b>' + E.fmtHM(t.schedLen) + '</b>' + (t.shift === 'pm' ? ' (e.g. a PM day moved to a morning tour for court, detailed out or training).' : '.') + '</div>' +
@@ -4175,9 +4403,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var info = start && len ? E.tourEndInfo(start, len, +box.dataset.d) : null;
     out.placeholder = info ? info.end : 'HH:MM'; endCheck(start, len);
     Array.prototype.forEach.call(document.querySelectorAll('#startPicks .pick'), function (b) { setOn(b, (b.dataset.v || '') === (raw ? E.normTime(raw) || '-' : '')); });
-    if (!info) { pop.hidden = true; return; }
+    if (!info || !info.note) { pop.hidden = true; pop.innerHTML = ''; return; }
     pop.hidden = false; pop.classList.toggle('nx', !!info.countsNext);
-    pop.innerHTML = '<div class="et">' + esc(info.text) + '</div>' + (raw ? '' : '<div class="es">Scheduled start ' + esc(start) + '</div>') + (info.note ? '<div class="enx">' + esc(info.note) + '</div>' : '');
+    pop.innerHTML = '<div class="enx">' + esc(info.note) + '</div>';
     if (flash) { pop.classList.remove('pop'); void pop.offsetWidth; pop.classList.add('pop'); }
   }
   // Typed tour end vs scheduled end: 1-14 min late = note only (no OT); 15+ = overtime; early = pick the balance to charge
@@ -4197,7 +4425,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function slipKindOf(iso) { var m = (S.slips || {})[iso], k = m && E.slipKind ? E.slipKind(m.kind) : null; return k && k.label ? k.label : 'Slip'; }
   function deleteDayNow(d) {
     var iso = E.toISO(d), r = E.deleteDay(S, iso); ['leave', 'assignments', 'slips', 'tours', 'overtime'].forEach(function (k) { S[k] = r.state[k]; });
-    var fin = function () { save(); closeSheet(); render(); toast('Deleted everything for ' + fmt(d, 'md')); };
+    var fin = function () { save(); closeAll(); render(); toast('Deleted everything for ' + fmt(d, 'md')); };
     slipDel(iso).then(function () { if (r.removed.slip) slipQueue(iso, 'del'); }, function () {}).then(fin, fin); // slip PDF: this device (IndexedDB) and the cloud bucket
   }
   // Small in-app confirm (native confirm() can't be styled and blocks the page)
@@ -4223,21 +4451,71 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     openSheet(entry ? 'Edit overtime' : 'Log overtime',
       '<form id="otForm" onsubmit="return false" data-id="' + esc(e.id) + '" data-linked="' + esc(lkIso || '') + '" data-lkind="' + (lkEnd ? 'end' : lk ? 'tour' : '') + '">' +
       (lk ? '<div class="ddpair" style="border-color:' + mySquad().color + '"><b>' + (lkEnd ? 'Tour ended late' : 'Extra tour on RDO') + '</b> &middot; ' + fmt(E.toDay(lkIso)) + '<div class="muted" style="font-size:12.5px">Date and hours come from that day\'s tour' + (lkEnd ? ' end' : '') + '. Change them from the day itself.</div><button type="button" class="btn sm" data-act="day" data-d="' + E.toDay(lkIso) + '" style="margin-top:6px">Edit tour</button></div>' : '') +
-      '<div class="field"><label for="otDate">Date</label><input type="date" id="otDate" value="' + esc(e.date) + '" required' + ro + '></div>' +
-      '<div class="field"><label for="otType">Type</label><select id="otType">' + C.overtimeTypes.map(function (t) { return '<option value="' + t.id + '"' + (t.id === e.type ? ' selected' : '') + '>' + esc(t.label) + '</option>'; }).join('') + '</select></div>' +
-      (lk ? '<div hidden>' : '<div>') + '<div class="field"><label>Enter as</label><div class="seg" id="otMode" data-mode="' + (times ? 'times' : 'hours') + '"><button type="button" data-act="otMode" data-m="times" class="' + (times ? 'on' : '') + '">Start / end time</button><button type="button" data-act="otMode" data-m="hours" class="' + (times ? '' : 'on') + '">Total hours</button></div></div></div>' +
-      '<div class="row" id="otTimes"' + (times ? '' : ' hidden') + '><div class="field"><label for="otStart">Start</label><input type="time" id="otStart" value="' + esc(e.start || '') + '"' + ro + '></div><div class="field"><label for="otEnd">End</label><input type="time" id="otEnd" value="' + esc(e.end || '') + '"' + ro + '></div></div>' +
+      '<div class="field" data-sec="8a"><label for="otDate">Date</label><input type="date" id="otDate" value="' + esc(e.date) + '" required' + ro + '></div>' +
+      '<div class="field" data-sec="8b"><label for="otType">Type</label><select id="otType">' + C.overtimeTypes.map(function (t) { return '<option value="' + t.id + '"' + (t.id === e.type ? ' selected' : '') + '>' + esc(t.label) + '</option>'; }).join('') + '</select></div>' +
+      cmdPicker('ot', e.otCmd || null, { sec: '8c', label: 'Overtime location (command / precinct)', hint: 'Where the overtime was worked. Used to suggest travel time from your permanent command.' }) +
+      (lk ? '<div hidden>' : '<div>') + '<div class="field" data-sec="8d"><label>Enter as</label><div class="seg" id="otMode" data-mode="' + (times ? 'times' : 'hours') + '"><button type="button" data-act="otMode" data-m="times" class="' + (times ? 'on' : '') + '">Start / end time</button><button type="button" data-act="otMode" data-m="hours" class="' + (times ? '' : 'on') + '">Total hours</button></div></div></div>' +
+      '<div class="row" id="otTimes"' + (times ? '' : ' hidden') + '><div class="field"><label for="otStart">Start</label><input id="otStart" class="timeIn" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="HH:MM" value="' + esc(e.start || '') + '"' + ro + '></div><div class="field"><label for="otEnd">End</label><input id="otEnd" class="timeIn" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="HH:MM" value="' + esc(e.end || '') + '"' + ro + '></div></div>' +
       '<div class="field" id="otHoursWrap"' + (times ? ' hidden' : '') + '><label for="otHours">Hours (H:MM)</label><input id="otHours" inputmode="decimal" autocomplete="off" placeholder="e.g. 4:30" value="' + esc(e.hours ? E.fmtHM(Math.round(parseFloat(e.hours) * 60)) : '') + '"' + ro + '></div>' +
-      otCompField(e) +
-      '<div class="card otpaycard" style="background:#f5f7fb;margin-bottom:12px"><b id="otPreview">0 h &middot; $0.00</b><div class="muted otrate" id="otRateLine"></div><div class="muted" style="font-size:12.5px">Shifts ending after midnight are counted overnight.</div></div>' +
-      '<div class="field"><label for="otNotes">Notes</label><textarea id="otNotes" placeholder="Case #, location, approving supervisor...">' + esc(e.notes || '') + '</textarea></div>' +
+      otCompField(e) + travelField(e) +
+      '<div class="card otpaycard" data-sec="8g" style="background:#f5f7fb;margin-bottom:12px"><b id="otPreview">0 h &middot; $0.00</b><div class="muted otrate" id="otRateLine"></div><div class="muted" style="font-size:12.5px">Shifts ending after midnight are counted overnight.</div></div>' +
+      '<div class="field" data-sec="8h"><label for="otNotes">Notes</label><textarea id="otNotes" placeholder="Case #, location, approving supervisor...">' + esc(e.notes || '') + '</textarea></div>' +
       '<button class="btn primary block" data-act="otSave">' + (entry ? 'Save changes' : 'Add overtime') + '</button>' +
       (entry ? '<button class="btn danger block" data-act="otDelete" style="margin-top:8px">Delete entry</button>' : '') + '</form>');
-    otPreview();
+    otPreview(); otTravResolve();
   }
+  // ---------- Travel time (ranks below Captain): Yes / No, then Cash / Time, then One way / Both ways with a suggested amount ----------
+  function travelField(e) {
+    var t = E.cleanTravel(e.travel), on = !!t, seg = function (id, act, cur, opts) { return '<div class="seg" id="' + id + '">' + opts.map(function (x) { return '<button type="button" data-act="' + act + '" data-v="' + x[0] + '" class="' + (cur === x[0] ? 'on' : '') + '" aria-pressed="' + (cur === x[0]) + '">' + x[1] + '</button>'; }).join('') + '</div>'; };
+    return '<div id="otTravWrap" data-sec="8f" class="travbox" data-on="' + (on ? '1' : '0') + '" data-comp="' + (t ? t.comp : '') + '" data-dir="' + (t ? t.dir : '') + '" data-each="' + (t ? t.each : '') + '" data-touched="' + (t ? '1' : '') + '" hidden>' +
+      '<div class="field"><label>Travel time?</label>' + seg('otTrav', 'otTrav', on ? '1' : '0', [['0', 'No'], ['1', 'Yes']]) + '</div>' +
+      '<div id="otTravBox"' + (on ? '' : ' hidden') + '>' +
+      '<div class="field"><label>Travel time compensation</label>' + seg('otTravComp', 'otTravComp', t ? t.comp : '', [['cash', 'Cash'], ['time', 'Time']]) + '<div class="hint">Cash is paid at your day overtime rate, even on a night tour. Time goes to your Comp bank.</div></div>' +
+      '<div class="field" id="otTravDirWrap"><label>Direction</label>' + seg('otTravDir', 'otTravDir', t ? t.dir : '', [['one', 'One way'], ['both', 'Both ways']]) + '</div>' +
+      '<div class="travsug" id="otTravSug" role="status" aria-live="polite"></div>' +
+      '<div class="picks" id="otTravPicks" style="margin-top:4px">' + C.travel.picks.map(function (m) { return '<button type="button" class="pick" data-act="otTravPick" data-v="' + m + '">' + E.fmtHM(m) + ' each way</button>'; }).join('') + '</div>' +
+      '<div class="field" style="margin-top:8px"><label for="otTravAmt">Travel time (H:MM)</label><input id="otTravAmt" class="timeIn" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="e.g. 1:30" value="' + (t ? E.fmtHM(t.minutes) : '') + '"><div class="hint">Filled in from the suggestion. Change it if your travel was different.</div></div>' +
+      '</div></div>';
+  }
+  function otTravDay() { var dv = (document.getElementById('otDate') || {}).value; return E.isISODate(dv) ? dv : E.toISO(T); }
+  function otTravSync() {
+    var w = document.getElementById('otTravWrap'); if (!w) return; var dv = otTravDay(), ok = E.travelEligible(profAt(dv));
+    w.hidden = !ok; var on = ok && w.dataset.on === '1', box = document.getElementById('otTravBox'); box.hidden = !on;
+    var mark = function (id, v) { Array.prototype.forEach.call(document.getElementById(id).children, function (b) { var x = b.dataset.v === v; b.classList.toggle('on', x); b.setAttribute('aria-pressed', x ? 'true' : 'false'); }); };
+    mark('otTrav', on ? '1' : '0'); mark('otTravComp', w.dataset.comp || ''); mark('otTravDir', w.dataset.dir || '');
+    cmdPctRefresh('ot', dv);
+    if (!ok) return;
+    var perm = withPctCache((recAt(E.toDay(dv)) || {}).command || null), ot = withPctCache(E.cleanCommand(readCommand('ot'))), sg = E.travelSuggest(perm, ot, dv), el = document.getElementById('otTravSug'), busy = pctPending(perm) || pctPending(ot);
+    w.dataset.sugEach = sg.ok ? sg.each : '';
+    if (sg.ok) el.innerHTML = 'Suggested: <b>' + E.fmtHM(sg.each) + ' each way</b> (' + E.fmtHM(sg.both) + ' both ways) &middot; ' + (sg.same ? 'same patrol borough as your command (' + sg.permBoro.abbr + ')' : 'different patrol borough (' + sg.permBoro.abbr + ' &rarr; ' + sg.otBoro.abbr + ')');
+    else el.innerHTML = busy ? 'Finding the precinct&hellip;' : sg.reason === 'nocmd' ? 'No suggestion: add your command in Settings &rarr; Rank &amp; assignment. Pick 0:45 or 1:15, or type the time.' : sg.reason === 'nootcmd' ? 'Pick the overtime location above for a suggestion, or pick 0:45 or 1:15, or type the time.' : sg.reason === 'outside' ? 'No suggestion: outside NYC (no precinct). Pick 0:45 or 1:15, or type the time.' : 'No suggestion: the precinct couldn\'t be matched. Pick 0:45 or 1:15, or type the time.';
+    var each = +w.dataset.each || (sg.ok ? sg.each : 0), amt = document.getElementById('otTravAmt');
+    if (sg.ok && w.dataset.touched !== '1' && (!+w.dataset.each || w.dataset.eachSrc !== 'pick')) { w.dataset.each = sg.each; w.dataset.eachSrc = 'sug'; each = sg.each; }
+    if (w.dataset.touched !== '1' && each && w.dataset.dir) amt.value = E.fmtHM(E.travelMinutes(w.dataset.dir, each));
+    Array.prototype.forEach.call(document.querySelectorAll('#otTravPicks .pick'), function (b) { b.classList.toggle('on', +b.dataset.v === +w.dataset.each); });
+  }
+  function otTravRead() {
+    var w = document.getElementById('otTravWrap'); if (!w || w.hidden || w.dataset.on !== '1') return null;
+    var m = E.parseHM((document.getElementById('otTravAmt') || {}).value || '');
+    return { on: true, comp: w.dataset.comp || '', dir: w.dataset.dir || '', minutes: m || 0, each: +w.dataset.each || 0 };
+  }
+  function otTravResolve() {
+    var dv = otTravDay(), perm = (recAt(E.toDay(dv)) || {}).command, ot = E.cleanCommand(readCommand('ot'));
+    [perm, ot].forEach(function (c) { if (c && E.commandNeedsPrecinct(c) && !PCT_CACHE[pctKey(E.commandAddress(c))]) { resolvePct(c).then(function () { otTravSync(); otPreview(); }); } });
+    otTravSync(); if (perm && E.commandNeedsPrecinct(perm)) resolveHistPcts();
+  }
+  // false = blocked (toast shown); null = no travel time; else the travel object to save
+  function otTravCheck() {
+    var t = otTravRead(); if (!t) return null;
+    if (!t.comp) { toast('Travel time: pick Cash or Time'); return false; }
+    if (!t.dir) { toast('Travel time: pick One way or Both ways'); return false; }
+    if (!(t.minutes > 0)) { var a = document.getElementById('otTravAmt'); if (a) a.focus(); toast('Travel time: enter the time, e.g. 1:30'); return false; }
+    return E.cleanTravel(t);
+  }
+  function otCmdRead() { var c = readCommand('ot'); if (c === undefined || !c) return null; if (E.commandError(c)) { checkCommand('ot'); return false; } return withPctCache(E.cleanCommand(c)) || null; }
   function otCompField(e) {
     var c = e.comp || 'cash', ch = e.comp === 'split' && e.cashHours ? E.fmtHM(Math.round(parseFloat(e.cashHours) * 60)) : '';
-    return '<div class="field" id="otCompWrap"><label>Paid as</label><div class="seg" id="otComp" data-comp="' + esc(c) + '">' +
+    return '<div class="field" id="otCompWrap" data-sec="8e"><label>Paid as</label><div class="seg" id="otComp" data-comp="' + esc(c) + '">' +
       [['cash', 'Cash'], ['time', 'Time'], ['split', 'Split']].map(function (x) { return '<button type="button" data-act="otComp" data-c="' + x[0] + '" class="' + (c === x[0] ? 'on' : '') + '">' + x[1] + '</button>'; }).join('') + '</div>' +
       '<div class="field otsplit" id="otSplitWrap"' + (c === 'split' ? '' : ' hidden') + '><label for="otCashH">Hours to cash (H:MM)</label><input id="otCashH" inputmode="decimal" autocomplete="off" placeholder="e.g. 2:00" value="' + esc(ch) + '"><div class="hint" id="otSplitHint">The rest becomes comp time at 1.5&times;.</div></div>' +
       '<div class="hint" id="otCompNote"></div></div>';
@@ -4253,12 +4531,17 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function otFormEntry() {
     var mode = document.getElementById('otMode').dataset.mode;
     var cs = document.getElementById('otComp'), comp = cs ? cs.dataset.comp : 'cash', chm = E.parseHM((document.getElementById('otCashH') || { value: '' }).value);
-    return { mode: mode, start: document.getElementById('otStart').value, end: document.getElementById('otEnd').value, hours: (function () { var m = E.parseHM(document.getElementById('otHours').value); return m ? m / 60 : ''; })(), comp: comp, cashHours: comp === 'split' && chm ? chm / 60 : '' };
+    return { travel: otTravRead(), mode: mode, start: E.normTime(document.getElementById('otStart').value) || '', end: E.normTime(document.getElementById('otEnd').value) || '', hours: (function () { var m = E.parseHM(document.getElementById('otHours').value); return m ? m / 60 : ''; })(), comp: comp, cashHours: comp === 'split' && chm ? chm / 60 : '' };
   }
-  function otPreview() { var el = document.getElementById('otPreview'); if (!el) return; otCompSync(); var fe = otFormEntry(), h = E.entryHours(fe), dv = (document.getElementById('otDate') || {}).value; var fid = (document.getElementById('otForm') || { dataset: {} }).dataset.id, pr = E.otPayList(S.overtime.filter(function (o) { return o.id !== fid; }).concat([Object.assign({ id: '__form', date: dv }, fe)]), { profile: S.profile, profileAt: profAt, multiplier: mult(), tourFor: otTourFor }).byId.__form, rl = document.getElementById('otRateLine'); if (rl) rl.innerHTML = otRateLine(pr, dv);
+  function otPreview() { var el = document.getElementById('otPreview'); if (!el) return; otCompSync(); otTravSync(); var fe = otFormEntry(), h = E.entryHours(fe), dv = (document.getElementById('otDate') || {}).value; var fid = (document.getElementById('otForm') || { dataset: {} }).dataset.id, pr = E.otPayList(S.overtime.filter(function (o) { return o.id !== fid; }).concat([Object.assign({ id: '__form', date: dv }, fe)]), { profile: S.profile, profileAt: profAt, multiplier: mult(), tourFor: otTourFor }).byId.__form, rl = document.getElementById('otRateLine'); if (rl) rl.innerHTML = otRateLine(pr, dv);
     el.innerHTML = hrs(h) + ' (' + dec(h) + ') &middot; ' + payText({ pay: pr.pay, comp: pr.compMinutes || 0 }) + (fe.mode === 'times' && E.countsNextDay(fe.start) ? '<div class="nxtxt">Starts 20:00 or later: counts for ' + (dv ? fmt(E.toDay(dv) + 1) : 'the next day') + ' (hours and pay period)</div>' : ''); }
 
-  function otRateLine(r, iso) { var b = otRateLineBase(r, iso); return b + (r.compMinutes && !(r.source === 'chart' && r.placement && r.placement.ceaOT) ? '<br>Comp time: <b>' + E.fmtHM(r.compMinutes) + '</b> banked to Comp (1.5&times;)' + (r.comp === 'split' ? ' &middot; ' + E.fmtHM(Math.round(r.cashHours * 60)) + ' paid in cash' : '') : ''); }
+  function travelLine(r) {
+    var t = r && r.travel; if (!t || t.ineligible) return '';
+    return '<div class="travline" id="otTravLine"><span class="ratechip trav">Travel time</span> ' + E.fmtHM(t.minutes) + ' (' + (t.dir === 'both' ? 'both ways' : 'one way') + ') &middot; ' +
+      (t.comp === 'time' ? 'Time: <b>' + E.fmtHM(t.compMinutes) + '</b> to Comp (' + C.travel.compRate + '&times;)' : 'Cash at the day OT rate ' + money(t.rate) + '/h = <b>' + money(t.pay) + '</b>') + '</div>';
+  }
+  function otRateLine(r, iso) { var b = otRateLineBase(r, iso) + travelLine(r); return b + (r.otCompMinutes && !(r.source === 'chart' && r.placement && r.placement.ceaOT) ? '<br>Comp time: <b>' + E.fmtHM(r.otCompMinutes) + '</b> banked to Comp (1.5&times;)' + (r.comp === 'split' ? ' &middot; ' + E.fmtHM(Math.round(r.cashHours * 60)) + ' paid in cash' : '') : ''); }
   function otRateLineBase(r, iso) {
     var p = profAt(iso), pl = r.placement;
     if (r.source === 'chart' && pl.ceaOT) {
@@ -4320,32 +4603,33 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function settingsSheet() {
     var p = S.profile, s = S.settings;
     openSheet('Settings',
-      accountPanel() + '<h3 style="margin-top:' + (CL.enabled ? '18px' : '0') + '">Profile</h3>' + profileFields('st', p, true) + homeField('st', p) +
-      '<h3 id="histHead">Rank &amp; assignment</h3><div id="histWrap">' + histPanel() + '</div>' +
-      '<h3 id="payHead" style="margin-top:18px">Pay</h3><div class="paycard" id="payCard">' + payCardHtml(profNow()) + '</div>' +
+      accountPanel() + '<h3 data-sec="9b" style="margin-top:' + (CL.enabled ? '18px' : '0') + '">Profile</h3>' + profileFields('st', p, true) + homeField('st', p) +
+      '<h3 id="histHead" data-sec="9c">Rank &amp; assignment</h3><div id="histWrap">' + histPanel() + '</div>' +
+      '<h3 id="payHead" data-sec="9d" style="margin-top:18px">Pay</h3><div class="paycard" id="payCard">' + payCardHtml(profNow()) + '</div>' +
       '<label class="chk ovchk"><input type="checkbox" id="stOverride"' + (p.rateOverride ? ' checked' : '') + '> Use my own hourly rate instead of the pay chart</label>' +
       '<div class="row" id="stOvWrap"' + (p.rateOverride || !E.payPlacement(profNow()).ok || !(E.payPlacement(profNow()).cashOT || E.payPlacement(profNow()).ceaOT) ? '' : ' hidden') + '><div class="field"><label for="stRate">Own hourly rate ($)</label><input id="stRate" type="number" inputmode="decimal" min="0" step="0.01" value="' + esc(p.rate) + '"></div>' +
       '<div class="field"><label for="stMult">OT multiplier</label><input id="stMult" type="number" inputmode="decimal" min="1" step="0.05" value="' + esc(s.multiplier) + '"><div class="hint">Only used with your own rate.</div></div></div>' +
       balancesHtml() +
       '<button class="btn primary block" data-act="stSave">Save settings</button>' +
-      '<h3 style="margin-top:20px" id="mapsHead">Google Maps API key (optional)</h3><div class="muted" style="font-size:13px;margin-bottom:8px">Navigate buttons and address suggestions work without a key. Add your own key to get Google Places suggestions and arrival times with live traffic. The key needs the Maps JavaScript API, Places API and Distance Matrix API enabled; restrict it to this site in Google Cloud.</div>' +
+      '<h3 style="margin-top:20px" id="mapsHead" data-sec="9f">Google Maps API key (optional)</h3><div class="muted" style="font-size:13px;margin-bottom:8px">Navigate buttons and address suggestions work without a key. Add your own key to get Google Places suggestions and arrival times with live traffic. The key needs the Maps JavaScript API, Places API and Distance Matrix API enabled; restrict it to this site in Google Cloud.</div>' +
       '<div class="field"><label for="stMapsKey">Google Maps API key (optional)</label><input id="stMapsKey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Paste your key" value="' + esc(mapsKey()) + '"><div class="hint">Stored only in this browser (localStorage), never in the code, and never synced to your account.' + (mapsKey() ? ' A key is saved.' : ' No key saved.') + '</div></div>' +
       '<label class="chk" style="display:flex;gap:8px;align-items:center;min-height:44px;font-size:14px"><input type="checkbox" id="stMapsInBk"' + (S.settings.mapsKeyInBackup ? ' checked' : '') + '> Include the key in backups</label>' +
       '<div class="row"><button class="btn sm" data-act="mapsSave">Save key</button><button class="btn sm" data-act="mapsShow">Show</button>' + (mapsKey() ? '<button class="btn sm danger" data-act="mapsClear">Remove key</button>' : '') + '</div>' +
-      '<h3 style="margin-top:20px">Backup</h3><div class="muted" style="font-size:13px;margin-bottom:8px">Your data is stored only on this device. Export a backup file regularly.' + (mapsKey() && !S.settings.mapsKeyInBackup ? ' Your Google Maps key is left out.' : '') + (Object.keys(S.slips).length ? ' <span id="bkSlips">The exported file includes your ' + Object.keys(S.slips).length + ' court/certification slip' + (Object.keys(S.slips).length === 1 ? '' : 's') + ' (about ' + E.fmtBytes(Math.round(Object.keys(S.slips).reduce(function (t, k) { return t + (S.slips[k].bytes || 0); }, 0) * 4 / 3)) + '); the copy/paste text below doesn\'t.</span>' : '') + '</div>' +
+      '<h3 style="margin-top:20px" data-sec="9g">Backup</h3><div class="muted" style="font-size:13px;margin-bottom:8px">Your data is stored only on this device. Export a backup file regularly.' + (mapsKey() && !S.settings.mapsKeyInBackup ? ' Your Google Maps key is left out.' : '') + (Object.keys(S.slips).length ? ' <span id="bkSlips">The exported file includes your ' + Object.keys(S.slips).length + ' court/certification slip' + (Object.keys(S.slips).length === 1 ? '' : 's') + ' (about ' + E.fmtBytes(Math.round(Object.keys(S.slips).reduce(function (t, k) { return t + (S.slips[k].bytes || 0); }, 0) * 4 / 3)) + '); the copy/paste text below doesn\'t.</span>' : '') + '</div>' +
       '<div class="row"><button class="btn" data-act="export">Export JSON</button><label class="btn" for="importFile" style="cursor:pointer">Import JSON</label></div>' +
       '<input type="file" id="importFile" accept="application/json,.json" hidden>' +
       '<details style="margin-top:10px"><summary style="min-height:40px;font-weight:700;cursor:pointer">Copy / paste backup text</summary>' +
       '<div class="field"><textarea id="bkText" style="min-height:120px;font-size:12px;font-family:monospace">' + esc(backupText()) + '</textarea></div>' +
       '<div class="row"><button class="btn sm" data-act="bkCopy">Copy</button><button class="btn sm" data-act="bkLoad">Restore from text</button></div></details>' +
-      '<h3 style="margin-top:20px" id="x15Head">Extra 15 minutes (PDU)</h3><div class="muted" style="font-size:13px;margin-bottom:8px">Detective Duty Schedule (Misc. 2135-4A): PM 9:15 and AM 8:15 on the listed dates. See each year\'s ranges by month and team, and change any of them.</div><button class="btn block" data-act="x15Open">Extra 15 minutes (PDU) ranges&hellip;</button>' +
-      '<h3 style="margin-top:20px">Schedule rules</h3><div class="muted" style="font-size:13px">' + esc(E.unit(U()).name) + ': ' + esc(E.unit(U()).pattern.description) + '. One squad is off each day.<br>PDU: ' + esc(PDU.description) + '. ' + shiftText('pm') + ', ' + shiftText('am') + '.</div>' +
-      '<h3 style="margin-top:20px" id="syncHead">Calendar sync</h3><div class="muted" style="font-size:13px;margin-bottom:8px">Export your schedule to Apple or Google Calendar.</div><div id="syncWrap">' + syncPanel() + '</div>' +
-      '<button class="btn danger block" data-act="reset" style="margin-top:20px">Erase all data</button>');
+      '<h3 style="margin-top:20px" id="x15Head" data-sec="9h">Extra 15 minutes (PDU)</h3><div class="muted" style="font-size:13px;margin-bottom:8px">Detective Duty Schedule (Misc. 2135-4A): PM 9:15 and AM 8:15 on the listed dates. See each year\'s ranges by month and team, and change any of them.</div><button class="btn block" data-act="x15Open">Extra 15 minutes (PDU) ranges&hellip;</button>' +
+      '<h3 style="margin-top:20px" data-sec="9i">Schedule rules</h3><div class="muted" style="font-size:13px">' + esc(E.unit(U()).name) + ': ' + esc(E.unit(U()).pattern.description) + '. One squad is off each day.<br>PDU: ' + esc(PDU.description) + '. ' + shiftText('pm') + ', ' + shiftText('am') + '.</div>' +
+      '<h3 style="margin-top:20px" id="syncHead" data-sec="9j">Calendar sync</h3><div class="muted" style="font-size:13px;margin-bottom:8px">Export your schedule to Apple or Google Calendar.</div><div id="syncWrap">' + syncPanel() + '</div>' +
+      '<button class="btn danger block" data-act="reset" data-sec="9k" style="margin-top:20px">Erase all data</button>');
   }
 
   // ---------- Day summary: what's saved on a date; tap an entry to view or change it ----------
   function daySummary(d, savedMsg) {
+    if (!E.dayHasEntries(S, E.toISO(d)) && !savedMsg) return daySheet(d);
     var iso = E.toISO(d), sq = mySquad(d), o = tourOpts(), dt = E.dayTour(d, sq.id, o), en = E.dayEntryOf(d, sq.id, o), opt = E.dayEntryOption(en.id) || { label: en.id, color: '#334155' };
     var lv = S.leave[iso] || {}, a = S.assignments[iso], ov = S.tours[iso] || {}, ots = S.overtime.filter(function (e) { return e.date === iso; }), sm = (S.slips || {})[iso], rows = [];
     var sw = function (c, txt) { return '<span class="sw" style="width:30px;height:30px;border-radius:8px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:12px;background:' + c + '">' + (txt || '') + '</span>'; };
@@ -4359,13 +4643,12 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (sm) rows.push(item('asg', sw('#334155', '&#128206;'), esc(slipKindOf(iso)), 'Saved on this device', 'sumSlip'));
     openSheet(fmt(d, 'long'),
       '<div id="daySum">' + (savedMsg ? '<div class="savedban" id="daySaved" role="status">&#10003; Saved &middot; ' + esc(savedMsg) + '</div>' : '') +
-      '<h3 style="margin-top:0">Saved for this day</h3><div class="list" id="sumList">' + rows.join('') + '</div>' +
-      (ots.length ? '<h3 style="margin-top:14px">Overtime</h3><div class="list" id="sumOT">' + ots.map(otRow).join('') + '</div>' : '') +
+      '<h3 style="margin-top:0">Saved for this day</h3><div class="list" id="sumList" data-sec="7a">' + rows.join('') + '</div>' +
+      (ots.length ? '<h3 style="margin-top:14px">Overtime</h3><div class="list" id="sumOT" data-sec="7b">' + ots.map(otRow).join('') + '</div>' : '') +
       '<div class="muted" style="font-size:12.5px;margin:8px 0">Tap an entry to view or change it.</div>' +
-      '<button class="btn primary block" data-act="dayEdit" data-d="' + d + '" data-focus="day" id="sumEdit">Edit this day</button>' +
-      '<button class="btn block" data-act="otNew" data-date="' + iso + '" style="margin-top:8px">+ Add overtime on this day</button>' +
-      '<button class="btn block" data-act="closeSheet" style="margin-top:8px" id="sumDone">Done</button>' +
-      '<div class="daydel"><button type="button" class="btn block delbtn" id="dayDelBtn" data-act="dayDelAsk" data-d="' + d + '">Delete this entry</button></div></div>', 'Day summary');
+      '<div data-sec="7c"><button class="btn primary block" data-act="dayEdit" data-d="' + d + '" data-focus="day" id="sumEdit">Edit this day</button>' +
+      '<button class="btn block" data-act="closeSheet" style="margin-top:8px" id="sumDone">Done</button></div>' +
+      '<div class="daydel" data-sec="7d"><button type="button" class="btn block delbtn" id="dayDelBtn" data-act="dayDelAsk" data-d="' + d + '">Delete this entry</button></div></div>', 'Day summary');
   }
 
   // ---------- Rank & assignment history (Settings) ----------
@@ -4397,27 +4680,27 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function histEditor(rec) {
     var l = E.sortHist(S.profile.assignHist), last = l[l.length - 1] || recAt(T), base = rec || last, isNew = !rec, isFirst = rec && l[0] && l[0].id === rec.id;
     var prev = isNew ? last : l[l.indexOf(rec) - 1];
-    var rk = '<div class="field"><label for="heRank">Rank <span class="req">*</span></label><select id="heRank" data-pf="rank"><option value="">Choose rank&hellip;</option>' +
+    var rk = '<div class="field" data-sec="10c"><label for="heRank">Rank <span class="req">*</span></label><select id="heRank" data-pf="rank"><option value="">Choose rank&hellip;</option>' +
       C.ranks.map(function (r) { return '<option value="' + r.id + '"' + (base.rank === r.id ? ' selected' : '') + '>' + esc(r.label) + '</option>'; }).join('') + '</select><div class="err" id="heRank-err"></div></div>' +
       '<div class="field" id="heRankOtherWrap"' + (base.rank === 'other' ? '' : ' hidden') + '><label for="heRankOther">Rank / title <span class="req">*</span></label><input id="heRankOther" value="' + esc(base.rankOther || '') + '" placeholder="e.g. Assistant Chief"><div class="err" id="heRankOther-err"></div></div>';
     var pduNow = /^pdu:/.test(base.chart || '');
     openSheet(isNew ? 'New entry: promotion / transfer' : 'Edit entry',
       '<div id="histEd" data-id="' + esc(rec ? rec.id : '') + '" data-prev="' + esc(prev ? prev.id : '') + '">' +
-      (prev ? '<div class="histprev" id="histPrev"><div class="hp-t">' + (isNew ? 'Your previous entry' : 'Entry before this one') + ' &middot; effective ' + esc(fmt(E.toDay(prev.effective), 'mdy')) + '</div>' + histRows(prev) + '<div class="muted" style="font-size:12.5px;margin-top:4px">' + (isNew ? 'Everything below starts as a copy. Change what\'s new (rank, command, chart or tour) and set the date it starts.' : '') + '</div></div>' : '') +
-      '<div class="field"><label for="heEff">Effective date <span class="req">*</span></label><input id="heEff" type="date" class="dateIn" value="' + esc(rec ? rec.effective : '') + '"><div class="hint">' + (isFirst ? 'The date this rank, command and chart started. Earlier dates also use this entry.' : 'The date of the promotion or transfer. It applies from this date on; earlier dates keep the entry before it.') + '</div><div class="err" id="heEff-err"></div></div>' +
-      rk + cmdPicker('he', base.command) +
-      '<div class="field"><label>Chart</label>' + chartPicker('he', base.chart || '') + '</div>' +
-      '<div id="heTourWrap"' + (pduNow ? ' hidden' : '') + '>' + tourField('heTour', E.fmtHM(base.tourLen || 480), 'Default tour length', 'heStart') +
-      '<div class="field"><label for="heStart">Tour start time (optional)</label><input id="heStart" type="time" value="' + esc(base.tourStart || '') + '"><div class="hint">Used for every day of this entry. You can still change one day from the calendar.</div></div></div>' +
+      (prev ? '<div class="histprev" id="histPrev" data-sec="10a"><div class="hp-t">' + (isNew ? 'Your previous entry' : 'Entry before this one') + ' &middot; effective ' + esc(fmt(E.toDay(prev.effective), 'mdy')) + '</div>' + histRows(prev) + '<div class="muted" style="font-size:12.5px;margin-top:4px">' + (isNew ? 'Everything below starts as a copy. Change what\'s new (rank, command, chart or tour) and set the date it starts.' : '') + '</div></div>' : '') +
+      '<div class="field" data-sec="10b"><label for="heEff">Effective date <span class="req">*</span></label><input id="heEff" type="date" class="dateIn" value="' + esc(rec ? rec.effective : '') + '"><div class="hint">' + (isFirst ? 'The date this rank, command and chart started. Earlier dates also use this entry.' : 'The date of the promotion or transfer. It applies from this date on; earlier dates keep the entry before it.') + '</div><div class="err" id="heEff-err"></div></div>' +
+      rk + cmdPicker('he', base.command, { sec: '10d' }) +
+      '<div class="field" data-sec="10e"><label>Chart</label>' + chartPicker('he', base.chart || '') + '</div>' +
+      '<div id="heTourWrap" data-sec="10f"' + (pduNow ? ' hidden' : '') + '>' + tourField('heTour', E.fmtHM(base.tourLen || 480), 'Default tour length', 'heStart') +
+      '<div class="field"><label for="heStart">Tour start time (optional)</label><input id="heStart" class="timeIn" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="HH:MM" value="' + esc(base.tourStart || '') + '"><div class="hint">Used for every day of this entry. You can still change one day from the calendar.</div></div></div>' +
       '<div class="hdiff" id="heDiff" role="status" aria-live="polite"></div>' +
       '<button class="btn primary block" data-act="histSave" data-id="' + esc(rec ? rec.id : '') + '" id="heSave">' + (isNew ? 'Save new entry' : 'Save changes') + '</button>' +
       '<button class="btn block" data-act="histBack" style="margin-top:8px">Back to Settings</button></div>', 'Rank & assignment');
-    chartHint('he'); tourPrev('heTour'); histDiffLine();
+    chartHint('he'); tourPrev('heTour'); histDiffLine(); cmdChanged('he');
   }
   function readHistForm() {
     var g = function (id) { var e = document.getElementById(id); return e ? e.value.trim() : ''; }, ck = g('heChart'), tl = E.parseHM(g('heTour'));
     if (/^pdu:/.test(ck) && !tl) tl = PDU.shifts.am.len;
-    return { effective: g('heEff'), rank: g('heRank'), rankOther: g('heRankOther'), command: E.cleanCommand(readCommand('he')), chart: ck, tourLen: tl || 0, tourStart: /^pdu:/.test(ck) ? '' : g('heStart') };
+    return { effective: g('heEff'), rank: g('heRank'), rankOther: g('heRankOther'), command: E.cleanCommand(readCommand('he')), chart: ck, tourLen: tl || 0, tourStart: /^pdu:/.test(ck) ? '' : (E.normTime(g('heStart')) || '') };
   }
   function histDiffLine() {
     var el = document.getElementById('heDiff'), ed = document.getElementById('histEd'); if (!el || !ed) return;
@@ -4434,7 +4717,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var k = Object.keys(errs); if (k.length) { var first = document.getElementById({ effective: 'heEff', rank: 'heRank', rankOther: 'heRankOther', chart: 'heChartBox' }[k[0]]); if (first && first.focus) first.focus(); return toast(errs[k[0]]); }
     var rec = E.cleanHistRec(Object.assign({ id: id || uid() }, f));
     S.profile.assignHist = id ? l.map(function (r) { return r.id === id ? rec : r; }) : l.concat([rec]);
-    syncProfileHist(); save(); render(); openHist();
+    syncProfileHist(); save(); render(); openHist(); resolveHistPcts();
     afterChartToast(id ? 'Entry saved' : 'New entry saved: effective ' + fmt(E.toDay(rec.effective), 'mdy'));
     var c = document.querySelector('.histcard[data-id="' + rec.id + '"]'); if (c) { c.classList.add('justsaved'); if (c.scrollIntoView) c.scrollIntoView({ block: 'center' }); }
   }
@@ -4476,7 +4759,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var sb = sn ? Object.keys(sf).reduce(function (t, k) { return t + String((sf[k] || {}).pdf || '').length * 3 / 4; }, 0) : 0;
     if (!confirm('Replace all current data with this backup? (' + n + ' overtime entries, ' + l + ' leave/notes' + (sn ? ', ' + sn + ' slip' + (sn === 1 ? '' : 's') + ' ' + E.fmtBytes(sb) : '') + ')' + (sb > E.SLIP.warnBytes ? '\n\nThe slips are large and may take a moment.' : ''))) return;
     var mk = typeof d.mapsKey === 'string' ? d.mapsKey.trim() : ''; delete d.mapsKey; delete d.slipFiles;
-    S = normalize(d); if (mk) setMapsKey(mk); save(); closeSheet(); render();
+    S = normalize(d); if (mk) setMapsKey(mk); save(); closeAll(); render();
     var done = function (x) { toast('Backup restored' + (mk ? ' (with Maps key)' : '') + (x || '')); };
     if (sf) slipRestore(sf).then(function () { Object.keys(sf).forEach(function (iso) { slipQueue(iso, 'up'); }); return slipReconcile(); }).then(function () { done(sn ? ' with ' + sn + ' slip' + (sn === 1 ? '' : 's') : ''); }, function () { done(' (slips could not be stored on this device)'); });
     else { slipReconcile(); done(''); } // backup text without slip files: keep the slips already on this device
@@ -4484,7 +4767,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
 
   // ---------- actions ----------
   var A = {
-    tab: function (t) { ui.tab = t.dataset.tab; ui.scrollCurrent = ui.tab === 'pay'; closeSheet(); window.scrollTo(0, 0); render(); },
+    tab: function (t) { ui.tab = t.dataset.tab; ui.scrollCurrent = ui.tab === 'pay'; closeAll(); window.scrollTo(0, 0); render(); },
     settings: settingsSheet,
     chartPick: function (t) {
       var px = t.dataset.px, k = t.dataset.key, inp = document.getElementById(px + 'Chart'), panel = document.getElementById(px + 'Steady'), pp = document.getElementById(px + 'Pdu'), box = document.getElementById(px + 'ChartBox');
@@ -4534,16 +4817,17 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (!tl) { tourPrev('onbTour'); document.getElementById('onbTour').focus(); return toast(E.tourLenError(document.getElementById('onbTour').value).msg || 'Enter your tour length, e.g. 8:15'); }
       if (!(r >= 0)) return toast('Hourly rate must be a number, or leave it blank');
       var effIn = document.getElementById('onbEff') ? document.getElementById('onbEff').value : '', eff = E.isISODate(effIn) ? effIn : (pf.hireDate || E.toISO(T));
-      S.profile = { charts: [{ id: uid(), effective: '', chart: ck }], rank: pf.rank, rankOther: pf.rank === 'other' ? pf.rankOther : '', firstName: pf.firstName, lastName: pf.lastName, name: pf.firstName + ' ' + pf.lastName, taxNumber: pf.taxNumber, refNumber: pf.refNumber, shieldNumber: pf.shieldNumber, hireDate: pf.hireDate, promotionDate: pf.promotionDate, retirementDate: pf.retirementDate, squad: ck, rate: r, rateOverride: r > 0, tourLen: tl, tourStart: /^pdu:/.test(ck) ? '' : (document.getElementById('onbStart').value || ''), command: E.cleanCommand(readCommand('onb')) }; S.profile.assignHist = [E.cleanHistRec({ id: uid(), effective: eff, rank: S.profile.rank, rankOther: S.profile.rankOther, command: S.profile.command, chart: ck, tourLen: S.profile.tourLen, tourStart: S.profile.tourStart })]; syncProfileHist(); save(); render(); toast(S.profile.command ? 'You\'re all set' : 'You\'re all set. Tip: add your command in Settings for drive times from your command.');
+      S.profile = { charts: [{ id: uid(), effective: '', chart: ck }], rank: pf.rank, rankOther: pf.rank === 'other' ? pf.rankOther : '', firstName: pf.firstName, lastName: pf.lastName, name: pf.firstName + ' ' + pf.lastName, taxNumber: pf.taxNumber, refNumber: pf.refNumber, shieldNumber: pf.shieldNumber, hireDate: pf.hireDate, promotionDate: pf.promotionDate, retirementDate: pf.retirementDate, squad: ck, rate: r, rateOverride: r > 0, tourLen: tl, tourStart: /^pdu:/.test(ck) ? '' : (E.normTime(document.getElementById('onbStart').value) || ''), command: E.cleanCommand(readCommand('onb')) }; S.profile.assignHist = [E.cleanHistRec({ id: uid(), effective: eff, rank: S.profile.rank, rankOther: S.profile.rankOther, command: S.profile.command, chart: ck, tourLen: S.profile.tourLen, tourStart: S.profile.tourStart })]; syncProfileHist(); save(); render(); toast(S.profile.command ? 'You\'re all set' : 'You\'re all set. Tip: add your command in Settings for drive times from your command.');
     },
     cmdPick: function (t) {
       var px = t.dataset.px, id = t.dataset.id, box = document.getElementById(px + 'Cmd'), c = id === 'other' ? { id: 'other' } : E.commandById(id); box.dataset.id = id;
       document.getElementById(px + 'CmdSel').innerHTML = cmdSelHtml(px, c); document.getElementById(px + 'CmdQ').hidden = true; document.getElementById(px + 'CmdQ').value = ''; document.getElementById(px + 'CmdList').innerHTML = '';
       document.getElementById(px + 'CmdOther').hidden = id !== 'other'; if (id === 'other') document.getElementById(px + 'CmdName').focus(); else if (E.commandNeedsAddress(id)) document.getElementById(px + 'CmdUAddr').focus();
+      cmdChanged(px);
     },
     cmdClear: function (t) {
       var px = t.dataset.px; document.getElementById(px + 'Cmd').dataset.id = ''; document.getElementById(px + 'CmdSel').innerHTML = ''; document.getElementById(px + 'CmdOther').hidden = true;
-      var q = document.getElementById(px + 'CmdQ'); q.hidden = false; q.focus();
+      var q = document.getElementById(px + 'CmdQ'); q.hidden = false; q.focus(); cmdChanged(px);
     },
     calPrev: function () { ui.calM--; if (ui.calM < 1) { ui.calM = 12; ui.calY--; } render(); },
     calNext: function () { ui.calM++; if (ui.calM > 12) { ui.calM = 1; ui.calY++; } render(); },
@@ -4644,10 +4928,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     },
     leaveNew: function (t) {
       var asg = t && t.dataset && t.dataset.kind === 'asg';
-      openSheet(asg ? 'Add assignment' : 'Leave, note or assignment', '<div class="field"><label for="lnDate">Date</label><input type="date" id="lnDate" value="' + E.toISO(asg ? T + 1 : T) + '"><div class="hint">Any date: past, today or ahead (training can be scheduled a year or more out).</div></div><button class="btn primary block" data-act="leaveGo">Continue</button>');
+      openSheet(asg ? 'Add assignment' : 'Leave, note or assignment', '<div class="field" data-sec="14a"><label for="lnDate">Date</label><input type="date" id="lnDate" value="' + E.toISO(asg ? T + 1 : T) + '"><div class="hint">Any date: past, today or ahead (training can be scheduled a year or more out).</div></div><button class="btn primary block" data-act="leaveGo">Continue</button>');
     },
     asgPick: function (t) {
-      var box = document.getElementById('asgBox'), id = t.dataset.t, ty = E.assignmentType(id); box.dataset.sel = id;
+      var box = document.getElementById('asgBox'), id = t.dataset.t, ty = E.assignmentType(id); box.dataset.sel = id; var og = document.getElementById('asgOld'); if (og) og.hidden = true;
       Array.prototype.forEach.call(t.parentNode.children, function (b) { var on = b === t; b.classList.toggle('on', on); b.style.background = on ? b.dataset.c : ''; });
       var w = document.getElementById('asgDetailWrap'), inp = document.getElementById('asgDetail');
       w.hidden = !(ty && ty.detail); document.getElementById('asgNotesWrap').hidden = !id;
@@ -4697,10 +4981,16 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     authSignOut: function () {
       var unsynced = Object.keys(SM.recs || {}).some(function (k) { return SM.recs[k].d; }) || Object.keys(SM.slipQ || {}).length;
       if (unsynced && CS.status === 'approved' && !confirm('Some changes haven\'t been uploaded yet. They stay on this device and upload the next time you sign in here. Sign out?')) return;
-      closeSheet(); Promise.resolve(cloudClient().auth.signOut()).catch(function () {}).then(function () { ui.lastUser = CS.username; CS = {}; saveCS(); ui.authTab = 'signin'; render(); toast('Signed out. Your data stays on this device until another account signs in.'); });
+      closeAll(); Promise.resolve(cloudClient().auth.signOut()).catch(function () {}).then(function () { ui.lastUser = CS.username; CS = {}; saveCS(); ui.authTab = 'signin'; render(); toast('Signed out. Your data stays on this device until another account signs in.'); });
     },
     syncNowBtn: function () { if (!online()) return toast('Offline: changes will sync when you\'re back online'); syncNow('manual').then(function () { toast(CL.status === 'error' ? 'Sync problem: ' + CL.error : 'Synced'); }); },
     adminOpen: function () { adminSheet(); },
+    adminBeta: function (t) {
+      var r = (ui.adminRows || []).filter(function (x) { return x.id === t.dataset.id; })[0]; if (!r) return; t.disabled = true;
+      Promise.resolve(cloudClient().rpc('set_user_beta', { target_id: r.id, beta_on: !r.beta })).then(q).then(function () {
+        toast(r.username + ': beta tags ' + (r.beta ? 'off' : 'on')); if (r.id === CS.uid) { CS.beta = !r.beta; saveCS(); render(); } adminSheet();
+      }, function (e) { t.disabled = false; toast('Couldn\'t update: ' + errText(e)); });
+    },
     adminSet: function (t) {
       var r = (ui.adminRows || []).filter(function (x) { return x.id === t.dataset.id; })[0], s = t.dataset.s; if (!r) return;
       if (s === 'revoked' && !confirm('Revoke access for ' + r.username + '? They will be signed out of the cloud; their device keeps its local copy.')) return;
@@ -4788,6 +5078,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         box.dataset.asked = '1';
       }
       if (s === 'paid') showPaidForm(true);
+      if (s === 'work' || s === 'ddnew') asgExpand();
       syncDayEntry();
     },
     pdAdd: function () { showPaidForm(true); var el = document.getElementById('asgPaid'); if (el) el.scrollIntoView({ block: 'center' }); },
@@ -4813,12 +5104,16 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       S.overtime = E.syncExtraOT(S.overtime, iso, null);
       save(); render(); daySheet(d); toast(had ? 'Reset; linked overtime entry removed' : 'Tour reset to default');
     },
-    syncOpen: function () { openSheet('Calendar sync', '<div id="syncWrap">' + syncPanel() + '</div>'); },
+    syncOpen: function () { openSheet('Calendar sync', '<div id="syncWrap" data-sec="15a">' + syncPanel() + '</div>'); },
     syncAllDay: function (t) { S.sync = Object.assign({}, S.sync || {}, { allDay: t.dataset.v === '1' }); save(true); refreshSync(); },
     syncExport: function (t) { doSyncExport(t.dataset.k); },
     otNew: function (t) { otSheet(null, t.dataset.date); },
     otEdit: function (t) { var e = S.overtime.filter(function (x) { return x.id === t.dataset.id; })[0]; if (e) otSheet(e); },
     otComp: function (t) { if (t.disabled) return; var seg = document.getElementById('otComp'); seg.dataset.comp = t.dataset.c; otPreview(); if (t.dataset.c === 'split') { var ci = document.getElementById('otCashH'); if (ci && !ci.value) ci.focus(); } },
+    otTrav: function (t) { var w = document.getElementById('otTravWrap'); w.dataset.on = t.dataset.v; otPreview(); if (t.dataset.v === '1') { var b = document.getElementById('otTravBox'); if (b && b.scrollIntoView) b.scrollIntoView({ block: 'nearest' }); } },
+    otTravComp: function (t) { document.getElementById('otTravWrap').dataset.comp = t.dataset.v; otPreview(); },
+    otTravDir: function (t) { var w = document.getElementById('otTravWrap'); w.dataset.dir = t.dataset.v; if (+w.dataset.each) w.dataset.touched = ''; otPreview(); },
+    otTravPick: function (t) { var w = document.getElementById('otTravWrap'); w.dataset.each = t.dataset.v; w.dataset.eachSrc = 'pick'; w.dataset.touched = ''; if (!w.dataset.dir) w.dataset.dir = 'one'; otPreview(); },
     otMode: function (t) {
       var seg = document.getElementById('otMode'); seg.dataset.mode = t.dataset.m;
       Array.prototype.forEach.call(seg.children, function (b) { b.classList.toggle('on', b === t); });
@@ -4830,15 +5125,18 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (f.dataset.linked) { // only type and notes are editable on an entry linked to an RDO extra tour
         var lh = 0; S.overtime.forEach(function (o) { if (o.id === f.dataset.id) lh = E.entryHours(o); });
         if (x.comp === 'split' && !(x.cashHours > 0 && x.cashHours < lh)) return toast('Split: enter the hours to cash (less than ' + hrs(lh) + ')');
-        S.overtime.forEach(function (o) { if (o.id === f.dataset.id) { o.type = document.getElementById('otType').value; o.notes = document.getElementById('otNotes').value.trim(); o.comp = x.comp; o.cashHours = x.comp === 'split' ? x.cashHours : ''; o.updated = new Date().toISOString(); } });
+        var ltv = otTravCheck(); if (ltv === false) return; var loc = otCmdRead(); if (loc === false) return;
+        S.overtime.forEach(function (o) { if (o.id === f.dataset.id) { o.type = document.getElementById('otType').value; o.notes = document.getElementById('otNotes').value.trim(); o.comp = x.comp; o.cashHours = x.comp === 'split' ? x.cashHours : ''; if (ltv) o.travel = ltv; else delete o.travel; if (loc) o.otCmd = loc; else delete o.otCmd; o.updated = new Date().toISOString(); } });
         save(); closeSheet(); render(); return toast('Overtime updated');
       }
       if (!f.dataset.id && S.overtime.some(function (o) { return o.linkedTour === date; }) && !confirm('This day already has an extra RDO tour in your overtime log. Add a separate entry anyway? Only do this for different hours so nothing is counted twice.')) return;
       if (x.mode === 'times' && (!x.start || !x.end)) return toast('Enter start and end times');
       var h = E.entryHours(x); if (!(h > 0)) return toast('Enter the hours worked');
       if (x.comp === 'split' && !(x.cashHours > 0 && x.cashHours < h)) { var ce = document.getElementById('otCashH'); if (ce) ce.focus(); return toast('Split: enter the hours to cash (less than ' + hrs(h) + ')'); }
+      var tv = otTravCheck(); if (tv === false) return; var oc = otCmdRead(); if (oc === false) return;
       var e = { id: f.dataset.id || uid(), date: date, mode: x.mode, start: x.mode === 'times' ? x.start : '', end: x.mode === 'times' ? x.end : '', hours: x.mode === 'times' ? h : h,
         type: document.getElementById('otType').value, notes: document.getElementById('otNotes').value.trim(), comp: x.comp, cashHours: x.comp === 'split' ? x.cashHours : '', updated: new Date().toISOString() };
+      if (tv) e.travel = tv; if (oc) e.otCmd = oc;
       var i = -1; S.overtime.forEach(function (o, k) { if (o.id === e.id) i = k; });
       if (i >= 0) S.overtime[i] = e; else S.overtime.push(e);
       save(); closeSheet(); render(); toast((i >= 0 ? 'Updated: ' : 'Logged: ') + hrs(h));
@@ -4875,7 +5173,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     },
     histNew: function () { histEditor(null); },
     histEdit: function (t) { histEditor(E.sortHist(S.profile.assignHist).filter(function (r) { return r.id === t.dataset.id; })[0] || null); },
-    histBack: function () { openHist(); },
+    histBack: function () { navBack(); },
     histSave: function (t) { histSave(t.dataset.id || ''); },
     histDel: function (t) {
       var l = E.sortHist(S.profile.assignHist); if (l.length < 2) return toast('You need at least one entry');
@@ -4913,11 +5211,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     reset: function () {
       if (CL.enabled && CS.uid) { // cloud: clear this device and sign out; the account keeps its copy
         if (!confirm('Remove all Patrol Schedule data from this device and sign out? Your account keeps its synced copy; tax, reference and shield numbers and the Maps key (device-only) are erased.')) return;
-        localStorage.removeItem(KEY); setMapsKey(''); slipClear().catch(function () {}); S = defaultState(); SM = { recs: {} }; saveSM(); ui.onbChart = null; closeSheet();
+        localStorage.removeItem(KEY); setMapsKey(''); slipClear().catch(function () {}); S = defaultState(); SM = { recs: {} }; saveSM(); ui.onbChart = null; closeAll();
         return Promise.resolve(cloudClient().auth.signOut()).catch(function () {}).then(function () { ui.lastUser = CS.username; CS = {}; saveCS(); render(); toast('Removed from this device'); });
       }
-      if (!confirm('Erase ALL data on this device? This cannot be undone.')) return; localStorage.removeItem(KEY); setMapsKey(''); slipClear().catch(function () {}); S = defaultState(); ui.onbChart = null; closeSheet(); render(); },
-    suggestOpen: function (t) { suggestSheet(t && t.dataset && t.dataset.section); },
+      if (!confirm('Erase ALL data on this device? This cannot be undone.')) return; localStorage.removeItem(KEY); setMapsKey(''); slipClear().catch(function () {}); S = defaultState(); ui.onbChart = null; closeAll(); render(); },
+    suggestOpen: function (t) { var sc = isBeta() && t && t.closest ? t.closest('[data-sec]') : null; suggestSheet(t && t.dataset && t.dataset.section, sc ? sc.getAttribute('data-sec') : isBeta() ? (sheetRoot.firstElementChild && NAV.cur ? SHEET_PAGES[(NAV.cur.key || '').split('|')[0]] : TAB_PAGES[ui.tab]) || '' : ''); },
     sugCapture: function () { sugCapture(); },
     sugClear: function () { if (ui.sugUrl && String(ui.sugUrl).indexOf('blob:') === 0) try { URL.revokeObjectURL(ui.sugUrl); } catch (e) {} setSugFile(null, ''); },
     sugSend: function () { sugSend(); },
@@ -4925,8 +5223,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     sugPopDismiss: function () { hideSugPop(); },
     sugMark: function (t) { sugMark(t.dataset.id); },
     pushToggle: function (t) { setPushEnabled(!!t.checked); },
-    sheetBg: function (t, ev) { if (ev.target === t) closeSheet(); },
-    closeSheet: closeSheet
+    sheetBg: function (t, ev) { if (ev.target === t) navBack(); },
+    closeSheet: function () { navBack(); },
+    navBack: function () { navBack(); }
   };
 
   document.addEventListener('click', function (ev) {
@@ -5058,9 +5357,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (ev.target.getAttribute('inputmode') === 'numeric' && !ev.target.classList.contains('tourIn') && !ev.target.classList.contains('timeIn') && /\D/.test(ev.target.value)) ev.target.value = ev.target.value.replace(/\D/g, '');
     if (ev.target.maxLength > 0 && ev.target.getAttribute('inputmode') === 'numeric' && ev.target.value.length > ev.target.maxLength) ev.target.value = ev.target.value.slice(0, ev.target.maxLength); // paste can exceed maxlength
     if (ev.target.classList.contains('cmdq')) cmdResults(ev.target.dataset.px, ev.target.value);
-    if (ev.target.classList.contains('timeIn')) { var tv = ev.target.value, tf = E.formatTimeInput(tv, /^delete/.test(ev.inputType || '')); if (tf !== tv) ev.target.value = tf; }
+    if (ev.target.classList.contains('timeIn')) { var tv = ev.target.value, tf = E.formatTimeInput(tv, /^delete/.test(ev.inputType || '')); if (tf !== tv) ev.target.value = tf; if (/^ot(Start|End)$/.test(ev.target.id)) otPreview(); if (ev.target.id === 'otTravAmt') { var tw = document.getElementById('otTravWrap'); if (tw) tw.dataset.touched = '1'; otPreview(); } }
     if (ev.target.id === 'dayStart' || ev.target.id === 'dayEnd') {
-      if (String(ev.target.value || '').trim()) openRdoKindPrompt();
+      if (String(ev.target.value || '').trim()) { openRdoKindPrompt(); if (ev.target.id === 'dayStart') asgExpand(); }
     }
     if (ev.target.id === 'dayStart' || ev.target.id === 'dayLen') { pduKeep(); updateEnd(true); }
     if (ev.target.id === 'dayEnd') updateEnd(false);
@@ -5076,9 +5375,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (/^(onbStart|stStart|heStart|dayStart)$/.test(ev.target.id)) { var ti = document.querySelector('.tourIn[data-start="' + ev.target.id + '"]'); if (ti) tourPrev(ti.id); }
   });
   document.addEventListener('change', function (ev) {
+    if (ev.target.classList && ev.target.classList.contains('timeIn')) { var fv = E.finishTimeInput(ev.target.value); if (fv !== ev.target.value) { ev.target.value = fv; if (ev.target.id === 'dayStart' || ev.target.id === 'dayEnd') updateEnd(false); } if (/^ot(Start|End|TravAmt)$/.test(ev.target.id)) otPreview(); }
     if (/^st(Rank|Hire|Promo|Override)$/.test(ev.target.id)) refreshPay();
     if (ev.target.id === 'heEff' || ev.target.id === 'heRank') histDiffLine();
-    if (ev.target.id === 'otDate') otPreview();
+    if (ev.target.id === 'otDate') { otPreview(); otTravResolve(); }
+    if (/^(ot|he|onb)Cmd(UAddr|Addr)$/.test(ev.target.id)) cmdChanged(ev.target.id.replace(/Cmd(UAddr|Addr)$/, ''));
     if (ev.target.id === 'pdDur') { var dm = E.parseHM(ev.target.value); if (dm) ev.target.value = E.fmtHM(E.roundPaidMin(dm)); pdRemind(); } // :59 rounds up
     if (ev.target.id === 'pdDate') pdDateCheck();
     if (ev.target.id === 'pdFile' && ev.target.files && ev.target.files[0]) { var pf = ev.target.files[0]; ev.target.value = ''; pdScan(pf); } // file stays in memory only
@@ -5097,12 +5398,24 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (ev.key !== 'Escape') return;
     var box = document.getElementById('lvOpts');
     if (box && box.classList.contains('open')) { closeDaySel(); ev.preventDefault(); return; }
-    if (document.getElementById('slipFlow')) slipClose(); else closeSheet();
+    if (document.getElementById('cfmDlg')) return; // the confirm box handles its own Escape
+    if (document.getElementById('slipFlow')) slipClose(); else if (sheetRoot.firstElementChild) navBack();
   });
   // Refresh "today" if the app is left open past midnight.
   document.addEventListener('visibilitychange', function () { if (!document.hidden && E.today() !== T) { T = E.today(); tp = E.parts(T); render(); } });
 
+  // Sheets that can be returned to (see navable / openSheet)
+  daySheet = navable('day', daySheet); daySummary = navable('sum', daySummary);
+  otSheet = navable('ot', otSheet, function (e, d) { return e ? e.id : 'new:' + (d || ''); });
+  settingsSheet = navable('settings', settingsSheet, function () { return ''; });
+  histEditor = navable('hist', histEditor, function (r) { return r ? r.id : 'new'; });
+  chartEditor = navable('chart', chartEditor, function (e) { return e ? e.id : 'new'; });
+  suggestSheet = navable('suggest', suggestSheet, function () { return ''; });
+  inboxSheet = navable('inbox', inboxSheet, function () { return ''; }); adminSheet = navable('admin', adminSheet, function () { return ''; });
+  x15Sheet = navable('x15', x15Sheet); x15Editor = navable('x15ed', x15Editor, function (y, m, t) { return [y, m, t].join('-'); });
+  A.leaveNew = navable('leaveNew', A.leaveNew, function (t) { return t && t.dataset ? t.dataset.kind || '' : ''; }); A.syncOpen = navable('sync', A.syncOpen, function () { return ''; });
   if (CL.enabled) cloudBoot(); else { render(); slipReconcile(); }
+  setTimeout(function () { try { if (S.profile) resolveHistPcts(); } catch (e) {} }, 1500);
   if ('serviceWorker' in navigator && document.querySelector('link[rel="manifest"]') && /^(https:|http:\/\/(localhost|127\.0\.0\.1))/.test(location.href)) {
     navigator.serviceWorker.register('sw.js').catch(function () {});
     navigator.serviceWorker.addEventListener('message', function (ev) { if (ev.data && ev.data.type === 'open-inbox' && CS && CS.role === 'admin') inboxSheet(); });

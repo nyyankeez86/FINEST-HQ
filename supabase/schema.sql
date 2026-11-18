@@ -143,6 +143,27 @@ end $$;
 revoke all on function public.set_user_status(uuid, text) from public, anon;
 grant execute on function public.set_user_status(uuid, text) to authenticated;
 
+-- ---------- beta testers: section numbers (1a, 2b, ...) shown in the app ----------
+-- profiles.beta: only the admin can change it (set_user_beta); users can read their own row but can't update profiles at all.
+-- Added 2026-11-18. The first time the column is created, everyone already approved (the invited testers, incl. the admin) becomes a beta tester.
+do $$ begin
+  if not exists (select 1 from information_schema.columns where table_schema = 'public' and table_name = 'profiles' and column_name = 'beta') then
+    alter table public.profiles add column beta boolean not null default false;
+    update public.profiles set beta = true where status = 'approved';
+  end if;
+end $$;
+create or replace function public.set_user_beta(target_id uuid, beta_on boolean) returns public.profiles
+language plpgsql security definer set search_path = public as $$
+declare p public.profiles;
+begin
+  if not public.is_admin() then raise exception 'admins only' using errcode = '42501'; end if;
+  update public.profiles set beta = coalesce(beta_on, false) where id = target_id returning * into p;
+  if p.id is null then raise exception 'no such user'; end if;
+  return p;
+end $$;
+revoke all on function public.set_user_beta(uuid, boolean) from public, anon;
+grant execute on function public.set_user_beta(uuid, boolean) to authenticated;
+
 -- ---------- slips: private Storage bucket, one folder per user (<user id>/<date>.pdf) ----------
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values ('slips', 'slips', false, 10485760, array['application/pdf', 'image/jpeg'])
@@ -164,7 +185,7 @@ create policy "slips: approved owner deletes" on storage.objects for delete to a
 
 -- ---------- make the owner an admin (run AFTER you have requested access in the app with your username) ----------
 -- Replace zee with your username, then run just these two lines:
---   update public.profiles set role = 'admin', status = 'approved', decided_at = now() where username = 'zee';
+--   update public.profiles set role = 'admin', status = 'approved', beta = true, decided_at = now() where username = 'zee';
 --   select username, status, role from public.profiles;
 
 -- Pin search_path on trigger function (Supabase advisor)
