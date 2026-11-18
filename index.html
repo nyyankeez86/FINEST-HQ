@@ -1878,6 +1878,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   // parentheses such as "(NO CELLPHONE USAGE)", Boro, Requested Rank, map link, status totals, unscheduling notice) is ignored.
   var PD_LABELS = /^(boro(ugh)?|requested\s*rank|rank|status|map|view\s*map|scheduled|pending|approved|cancel+ed|total|unschedul|selected\s*paid|paid\s*details?\b(?!\s*(id|#|no))|date|time|duration|vendor|address|location|paid\s*detail\s*(id|#|no))/i;
   var PD_CITIES = ['STATEN ISLAND', 'NEW YORK', 'MANHATTAN', 'BROOKLYN', 'BRONX', 'QUEENS', 'LONG ISLAND CITY', 'FLUSHING', 'JAMAICA', 'ASTORIA', 'FAR ROCKAWAY'];
+  // Address label words from the screen, removed wherever they appear in the address text.
+  var PD_ADDR_LBL = /\b(?:street\s*)?(?:address|addr\.?)\s*(?:line\s*)?(?:#\s*)?[12]?\b\s*[:.-]?|\bline\s*[12]\b\s*[:.-]?|\bcity\s*[,\/]?\s*state(?:\s*[,\/&]?\s*zip(?:\s*code)?)?\b\s*[:.-]?|\bzip(?:\s*code)?\s*:|\blocation\s*:?/gi;
+  var PD_LABELS_NOADDR = /^(boro(ugh)?|requested\s*rank|rank|status|map|view\s*map|total|vendor|date|time|duration|paid\s*detail\s*(id|#|no))\b/i;
+  function stripAddrLabels(v) { return String(v || '').replace(PD_ADDR_LBL, ' ').replace(/\s+,/g, ',').replace(/^[\s:;,.-]+|[\s:;,-]+$/g, '').replace(/\s+/g, ' ').trim(); }
   function parsePaidDetail(text) {
     var raw = String(text || '').replace(/\r/g, ''), lines = raw.split('\n').map(function (l) { return l.replace(/[|]/g, ' ').replace(/\s+/g, ' ').trim(); }).filter(Boolean), out = { id: '', date: '', start: '', end: '', durationMin: 0, vendor: '', address: '' };
     var all = lines.join('\n'), m;
@@ -1891,15 +1895,28 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var labelVal = function (re) { for (var i = 0; i < lines.length; i++) { var mm = lines[i].match(re); if (mm) { var v = lines[i].slice(mm.index + mm[0].length).replace(/^\s*[:.-]?\s*/, ''); return { i: i, v: v }; } } return null; };
     var cityLine = function (l) { return /\b(NY|N\.Y\.|NEW YORK)\s*,?\s*\d{5}(-\d{4})?\b/i.test(l); };
     var cut = function (l) { var k = l.search(/\b(boro(ugh)?|requested\s*rank|status|map)\b\s*:?/i); return k > 0 ? l.slice(0, k).trim() : l; };
-    // address: "Address:" label, else a street line (+ city line) ending in NY + ZIP
-    var ad = labelVal(/\b(address|location)\b/i), addr = '', ai = -1;
-    if (ad) { addr = cut(ad.v); ai = ad.i; if (!cityLine(addr) && lines[ad.i + 1] && cityLine(lines[ad.i + 1])) addr += ', ' + cut(lines[ad.i + 1]); }
-    else for (var i = 0; i < lines.length; i++) {
+    // address = line 1 (building number + street) + line 2 (city, state, ZIP). Labels ("Address Line 1:", "Address 2", "City, State, Zip",
+    // "Street Address", "Location") are never kept, whether the value follows on the same line or the next one.
+    var isLbl = function (l) { return new RegExp(PD_ADDR_LBL.source, 'i').test(l) && !stripAddrLabels(l); }; // a line that is only a label
+    var valAfter = function (k, re) { var mm = lines[k].match(re), v = stripAddrLabels(lines[k].slice(mm.index + mm[0].length)); if (!v && lines[k + 1] && !isLbl(lines[k + 1]) && !PD_LABELS_NOADDR.test(lines[k + 1])) return { v: stripAddrLabels(lines[k + 1]), at: k + 1 }; return { v: v, at: k }; };
+    var find = function (re) { for (var k = 0; k < lines.length; k++) if (re.test(lines[k])) return k; return -1; };
+    var L1 = /\b(?:street\s*)?(?:address|addr\.?)\s*(?:line\s*)?(?:#\s*)?1\b\s*[:.-]?|\bline\s*1\b\s*[:.-]?/i, L2 = /\b(?:address|addr\.?)\s*(?:line\s*)?(?:#\s*)?2\b\s*[:.-]?|\bline\s*2\b\s*[:.-]?|\bcity\s*[,\/]?\s*state(?:\s*[,\/&]?\s*zip(?:\s*code)?)?\b\s*[:.-]?/i, L0 = /\b(?:street\s*)?(?:address|addr\.?|location)\b\s*[:.-]?/i;
+    var addr = '', ai = -1, k1 = find(L1), k2 = find(L2), a1 = null, a2 = null;
+    if (k1 >= 0) { a1 = valAfter(k1, L1); ai = k1; }
+    else { var k0 = find(L0); if (k0 >= 0 && k0 !== k2) { a1 = valAfter(k0, L0); ai = k0; } }
+    if (k2 >= 0) a2 = valAfter(k2, L2);
+    if (a1 && a1.v) {
+      addr = cut(a1.v);
+      if (a2 && a2.v && !cityLine(addr)) addr += ', ' + cut(a2.v);
+      else if (!a2 && !cityLine(addr) && lines[a1.at + 1] && cityLine(lines[a1.at + 1])) addr += ', ' + cut(stripAddrLabels(lines[a1.at + 1]));
+    } else if (a2 && a2.v) { addr = cut(a2.v); ai = k2; }
+    if (!addr) for (var i = 0; i < lines.length; i++) {
       if (/^\d+[A-Z]?(-\d+)?\s+\S/i.test(lines[i]) && !/\d{1,2}\/\d{1,2}\/\d{4}/.test(lines[i]) && !/^\d{4}\s*[-–]/.test(lines[i]) && !/^\d{5,9}$/.test(lines[i])) {
         if (cityLine(lines[i])) { addr = cut(lines[i]); ai = i; break; }
-        if (lines[i + 1] && cityLine(lines[i + 1])) { addr = cut(lines[i]) + ', ' + cut(lines[i + 1]); ai = i; break; }
+        if (lines[i + 1] && cityLine(lines[i + 1])) { addr = cut(lines[i]) + ', ' + cut(stripAddrLabels(lines[i + 1])); ai = i; break; }
       }
     }
+    addr = stripAddrLabels(addr);
     if (addr) { // "3201 KINGS HIGHWAY BROOKLYN NY 11234" -> "3201 KINGS HIGHWAY, BROOKLYN NY 11234"
       addr = strip(addr).replace(/(\s*,\s*)+/g, ', ').replace(/\bN\.Y\.?/i, 'NY');
       if (addr.indexOf(',') < 0) PD_CITIES.some(function (c) { var re = new RegExp('\\s(' + c + ')\\s+(NY|NEW YORK)\\s+(\\d{5})', 'i'); if (re.test(addr)) { addr = addr.replace(re, ', $1 $2 $3'); return true; } return false; });
@@ -2251,6 +2268,15 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function siteForAddress(addr) { for (var i = 0; i < CONFIG.trainingSites.length; i++) if (sameAddr(CONFIG.trainingSites[i].address, addr)) return i; return -1; }
   // Address suggestions (no API key needed): predefined training sites (for Training) + every address entered before, most recent first.
+  // Paid Detail address suggestions: earlier paid detail addresses first (vendor as label), then every other saved address.
+  function paidAddressSuggestions(map) {
+    var out = [], seen = {}, add = function (v, l) { var k = String(v || '').trim().toLowerCase(); if (!k || seen[k]) return; seen[k] = 1; out.push({ value: String(v).trim(), label: l || '' }); };
+    Object.keys(map || {}).map(function (iso) { return [iso, map[iso]]; }).filter(function (x) { return x[1] && x[1].pd && x[1].pd.address; })
+      .sort(function (a, b) { var x = a[1].updated || a[0], y = b[1].updated || b[0]; return x < y ? 1 : x > y ? -1 : 0; })
+      .forEach(function (x) { add(x[1].pd.address, x[1].pd.vendor || 'Paid Detail'); });
+    addressSuggestions(map, '').forEach(function (x) { add(x.value, x.label); });
+    return out;
+  }
   function addressSuggestions(map, type) {
     var out = [], seen = {}, add = function (v, l) { var k = String(v || '').trim().toLowerCase(); if (!k || seen[k]) return; seen[k] = 1; out.push({ value: String(v).trim(), label: l || '' }); };
     if (type === 'training') CONFIG.trainingSites.forEach(function (st) { add(st.address, st.name); });
@@ -2534,6 +2560,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     periodsForPayday: periodsForPayday, regularPaydayFor: regularPaydayFor, overtimePaydayFor: overtimePaydayFor, regularPeriodFor: regularPeriodFor, overtimePeriodFor: overtimePeriodFor, payPeriodsInYear: payPeriodsInYear, hoursBetween: hoursBetween, entryHours: entryHours,
     otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, dayTour: dayTour, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, commandById: commandById, searchCommands: searchCommands, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, addYearsISO: addYearsISO, retirementDateOf: retirementDateOf, retirementRemain: retirementRemain, retirementCountdown: retirementCountdown, endCompare: endCompare, syncEndOT: syncEndOT, leaveBalances: leaveBalances, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
     steadyKey: steadyKey, parseChart: parseChart, validChartKey: validChartKey, chartInfo: chartInfo, sortCharts: sortCharts, chartAt: chartAt, chartChanges: chartChanges, nextOff: nextOff, nextOn: nextOn, reviewOverrides: reviewOverrides, DOW3: DOW3,
+    stripAddrLabels: stripAddrLabels, paidAddressSuggestions: paidAddressSuggestions,
     rankAbbr: rankAbbr, rankLabel: rankLabel, displayName: displayName, migrateProfile: migrateProfile, validateProfile: validateProfile,
     sortHist: sortHist, histAt: histAt, cleanHistRec: cleanHistRec, histCharts: histCharts, profileAt: profileAt, migrateHist: migrateHist, syncHist: syncHist, histChanges: histChanges, validateHistRec: validateHistRec, sameRank: sameRank, sameCommand: sameCommand,
     icsEscape: icsEscape, foldLine: foldLine, buildEvents: buildEvents, toICS: toICS, googleLink: googleLink, TZID: TZID
@@ -3180,7 +3207,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div class="field"><label for="pdEnd">End (HHMM)</label><input id="pdEnd" class="timeIn" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="0800" value="' + esc(pd.end || '') + '"></div></div>' +
       '<div class="field"><label for="pdDur">Duration (H:MM)</label><input id="pdDur" inputmode="decimal" autocomplete="off" placeholder="auto from the times" value="' + esc(pd.durationMin ? E.fmtHM(pd.durationMin) : '') + '"><div class="hint" id="pdDurHint">Worked out from the times (may cross midnight). :59 rounds up to the hour.</div></div><div class="pdpay" id="pdPay" role="status" aria-live="polite"></div><div class="pdnote" id="pdRemind" role="note" hidden></div>' +
       f('pdVendor', 'Vendor', pd.vendor, ' autocomplete="off" placeholder="e.g. Mount Sinai Health System / Brooklyn"') +
-      f('pdAddr', 'Address', pd.address, ' autocomplete="off" placeholder="Street, city, ZIP"') +
+      f('pdAddr', 'Address', pd.address, ' class="acIn" data-ac="pd" autocomplete="off" autocapitalize="words" enterkeyhint="done" placeholder="Street, city or place name"') +
       '<button type="button" class="btn sm danger pdrm" data-act="pdRemove">Remove paid detail</button></div>';
   }
   function pdHasInput() { return E.hasPaidDetail({ pd: readPaid() }); }
@@ -4910,7 +4937,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (t.dataset.act !== 'sheetBg') ev.preventDefault();
     fn(t, ev);
   });
-  // ---- Address autocomplete dropdown (all address fields: class acIn, data-ac = asg | cmd | home) --------------------
+  // ---- Address autocomplete dropdown (all address fields: class acIn, data-ac = asg | pd | cmd | home) --------------------
   var AC = { t: null, ctrl: null, inp: null, items: [], idx: -1, seq: 0 };
   function acLocal(inp) {
     var kind = inp.dataset.ac, out = [], add = function (v, l) { if (v) out.push({ value: v, label: l || '' }); };
@@ -4918,6 +4945,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var bx = document.getElementById('asgBox'), ty = bx ? bx.dataset.sel : '';
       E.addressSuggestions(S.assignments, ty).forEach(function (x) { add(x.value, x.label); });
       if (ty === 'court') C.boroughs.forEach(function (b) { E.courtList(b).forEach(function (c) { add(c.address, c.name); }); });
+    } else if (kind === 'pd') {
+      E.paidAddressSuggestions(S.assignments).forEach(function (x) { add(x.value, x.label); });
     } else if (kind === 'cmd') {
       C.commands.forEach(function (c) { if (c.address) add(c.address, c.name); });
     }
