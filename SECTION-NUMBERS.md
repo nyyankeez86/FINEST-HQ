@@ -43,7 +43,7 @@ so they stay stable when sections move. New sections get the next free letter; r
 | | 6b | This day (leave / status picker) |
 | | 6c | Tour this day: Time actually worked only (framed Date from / Date to, Scheduled time button, empty-until-entered hint on focus). Typing Tour start live-fills Tour end from the default tour length (end date moves if it crosses midnight). A manual Tour end is kept until start is edited again. Time scheduled to work is not on this screen — it appears on page 8 when overtime is incurred. |
 | | 6d | Assignment |
-| | 6e | Paid detail (own section below Assignment: Add paid detail button / form). Not an assignment option. |
+| | 6e | Paid detail (own section below Assignment: Add paid detail opens page 19; a saved detail shows a summary + Edit). Not an assignment option. |
 | | 6f | Note |
 | | 6g | Overtime this day |
 | | 6h | Delete this entry |
@@ -94,3 +94,9 @@ so they stay stable when sections move. New sections get the next free letter; r
 | **16 Extra 15 minutes (PDU)** | — | header tag only |
 | **17 Extra 15 month editor** | — | header tag only |
 | **18 Chart editor** | — | header tag only |
+| **19 Paid detail** | 19a | Paid Detail ID |
+| | 19b | Date from / Date to (framed tappable MM/DD/YYYY + date wheel; overnight times move Date to to the next day) |
+| | 19c | Start time, End time, and computed Hrs:Min (platform-wide auto-colon typing; the official slip Time range) |
+| | 19d | Vendor, with Previous vendors (deduped name+address from past paid details, most recent first, searchable when there are many; picking one fills vendor + both address lines) |
+| | 19e | Address Line 1 (street; same address autocomplete as court/training) |
+| | 19f | Address Line 2 (city, state, ZIP; trailing “Boro: Q” is stripped) |
