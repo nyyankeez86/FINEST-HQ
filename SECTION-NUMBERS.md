@@ -35,7 +35,7 @@ so they stay stable when sections move. New sections get the next free letter; r
 | | 5d | Week strip |
 | | 5e | PDU lookup (PDU only) |
 
-## Sheets (fixed numbers 6–18)
+## Sheets (fixed numbers 6–20)
 
 | Page | Section | What |
 |---|---|---|
@@ -100,3 +100,10 @@ so they stay stable when sections move. New sections get the next free letter; r
 | | 19d | Vendor, with Previous vendors (deduped name+address from past paid details, most recent first, searchable when there are many; picking one fills vendor + both address lines) |
 | | 19e | Address Line 1 (street; same address autocomplete as court/training) |
 | | 19f | Address Line 2 (city, state, ZIP; trailing “Boro: Q” is stripped) |
+| | 19g | Payment: Paid button (mark as paid), optional Paid date (date payment was received), and Check date. Tapping either date opens a mini calendar grid (not the date wheel). Caption under Check date: “This is the date printed on the check, not the day you received it.” Stored in the synced paid-detail record. |
+| | 19h | Timing captions at the bottom of a completed detail (only when computable): days from the detail date to the check date (“Vendor issued check N days after the detail”) and from the check date to the paid date (“Received N days after the check date”). |
+| | 19i | Amount (optional check amount, $). If blank, pay is hours × the existing flat rank rate already used for paid details. The year-end report uses the entered check amount when present, otherwise the calculated pay. |
+| **20 Year-end tax report** | 20a | Tax year picker. Earnings count in the year of the check date (not the work date). If the check date is missing, the paid date is used; details with neither are listed as pending and excluded from that year’s totals. Opened from the Paid Details card (2d). |
+| | 20b | Vendor consolidation: suggested groups of likely-same vendors (name similarity / prefix matches such as UBS, Mount Sinai, MSG, Boston Properties, Vornado, NYU, Tishman Speyer), confirm or keep separate, manual combine, rename a group, and remove a vendor that was grouped by mistake. Mapping is stored in synced settings. The report uses the combined name, with locations listed under each. |
+| | 20c | Report preview: per-vendor totals (gross by check date), count of details, hours, and a detailed line list (date worked, ID, vendor, location/address, hours, amount, check date, paid date), plus pending / unpaid. |
+| | 20d | Export: real .xlsx (Summary + Details sheets, built on the device) and CSV fallback; Email to myself via the device share sheet (navigator.share with the file), falling back to download + mailto. Nothing is uploaded. |
