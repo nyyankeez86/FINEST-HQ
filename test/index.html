@@ -63,6 +63,11 @@ nav.tabs button[data-tab="overtime"] .tablbl{display:block;text-align:center;max
 .otviewseg .btn.on{background:#0f172a;color:#fff;border-color:#0f172a}
 .ottools{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 10px}
 .ottools .btn.on{background:#0f172a;color:#fff;border-color:#0f172a}
+.swrow{position:relative;overflow:hidden;touch-action:pan-y;background:#fff}
+.swrow .item{background:#fff;transition:transform .18s ease,background-color .18s ease}
+.swrow.swiping .item{transition:none}
+.swrow.sw-paid,.swrow.sw-paid .item{background:#d1fae5}
+.swrow.sw-del,.swrow.sw-del .item{background:#fecaca}
 .item.otitem{padding:5px 2px;min-height:0;gap:6px;align-items:flex-start;line-height:1.2;overflow:hidden}
 .item.otitem .t1,.item.otitem .t2{min-width:0;overflow:hidden;text-overflow:ellipsis}.item.otitem .t1{font-size:13px;font-weight:700}
 .item.otitem .t2{font-size:11.5px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -83,8 +88,10 @@ nav.tabs button svg{width:24px;height:24px}
 nav.tabs button.on{color:var(--navy)}
 nav.tabs button.on::before{content:"";position:absolute;margin-top:-58px;width:36px;height:3px;border-radius:3px;background:var(--navy)}
 .card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:0 1px 2px rgba(15,23,42,.08);border:1px solid #e1e6ee;margin-bottom:12px}
-.row{display:flex;gap:10px}.row[hidden]{display:none}.field.mi{flex:0 0 76px;min-width:76px}.field.mi input{text-align:center;text-transform:uppercase}
+.row{display:flex;gap:10px}.row[hidden]{display:none}.field.mi{flex:0 0 64px;min-width:64px;max-width:72px}.field.mi input{text-align:center;text-transform:uppercase}
 .row>*{flex:1;min-width:0}
+.namerow{display:flex;gap:10px;align-items:stretch}.namerow>*{flex:1;min-width:0}.namerow .field{display:flex;flex-direction:column;margin-bottom:12px}.namerow .field label{min-height:18px;line-height:18px;white-space:nowrap}.namerow .field input{height:48px;min-height:48px}
+.sfold{margin-top:20px}.sfoldbtn{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:44px;margin:0;padding:6px 0;border:0;background:transparent;font:inherit;font-size:17px;font-weight:800;color:inherit;text-align:left;cursor:pointer}.sfoldbtn .sfoldttl{flex:1;min-width:0}.sfoldchev{flex-shrink:0;font-size:16px;color:#4b5a70;width:24px;text-align:center}.sfoldbody{margin-top:6px}
 .stat .lbl{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700}
 .stat .big{font-size:24px;font-weight:800;margin-top:2px;line-height:1.15}
 .stat .small{font-size:13px;color:var(--muted);margin-top:2px}
@@ -184,10 +191,11 @@ h3{font-size:17px;margin:0 0 6px}
 .field input,.field select,.field textarea{width:100%;min-height:48px;border:1px solid #b9c3d3;border-radius:10px;padding:10px 12px;background:#fff;font-size:16px}
 .field textarea{min-height:76px;resize:vertical}
 .field .hint{font-size:12.5px;color:var(--muted);margin-top:4px}
-.sheet-bg{position:fixed;inset:0;background:rgba(5,15,30,.55);z-index:50;display:flex;align-items:flex-end;justify-content:center;animation:fade .15s}
-.sheet{background:#fff;width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:8px 16px calc(18px + env(safe-area-inset-bottom));animation:up .18s ease-out}
-.sheet .grab{width:44px;height:5px;border-radius:5px;background:#c8cfdb;margin:4px auto 10px}
-.sheet .shead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.sheet-bg{position:fixed;inset:0;background:rgba(5,15,30,.55);z-index:50;display:flex;align-items:flex-end;justify-content:center;padding-top:env(safe-area-inset-top,0px);animation:fade .15s}
+.sheet{background:#fff;width:100%;max-width:560px;max-height:92vh;overflow:auto;-webkit-overflow-scrolling:touch;border-radius:18px 18px 0 0;padding:0 16px calc(18px + env(safe-area-inset-bottom));scroll-padding-top:96px;animation:up .18s ease-out}
+.sheet .sbar{position:sticky;top:0;z-index:8;background:#fff;margin:0 -16px 8px;padding:8px 16px 10px;border-bottom:1px solid var(--line,#cfd6e2);box-shadow:0 8px 0 #fff}
+.sheet .grab{width:44px;height:5px;border-radius:5px;background:#c8cfdb;margin:4px auto 8px}
+.sheet .shead{display:flex;justify-content:space-between;align-items:center;margin-bottom:0;background:#fff}
 .sheet .sback{min-height:40px;padding:0 12px 0 8px;margin-right:8px;border-radius:10px;border:0;background:#eef1f6;font-weight:800;font-size:15px;color:var(--ink,#0f172a);cursor:pointer;flex-shrink:0}
 .sheet .shead h3{flex:1;min-width:0}
 .travsum{display:block;font-size:11.5px;color:#0f766e;font-weight:600}.travchip{background:#ecfdf5;border:1px solid #99f6e4;color:#0f766e}
@@ -270,7 +278,7 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after{top:-4px;le
 .pdtagn{margin-top:2px}
 .pdsumpay{margin:0 0 10px}
 .pdsumamt{font-size:13px;font-weight:700;margin-top:6px}
-.mcalwrap{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:16px}
+.mcalwrap{position:fixed;inset:0;z-index:400;display:flex;align-items:center;justify-content:center;padding:16px}
 .mcalwrap[hidden]{display:none!important}
 .mcalback{position:absolute;inset:0;background:rgba(15,23,42,.45)}
 .mcal{position:relative;z-index:1;width:min(340px,100%);background:#fff;border-radius:16px;padding:12px;box-shadow:0 16px 40px rgba(15,23,42,.25)}
@@ -880,12 +888,19 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     //   Federal: https://www.nysd.uscourts.gov (500 Pearl St, 40 Foley Sq), https://www.nyed.uscourts.gov/court-info/court-locations (225 Cadman Plaza East;
     //     EDNY has no Queens or Staten Island courthouse; Central Islip and SDNY White Plains are outside NYC and left out)
     //   NYS DMV Traffic Violations Bureau: https://dmv.ny.gov/tickets/find-tvb-office-locations (+ floors/suites from https://portal.311.nyc.gov/article/?kanumber=KA-02058)
+    //   NYC Family Court (one per borough), checked 2026-11-22 against official nycourts.gov pages:
+    //     New York/Manhattan: https://nycourts.gov/courts/1jd/ (60 Lafayette Street, New York, NY 10013)
+    //     Kings/Brooklyn: https://www.nycourts.gov/courts/2jd/ and https://ww2.nycourts.gov/COURTS/nyc/family/building_kings.shtml (330 Jay Street, Brooklyn, NY 11201)
+    //     Queens: https://nycourts.gov/courts/11jd/index.shtml (151-20 Jamaica Avenue, Jamaica, NY 11432)
+    //     Bronx: 900 Sheridan Avenue, Bronx, NY 10451 — nycourts.gov reporter (Family Court, Bronx County), e.g. Matter of Lucas D. (2013 NY Slip Op 51148(U)); also elderjustice.nycourts.gov directory
+    //     Richmond/Staten Island: https://ww2.nycourts.gov/COURTS/13jd/ada.shtml and https://nycourts.gov/courthelp/goingtocourt/helpcenters.shtml (100 Richmond Terrace, Staten Island, NY 10301)
+    //   signInLocation is reserved on each court for a later note; it is left blank and is not shown in the picker.
     //   Notes: 100 Centre St ZIP 10013 per the Supreme Criminal Term listing; Queens 125-01 Queens Blvd ZIP 11415 per the Supreme Criminal Term
     //   listing (the Criminal Court page prints 11417); DMV prints Manhattan North TVB as "NY, 11027" (typo for 10027).
     //   Manhattan prosecutor: Office of the Special Narcotics Prosecutor, 80 Centre St, New York, NY 10013 -- source: user-provided (added 2026-11-16, not web-verified).
     //   Brooklyn admin: Transit Adjudication Bureau (TAB Court), 29 Gallatin Pl, Brooklyn, NY 11201 -- source: user-provided (added 2026-11-16, not web-verified).
     boroughs: ['Manhattan', 'Brooklyn', 'Queens', 'Bronx', 'Staten Island'],
-    courtTypes: [{ id: 'criminal', label: 'NYC Criminal Court' }, { id: 'supreme', label: 'NYS Supreme Court' }, { id: 'federal', label: 'Federal court' }, { id: 'tvb', label: 'DMV Traffic Violations Bureau' }, { id: 'admin', label: 'TAB Court' }, { id: 'prosecutor', label: 'SNC' }],
+    courtTypes: [{ id: 'criminal', label: 'NYC Criminal Court' }, { id: 'supreme', label: 'NYS Supreme Court' }, { id: 'family', label: 'NYC Family Court' }, { id: 'federal', label: 'Federal court' }, { id: 'tvb', label: 'DMV Traffic Violations Bureau' }, { id: 'admin', label: 'TAB Court' }, { id: 'prosecutor', label: 'SNC' }],
     courts: {
       'Manhattan': {
         criminal: [{ name: 'Manhattan Criminal Court', address: '100 Centre Street, New York, NY 10013' },
@@ -893,6 +908,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
           { name: 'Midtown Community Justice Center', address: '314 West 54th Street, New York, NY 10019' }],
         supreme: [{ name: 'New York County Supreme Court, Criminal Term', address: '100 Centre Street, New York, NY 10013' },
           { name: 'New York County Supreme Court, Civil Term', address: '60 Centre Street, New York, NY 10007' }],
+        family: [{ name: 'New York County Family Court', address: '60 Lafayette Street, New York, NY 10013', signInLocation: '' }],
         federal: [{ name: 'SDNY Daniel Patrick Moynihan U.S. Courthouse', address: '500 Pearl Street, New York, NY 10007' },
           { name: 'SDNY Thurgood Marshall U.S. Courthouse', address: '40 Foley Square, New York, NY 10007' }],
         tvb: [{ name: 'Manhattan North TVB', address: '5 West 125th Street, New York, NY 10027' },
@@ -904,6 +920,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
           { name: 'Red Hook Community Justice Center', address: '88-94 Visitation Place, Brooklyn, NY 11231' }],
         supreme: [{ name: 'Kings County Supreme Court, Criminal Term', address: '320 Jay Street, Brooklyn, NY 11201' },
           { name: 'Kings County Supreme Court, Civil Term', address: '360 Adams Street, Brooklyn, NY 11201' }],
+        family: [{ name: 'Kings County Family Court', address: '330 Jay Street, Brooklyn, NY 11201', signInLocation: '' }],
         federal: [{ name: 'EDNY U.S. Courthouse', address: '225 Cadman Plaza East, Brooklyn, NY 11201' }],
         tvb: [{ name: 'Brooklyn North TVB', address: '625 Atlantic Avenue, 2nd Floor, Brooklyn, NY 11217' },
           { name: 'Brooklyn South TVB', address: '2875 West 8th Street, Brooklyn, NY 11224' }],
@@ -913,6 +930,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         criminal: [{ name: 'Queens Criminal Court', address: '125-01 Queens Boulevard, Kew Gardens, NY 11415' }],
         supreme: [{ name: 'Queens County Supreme Court, Criminal Term', address: '125-01 Queens Boulevard, Kew Gardens, NY 11415' },
           { name: 'Queens County Supreme Court, Civil Term', address: '88-11 Sutphin Boulevard, Jamaica, NY 11435' }],
+        family: [{ name: 'Queens County Family Court', address: '151-20 Jamaica Avenue, Jamaica, NY 11432', signInLocation: '' }],
         federal: [],
         tvb: [{ name: 'Queens North TVB', address: '30-56 Whitestone Expressway, Flushing, NY 11354' },
           { name: 'Queens South TVB', address: '168-35 Rockaway Boulevard, Jamaica, NY 11434' }]
@@ -922,12 +940,14 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
           { name: 'Bronx Criminal Court (Hall of Justice)', address: '265 East 161st Street, Bronx, NY 10451' }],
         supreme: [{ name: 'Bronx County Supreme Court, Criminal Term (Hall of Justice)', address: '265 East 161st Street, Bronx, NY 10451' },
           { name: 'Bronx County Supreme Court, Civil Term', address: '851 Grand Concourse, Bronx, NY 10451' }],
+        family: [{ name: 'Bronx County Family Court', address: '900 Sheridan Avenue, Bronx, NY 10451', signInLocation: '' }],
         federal: [],
         tvb: [{ name: 'Bronx TVB', address: '610 Exterior Street, Suite B3-02, Bronx, NY 10451' }]
       },
       'Staten Island': {
         criminal: [{ name: 'Staten Island Criminal Court', address: '26 Central Avenue, Staten Island, NY 10301' }],
         supreme: [{ name: 'Richmond County Supreme Court (Civil & Criminal Terms)', address: '26 Central Avenue, Staten Island, NY 10301' }],
+        family: [{ name: 'Richmond County Family Court', address: '100 Richmond Terrace, Staten Island, NY 10301', signInLocation: '' }],
         federal: [],
         tvb: [{ name: 'Staten Island (Richmond) TVB', address: '1775 South Avenue, Suite 2, Staten Island, NY 10314' }]
       }
@@ -2765,7 +2785,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     return out;
   }
   // Courts: list for a borough (type order), a pick fills name + address + borough
-  function courtList(boro) { var b = CONFIG.courts[boro] || {}, out = []; CONFIG.courtTypes.forEach(function (t) { (b[t.id] || []).forEach(function (c, i) { out.push({ boro: boro, type: t.id, typeLabel: t.label, i: i, name: c.name, address: c.address }); }); }); return out; }
+  function courtList(boro) { var b = CONFIG.courts[boro] || {}, out = []; CONFIG.courtTypes.forEach(function (t) { (b[t.id] || []).forEach(function (c, i) { out.push({ boro: boro, type: t.id, typeLabel: t.label, i: i, name: c.name, address: c.address, signInLocation: c.signInLocation || '' }); }); }); return out; }
   function applyCourt(a, boro, type, i) { var c = ((CONFIG.courts[boro] || {})[type] || [])[i], r = copy(a || {}); if (!c) return r; r.type = 'court'; r.boro = boro; r.place = c.name; r.address = c.address; return r; }
   // Address comparison for highlighting picks: case, punctuation, spacing and common street abbreviations don't matter; a missing ZIP is OK
   var ADDR_ABBR = { street: 'st', avenue: 'ave', av: 'ave', place: 'pl', boulevard: 'blvd', road: 'rd', expressway: 'expy', floor: 'fl', suite: 'ste', east: 'e', west: 'w', north: 'n', south: 's' };
@@ -3159,6 +3179,17 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   // Typed 24-hour time when the box loses focus: 3 digits = H:MM (130 -> 01:30), 1-2 digits = whole hour (7 -> 07:00). Invalid stays as typed.
   function finishTimeInput(raw) { var v = String(raw || '').trim(); if (!v) return ''; var d = v.replace(/\D/g, ''); var n = normTime(d.length && d.length <= 4 && /^[\d:]+$/.test(v) ? d : v); return n || v; }
   function commandById(id) { for (var i = 0; i < CONFIG.commands.length; i++) if (CONFIG.commands[i].id === id) return CONFIG.commands[i]; return null; }
+  // PDU commands: precinct detective squads (kind pds / id pds-*) and any listed or typed command whose name or abbreviation includes "PDU".
+  function isPduCommand(c) {
+    if (!c) return false;
+    var id = String(c.id || '');
+    if (id.indexOf('pds-') === 0 || c.kind === 'pds') return true;
+    var k = id && id !== 'other' ? commandById(id) : null;
+    if (k && (k.kind === 'pds' || String(k.id || '').indexOf('pds-') === 0)) return true;
+    var parts = [c.kind, c.name, c.abbr, k && k.kind, k && k.name, k && k.abbr];
+    for (var i = 0; i < parts.length; i++) if (parts[i] && /\bPDU\b/i.test(String(parts[i]))) return true;
+    return false;
+  }
   function searchCommands(q, limit) {
     var s = String(q || '').toLowerCase().replace(/[.#]/g, ' ').replace(/\s+/g, ' ').trim(), n = (s.match(/\d+/) || [])[0], kind = /detective|\bsquad\b|\bpds\b|\bpdu\b/.test(s) && /\d/.test(s) ? 'pds' : /\bpsa\b|^psa\d|housing ?\d/.test(s) ? 'psa' : /\btd\b|transit( district)? ?\d/.test(s) ? 'td' : /pct|precinct/.test(s) && !/detective/.test(s) ? 'pct' : '';
     var pure = /^(pct|precinct|psa|housing|td|transit( district)?)?\s*\d+(st|nd|rd|th)?\s*(pct|precinct|precinct detective squad|detective squad|detective|squad|pds|pdu)?$/.test(s);
@@ -3513,7 +3544,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     unit: unit, squad: squad, cycleOffset: cycleOffset, squadsOff: squadsOff, squadsWorking: squadsWorking, isRDO: isRDO,
     nextDayOff: nextDayOff, nextWorkday: nextWorkday, countRDOs: countRDOs, isPayday: isPayday, nextPayday: nextPayday,
     periodsForPayday: periodsForPayday, regularPaydayFor: regularPaydayFor, overtimePaydayFor: overtimePaydayFor, regularPeriodFor: regularPeriodFor, overtimePeriodFor: overtimePeriodFor, payPeriodsInYear: payPeriodsInYear, hoursBetween: hoursBetween, entryHours: entryHours,
-    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, fmtMDY: fmtMDY, defaultTourWindow: defaultTourWindow, tourSpanMinutes: tourSpanMinutes, suggestEndDate: suggestEndDate, workedVsScheduled: workedVsScheduled, cleanTourEntry: cleanTourEntry, tourEntries: tourEntries, dayTour: dayTour, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, commandById: commandById, searchCommands: searchCommands, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, stripBoroSuffix: stripBoroSuffix, splitPaidAddress: splitPaidAddress, joinPaidAddress: joinPaidAddress, mergePaidVendors: mergePaidVendors, rememberPaidVendor: rememberPaidVendor, paidVendorKey: paidVendorKey, parsePaidAmount: parsePaidAmount, paidDetailAmount: paidDetailAmount, paidDetailTaxDate: paidDetailTaxDate, daysBetweenISO: daysBetweenISO, paidDetailTiming: paidDetailTiming, paidDetailTimingCaptions: paidDetailTimingCaptions, paidVendorNames: paidVendorNames, cleanVendorGroups: cleanVendorGroups, vendorReportName: vendorReportName, addVendorToGroup: addVendorToGroup, removeVendorFromGroup: removeVendorFromGroup, renameVendorGroup: renameVendorGroup, ungroupVendor: ungroupVendor, suggestVendorGroups: suggestVendorGroups, paidDetailTaxReport: paidDetailTaxReport, buildPaidDetailXlsx: buildPaidDetailXlsx, buildPaidDetailCsv: buildPaidDetailCsv, parseXlsx: parseXlsx, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, addYearsISO: addYearsISO, retirementDateOf: retirementDateOf, retirementRemain: retirementRemain, retirementCountdown: retirementCountdown, endCompare: endCompare, syncEndOT: syncEndOT, syncWorkedOT: syncWorkedOT, syncEntryOT: syncEntryOT, leaveBalances: leaveBalances, fmtChart: fmtChart, chartTimeFromTour: chartTimeFromTour, isDetectiveRank: isDetectiveRank, isSergeantRank: isSergeantRank, isLieutenantRank: isLieutenantRank, isPoliceOfficerRank: isPoliceOfficerRank, chartKind: chartKind, rankStartDate: rankStartDate, yearsInRankAtLeast: yearsInRankAtLeast, chartTimeEligibility: chartTimeEligibility, chartTimeForDay: chartTimeForDay, chartTimeRange: chartTimeRange, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
+    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, fmtMDY: fmtMDY, defaultTourWindow: defaultTourWindow, tourSpanMinutes: tourSpanMinutes, suggestEndDate: suggestEndDate, workedVsScheduled: workedVsScheduled, cleanTourEntry: cleanTourEntry, tourEntries: tourEntries, dayTour: dayTour, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, commandById: commandById, isPduCommand: isPduCommand, searchCommands: searchCommands, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, stripBoroSuffix: stripBoroSuffix, splitPaidAddress: splitPaidAddress, joinPaidAddress: joinPaidAddress, mergePaidVendors: mergePaidVendors, rememberPaidVendor: rememberPaidVendor, paidVendorKey: paidVendorKey, parsePaidAmount: parsePaidAmount, paidDetailAmount: paidDetailAmount, paidDetailTaxDate: paidDetailTaxDate, daysBetweenISO: daysBetweenISO, paidDetailTiming: paidDetailTiming, paidDetailTimingCaptions: paidDetailTimingCaptions, paidVendorNames: paidVendorNames, cleanVendorGroups: cleanVendorGroups, vendorReportName: vendorReportName, addVendorToGroup: addVendorToGroup, removeVendorFromGroup: removeVendorFromGroup, renameVendorGroup: renameVendorGroup, ungroupVendor: ungroupVendor, suggestVendorGroups: suggestVendorGroups, paidDetailTaxReport: paidDetailTaxReport, buildPaidDetailXlsx: buildPaidDetailXlsx, buildPaidDetailCsv: buildPaidDetailCsv, parseXlsx: parseXlsx, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, addYearsISO: addYearsISO, retirementDateOf: retirementDateOf, retirementRemain: retirementRemain, retirementCountdown: retirementCountdown, endCompare: endCompare, syncEndOT: syncEndOT, syncWorkedOT: syncWorkedOT, syncEntryOT: syncEntryOT, leaveBalances: leaveBalances, fmtChart: fmtChart, chartTimeFromTour: chartTimeFromTour, isDetectiveRank: isDetectiveRank, isSergeantRank: isSergeantRank, isLieutenantRank: isLieutenantRank, isPoliceOfficerRank: isPoliceOfficerRank, chartKind: chartKind, rankStartDate: rankStartDate, yearsInRankAtLeast: yearsInRankAtLeast, chartTimeEligibility: chartTimeEligibility, chartTimeForDay: chartTimeForDay, chartTimeRange: chartTimeRange, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
     steadyKey: steadyKey, parseChart: parseChart, validChartKey: validChartKey, chartInfo: chartInfo, sortCharts: sortCharts, chartAt: chartAt, chartChanges: chartChanges, nextOff: nextOff, nextOn: nextOn, reviewOverrides: reviewOverrides, DOW3: DOW3,
     stripAddrLabels: stripAddrLabels, paidAddressSuggestions: paidAddressSuggestions,
     rankAbbr: rankAbbr, rankLabel: rankLabel, displayName: displayName, formatFullName: formatFullName, normMiddleInitial: normMiddleInitial, migrateProfile: migrateProfile, validateProfile: validateProfile,
@@ -3659,20 +3690,20 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (!onb && ui.tab === 'schedule') startRetireTick(); else stopRetireTick();
   }
 
-  var PF = [['firstName', 'First', 'First name', 'given-name', 'text'], ['middleInitial', 'MI', 'Middle initial', 'additional-name', 'mi'], ['lastName', 'Last', 'Last name', 'family-name', 'text'],
+  var PF = [['firstName', 'First', 'First name', 'given-name', 'text'], ['middleInitial', 'MI', 'M.I.', 'additional-name', 'mi'], ['lastName', 'Last', 'Last name', 'family-name', 'text'],
     ['taxNumber', 'Tax', 'Tax number', 'off', 'numericTax'], ['refNumber', 'Ref', 'Reference number', 'off', 'numeric7'], ['shieldNumber', 'Shield', 'Shield number (optional)', 'off', 'numeric']];
   function profileFields(px, p, noRank) {
     p = p || {};
-    var h = noRank ? '<div class="row">' : '<div class="field"><label for="' + px + 'Rank">Rank <span class="req">*</span></label><select id="' + px + 'Rank" data-pf="rank"><option value="">Choose rank&hellip;</option>' +
+    var h = noRank ? '<div class="namerow">' : '<div class="field"><label for="' + px + 'Rank">Rank <span class="req">*</span></label><select id="' + px + 'Rank" data-pf="rank"><option value="">Choose rank&hellip;</option>' +
       C.ranks.map(function (r) { return '<option value="' + r.id + '"' + (p.rank === r.id ? ' selected' : '') + '>' + esc(r.label) + '</option>'; }).join('') + '</select><div class="err" id="' + px + 'Rank-err"></div></div>' +
       '<div class="field" id="' + px + 'RankOtherWrap"' + (p.rank === 'other' ? '' : ' hidden') + '><label for="' + px + 'RankOther">Rank / title <span class="req">*</span></label><input id="' + px + 'RankOther" value="' + esc(p.rankOther || '') + '" placeholder="e.g. Assistant Chief"><div class="err" id="' + px + 'RankOther-err"></div></div>' +
-      '<div class="row">';
-    if (noRank) h = '<div class="row">';
+      '<div class="namerow">';
+    if (noRank) h = '<div class="namerow">';
     PF.forEach(function (f, i) {
       if (i === 3) h += '</div><div class="row">';
       if (i === 5) h += '</div><div class="privnote" id="' + px + 'PrivNote">&#128274; Tax, reference and shield numbers stay on this device only' + (CL.enabled ? ' and are never synced to your account' : '') + '.</div>';
       var num = f[4].indexOf('numeric') === 0, mi = f[4] === 'mi';
-      h += '<div class="field' + (mi ? ' mi' : '') + '"><label for="' + px + f[1] + '">' + f[2] + (f[0] === 'shieldNumber' || f[0] === 'middleInitial' ? '' : ' <span class="req">*</span>') + (mi ? ' <span class="muted">(optional)</span>' : '') + '</label><input id="' + px + f[1] + '" autocomplete="' + f[3] + '"' + (num ? ' inputmode="numeric" pattern="[0-9]*"' : '') + (mi ? ' maxlength="1" autocapitalize="characters" spellcheck="false" placeholder="A" aria-label="Middle initial, optional"' : '') + (f[4] === 'numeric7' ? ' maxlength="7" placeholder="7 digits"' : '') + (f[4] === 'numericTax' ? ' maxlength="' + C.taxNumberDigits + '" placeholder="' + C.taxNumberDigits + ' digits"' : '') + ' value="' + esc(f[0] === 'middleInitial' ? E.normMiddleInitial(p.middleInitial) : (p[f[0]] || '')) + '"' + (f[0] === 'shieldNumber' ? ' placeholder="If you have one"' : '') + '><div class="err" id="' + px + f[1] + '-err"></div></div>';
+      h += '<div class="field' + (mi ? ' mi' : '') + '"><label for="' + px + f[1] + '">' + f[2] + (f[0] === 'shieldNumber' || f[0] === 'middleInitial' ? '' : ' <span class="req">*</span>') + '</label><input id="' + px + f[1] + '" autocomplete="' + f[3] + '"' + (num ? ' inputmode="numeric" pattern="[0-9]*"' : '') + (mi ? ' maxlength="1" autocapitalize="characters" spellcheck="false" placeholder="A" aria-label="Middle initial, optional"' : '') + (f[4] === 'numeric7' ? ' maxlength="7" placeholder="7 digits"' : '') + (f[4] === 'numericTax' ? ' maxlength="' + C.taxNumberDigits + '" placeholder="' + C.taxNumberDigits + ' digits"' : '') + ' value="' + esc(f[0] === 'middleInitial' ? E.normMiddleInitial(p.middleInitial) : (p[f[0]] || '')) + '"' + (f[0] === 'shieldNumber' ? ' placeholder="If you have one"' : '') + '><div class="err" id="' + px + f[1] + '-err"></div></div>';
     });
     h += '<div class="field"><label for="' + px + 'Hire">Hire date (optional)</label><input id="' + px + 'Hire" type="date" class="dateIn" max="' + E.toISO(E.today()) + '" value="' + esc(p.hireDate || '') + '"><div class="err" id="' + px + 'Hire-err"></div></div>' +
       '<div class="field"><label for="' + px + 'Promo">Most recent promotion date (optional)</label><input id="' + px + 'Promo" type="date" class="dateIn" max="' + E.toISO(E.today()) + '" value="' + esc(p.promotionDate || '') + '"><div class="err" id="' + px + 'Promo-err"></div>' +
@@ -3764,6 +3795,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function cmdChanged(px) {
     var c = E.cleanCommand(readCommand(px)), iso = px === 'ot' ? otTravDay() : px === 'he' ? ((document.getElementById('heEff') || {}).value || '') : '';
     cmdPctRefresh(px, iso); if (px === 'ot') otPreview();
+    if (px === 'he' || px === 'st' || px === 'onb') syncX15Section();
     if (c && E.commandNeedsPrecinct(c)) resolvePct(c).then(function () { cmdPctRefresh(px, iso); if (px === 'ot') otPreview(); });
   }
   function checkCommand(px) { var c = readCommand(px), e = E.commandError(c), er = document.getElementById(px + 'CmdName-err'); if (er) er.textContent = e; if (e) { document.getElementById(px + 'CmdName').focus(); toast(e); return false; } return true; }
@@ -4041,13 +4073,13 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var badge = '<span class="otbadge ' + (paid ? 'paid' : 'unpaid') + '">' + paidLbl + '</span>';
     var chk = sel ? '<input type="checkbox" class="otchk" data-act="otSelOne" data-id="' + esc(e.id) + '"' + (ui.otSelIds && ui.otSelIds[e.id] ? ' checked' : '') + ' aria-label="Select overtime entry">' : '';
     var act = sel ? 'otSelOne' : 'otEdit';
-    return '<button class="item otitem" data-act="' + act + '" data-id="' + esc(e.id) + '">' + chk +
+    return '<div class="swrow" data-swipe="ot" data-id="' + esc(e.id) + '"><button class="item otitem" data-act="' + act + '" data-id="' + esc(e.id) + '">' + chk +
       '<div class="main"><div class="t1">' + esc(otType(e.type).label) + badge +
       (e.linkedTour ? ' <span class="chip otchip">RDO tour</span>' : e.linkedEnd ? ' <span class="chip otchip late">Late end</span>' : '') +
       (function (t) { return t && !t.ineligible && t.minutes ? ' <span class="chip travchip otchip">Travel ' + E.fmtHM(t.minutes) + (t.comp === 'time' ? ' comp' : '') + '</span>' : ''; })(entryPay(e).travel) +
       '</div><div class="t2">' + when + (e.notes ? ' · ' + esc(e.notes) : '') + '</div>' +
       '<div class="t2 otexp">Expected pay date ' + exp + (paid ? ' · ' + paidLbl : '') + '</div></div>' +
-      '<div class="right">' + hrs(h) + '<small>' + (function (r) { return payText({ pay: r.pay, comp: r.compMinutes || 0 }); })(entryPay(e)) + '</small></div></button>';
+      '<div class="right">' + hrs(h) + '<small>' + (function (r) { return payText({ pay: r.pay, comp: r.compMinutes || 0 }); })(entryPay(e)) + '</small></div></button></div>';
   }
   function otTools() {
     var list = S.overtime || [], unpaid = list.filter(function (e) { return !otIsPaid(e); }).length;
@@ -4134,9 +4166,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
           if (mClosed) return;
           html += '<div class="list otlist">';
           g.forEach(function (x) {
-            html += '<button class="item otitem" data-act="day" data-d="' + E.toDay(x.iso) + '"><div class="main"><div class="t1">' + esc(x.pd.vendor || 'Paid Detail') + (x.pd.id ? ' · #' + esc(x.pd.id) : '') + '</div>' +
+            html += '<div class="swrow" data-swipe="pd" data-iso="' + esc(x.iso) + '"><button class="item otitem" data-act="day" data-d="' + E.toDay(x.iso) + '"><div class="main"><div class="t1">' + esc(x.pd.vendor || 'Paid Detail') + (x.pd.id ? ' · #' + esc(x.pd.id) : '') + '</div>' +
               '<div class="t2">' + fmt(E.toDay(x.work)) + (x.pd.start ? ' · ' + esc(hhmm(x.pd.start)) + (x.pd.end ? '–' + esc(hhmm(x.pd.end)) : '') : '') + '</div></div>' +
-              '<div class="right">' + E.fmtHM(x.minutes) + '<small>' + (x.amount ? money(x.amount) : '') + '</small></div></button>';
+              '<div class="right">' + E.fmtHM(x.minutes) + '<small>' + (x.amount ? money(x.amount) : '') + '</small></div></button></div>';
           });
           html += '</div>';
         });
@@ -4306,7 +4338,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     NAV.cur = p || { key: 'anon|' + title, fn: null };
     var pg = SHEET_PAGES[(NAV.cur.key || '').split('|')[0]] || '';
     var back = NAV.stack.length ? '<button type="button" class="sback" data-act="navBack" id="sheetBack" aria-label="Back">&lsaquo; Back</button>' : '';
-    sheetRoot.innerHTML = '<div class="sheet-bg" data-act="sheetBg"><div class="sheet' + (back ? ' sub' : '') + '" role="dialog" aria-modal="true" aria-label="' + esc(title) + '"><div class="grab"></div><div class="shead"' + (pg ? ' data-sec="' + pg + '"' : '') + '>' + back + '<h3>' + esc(title) + '</h3><div class="shead-acts">' + sug + '<button class="x" data-act="closeSheet" aria-label="' + (back ? 'Close and go back' : 'Close') + '">&times;</button></div></div>' + body + '</div></div>';
+    sheetRoot.innerHTML = '<div class="sheet-bg" data-act="sheetBg"><div class="sheet' + (back ? ' sub' : '') + '" role="dialog" aria-modal="true" aria-label="' + esc(title) + '"><div class="sbar"><div class="grab"></div><div class="shead"' + (pg ? ' data-sec="' + pg + '"' : '') + '>' + back + '<h3>' + esc(title) + '</h3><div class="shead-acts">' + sug + '<button class="x" data-act="closeSheet" aria-label="' + (back ? 'Close and go back' : 'Close') + '">&times;</button></div></div></div>' + body + '</div></div>';
   }
   // Back / X / Escape: the previous page exactly as it was left (or close, at the top level).
   function navBack() {
@@ -5098,8 +5130,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     return '<div class="privnote"><p>We never sell your data.</p>' +
       '<p>Your entries — schedule, overtime, leave, assignments, slips, and other records synced to your account — are tied to your account and protected so other users and app admins cannot view them.</p>' +
       '<p>Private fields (tax number, reference number, shield number, home address, and your Maps key) stay only on this device and are never uploaded. Paid detail screenshots are read on this device and never uploaded.</p>' +
-      '<p>If you send a suggestion, the admin can read that message and any screenshot you attach.</p>' +
-      '<p>End-to-end encryption is planned.</p></div>';
+      '<p>If you send a suggestion, the admin can read that message and any screenshot you attach.</p></div>';
   }
   function privacySectionHtml(opts) {
     opts = opts || {};
@@ -6053,8 +6084,134 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     document.body.appendChild(w);
     var close = function () { w.remove(); document.removeEventListener('keydown', key, true); }, key = function (e) { if (e.key === 'Escape') { e.stopPropagation(); close(); } };
     document.addEventListener('keydown', key, true);
-    w.addEventListener('click', function (e) { if (e.target === w || e.target.id === 'cfmNo') close(); else if (e.target.id === 'cfmYes') { close(); o.onOk && o.onOk(); } });
+    w.addEventListener('click', function (e) {
+      if (e.target === w || e.target.id === 'cfmNo') { if (o.onCancel) o.onCancel(); close(); }
+      else if (e.target.id === 'cfmYes') { if (o.onOk && o.onOk(w) === false) return; close(); }
+    });
     document.getElementById('cfmNo').focus();
+  }
+  function overtimeById(id) {
+    var i, e = null; (S.overtime || []).forEach(function (o) { if (String(o.id) === String(id)) e = o; }); return e;
+  }
+  function overtimeDeleteMessage(e) {
+    var lk = e && (e.linkedTour || e.linkedEnd), le = !!(e && e.linkedEnd);
+    return le ? 'Delete this entry? This also clears the late tour end on ' + fmt(E.toDay(lk)) + '.' : lk ? 'Delete this entry? This also removes the extra tour from ' + fmt(E.toDay(lk)) + ' on your calendar.' : 'Delete this overtime entry?';
+  }
+  function commitOvertimeDelete(id, closeForm) {
+    var e = overtimeById(id) || {}, lk = e.linkedTour || e.linkedEnd || '', le = !!e.linkedEnd;
+    S.overtime = (S.overtime || []).filter(function (o) { return String(o.id) !== String(id); });
+    if (le && S.tours[lk]) { var tt = copy(S.tours[lk]); delete tt.end; delete tt.short; if (!tt.status && !tt.len && !tt.start) delete S.tours[lk]; else S.tours[lk] = tt; }
+    else if (lk && S.tours[lk] && S.tours[lk].status === 'work') delete S.tours[lk];
+    save(); if (closeForm) closeSheet(); render(); toast('Entry deleted');
+  }
+  function commitPaidDetailDelete(iso) {
+    if (!iso || !S.assignments[iso]) return;
+    var cur = Object.assign({}, S.assignments[iso]);
+    delete cur.pd;
+    if (cur.type === 'paiddetail') cur.type = '';
+    var asg = E.cleanAssignment(cur);
+    if (asg) S.assignments[iso] = Object.assign(asg, { updated: new Date().toISOString() });
+    else delete S.assignments[iso];
+    save(); render(); toast('Paid detail removed');
+  }
+  function openSwipePaidDialog(kind, key) {
+    var today = E.toISO(T), paidIso = today, checkIso = '', body;
+    if (kind === 'ot') {
+      var e = overtimeById(key);
+      if (e && otPaidDate(e)) paidIso = otPaidDate(e);
+      body = '<p>Pick the date you were paid for this overtime entry.</p>' + pdCalCap('swipePaidDate', 'Paid date', paidIso, '');
+    } else {
+      var a = (S.assignments || {})[key], pd = E.cleanPaidDetail((a && a.pd) || {});
+      if (pd.paidDate) paidIso = pd.paidDate;
+      if (pd.checkDate) checkIso = pd.checkDate;
+      body = '<p>Mark this paid detail as paid. For taxes, earnings count in the year of the check date (or paid date if the check date is missing).</p>' +
+        '<div class="datepair pdcalpair">' + pdCalCap('swipePaidDate', 'Paid date', paidIso, '') + pdCalCap('swipeCheckDate', 'Check date', checkIso, 'This is the date printed on the check, not the day you received it.') + '</div>';
+    }
+    confirmDlg({
+      title: 'Mark paid',
+      body: body,
+      ok: 'Mark paid',
+      onOk: function () {
+        var p = document.getElementById('swipePaidDate'), c = document.getElementById('swipeCheckDate');
+        var paid = (p && p.dataset.iso) || '', check = (c && c.dataset.iso) || '';
+        if (!E.isISODate(paid)) { toast('Pick the date you were paid'); return false; }
+        if (kind === 'ot') {
+          var ids = {}; ids[key] = true;
+          var n = applyOtPaidDate(paid, ids);
+          render();
+          toast(n ? ('Marked paid ' + E.fmtMDY(paid)) : 'Couldn\'t mark paid');
+        } else {
+          if (!S.assignments[key]) return;
+          var rec = Object.assign({}, S.assignments[key]);
+          var pd2 = E.cleanPaidDetail(rec.pd || {});
+          pd2.paid = true; pd2.paidDate = paid; pd2.checkDate = check;
+          rec.pd = pd2;
+          var asg = E.cleanAssignment(rec);
+          if (asg) S.assignments[key] = Object.assign(asg, { updated: new Date().toISOString() });
+          save(); render(); toast('Marked paid ' + E.fmtMDY(paid) + (check ? ' · check ' + E.fmtMDY(check) : ''));
+        }
+      }
+    });
+  }
+  function openSwipeDeleteDialog(kind, key) {
+    if (kind === 'ot') {
+      var e = overtimeById(key); if (!e) return;
+      confirmDlg({ title: 'Delete overtime', body: '<p>' + esc(overtimeDeleteMessage(e)) + '</p>', ok: 'Delete', danger: true, onOk: function () { commitOvertimeDelete(key, false); } });
+    } else {
+      confirmDlg({ title: 'Delete paid detail', body: '<p>Remove this paid detail from the day?</p>', ok: 'Delete', danger: true, onOk: function () { commitPaidDetailDelete(key); } });
+    }
+  }
+  var SW = { row: null, id: 0, x0: 0, y0: 0, dx: 0, axis: '', locked: false, suppressClick: false, suppressRow: null };
+  var SW_LOCK = 12, SW_THRESH = 72;
+  function swipeClear(row, animate) {
+    if (!row) return;
+    var item = row.querySelector('.item');
+    row.classList.remove('swiping', 'sw-paid', 'sw-del');
+    if (item) {
+      if (!animate) item.style.transition = 'none';
+      item.style.transform = '';
+      if (!animate) { void item.offsetWidth; item.style.transition = ''; }
+    }
+  }
+  function swipeTint(row, dx) {
+    row.classList.toggle('sw-paid', dx > 8);
+    row.classList.toggle('sw-del', dx < -8);
+    var item = row.querySelector('.item');
+    if (item) item.style.transform = 'translateX(' + dx + 'px)';
+  }
+  function swipeDown(ev) {
+    if (ev.button && ev.button !== 0) return;
+    if (ui.otSel) return;
+    if (ev.target.closest && ev.target.closest('input,select,textarea,.otchk')) return;
+    var row = ev.target.closest && ev.target.closest('.swrow');
+    if (!row || !row.dataset.swipe) return;
+    SW.row = row; SW.id = ev.pointerId; SW.x0 = ev.clientX; SW.y0 = ev.clientY; SW.dx = 0; SW.axis = ''; SW.locked = false;
+  }
+  function swipeMove(ev) {
+    if (!SW.row || ev.pointerId !== SW.id) return;
+    var dx = ev.clientX - SW.x0, dy = ev.clientY - SW.y0;
+    if (!SW.axis) {
+      if (Math.abs(dy) > SW_LOCK && Math.abs(dy) >= Math.abs(dx)) { SW.axis = 'y'; return; }
+      if (Math.abs(dx) > SW_LOCK && Math.abs(dx) > Math.abs(dy) * 1.15) {
+        SW.axis = 'x'; SW.locked = true; SW.row.classList.add('swiping');
+        try { SW.row.setPointerCapture(ev.pointerId); } catch (err) {}
+      } else return;
+    }
+    if (SW.axis !== 'x') return;
+    ev.preventDefault();
+    SW.dx = dx;
+    swipeTint(SW.row, dx);
+  }
+  function swipeUp(ev) {
+    if (!SW.row || ev.pointerId !== SW.id) return;
+    var row = SW.row, kind = row.dataset.swipe, key = kind === 'pd' ? row.dataset.iso : row.dataset.id, dx = SW.dx, axis = SW.axis;
+    try { row.releasePointerCapture(ev.pointerId); } catch (err) {}
+    SW.row = null; SW.id = 0; SW.axis = ''; SW.locked = false; SW.dx = 0;
+    row.classList.remove('swiping');
+    if (axis === 'x' && Math.abs(dx) >= 8) { SW.suppressClick = true; SW.suppressRow = row; }
+    if (axis === 'x' && dx >= SW_THRESH) { swipeClear(row, true); openSwipePaidDialog(kind, key); return; }
+    if (axis === 'x' && dx <= -SW_THRESH) { swipeClear(row, true); openSwipeDeleteDialog(kind, key); return; }
+    swipeClear(row, true);
   }
   function pduKeep() {
     var box = document.getElementById('pduSched'), el = document.getElementById('pduKeep'); if (!box || !el) return;
@@ -6498,7 +6655,19 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var c = document.getElementById('payCard'); if (!c) return; var p = payFormProfile(); c.innerHTML = payCardHtml(p);
     var w = document.getElementById('stOvWrap'), o = document.getElementById('stOverride'), pl = E.payPlacement(p); if (w && o) w.hidden = !o.checked && pl.ok && (pl.cashOT || !!pl.ceaOT);
   }
-  function reopenMaps() { var sc = window.scrollY; settingsSheet(); var h = document.getElementById('mapsHead'); if (h && h.scrollIntoView) h.scrollIntoView({ block: 'start' }); }
+  function settingsFold(id, sec, title, body, open) {
+    return '<div class="sfold" id="' + id + 'Wrap" data-sec="' + sec + '">' +
+      '<button type="button" class="sfoldbtn" data-act="settingsFold" data-id="' + id + '" id="' + id + '" aria-expanded="' + (open ? 'true' : 'false') + '"><span class="sfoldttl">' + title + '</span><span class="sfoldchev" aria-hidden="true">' + (open ? '&#9662;' : '&#9656;') + '</span></button>' +
+      '<div class="sfoldbody" id="' + id + 'Body"' + (open ? '' : ' hidden') + '>' + body + '</div></div>';
+  }
+  function syncX15Section() {
+    var show = E.isPduCommand((recAt(T) || {}).command || (S.profile && S.profile.command));
+    var nodes = [];
+    if (document.getElementById('x15Sec')) nodes.push(document.getElementById('x15Sec'));
+    (NAV.stack || []).forEach(function (n) { if (n && n.node) { var el = n.node.querySelector('#x15Sec'); if (el && nodes.indexOf(el) < 0) nodes.push(el); } });
+    nodes.forEach(function (el) { el.hidden = !show; });
+  }
+  function reopenMaps() { ui.fold9f = true; settingsSheet(); var h = document.getElementById('mapsHead'); if (h && h.scrollIntoView) h.scrollIntoView({ block: 'start' }); }
   function settingsSheet() {
     var p = S.profile, s = S.settings;
     openSheet('Settings',
@@ -6510,19 +6679,22 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div class="field"><label for="stMult">OT multiplier</label><input id="stMult" type="number" inputmode="decimal" min="1" step="0.05" value="' + esc(s.multiplier) + '"><div class="hint">Only used with your own rate.</div></div></div>' +
       balancesHtml() +
       '<button class="btn primary block" data-act="stSave">Save settings</button>' +
-      '<h3 style="margin-top:20px" id="mapsHead" data-sec="9f">Google Maps API key (optional)</h3><div class="muted" style="font-size:13px;margin-bottom:8px">Navigate buttons and address suggestions work without a key. Add your own key to get Google Places suggestions and arrival times with live traffic. The key needs the Maps JavaScript API, Places API and Distance Matrix API enabled; restrict it to this site in Google Cloud.</div>' +
-      '<div class="field"><label for="stMapsKey">Google Maps API key (optional)</label><input id="stMapsKey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Paste your key" value="' + esc(mapsKey()) + '"><div class="hint">Stored only in this browser (localStorage), never in the code, and never synced to your account.' + (mapsKey() ? ' A key is saved.' : ' No key saved.') + '</div></div>' +
-      '<label class="chk" style="display:flex;gap:8px;align-items:center;min-height:44px;font-size:14px"><input type="checkbox" id="stMapsInBk"' + (S.settings.mapsKeyInBackup ? ' checked' : '') + '> Include the key in backups</label>' +
-      '<div class="row"><button class="btn sm" data-act="mapsSave">Save key</button><button class="btn sm" data-act="mapsShow">Show</button>' + (mapsKey() ? '<button class="btn sm danger" data-act="mapsClear">Remove key</button>' : '') + '</div>' +
+      settingsFold('mapsHead', '9f', 'Google Maps API key (optional)',
+        '<div class="muted" style="font-size:13px;margin-bottom:8px">Navigate buttons and address suggestions work without a key. Add your own key to get Google Places suggestions and arrival times with live traffic. The key needs the Maps JavaScript API, Places API and Distance Matrix API enabled; restrict it to this site in Google Cloud.</div>' +
+        '<div class="field"><label for="stMapsKey">Google Maps API key (optional)</label><input id="stMapsKey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Paste your key" value="' + esc(mapsKey()) + '"><div class="hint">Stored only in this browser (localStorage), never in the code, and never synced to your account.' + (mapsKey() ? ' A key is saved.' : ' No key saved.') + '</div></div>' +
+        '<label class="chk" style="display:flex;gap:8px;align-items:center;min-height:44px;font-size:14px"><input type="checkbox" id="stMapsInBk"' + (S.settings.mapsKeyInBackup ? ' checked' : '') + '> Include the key in backups</label>' +
+        '<div class="row"><button class="btn sm" data-act="mapsSave">Save key</button><button class="btn sm" data-act="mapsShow">Show</button>' + (mapsKey() ? '<button class="btn sm danger" data-act="mapsClear">Remove key</button>' : '') + '</div>',
+        !!ui.fold9f) +
       '<h3 style="margin-top:20px" data-sec="9g">Backup</h3><div class="muted" style="font-size:13px;margin-bottom:8px">Your data is stored only on this device. Export a backup file regularly.' + (mapsKey() && !S.settings.mapsKeyInBackup ? ' Your Google Maps key is left out.' : '') + (Object.keys(S.slips).length ? ' <span id="bkSlips">The exported file includes your ' + Object.keys(S.slips).length + ' court/certification slip' + (Object.keys(S.slips).length === 1 ? '' : 's') + ' (about ' + E.fmtBytes(Math.round(Object.keys(S.slips).reduce(function (t, k) { return t + (S.slips[k].bytes || 0); }, 0) * 4 / 3)) + '); the copy/paste text below doesn\'t.</span>' : '') + '</div>' +
       '<div class="row"><button class="btn" data-act="export">Export JSON</button><label class="btn" for="importFile" style="cursor:pointer">Import JSON</label></div>' +
       '<input type="file" id="importFile" accept="application/json,.json" hidden>' +
       '<details style="margin-top:10px"><summary style="min-height:40px;font-weight:700;cursor:pointer">Copy / paste backup text</summary>' +
       '<div class="field"><textarea id="bkText" style="min-height:120px;font-size:12px;font-family:monospace">' + esc(backupText()) + '</textarea></div>' +
       '<div class="row"><button class="btn sm" data-act="bkCopy">Copy</button><button class="btn sm" data-act="bkLoad">Restore from text</button></div></details>' +
-      '<h3 style="margin-top:20px" id="x15Head" data-sec="9h">Extra 15 minutes (PDU)</h3><div class="muted" style="font-size:13px;margin-bottom:8px">Detective Duty Schedule (Misc. 2135-4A): PM 9:15 and AM 8:15 on the listed dates. See each year\'s ranges by month and team, and change any of them.</div><button class="btn block" data-act="x15Open">Extra 15 minutes (PDU) ranges&hellip;</button>' +
-      '<h3 style="margin-top:20px" data-sec="9i">Schedule rules</h3><div class="muted" style="font-size:13px">' + esc(E.unit(U()).name) + ': ' + esc(E.unit(U()).pattern.description) + '. One squad is off each day.<br>PDU: ' + esc(PDU.description) + '. ' + shiftText('pm') + ', ' + shiftText('am') + '.</div>' +
-      '<h3 style="margin-top:20px" id="syncHead" data-sec="9j">Calendar sync</h3><div class="muted" style="font-size:13px;margin-bottom:8px">Export a file of your schedule to Apple or Google Calendar. This is a one-time snapshot; it does not stay in sync.</div><div id="syncWrap">' + syncPanel() + '</div>' +
+      '<div id="x15Sec"' + (E.isPduCommand((recAt(T) || {}).command || (S.profile && S.profile.command)) ? '' : ' hidden') + '><h3 style="margin-top:20px" id="x15Head" data-sec="9h">Extra 15 minutes (PDU)</h3><div class="muted" style="font-size:13px;margin-bottom:8px">Detective Duty Schedule (Misc. 2135-4A): PM 9:15 and AM 8:15 on the listed dates. See each year\'s ranges by month and team, and change any of them.</div><button class="btn block" data-act="x15Open">Extra 15 minutes (PDU) ranges&hellip;</button></div>' +
+      settingsFold('syncHead', '9j', 'Calendar sync',
+        '<div class="muted" style="font-size:13px;margin-bottom:8px">Export a file of your schedule to Apple or Google Calendar. This is a one-time snapshot; it does not stay in sync.</div><div id="syncWrap">' + syncPanel() + '</div>',
+        !!ui.fold9j) +
       '<h3 style="margin-top:20px" data-sec="9l">Default calendar</h3><div class="muted" style="font-size:13px;margin-bottom:8px">Used when you tap <b>Add to calendar</b> on a day. Change this any time. A one-off add cannot be taken back; subscribe (below) is the way to keep a calendar up to date.</div>' +
       '<div class="seg" id="stCalSeg">' +
         '<button type="button" class="' + ((s.defaultCalendar || 'google') === 'google' ? 'on' : '') + '" data-act="calDefault" data-v="google">Google</button>' +
@@ -6753,6 +6925,14 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   var A = {
     tab: function (t) { ui.tab = t.dataset.tab; ui.scrollCurrent = ui.tab === 'pay'; closeAll(); window.scrollTo(0, 0); render(); },
     settings: settingsSheet,
+    settingsFold: function (t) {
+      var id = t.dataset.id, body = document.getElementById(id + 'Body'), chev = t.querySelector('.sfoldchev');
+      var open = !(body && !body.hidden);
+      if (id === 'mapsHead') ui.fold9f = open; else if (id === 'syncHead') ui.fold9j = open;
+      if (body) body.hidden = !open;
+      t.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (chev) chev.innerHTML = open ? '&#9662;' : '&#9656;';
+    },
     chartPick: function (t) {
       var px = t.dataset.px, k = t.dataset.key, inp = document.getElementById(px + 'Chart'), panel = document.getElementById(px + 'Steady'), pp = document.getElementById(px + 'Pdu'), box = document.getElementById(px + 'ChartBox');
       if (k === 'steady' || k === 'pdu') { if (inp.value.indexOf(k + ':') !== 0) inp.value = ''; }
@@ -7303,12 +7483,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       save(); closeSheet(); render(); toast((i >= 0 ? 'Updated: ' : 'Logged: ') + hrs(h));
     },
     otDelete: function () {
-      var f = document.getElementById('otForm'), id = f.dataset.id, lk = f.dataset.linked, le = f.dataset.lkind === 'end';
-      if (!confirm(le ? 'Delete this entry? This also clears the late tour end on ' + fmt(E.toDay(lk)) + '.' : lk ? 'Delete this entry? This also removes the extra tour from ' + fmt(E.toDay(lk)) + ' on your calendar.' : 'Delete this overtime entry?')) return;
-      S.overtime = S.overtime.filter(function (o) { return o.id !== id; });
-      if (le && S.tours[lk]) { var tt = copy(S.tours[lk]); delete tt.end; delete tt.short; if (!tt.status && !tt.len && !tt.start) delete S.tours[lk]; else S.tours[lk] = tt; }
-      else if (lk && S.tours[lk] && S.tours[lk].status === 'work') delete S.tours[lk];
-      save(); closeSheet(); render(); toast('Entry deleted');
+      var f = document.getElementById('otForm'), id = f.dataset.id, e = overtimeById(id) || { linkedTour: f.dataset.linked, linkedEnd: f.dataset.lkind === 'end' ? f.dataset.linked : '' };
+      if (!confirm(overtimeDeleteMessage(e))) return;
+      commitOvertimeDelete(id, true);
     },
     otView: function (t) { ui.otView = t.dataset.v === 'pd' ? 'pd' : 'ot'; ui.otSel = false; render(); },
     otToggle: function (t) { otToggleCollapse(t.dataset.k, t.dataset.v); render(); },
@@ -7532,7 +7709,12 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     navBack: function () { navBack(); }
   };
 
+  document.addEventListener('pointerdown', swipeDown);
+  document.addEventListener('pointermove', swipeMove, { passive: false });
+  document.addEventListener('pointerup', swipeUp);
+  document.addEventListener('pointercancel', swipeUp);
   document.addEventListener('click', function (ev) {
+    if (SW.suppressClick) { var same = SW.suppressRow && ev.target.closest && ev.target.closest('.swrow') === SW.suppressRow; SW.suppressClick = false; SW.suppressRow = null; if (same) { ev.preventDefault(); ev.stopPropagation(); return; } }
     var box = document.getElementById('lvOpts');
     if (box && box.classList.contains('open') && !box.contains(ev.target)) closeDaySel();
     var t = ev.target.closest('[data-act]'); if (!t) return;

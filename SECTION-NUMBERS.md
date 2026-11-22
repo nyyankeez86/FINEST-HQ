@@ -21,8 +21,8 @@ so they stay stable when sections move. New sections get the next free letter; r
 | | 1h | "Finish your profile" prompt (when shown) |
 | **2 Overtime/Paid Detail** | 2a | Totals row (OT period / Month / Year), shown in the Overtime view. The “paid” Friday in this row is the expected pay date. |
 | | 2b | + Log overtime |
-| | 2c | Overtime entries grouped by year (top level, newest first) then month; groups are collapsible. Compact rows show type, times, hours, expected pay date, and a Paid / Unpaid badge. |
-| | 2d | Paid Detail view: entries grouped the same way (year then month), plus the year-end tax report button. |
+| | 2c | Overtime entries grouped by year (top level, newest first) then month; groups are collapsible. Compact rows show type, times, hours, expected pay date, and a Paid / Unpaid badge. Swipe right to mark paid (green while dragging; paid-date dialog). Swipe left to delete (red while dragging; confirm). Swipes are off in Select mode. |
+| | 2d | Paid Detail view: entries grouped the same way (year then month), plus the year-end tax report button. Swipe right to mark paid (green while dragging; Paid date and Check date dialog; tax year still follows the check date). Swipe left to delete (red while dragging; confirm). |
 | | 2e | Overtime \| Paid Detail toggle, directly above 2a. |
 | | 2f | Select mode, Unpaid / Paid filter, and Mark paid / Mark unpaid. Mark paid opens the mini calendar; the chosen date is stored on each selected OT record as the actual paid date (separate from the expected pay date). |
 | **3 Pay** | 3a | Year summary card (includes chart time accrued this year) |
@@ -44,7 +44,7 @@ so they stay stable when sections move. New sections get the next free letter; r
 | **6 Day page** | 6a | Status line (your schedule for that day only by default) |
 | | 6b | This day (leave / status picker) |
 | | 6c | Tour this day: Time actually worked only (framed Date from / Date to, Scheduled time button, empty-until-entered hint on focus). Typing Tour start live-fills Tour end from the default tour length (end date moves if it crosses midnight). A manual Tour end is kept until start is edited again. Time scheduled to work is not on this screen — it appears on page 8 when overtime is incurred. Chart time for the day is shown under the tour when it accrues or is pending. |
-| | 6d | Assignment |
+| | 6d | Assignment (court picker includes NYC Family Court in each borough; sign-in location field reserved, not shown) |
 | | 6e | Paid detail (own section below Assignment: Add paid detail opens page 19; a saved detail shows a summary + Edit). Not an assignment option. |
 | | 6f | Note |
 | | 6g | Overtime this day |
@@ -68,15 +68,15 @@ so they stay stable when sections move. New sections get the next free letter; r
 | | 8j | Total overtime performed (read-only, auto-calculated) |
 | | 8k | Compensation option (Cash and Time rows; only when Paid as is Split). Hrs:Min uses the same time-typing rule as the rest of the app. |
 | **9 Settings** | 9a | Account |
-| | 9b | Profile (first name, optional middle initial, last name, ID numbers) |
+| | 9b | Profile (first name, M.I. (optional, no asterisk), last name, ID numbers; name boxes aligned on one row) |
 | | 9c | Rank & assignment history |
 | | 9d | Pay |
 | | 9e | Leave balances |
-| | 9f | Google Maps API key |
+| | 9f | Google Maps API key (collapsed by default; title button expands it) |
 | | 9g | Backup |
-| | 9h | Extra 15 minutes (PDU) |
-| | 9i | Schedule rules |
-| | 9j | Calendar sync (one-time file export) |
+| | 9h | Extra 15 minutes (PDU) (shown only when the current command is a PDU / precinct detective squad) |
+| | 9i | Schedule rules (hidden; text/engine data kept, not shown) |
+| | 9j | Calendar sync (one-time file export; collapsed by default; title button expands it) |
 | | 9k | Erase all data |
 | | 9l | Default calendar (Google or Apple, for one-off Add to calendar) |
 | | 9m | Subscribe to calendar (private feed URL) |
