@@ -19,12 +19,14 @@ so they stay stable when sections move. New sections get the next free letter; r
 | | 1f | Retirement countdown |
 | | 1g | Sync to Apple / Google Calendar button |
 | | 1h | "Finish your profile" prompt (when shown) |
-| **2 Overtime** | 2a | Totals row (OT period / Month / Year) |
+| **2 Overtime/Paid Detail** | 2a | Totals row (OT period / Month / Year), shown in the Overtime view. The “paid” Friday in this row is the expected pay date. |
 | | 2b | + Log overtime |
-| | 2c | Year log (year picker, totals, monthly lists) |
-| | 2d | Paid Details card |
-| **3 Pay** | 3a | Year summary card |
-| | 3b | Each payday / pay-period card |
+| | 2c | Overtime entries grouped by year (top level, newest first) then month; groups are collapsible. Compact rows show type, times, hours, expected pay date, and a Paid / Unpaid badge. |
+| | 2d | Paid Detail view: entries grouped the same way (year then month), plus the year-end tax report button. |
+| | 2e | Overtime \| Paid Detail toggle, directly above 2a. |
+| | 2f | Select mode, Unpaid / Paid filter, and Mark paid / Mark unpaid. Mark paid opens the mini calendar; the chosen date is stored on each selected OT record as the actual paid date (separate from the expected pay date). |
+| **3 Pay** | 3a | Year summary card (includes chart time accrued this year) |
+| | 3b | Each payday / pay-period card (straight time is 8:00/day; chart time for the regular period, or pending for rotating Sergeants) |
 | **4 Leave** | 4a | Year summary card |
 | | 4b | Add leave / note / assignment buttons |
 | | 4c | Assignments this year |
@@ -41,7 +43,7 @@ so they stay stable when sections move. New sections get the next free letter; r
 |---|---|---|
 | **6 Day page** | 6a | Status line (your schedule for that day only by default) |
 | | 6b | This day (leave / status picker) |
-| | 6c | Tour this day: Time actually worked only (framed Date from / Date to, Scheduled time button, empty-until-entered hint on focus). Typing Tour start live-fills Tour end from the default tour length (end date moves if it crosses midnight). A manual Tour end is kept until start is edited again. Time scheduled to work is not on this screen — it appears on page 8 when overtime is incurred. |
+| | 6c | Tour this day: Time actually worked only (framed Date from / Date to, Scheduled time button, empty-until-entered hint on focus). Typing Tour start live-fills Tour end from the default tour length (end date moves if it crosses midnight). A manual Tour end is kept until start is edited again. Time scheduled to work is not on this screen — it appears on page 8 when overtime is incurred. Chart time for the day is shown under the tour when it accrues or is pending. |
 | | 6d | Assignment |
 | | 6e | Paid detail (own section below Assignment: Add paid detail opens page 19; a saved detail shows a summary + Edit). Not an assignment option. |
 | | 6f | Note |
@@ -84,6 +86,8 @@ so they stay stable when sections move. New sections get the next free letter; r
 | | 10d | Command |
 | | 10e | Chart |
 | | 10f | Tour |
+| | 10g | Date promoted to rank (optional). Used to measure time in rank for chart time when the effective date is a transfer, not the promotion. |
+| | 10h | Investigative assignment (Yes/No), shown for detective ranks. Investigative detectives do not accrue chart time. |
 | **11 Send a suggestion** | 11a | Section |
 | | 11b | Your suggestion |
 | | 11c | Screenshot |
