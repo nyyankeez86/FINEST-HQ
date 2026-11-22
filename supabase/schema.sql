@@ -37,17 +37,21 @@ create index if not exists user_records_pull on public.user_records (user_id, se
 
 -- ---------- helper functions (security definer so policies can use them without recursion) ----------
 create or replace function public.is_admin() returns boolean
-language sql stable security definer set search_path = public as $$
+language sql stable security definer set search_path = public, pg_temp as $$
   select exists (select 1 from public.profiles where id = auth.uid() and role = 'admin' and status = 'approved');
 $$;
 create or replace function public.is_approved() returns boolean
-language sql stable security definer set search_path = public as $$
+language sql stable security definer set search_path = public, pg_temp as $$
   select exists (select 1 from public.profiles where id = auth.uid() and status = 'approved');
 $$;
+revoke all on function public.is_admin() from public, anon;
+revoke all on function public.is_approved() from public, anon;
+grant execute on function public.is_admin() to authenticated;
+grant execute on function public.is_approved() to authenticated;
 
 -- ---------- new sign-up -> pending profile ----------
 create or replace function public.handle_new_user() returns trigger
-language plpgsql security definer set search_path = public as $$
+language plpgsql security definer set search_path = public, pg_temp as $$
 declare u text := lower(coalesce(new.raw_user_meta_data->>'username', split_part(new.email, '@', 1)));
 begin
   insert into public.profiles (id, username, full_name, command, status, role)
@@ -63,7 +67,7 @@ create trigger on_auth_user_created after insert on auth.users for each row exec
 
 -- ---------- record writes: server timestamp + privacy scrub ----------
 create or replace function public.user_records_before_write() returns trigger
-language plpgsql as $$
+language plpgsql security invoker set search_path = public, pg_temp as $$
 begin
   new.server_ts := clock_timestamp();
   if new.kind = 'profile' and new.data is not null then
@@ -76,31 +80,34 @@ begin
 end $$;
 drop trigger if exists user_records_bw on public.user_records;
 create trigger user_records_bw before insert or update on public.user_records for each row execute function public.user_records_before_write();
+revoke all on function public.user_records_before_write() from public, anon, authenticated;
 
 -- ---------- Row Level Security ----------
 alter table public.profiles enable row level security;
 alter table public.user_records enable row level security;
 
 drop policy if exists "profiles: read own" on public.profiles;
-create policy "profiles: read own" on public.profiles for select to authenticated using (id = auth.uid());
+create policy "profiles: read own" on public.profiles for select to authenticated using (id = (select auth.uid()));
 drop policy if exists "profiles: admins read all" on public.profiles;
 create policy "profiles: admins read all" on public.profiles for select to authenticated using (public.is_admin());
 -- No insert/update/delete policies on profiles: rows are created by the trigger, status/role change only through set_user_status (admins).
 
 drop policy if exists "records: approved owner reads" on public.user_records;
-create policy "records: approved owner reads" on public.user_records for select to authenticated using (user_id = auth.uid() and public.is_approved());
+create policy "records: approved owner reads" on public.user_records for select to authenticated using (user_id = (select auth.uid()) and public.is_approved());
 drop policy if exists "records: approved owner inserts" on public.user_records;
-create policy "records: approved owner inserts" on public.user_records for insert to authenticated with check (user_id = auth.uid() and public.is_approved());
+create policy "records: approved owner inserts" on public.user_records for insert to authenticated with check (user_id = (select auth.uid()) and public.is_approved());
 drop policy if exists "records: approved owner updates" on public.user_records;
-create policy "records: approved owner updates" on public.user_records for update to authenticated using (user_id = auth.uid() and public.is_approved()) with check (user_id = auth.uid() and public.is_approved());
+create policy "records: approved owner updates" on public.user_records for update to authenticated using (user_id = (select auth.uid()) and public.is_approved()) with check (user_id = (select auth.uid()) and public.is_approved());
 drop policy if exists "records: approved owner deletes" on public.user_records;
-create policy "records: approved owner deletes" on public.user_records for delete to authenticated using (user_id = auth.uid() and public.is_approved());
+create policy "records: approved owner deletes" on public.user_records for delete to authenticated using (user_id = (select auth.uid()) and public.is_approved());
 
 revoke all on public.profiles from anon;
 revoke all on public.user_records from anon;
 revoke insert, update, delete, truncate, references, trigger on public.profiles from authenticated; -- Supabase grants everything by default
 grant select on public.profiles to authenticated;
 grant select, insert, update, delete on public.user_records to authenticated;
+revoke truncate, references, trigger on public.profiles from authenticated, anon, public;
+revoke truncate, references, trigger on public.user_records from authenticated, anon, public;
 
 -- ---------- sync upload: last-write-wins per record ----------
 -- records: [{ "kind": "...", "key": "...", "data": {...} | null, "deleted": false, "client_ts": 1731740000000 }, ...]
@@ -130,7 +137,7 @@ grant execute on function public.push_records(jsonb) to authenticated;
 
 -- ---------- admin ----------
 create or replace function public.set_user_status(target_id uuid, new_status text) returns public.profiles
-language plpgsql security definer set search_path = public as $$
+language plpgsql security definer set search_path = public, pg_temp as $$
 declare p public.profiles;
 begin
   if not public.is_admin() then raise exception 'admins only' using errcode = '42501'; end if;
@@ -153,7 +160,7 @@ do $$ begin
   end if;
 end $$;
 create or replace function public.set_user_beta(target_id uuid, beta_on boolean) returns public.profiles
-language plpgsql security definer set search_path = public as $$
+language plpgsql security definer set search_path = public, pg_temp as $$
 declare p public.profiles;
 begin
   if not public.is_admin() then raise exception 'admins only' using errcode = '42501'; end if;
@@ -273,7 +280,7 @@ alter table public.push_subscriptions enable row level security;
 
 drop policy if exists "suggestions: approved user inserts own" on public.suggestions;
 create policy "suggestions: approved user inserts own" on public.suggestions for insert to authenticated
-  with check (user_id = auth.uid() and public.is_approved());
+  with check (user_id = (select auth.uid()) and public.is_approved());
 drop policy if exists "suggestions: admins read all" on public.suggestions;
 create policy "suggestions: admins read all" on public.suggestions for select to authenticated
   using (public.is_admin());
@@ -283,16 +290,16 @@ create policy "suggestions: admins update read_at" on public.suggestions for upd
 
 drop policy if exists "push: admin reads own" on public.push_subscriptions;
 create policy "push: admin reads own" on public.push_subscriptions for select to authenticated
-  using (public.is_admin() and user_id = auth.uid());
+  using (public.is_admin() and user_id = (select auth.uid()));
 drop policy if exists "push: admin inserts own" on public.push_subscriptions;
 create policy "push: admin inserts own" on public.push_subscriptions for insert to authenticated
-  with check (public.is_admin() and user_id = auth.uid());
+  with check (public.is_admin() and user_id = (select auth.uid()));
 drop policy if exists "push: admin updates own" on public.push_subscriptions;
 create policy "push: admin updates own" on public.push_subscriptions for update to authenticated
-  using (public.is_admin() and user_id = auth.uid()) with check (public.is_admin() and user_id = auth.uid());
+  using (public.is_admin() and user_id = (select auth.uid())) with check (public.is_admin() and user_id = (select auth.uid()));
 drop policy if exists "push: admin deletes own" on public.push_subscriptions;
 create policy "push: admin deletes own" on public.push_subscriptions for delete to authenticated
-  using (public.is_admin() and user_id = auth.uid());
+  using (public.is_admin() and user_id = (select auth.uid()));
 
 revoke all on public.suggestions from anon;
 revoke all on public.push_subscriptions from anon;
@@ -414,3 +421,147 @@ revoke all on function public.notify_suggestion_push() from public, anon, authen
 drop trigger if exists suggestions_notify_push on public.suggestions;
 create trigger suggestions_notify_push after insert on public.suggestions
   for each row execute function public.notify_suggestion_push();
+
+
+-- ---------- calendar subscription feeds ----------
+-- Private, unguessable token per approved user. Tokens live here (not on profiles) because
+-- admins can SELECT all profiles. No direct SELECT/INSERT/UPDATE for anon or authenticated;
+-- clients only call the security-definer RPCs below. The calendar-feed Edge Function reads
+-- this table with the service role and authenticates by token (calendar apps send no JWT).
+create table if not exists public.calendar_feeds (
+  user_id uuid primary key references public.profiles(id) on delete cascade,
+  token text not null unique,
+  created_at timestamptz not null default now(),
+  rotated_at timestamptz
+);
+alter table public.calendar_feeds enable row level security;
+revoke all on table public.calendar_feeds from public, anon, authenticated;
+do $$ begin
+  if exists (select 1 from pg_roles where rolname = 'service_role') then
+    grant select on table public.calendar_feeds to service_role;
+    grant select on table public.user_records to service_role;
+  end if;
+end $$;
+
+create or replace function public.get_or_create_calendar_token()
+returns text
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare t text;
+begin
+  if auth.uid() is null then
+    raise exception 'not signed in';
+  end if;
+  if not public.is_approved() then
+    raise exception 'not approved';
+  end if;
+  select token into t from public.calendar_feeds where user_id = auth.uid();
+  if t is null then
+    t := replace(gen_random_uuid()::text, '-', '') || replace(gen_random_uuid()::text, '-', '');
+    insert into public.calendar_feeds(user_id, token) values (auth.uid(), t);
+  end if;
+  return t;
+end $$;
+
+create or replace function public.rotate_calendar_token()
+returns text
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare t text;
+begin
+  if auth.uid() is null then
+    raise exception 'not signed in';
+  end if;
+  if not public.is_approved() then
+    raise exception 'not approved';
+  end if;
+  t := replace(gen_random_uuid()::text, '-', '') || replace(gen_random_uuid()::text, '-', '');
+  insert into public.calendar_feeds(user_id, token, created_at, rotated_at)
+    values (auth.uid(), t, now(), now())
+    on conflict (user_id) do update set token = excluded.token, rotated_at = now();
+  return t;
+end $$;
+
+revoke all on function public.get_or_create_calendar_token() from public, anon;
+revoke all on function public.rotate_calendar_token() from public, anon;
+grant execute on function public.get_or_create_calendar_token() to authenticated;
+grant execute on function public.rotate_calendar_token() to authenticated;
+
+-- ---------- t160u lockdown (idempotent): tighten grants, narrow admin list, delete-my-data ----------
+-- Admins do not receive a user_records policy. The live admin page still reads profiles (compatibility).
+-- The test build uses admin_list_users(), which returns only approval fields (no entries, no command).
+
+revoke all on function public.is_admin() from public, anon;
+revoke all on function public.is_approved() from public, anon;
+grant execute on function public.is_admin() to authenticated;
+grant execute on function public.is_approved() to authenticated;
+
+revoke all on function public.user_records_before_write() from public, anon, authenticated;
+revoke all on function public.handle_new_user() from public, anon, authenticated;
+revoke all on function public.notify_suggestion_push() from public, anon, authenticated;
+revoke all on function public.suggestions_before_write() from public, anon, authenticated;
+revoke all on function public.suggestions_before_update() from public, anon, authenticated;
+
+revoke truncate, references, trigger on public.profiles from authenticated, anon, public;
+revoke truncate, references, trigger on public.user_records from authenticated, anon, public;
+revoke truncate, references, trigger on public.suggestions from authenticated, anon, public;
+revoke truncate, references, trigger on public.push_subscriptions from authenticated, anon, public;
+revoke all on public.calendar_feeds from authenticated, anon, public;
+
+create or replace function public.admin_list_users()
+returns table (
+  id uuid,
+  username text,
+  full_name text,
+  status text,
+  role text,
+  beta boolean,
+  created_at timestamptz,
+  decided_at timestamptz
+)
+language plpgsql
+stable
+security definer
+set search_path = public, pg_temp
+as $$
+begin
+  if not public.is_admin() then
+    raise exception 'admins only' using errcode = '42501';
+  end if;
+  return query
+    select p.id, p.username, p.full_name, p.status, p.role, p.beta, p.created_at, p.decided_at
+    from public.profiles p
+    order by p.created_at desc;
+end $$;
+revoke all on function public.admin_list_users() from public, anon;
+grant execute on function public.admin_list_users() to authenticated;
+
+create or replace function public.delete_my_data()
+returns void
+language plpgsql
+security definer
+set search_path = public, storage, auth, pg_temp
+as $$
+declare uid uuid := auth.uid();
+begin
+  if uid is null then
+    raise exception 'not signed in' using errcode = '42501';
+  end if;
+  if exists (select 1 from public.profiles where id = uid and role = 'admin' and status = 'approved')
+     and (select count(*) from public.profiles where role = 'admin' and status = 'approved') <= 1 then
+    raise exception 'the only approved admin cannot delete this account';
+  end if;
+  delete from storage.objects where (storage.foldername(name))[1] = uid::text;
+  delete from public.user_records where user_id = uid;
+  delete from public.calendar_feeds where user_id = uid;
+  delete from public.push_subscriptions where user_id = uid;
+  delete from public.suggestions where user_id = uid;
+  delete from public.profiles where id = uid;
+  delete from auth.users where id = uid;
+end $$;
+revoke all on function public.delete_my_data() from public, anon;
+grant execute on function public.delete_my_data() to authenticated;

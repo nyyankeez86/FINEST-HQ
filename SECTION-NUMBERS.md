@@ -80,6 +80,7 @@ so they stay stable when sections move. New sections get the next free letter; r
 | | 9k | Erase all data |
 | | 9l | Default calendar (Google or Apple, for one-off Add to calendar) |
 | | 9m | Subscribe to calendar (private feed URL) |
+| | 9n | Privacy & Security (never sell data; entries visible only to the account holder; device-only private fields; Delete my account and cloud data) |
 | **10 History editor** | 10a | What changes (preview) |
 | | 10b | Effective date |
 | | 10c | Rank |

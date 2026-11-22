@@ -62,6 +62,7 @@ nav.tabs button[data-tab="overtime"] .tablbl{display:block;text-align:center;max
 .otviewseg .btn{flex:1}
 .otviewseg .btn.on{background:#0f172a;color:#fff;border-color:#0f172a}
 .ottools{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 10px}
+.ottools .btn.on{background:#0f172a;color:#fff;border-color:#0f172a}
 .item.otitem{padding:5px 2px;min-height:0;gap:6px;align-items:flex-start;line-height:1.2;overflow:hidden}
 .item.otitem .t1,.item.otitem .t2{min-width:0;overflow:hidden;text-overflow:ellipsis}.item.otitem .t1{font-size:13px;font-weight:700}
 .item.otitem .t2{font-size:11.5px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -348,7 +349,7 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after{top:-4px;le
 .histcard{border:1.5px solid var(--line,#e2e8f0);border-radius:12px;padding:10px 12px;margin-bottom:10px;background:#fff}.histcard.now{border-color:#1E3A8A;box-shadow:0 0 0 2px rgba(30,58,138,.12)}.histcard.justsaved{background:#f0fdf4}.hhead{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:6px}.hacts{display:flex;gap:6px;flex-shrink:0}.htags{margin-top:4px;display:flex;flex-wrap:wrap;gap:4px}.htag{font-size:11.5px;font-weight:700;padding:2px 7px;border-radius:999px;background:#e2e8f0;color:#334155}.htag-rank{background:#fef3c7;color:#92400e}.htag-command{background:#dbeafe;color:#1e40af}.htag-chart{background:#ccfbf1;color:#115e59}.htag-tour{background:#ede9fe;color:#5b21b6}.histprev{background:#f5f7fb;border-radius:12px;padding:10px 12px;margin-bottom:12px}.hp-t{font-weight:800;font-size:13.5px;margin-bottom:6px}.hdiff{font-size:13px;margin:4px 0 10px;min-height:18px}.lenline{margin:2px 0 6px}.lenbox{border-left:3px solid #0E7490;padding-left:10px;margin-bottom:8px}.savedban{background:#ecfdf5;border:1.5px solid #10b981;color:#065f46;font-weight:700;border-radius:10px;padding:8px 12px;margin-bottom:12px;font-size:14px}.sumgo{color:var(--accent);font-size:12.5px;white-space:nowrap}
 .authfoot{margin-top:12px;font-size:14px;text-align:center}.linkbtn{border:0;background:none;color:#0E7490;font:inherit;font-weight:700;cursor:pointer;padding:4px;min-height:32px}
 .authwarn{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px 10px;font-size:13.5px;margin-bottom:10px}
-.privnote{font-size:12.5px;color:#334155;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:8px 10px;margin:6px 0 10px}
+.privnote{font-size:12.5px;color:#334155;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:8px 10px;margin:6px 0 10px}.privsec .privnote p{margin:0 0 8px}.privsec .privnote p:last-child{margin:0}
 .privbanner{background:#fefce8;border:1px solid #fde68a;border-radius:12px;padding:10px 12px;margin:0 0 10px;font-size:13.5px}
 .acct{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
 .admrow{display:flex;gap:8px;align-items:center}.admrow .main{flex:1;min-width:0}.admbtns{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.admh{margin:14px 0 6px;font-size:15px}
@@ -4056,9 +4057,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<button type="button" class="btn sm' + (ui.otSel ? ' on' : '') + '" data-act="otSelMode" id="otSelMode">' + (ui.otSel ? 'Done selecting' : 'Select') + '</button>' +
       '<button type="button" class="btn sm' + (fil === 'unpaid' ? ' on' : '') + '" data-act="otFilter" data-v="unpaid">Unpaid' + (unpaid ? ' (' + unpaid + ')' : '') + '</button>' +
       '<button type="button" class="btn sm' + (fil === 'paid' ? ' on' : '') + '" data-act="otFilter" data-v="paid">Paid</button>' +
-      (fil !== 'all' ? '<button type="button" class="btn sm" data-act="otFilter" data-v="all">All</button>' : '') +
-      (ui.otSel ? '<button type="button" class="btn sm primary" data-act="otMarkPaid" id="otMarkPaid"' + (n ? '' : ' disabled') + '>Mark paid' + (n ? ' (' + n + ')' : '') + '</button>' +
-        '<button type="button" class="btn sm" data-act="otMarkUnpaid"' + (n ? '' : ' disabled') + '>Mark unpaid</button>' : '') +
+      '<button type="button" class="btn sm' + (fil === 'all' ? ' on' : '') + '" data-act="otFilter" data-v="all">All</button>' +
+      (ui.otSel ? '<button type="button" class="btn sm" data-act="otMarkPaid" id="otMarkPaid">Mark paid' + (n ? ' (' + n + ')' : '') + '</button>' +
+        '<button type="button" class="btn sm" data-act="otMarkUnpaid" id="otMarkUnpaid">Mark unpaid</button>' : '') +
       '</div>';
   }
   function applyOtPaidDate(iso, ids) {
@@ -4957,6 +4958,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div class="field"><label for="siUser">Username</label><input id="siUser" name="username" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" value="' + esc(ui.lastUser || '') + '"><div class="err" id="siUser-err"></div></div>' +
       '<div class="field"><label for="siPass">Password</label><input id="siPass" name="password" type="password" autocomplete="current-password"><div class="err" id="siPass-err"></div></div>' +
       '<button type="submit" class="btn primary block" data-act="authSignIn" id="siBtn">Sign in</button></form>' +
+      privacySectionHtml({ title: true, top: '16px' }) +
       '<div class="authfoot">No account yet? <button type="button" class="linkbtn" data-act="authTab" data-t="request">Request beta access</button></div></div>';
   }
   function viewRequest() {
@@ -4967,7 +4969,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div class="field"><label for="rqPass2">Confirm password <span class="req">*</span></label><input id="rqPass2" type="password" autocomplete="new-password" maxlength="72"><div class="err" id="rqPass2-err"></div></div>' +
       '<div class="field"><label for="rqName">Name (optional)</label><input id="rqName" autocomplete="name" maxlength="80" placeholder="So the admin knows who you are"></div>' +
       cmdPicker('req', null) +
-      '<div class="privnote">&#128274; Only your username, name and command are sent with the request. Tax, reference and shield numbers are never uploaded.</div>' +
+      privacySectionHtml({ title: true, top: '16px' }) +
       '<button type="submit" class="btn primary block" data-act="authRequest" id="rqBtn">Send request</button></form>' +
       '<div class="authfoot">Already approved? <button type="button" class="linkbtn" data-act="authTab" data-t="signin">Sign in</button></div></div>';
   }
@@ -5092,10 +5094,23 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     return t + (pend && CL.status !== 'syncing' ? ' \u00b7 ' + pend + ' change' + (pend === 1 ? '' : 's') + ' waiting to upload' : '');
   }
   function refreshSyncLine() { var e = document.getElementById('syncLine'); if (e) e.textContent = syncLine(); }
+  function privacyCopyHtml() {
+    return '<div class="privnote"><p>We never sell your data.</p>' +
+      '<p>Your entries — schedule, overtime, leave, assignments, slips, and other records synced to your account — are tied to your account and protected so other users and app admins cannot view them.</p>' +
+      '<p>Private fields (tax number, reference number, shield number, home address, and your Maps key) stay only on this device and are never uploaded. Paid detail screenshots are read on this device and never uploaded.</p>' +
+      '<p>If you send a suggestion, the admin can read that message and any screenshot you attach.</p>' +
+      '<p>End-to-end encryption is planned.</p></div>';
+  }
+  function privacySectionHtml(opts) {
+    opts = opts || {};
+    var del = opts.deleteBtn ? '<button type="button" class="btn danger block" data-act="deleteMyData" id="deleteMyDataBtn" style="margin-top:10px">Delete my account and cloud data</button>' : '';
+    return '<div class="privsec"' + (opts.sec ? ' data-sec="' + opts.sec + '"' : '') + '>' +
+      (opts.title ? '<h3 style="margin-top:' + (opts.top || '20px') + '">Privacy &amp; Security</h3>' : '') +
+      privacyCopyHtml() + del + '</div>';
+  }
   function accountPanel() {
     if (!CL.enabled) return '';
     return '<h3 style="margin-top:0" id="acctHead" data-sec="9a">Account</h3><div class="acct"><div><b>' + esc(CS.username || '') + '</b>' + (CS.role === 'admin' ? ' <span class="betatag">admin</span>' : '') + '<div class="muted" id="syncLine" style="font-size:13px">' + esc(syncLine()) + '</div></div></div>' +
-      '<div class="privnote">&#128274; Your schedule, overtime, leave, assignments, slips and settings sync to your private account so they\'re on every device you sign in to. <b>Tax number, reference number, shield number, home address and your Google Maps key stay on this device only and are never uploaded.</b></div>' +
       '<div class="row" style="margin-bottom:6px"><button class="btn sm" data-act="syncNowBtn">Sync now</button>' + (CS.role === 'admin' ? '<button class="btn sm" data-act="inboxOpen" id="adminInboxBtn">Suggestions<span class="inbadge" id="inboxBadgeSheet"' + (ui.inboxUnread ? '' : ' hidden') + '>' + (ui.inboxUnread > 9 ? '9+' : (ui.inboxUnread || '')) + '</span></button><button class="btn sm" data-act="adminOpen" id="adminBtn">Admin: beta users</button>' : '') + '<button class="btn sm" data-act="authSignOut">Sign out</button></div>';
   }
 
@@ -5352,7 +5367,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
 
   function adminSheet() {
     openSheet('Beta users', '<div id="adminList" data-sec="13a" class="muted">Loading\u2026</div>');
-    Promise.resolve(cloudClient().from('profiles').select('id,username,full_name,command,status,role,beta,created_at,decided_at').order('created_at', { ascending: false })).then(q).then(function (rows) {
+    Promise.resolve(cloudClient().rpc('admin_list_users')).then(q).then(function (rows) {
       ui.adminRows = rows || []; var el = document.getElementById('adminList'); if (!el) return; el.classList.remove('muted');
       var groups = [['pending', 'Pending'], ['approved', 'Approved'], ['denied', 'Denied'], ['revoked', 'Revoked']];
       el.innerHTML = groups.map(function (g) {
@@ -6487,7 +6502,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function settingsSheet() {
     var p = S.profile, s = S.settings;
     openSheet('Settings',
-      accountPanel() + '<h3 data-sec="9b" style="margin-top:' + (CL.enabled ? '18px' : '0') + '">Profile</h3>' + profileFields('st', p, true) + homeField('st', p) +
+      accountPanel() + (CL.enabled ? privacySectionHtml({ title: true, deleteBtn: !!CS.uid, sec: '9n', top: '18px' }) : '') + '<h3 data-sec="9b" style="margin-top:' + (CL.enabled ? '18px' : '0') + '">Profile</h3>' + profileFields('st', p, true) + homeField('st', p) +
       '<h3 id="histHead" data-sec="9c">Rank &amp; assignment</h3><div id="histWrap">' + histPanel() + '</div>' +
       '<h3 id="payHead" data-sec="9d" style="margin-top:18px">Pay</h3><div class="paycard" id="payCard">' + payCardHtml(profNow()) + '</div>' +
       '<label class="chk ovchk"><input type="checkbox" id="stOverride"' + (p.rateOverride ? ' checked' : '') + '> Use my own hourly rate instead of the pay chart</label>' +
@@ -7308,7 +7323,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     otFilter: function (t) { ui.otFilter = t.dataset.v || 'all'; render(); },
     otMarkPaid: function () {
       var n = 0, id; for (id in (ui.otSelIds || {})) if (ui.otSelIds[id]) n++;
-      if (!n) return toast('Select one or more overtime entries');
+      if (!n) return toast('Select at least one entry.');
       MC.iso = ''; MC.forId = 'otBulkPaid';
       var todayIso = E.toISO(T);
       miniCalOpen('otBulkPaid', todayIso);
@@ -7317,7 +7332,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     },
     otMarkUnpaid: function () {
       var n = 0, id; for (id in (ui.otSelIds || {})) if (ui.otSelIds[id]) n++;
-      if (!n) return toast('Select one or more overtime entries');
+      if (!n) return toast('Select at least one entry.');
       if (!confirm('Clear the paid date on ' + n + ' overtime ' + (n === 1 ? 'entry' : 'entries') + ' and mark them unpaid?')) return;
       applyOtPaidDate('');
       ui.otSel = false; ui.otSelIds = {};
@@ -7391,6 +7406,23 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     mapsShow: function (t) { var i = document.getElementById('stMapsKey'), sh = i.type === 'password'; i.type = sh ? 'text' : 'password'; t.textContent = sh ? 'Hide' : 'Show'; },
     mapsClear: function () { setMapsKey(''); mapsLoad = null; toast('Maps key removed'); reopenMaps(); },
     bkLoad: function () { importData(document.getElementById('bkText').value); },
+    deleteMyData: function () {
+      if (!CL.enabled || !CS.uid) return toast('Sign in to delete your account data');
+      if (!confirm('Delete your FINEST HQ account and all data stored with it (synced entries, calendar token, suggestions, and slips)? This cannot be undone. Data that stays only on this device will also be erased.')) return;
+      if (!confirm('This permanently deletes your account. Continue?')) return;
+      var btn = document.getElementById('deleteMyDataBtn'); if (btn) btn.disabled = true;
+      Promise.resolve(cloudClient().rpc('delete_my_data')).then(q).then(function () {
+        return Promise.resolve(cloudClient().auth.signOut()).catch(function () {});
+      }).then(function () {
+        localStorage.removeItem(KEY); setMapsKey(''); slipClear().catch(function () {});
+        S = defaultState(); SM = { recs: {} }; saveSM(); ui.onbChart = null; closeAll();
+        ui.lastUser = CS.username; CS = {}; saveCS(); render();
+        toast('Your account and cloud data were deleted');
+      }, function (e) {
+        if (btn) btn.disabled = false;
+        toast('Couldn\'t delete account: ' + errText(e));
+      });
+    },
     reset: function () {
       if (CL.enabled && CS.uid) { // cloud: clear this device and sign out; the account keeps its copy
         if (!confirm('Remove all Patrol Schedule data from this device and sign out? Your account keeps its synced copy; tax, reference and shield numbers and the Maps key (device-only) are erased.')) return;
