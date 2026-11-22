@@ -311,8 +311,11 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after{top:-4px;le
 .roIn{background:#f1f5f9!important;color:#0f172a;font-weight:800}
 .dateIn{width:100%;min-width:0;max-width:100%;box-sizing:border-box}
 .sebox .hint{font-size:12.5px;line-height:1.35}.startpicks{margin:2px 0 6px}.startpicks .pick{min-height:36px;font-size:13px}
-.datecap{display:block;width:100%;margin:0 0 4px;padding:0;border:0;background:none;color:var(--muted,#64748b);font:600 12px/1.2 system-ui,-apple-system,sans-serif;text-align:left;cursor:pointer}
-.datecap:focus{outline:2px solid var(--accent,#2563eb);outline-offset:2px;border-radius:4px}
+.dateframe{position:relative;display:block;width:100%;margin:0 0 4px}
+.datecap-lbl{position:absolute;top:6px;left:12px;right:12px;z-index:1;pointer-events:none;font:600 11px/1.2 system-ui,-apple-system,sans-serif;color:var(--muted,#64748b);letter-spacing:.02em}
+.datecap{display:block;width:100%;box-sizing:border-box;min-height:48px;margin:0;padding:22px 12px 8px;border:1.5px solid var(--line,#cbd5e1);border-radius:12px;background:#fff;color:#0f172a;font:600 15px/1.3 system-ui,-apple-system,sans-serif;text-align:left;cursor:pointer}
+.dateframe:not(:has(.datecap-lbl)) .datecap{padding:10px 12px;min-height:44px}
+.datecap:focus{outline:2px solid var(--accent,#2563eb);outline-offset:2px}
 .tourblock{margin-top:12px;padding-top:10px;border-top:1px solid #e5e7eb}
 .tourblock h4{margin:0 0 8px;font-size:14.5px}
 .schedfill{margin-top:6px}
@@ -323,6 +326,8 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after{top:-4px;le
 .otslip .row{align-items:flex-end}
 .otdur{flex:0 0 88px;min-width:88px}
 .otdur input,.otTotalIn{text-align:center;font-weight:800;letter-spacing:.02em}
+.otnxnote{margin-top:6px;font-size:11px;line-height:1.35;font-weight:400;color:var(--muted,#64748b)}
+.otnxnote[hidden]{display:none !important}
 .durOut,input[readonly].durOut{background:#f8fafc;color:#0f172a;cursor:default}
 .ottotal{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 14px;padding:12px;border:1.5px solid #0f172a;border-radius:14px;background:#0b1f3a;color:#fff}
 .ottotal b{display:block;font-size:13.5px;letter-spacing:.03em;text-transform:uppercase}
@@ -1265,20 +1270,6 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (d.length >= 3 && +d[0] > 2) d = ('0' + d).slice(0, 4);
     if (d.length <= 2) return deleting || d.length < 2 ? d : d + ':';
     return d.slice(0, 2) + ':' + d.slice(2);
-  }
-  // Compensation Hrs:Min only: if total OT is under 10:00, colon after the first digit (2 → 2:, 230 → 2:30). At 10:00+ use two-digit hours.
-  function formatOtSplitInput(raw, deleting, totalMin) {
-    var d = String(raw || '').replace(/\D/g, ''); if (!d) return '';
-    var under10 = !(totalMin >= 600);
-    if (under10) {
-      d = d.slice(0, 3);
-      if (d.length <= 1) return deleting ? d : d + ':';
-      return d.charAt(0) + ':' + d.slice(1, 3);
-    }
-    var hd = totalMin >= 6000 ? 3 : 2;
-    d = d.slice(0, hd + 2);
-    if (d.length <= hd) return deleting || d.length < hd ? d : d + ':';
-    return d.slice(0, hd) + ':' + d.slice(hd);
   }
   function normTime(raw) { // 'HH:MM' or null; accepts 7:30, 0730, 730, 19
     var v = String(raw || '').trim(), m = v.match(/^(\d{1,2}):?(\d{2})?$/) ; if (!m) return null;
@@ -2866,7 +2857,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     unit: unit, squad: squad, cycleOffset: cycleOffset, squadsOff: squadsOff, squadsWorking: squadsWorking, isRDO: isRDO,
     nextDayOff: nextDayOff, nextWorkday: nextWorkday, countRDOs: countRDOs, isPayday: isPayday, nextPayday: nextPayday,
     periodsForPayday: periodsForPayday, regularPaydayFor: regularPaydayFor, overtimePaydayFor: overtimePaydayFor, regularPeriodFor: regularPeriodFor, overtimePeriodFor: overtimePeriodFor, payPeriodsInYear: payPeriodsInYear, hoursBetween: hoursBetween, entryHours: entryHours,
-    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, formatOtSplitInput: formatOtSplitInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, fmtMDY: fmtMDY, defaultTourWindow: defaultTourWindow, tourSpanMinutes: tourSpanMinutes, suggestEndDate: suggestEndDate, workedVsScheduled: workedVsScheduled, cleanTourEntry: cleanTourEntry, tourEntries: tourEntries, dayTour: dayTour, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, commandById: commandById, searchCommands: searchCommands, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, addYearsISO: addYearsISO, retirementDateOf: retirementDateOf, retirementRemain: retirementRemain, retirementCountdown: retirementCountdown, endCompare: endCompare, syncEndOT: syncEndOT, syncWorkedOT: syncWorkedOT, syncEntryOT: syncEntryOT, leaveBalances: leaveBalances, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
+    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, fmtMDY: fmtMDY, defaultTourWindow: defaultTourWindow, tourSpanMinutes: tourSpanMinutes, suggestEndDate: suggestEndDate, workedVsScheduled: workedVsScheduled, cleanTourEntry: cleanTourEntry, tourEntries: tourEntries, dayTour: dayTour, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, commandById: commandById, searchCommands: searchCommands, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, addYearsISO: addYearsISO, retirementDateOf: retirementDateOf, retirementRemain: retirementRemain, retirementCountdown: retirementCountdown, endCompare: endCompare, syncEndOT: syncEndOT, syncWorkedOT: syncWorkedOT, syncEntryOT: syncEntryOT, leaveBalances: leaveBalances, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
     steadyKey: steadyKey, parseChart: parseChart, validChartKey: validChartKey, chartInfo: chartInfo, sortCharts: sortCharts, chartAt: chartAt, chartChanges: chartChanges, nextOff: nextOff, nextOn: nextOn, reviewOverrides: reviewOverrides, DOW3: DOW3,
     stripAddrLabels: stripAddrLabels, paidAddressSuggestions: paidAddressSuggestions,
     rankAbbr: rankAbbr, rankLabel: rankLabel, displayName: displayName, formatFullName: formatFullName, normMiddleInitial: normMiddleInitial, migrateProfile: migrateProfile, validateProfile: validateProfile,
@@ -4579,6 +4570,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     function dateCap(id, iso) {
       return '<button type="button" class="datecap" id="' + id + '" data-act="dateWheel" data-iso="' + esc(iso || '') + '"' + (iso ? ' aria-label="Date ' + esc(E.fmtMDY(iso)) + '"' : '') + '>' + (iso ? esc(E.fmtMDY(iso)) : 'Date') + '</button>';
     }
+    function dateFrame(id, iso, label) {
+      return '<div class="dateframe">' + (label ? '<span class="datecap-lbl">' + esc(label) + '</span>' : '') + dateCap(id, iso) + '</div>';
+    }
     function tourSection(d, opts) {
     opts = opts || {};
     var iso = E.toISO(d), sq = mySquad(), t = E.dayTour(d, sq.id, tourOpts()), ov = S.tours[iso] || {}, st = t.status;
@@ -4605,9 +4599,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<div id="pduKeep" style="font-weight:700;margin-top:6px"></div></div>' : '';
     var timePair = function (prefix, startId, endId, startVal, endVal, startDate, endDate, fillAct) {
       return '<div class="sebox"' + (prefix === 'worked' ? ' id="seBox" data-d="' + d + '" data-sl="' + (regLen || '') + '" data-ss="' + esc(defStart) + '"' : '') + '><div class="row">' +
-        '<div class="field">' + dateCap(prefix + 'StartDate', startDate) + '<label for="' + startId + '">Tour start</label><input id="' + startId + '" class="timeIn" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="HH:MM" value="' + esc(startVal) + '"><div class="err" id="' + startId + '-err"></div>' +
+        '<div class="field">' + dateFrame(prefix + 'StartDate', startDate, 'Date from') + '<label for="' + startId + '">Tour start</label><input id="' + startId + '" class="timeIn" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="HH:MM" value="' + esc(startVal) + '"><div class="err" id="' + startId + '-err"></div>' +
         '<button type="button" class="btn sm schedfill" data-act="fillSched" data-for="' + prefix + '">Scheduled time</button></div>' +
-        '<div class="field">' + dateCap(prefix + 'EndDate', endDate) + '<label for="' + endId + '">Tour end</label><input id="' + endId + '" class="timeIn" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="HH:MM" value="' + esc(endVal) + '"><div class="err" id="' + endId + '-err"></div></div></div></div>';
+        '<div class="field">' + dateFrame(prefix + 'EndDate', endDate, 'Date to') + '<label for="' + endId + '">Tour end</label><input id="' + endId + '" class="timeIn" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="HH:MM" value="' + esc(endVal) + '"><div class="err" id="' + endId + '-err"></div></div></div></div>';
     };
     var workedBlock = '<div id="workedBox" class="tourblock" style="border-top:0;padding-top:0;margin-top:8px"><h4>Time actually worked</h4>' +
       timePair('worked', 'dayStart', 'dayEnd', wStart, wEnd, wStartDate, wEndDate) +
@@ -4858,8 +4852,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var ds = isW ? 'otWorkedStartDate' : 'otSchedStartDate', de = isW ? 'otWorkedEndDate' : 'otSchedEndDate';
     var dur = isW ? 'otWorkedDur' : 'otSchedDur', box = isW ? 'otWorkedBox' : 'otSchedBox';
     return '<div class="otslip" id="' + box + '" data-sec="' + sec + '"><h4>' + title + '</h4>' +
-      '<div class="row"><div class="field">' + dateCap(ds, startDate || '') + '<div class="hint">Date from</div></div>' +
-      '<div class="field">' + dateCap(de, endDate || startDate || '') + '<div class="hint">Date to</div></div></div>' +
+      '<div class="row"><div class="field">' + dateFrame(ds, startDate || '', 'Date from') + '</div>' +
+      '<div class="field">' + dateFrame(de, endDate || startDate || '', 'Date to') + '</div></div>' +
       '<div class="row"><div class="field"><label for="' + sid + '">Time from</label><input id="' + sid + '" class="timeIn" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="HH:MM" value="' + esc(start || '') + '"></div>' +
       '<div class="field"><label for="' + eid + '">Time to</label><input id="' + eid + '" class="timeIn" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="HH:MM" value="' + esc(end || '') + '"></div>' +
       '<div class="field otdur"><label for="' + dur + '">Hrs : Min</label><input id="' + dur + '" class="durOut" readonly tabindex="-1" value="' + esc(otDurText(startDate, start, endDate, end)) + '"></div></div>' +
@@ -4898,7 +4892,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var a = document.getElementById(fromId), b = document.getElementById(toId), d = document.getElementById(durId);
     if (a && start != null) a.value = start;
     if (b && end != null) b.value = end;
-    if (d && durMin != null) d.value = durMin ? E.fmtHM(durMin) : '';
+    if (d && durMin != null && E.parseHM(d.value || '') !== (durMin || null)) d.value = durMin ? E.fmtHM(durMin) : '';
   }
   function otSyncSplit(otMin, opts) {
     var wrap = document.getElementById('otSplitWrap'); if (wrap) wrap.hidden = ((document.getElementById('otComp') || {}).dataset.comp !== 'split');
@@ -4907,8 +4901,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (comp !== 'split') { if (err) err.textContent = ''; return; }
     opts = opts || {};
     var src = opts.splitSrc || (document.getElementById('otForm') || { dataset: {} }).dataset.splitSrc || '';
-    var cashH = E.parseHM(((document.getElementById('otCashH') || {}).value || ''));
-    var timeH = E.parseHM(((document.getElementById('otTimeDur') || {}).value || ''));
+    function splitDurComplete(raw) { return /^\d{1,2}:\d{2}$/.test(String(raw || '').trim()); }
+    var cashRaw = ((document.getElementById('otCashH') || {}).value || '');
+    var timeRaw = ((document.getElementById('otTimeDur') || {}).value || '');
+    var cashH = splitDurComplete(cashRaw) ? E.parseHM(cashRaw) : null;
+    var timeH = splitDurComplete(timeRaw) ? E.parseHM(timeRaw) : null;
     var cFrom = E.normTime(((document.getElementById('otCashFrom') || {}).value || '').trim()) || '';
     var cTo = E.normTime(((document.getElementById('otCashTo') || {}).value || '').trim()) || '';
     var tFrom = E.normTime(((document.getElementById('otTimeFrom') || {}).value || '').trim()) || '';
@@ -4938,8 +4935,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         otFillRow('otCashFrom', 'otCashTo', 'otCashH', null, null, rem2 > 0 ? rem2 : 0);
       }
     }
-    cashH = E.parseHM(((document.getElementById('otCashH') || {}).value || ''));
-    timeH = E.parseHM(((document.getElementById('otTimeDur') || {}).value || ''));
+    cashRaw = ((document.getElementById('otCashH') || {}).value || '');
+    timeRaw = ((document.getElementById('otTimeDur') || {}).value || '');
+    cashH = splitDurComplete(cashRaw) ? E.parseHM(cashRaw) : null;
+    timeH = splitDurComplete(timeRaw) ? E.parseHM(timeRaw) : null;
     var msg = '';
     if (otMin && cashH != null && cashH > otMin) msg = 'Cash is more than the total overtime (' + E.fmtHM(otMin) + ').';
     else if (otMin && timeH != null && timeH > otMin) msg = 'Time is more than the total overtime (' + E.fmtHM(otMin) + ').';
@@ -5043,7 +5042,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div class="field" data-sec="8a"><label for="otDate">Date</label><input type="date" id="otDate" value="' + esc(e.date) + '" required' + ro + '></div>' +
       '<div class="field" data-sec="8b"><label for="otType">Type</label><select id="otType">' + C.overtimeTypes.map(function (t) { return '<option value="' + t.id + '"' + (t.id === e.type ? ' selected' : '') + '>' + esc(t.label) + '</option>'; }).join('') + '</select></div>' +
       cmdPicker('ot', e.otCmd || null, { sec: '8c', label: 'Overtime location (command / precinct)', hint: 'Where the overtime was worked. Used to suggest travel time from your permanent command.' }) +
-      '<div class="field otmode" data-sec="8d"><label>Enter as</label><div class="seg" id="otMode" data-mode="' + (times ? 'times' : 'hours') + '"><button type="button" data-act="otMode" data-m="times" class="' + (times ? 'on' : '') + '">Times</button><button type="button" data-act="otMode" data-m="hours" class="' + (times ? '' : 'on') + '">Total hours only</button></div></div>' +
+      '<div class="field otmode"><label>Enter as</label><div class="seg" id="otMode" data-mode="' + (times ? 'times' : 'hours') + '"><button type="button" data-act="otMode" data-m="times" class="' + (times ? 'on' : '') + '">Times</button><button type="button" data-act="otMode" data-m="hours" class="' + (times ? '' : 'on') + '">Total hours only</button></div></div>' +
       '<div id="otSlipTimes"' + (times ? '' : ' hidden') + '>' +
       otTimeBlockHtml('worked', 'Time actually worked', '8d', win.work.startDate, win.work.endDate, win.work.start, win.work.end) +
       otTimeBlockHtml('sched', 'Time scheduled to work', '8i', win.sched.startDate, win.sched.endDate, win.sched.start, win.sched.end) +
@@ -5051,7 +5050,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div class="field" id="otHoursWrap"' + (times ? ' hidden' : '') + '><label for="otHours">Hours (H:MM)</label><input id="otHours" inputmode="decimal" autocomplete="off" placeholder="e.g. 4:30" value="' + esc(e.hours && !times ? E.fmtHM(Math.round(parseFloat(e.hours) * 60)) : '') + '"' + (lk && !times ? ro : '') + '></div>' +
       '<div class="ottotal" data-sec="8j"><div><b>Total overtime performed</b><div class="muted" style="font-size:12.5px">Worked time minus scheduled time. You can\'t edit this.</div></div><input id="otTotal" class="durOut otTotalIn" readonly tabindex="-1" value="0:00" aria-label="Total overtime performed"></div>' +
       otCompField(e) + travelField(e) +
-      '<div class="card otpaycard" data-sec="8g" style="background:#f5f7fb;margin-bottom:12px"><b id="otPreview">0 h &middot; $0.00</b><div class="muted otrate" id="otRateLine"></div><div class="muted" style="font-size:12.5px">Shifts ending after midnight are counted overnight.</div></div>' +
+      '<div class="card otpaycard" data-sec="8g" style="background:#f5f7fb;margin-bottom:12px"><b id="otPreview">0 h &middot; $0.00</b><div class="muted otrate" id="otRateLine"></div><div class="muted otnxnote" id="otNxNote" hidden></div></div>' +
       '<div class="field" data-sec="8h"><label for="otNotes">Notes</label><textarea id="otNotes" placeholder="Case #, location, approving supervisor...">' + esc(e.notes || '') + '</textarea></div>' +
       '<button class="btn primary block" data-act="otSave">' + (entry ? 'Save changes' : 'Add overtime') + '</button>' +
       (entry ? '<button class="btn danger block" data-act="otDelete" style="margin-top:8px">Delete entry</button>' : '') + '</form>');
@@ -5122,11 +5121,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div class="otcomprow" data-side="cash"><div class="otcomplbl">Cash</div><div class="row">' +
       '<div class="field"><label for="otCashFrom">Time from</label><input id="otCashFrom" class="timeIn" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="HH:MM"></div>' +
       '<div class="field"><label for="otCashTo">Time to</label><input id="otCashTo" class="timeIn" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="HH:MM"></div>' +
-      '<div class="field otdur"><label for="otCashH">Hrs : Min</label><input id="otCashH" class="otSplitIn" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="H:MM" value="' + esc(ch) + '"></div></div></div>' +
+      '<div class="field otdur"><label for="otCashH">Hrs : Min</label><input id="otCashH" class="otSplitIn" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="HH:MM" value="' + esc(ch) + '"></div></div></div>' +
       '<div class="otcomprow" data-side="time"><div class="otcomplbl">Time</div><div class="row">' +
       '<div class="field"><label for="otTimeFrom">Time from</label><input id="otTimeFrom" class="timeIn" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="HH:MM"></div>' +
       '<div class="field"><label for="otTimeTo">Time to</label><input id="otTimeTo" class="timeIn" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="HH:MM"></div>' +
-      '<div class="field otdur"><label for="otTimeDur">Hrs : Min</label><input id="otTimeDur" class="otSplitIn" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="H:MM" value="' + esc(th) + '"></div></div></div>' +
+      '<div class="field otdur"><label for="otTimeDur">Hrs : Min</label><input id="otTimeDur" class="otSplitIn" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="HH:MM" value="' + esc(th) + '"></div></div></div>' +
       '<div class="err" id="otSplitErr"></div></div>' +
       '<div class="hint" id="otCompNote"></div></div>';
   }
@@ -5161,7 +5160,19 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       comp: comp, cashHours: comp === 'split' && chm ? chm / 60 : '' };
   }
   function otPreview() { var el = document.getElementById('otPreview'); if (!el) return; if (typeof otSyncSlip === 'function') otSyncSlip({ splitSrc: ((document.getElementById('otForm') || { dataset: {} }).dataset.splitSrc) || '' }); otCompSync(); otTravSync(); var fe = otFormEntry(), h = fe.hours ? +fe.hours : E.entryHours(fe), dv = (document.getElementById('otDate') || {}).value; var fid = (document.getElementById('otForm') || { dataset: {} }).dataset.id, payEntry = Object.assign({ id: '__form', date: dv }, fe, { mode: 'hours', hours: h }); var pr = E.otPayList(S.overtime.filter(function (o) { return o.id !== fid; }).concat([payEntry]), { profile: S.profile, profileAt: profAt, multiplier: mult(), tourFor: otTourFor }).byId.__form, rl = document.getElementById('otRateLine'); if (rl) rl.innerHTML = otRateLine(pr, dv);
-    el.innerHTML = hrs(h) + ' (' + dec(h) + ') &middot; ' + payText({ pay: pr.pay, comp: pr.compMinutes || 0 }) + (fe.start && E.countsNextDay(fe.start) ? '<div class="nxtxt">Starts 20:00 or later: counts for ' + (dv ? fmt(E.toDay(dv) + 1) : 'the next day') + ' (hours and pay period)</div>' : ''); }
+    el.innerHTML = hrs(h) + ' (' + dec(h) + ') &middot; ' + payText({ pay: pr.pay, comp: pr.compMinutes || 0 });
+    var nx = document.getElementById('otNxNote');
+    if (nx) {
+      var tourStart = '';
+      if (document.getElementById('otMode') && document.getElementById('otMode').dataset.mode !== 'hours') {
+        tourStart = (typeof completeNorm === 'function' ? completeNorm(((document.getElementById('otStart') || {}).value || '')) : E.normTime(((document.getElementById('otStart') || {}).value || '').trim())) || fe.workStart || fe.start || '';
+      }
+      if (tourStart && E.countsNextDay(tourStart)) {
+        nx.hidden = false;
+        nx.textContent = 'Starts 20:00 or later: counts for ' + (dv ? fmt(E.toDay(dv) + 1) : 'the next day') + ' (hours and pay period).';
+      } else { nx.hidden = true; nx.textContent = ''; }
+    }
+  }
 
   function travelLine(r) {
     var t = r && r.travel; if (!t || t.ineligible) return '';
@@ -6221,12 +6232,12 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       tourPrev(inp.id);
     }
     if (ev.target.classList.contains('bad')) { ev.target.classList.remove('bad'); var er = document.getElementById(ev.target.id + '-err'); if (er) er.textContent = ''; }
-    if (ev.target.getAttribute('inputmode') === 'numeric' && !ev.target.classList.contains('tourIn') && !ev.target.classList.contains('timeIn') && /\D/.test(ev.target.value)) ev.target.value = ev.target.value.replace(/\D/g, '');
+    if (ev.target.getAttribute('inputmode') === 'numeric' && !ev.target.classList.contains('tourIn') && !ev.target.classList.contains('timeIn') && !ev.target.classList.contains('otSplitIn') && /\D/.test(ev.target.value)) ev.target.value = ev.target.value.replace(/\D/g, '');
     if (ev.target.maxLength > 0 && ev.target.getAttribute('inputmode') === 'numeric' && ev.target.value.length > ev.target.maxLength) ev.target.value = ev.target.value.slice(0, ev.target.maxLength); // paste can exceed maxlength
     if (ev.target.classList.contains('cmdq')) cmdResults(ev.target.dataset.px, ev.target.value);
     if (ev.target.classList.contains('otSplitIn')) {
-      var totMin = E.parseHM(((document.getElementById('otTotal') || {}).value || '')) || 0;
-      var sv = ev.target.value, sf = E.formatOtSplitInput(sv, /^delete/.test(ev.inputType || ''), totMin);
+      var sv = ev.target.value, del = /^delete/.test(ev.inputType || '');
+      var sf = /^\d{1,2}:\d{2}$/.test(String(sv).trim()) ? String(sv).trim() : E.formatTimeInput(sv, del);
       if (sf !== sv) ev.target.value = sf;
       var form = document.getElementById('otForm'); if (form) form.dataset.splitSrc = ev.target.id === 'otTimeDur' ? 'time-h' : 'cash-h';
       otPreview();
