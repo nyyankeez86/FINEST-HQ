@@ -215,6 +215,10 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after{top:-4px;le
 .pdadd[hidden], .paidbox[hidden]{display:none !important}
 .paidbox .pdrm{margin-top:8px}
 .asgbox{background:#f8fafc;padding:12px}
+.pdsec{background:#f8fafc;padding:12px;margin-top:12px}
+.pdsec .shead{display:flex;justify-content:space-between;align-items:center;margin:0 0 8px;padding-right:28px}
+.pdsec .pdadd{margin-top:4px}
+.pdsec .paidbox{margin-top:0;border-top:0;padding-top:0}
 .asgbox.rdomin .asgopts,.asgbox.rdomin #asgDetailWrap,.asgbox.rdomin #asgNotesWrap,.asgbox.rdomin #asgAddrWrap,.asgbox.rdomin #asgCourt,.asgbox.rdomin #asgSites{display:none!important}
 .asgbox .rdominhint{display:none}.asgbox.rdomin .rdominhint{display:block;margin:0 0 8px}
 .asgold{display:flex;gap:10px;align-items:center;border:1.5px dashed #94a3b8;border-radius:12px;padding:8px 10px;margin-bottom:8px}
@@ -740,7 +744,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       { id: 'transport',   label: 'Prisoner transport',    short: 'TRNS', color: '#7C2D12', retired: true },
       { id: 'walkthrough', label: 'Prisoner walkthrough',  short: 'WALK', color: '#4D7C0F', retired: true },
       { id: 'detail',      label: 'Detail',                short: 'DTL',  color: '#6D28D9' },
-      { id: 'paiddetail',  label: 'Paid Detail',           short: 'PAID', color: '#A16207', paid: true }, // fields: ID, date, time, duration, vendor, address (+ on-device OCR of the 'Selected Paid Details' screen)
+      { id: 'paiddetail',  label: 'Paid Detail',           short: 'PAID', color: '#A16207', paid: true }, // not offered in the assignment picker (Zee 2026-11-21); own section on the day page. Kept so older saved days still label correctly. fields: ID, date, time, duration, vendor, address (+ on-device OCR of the 'Selected Paid Details' screen)
       { id: 'training',    label: 'Training',              short: 'TRNG', color: '#0E7490', detail: { label: 'Training (what training)', placeholder: 'e.g. Firearms requalification' }, suggest: true, address: true, sites: true },
       { id: 'court',       label: 'Court',                 short: 'CRT',  color: '#374151', detail: { label: 'Court appearance (court, part, case)', placeholder: 'e.g. Kings Supreme, Part 30, Ind. 1234/26' }, suggest: true, address: true },
       { id: 'other',       label: 'Other',                 short: 'OTH',  color: '#57534E', detail: { label: 'Assignment', placeholder: 'Describe the assignment', required: true }, suggest: true }
@@ -3416,12 +3420,12 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     box.className = 'pdnote' + (bad ? ' bad' : ''); box.hidden = false;
   }
   // ---------- Paid Detail fields + on-device screenshot reader ----------
-  function paidBlock(a, sel, iso) {
-    var pd = (a && a.pd) || {}, show = sel === 'paiddetail' || E.hasPaidDetail(a);
+  function paidSection(a, iso, slip) {
+    var pd = (a && a.pd) || {}, t = E.assignmentType(a && a.type), show = E.hasPaidDetail(a) || !!(t && t.paid);
     var f = function (id, lbl, v, extra) { return '<div class="field"><label for="' + id + '">' + lbl + '</label><input id="' + id + '" value="' + esc(v || '') + '"' + (extra || '') + '></div>'; };
-    return '<button type="button" class="btn block pdadd" id="pdAddBtn" data-act="pdAdd"' + (show ? ' hidden' : '') + '>Add paid detail</button>' +
-      '<div class="paidbox" id="asgPaid" data-sec="6e"' + (show ? '' : ' hidden') + ' data-iso="' + iso + '">' +
-      '<div class="shead" style="margin-bottom:8px"><h3 style="margin:0">Paid Detail</h3>' + suggestBtnHtml('Paid Detail') + '</div>' +
+    return '<div class="card pdsec" id="pdSec" data-sec="6e"><div class="shead"><h3 style="margin:0;font-size:15px">Paid detail</h3>' + suggestBtnHtml('Paid Detail') + '</div>' +
+      '<button type="button" class="btn block pdadd" id="pdAddBtn" data-act="pdAdd"' + (show ? ' hidden' : '') + '>Add paid detail</button>' +
+      '<div class="paidbox" id="asgPaid"' + (show ? '' : ' hidden') + ' data-iso="' + iso + '">' +
       '<div class="pdscan"><label class="btn sm pdup" for="pdFile">&#128247; Upload screenshot</label><input type="file" id="pdFile" accept="image/*" hidden>' +
       '<div class="hint">Reads your &ldquo;Selected Paid Details&rdquo; screen on this phone and fills the fields below. The picture is not uploaded, saved or synced.</div><div class="pdstat" id="pdStat" role="status" aria-live="polite" hidden></div></div>' +
       f('pdId', 'Paid Detail ID', pd.id, ' inputmode="numeric" autocomplete="off" placeholder="e.g. 4315816"') +
@@ -3431,7 +3435,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div class="field"><label for="pdDur">Duration (H:MM)</label><input id="pdDur" inputmode="decimal" autocomplete="off" placeholder="auto from the times" value="' + esc(pd.durationMin ? E.fmtHM(pd.durationMin) : '') + '"><div class="hint" id="pdDurHint">Worked out from the times (may cross midnight). :59 rounds up to the hour.</div></div><div class="pdpay" id="pdPay" role="status" aria-live="polite"></div><div class="pdnote" id="pdRemind" role="note" hidden></div>' +
       f('pdVendor', 'Vendor', pd.vendor, ' autocomplete="off" placeholder="e.g. Mount Sinai Health System / Brooklyn"') +
       f('pdAddr', 'Address', pd.address, ' class="acIn" data-ac="pd" autocomplete="off" autocapitalize="words" enterkeyhint="done" placeholder="Street, city or place name"') +
-      '<button type="button" class="btn sm danger pdrm" data-act="pdRemove">Remove paid detail</button></div>';
+      '<button type="button" class="btn sm danger pdrm" data-act="pdRemove">Remove paid detail</button>' +
+      '<div id="pdSlipHost" data-iso="' + iso + '">' + (slip || '') + '</div></div></div>';
   }
   function pdHasInput() { return E.hasPaidDetail({ pd: readPaid() }); }
   function showPaidForm(on, clear) {
@@ -3467,21 +3472,26 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   // ---------- daily assignment (day sheet) ----------
   function asgExpand() { var b = document.getElementById('asgBox'); if (b && b.classList.contains('rdomin')) b.classList.remove('rdomin'); }
   function asgSection(iso, d, dt) {
-    var a = S.assignments[iso] || {}, sel = a.type || '', t = E.assignmentType(sel), st = dt && dt.working && (dt.start || dt.schedStart) ? (dt.start || dt.schedStart) : '';
-    var opts = [{ id: '', label: 'None', color: '#334155' }].concat(C.assignmentTypes.filter(function (x) { return !x.retired; })).map(function (x) {
+    var a = S.assignments[iso] || {}, raw = a.type || '', tRaw = E.assignmentType(raw);
+    // Paid Detail is its own section (6e), not an assignment option. Older days saved as type paiddetail still open that section; the picker shows None.
+    var sel = (tRaw && tRaw.paid) ? '' : raw, t = E.assignmentType(sel), st = dt && dt.working && (dt.start || dt.schedStart) ? (dt.start || dt.schedStart) : '';
+    var showPd = E.hasPaidDetail(a) || !!(tRaw && tRaw.paid), inPaidSlip = showPd && !E.slipKind(sel);
+    var opts = [{ id: '', label: 'None', color: '#334155' }].concat(C.assignmentTypes.filter(function (x) { return !x.retired && !x.paid; })).map(function (x) {
       var on = sel === x.id; return '<button type="button" data-act="asgPick" data-t="' + x.id + '" data-c="' + x.color + '" class="' + (on ? 'on' : '') + '" style="' + (on ? 'background:' + x.color : '') + '">' + esc(x.label) + '</button>';
     }).join('');
     // A day saved with a type that is no longer offered keeps it, shown read-only until another type is picked.
     var old = t && t.retired ? '<div class="asgold" id="asgOld"><span class="asgold-sw" style="background:' + t.color + '">' + esc(t.short) + '</span><div><b>' + esc(E.assignmentLabel(a)) + '</b><div class="muted" style="font-size:12.5px">Saved earlier. This type is no longer offered; pick another to change it.</div></div></div>' : '';
-    // Scheduled RDO: only "Add paid detail" until a tour start is typed (then Detail, Training, Court, Paid Detail, Other).
-    var tb = S.tours[iso] || {}, rdoMin = !!(dt && dt.rdo) && !sel && !E.hasPaidDetail(a) && !tb.start && !tb.status;
+    // Scheduled RDO: assignment options stay hidden until a tour start is typed; the Paid detail section below stays available.
+    var tb = S.tours[iso] || {}, rdoMin = !!(dt && dt.rdo) && !sel && !raw && !E.hasPaidDetail(a) && !tb.start && !tb.status;
     return '<div class="card asgbox' + (rdoMin ? ' rdomin' : '') + '" id="asgBox" data-sec="6d" data-sel="' + esc(sel) + '" data-orig="' + esc(sel) + '" data-odetail="' + esc(a.detail || '') + '"><h3 style="font-size:15px;margin-top:0">Assignment</h3>' + old +
       '<div class="hint rdominhint" id="asgRdoHint">RDO: no assignment. Type a tour start above if you\'re working, or add a paid detail.</div><div class="asgopts" id="asgOpts">' + opts + '</div>' +
       '<div class="field" id="asgDetailWrap" style="margin-top:10px"' + (t && t.detail ? '' : ' hidden') + '><label for="asgDetail" id="asgDetailLbl">' + esc(t && t.detail ? t.detail.label + (t.detail.required ? '' : ' (optional)') : '') + '</label>' +
       '<input id="asgDetail" list="asgSug" autocomplete="off" placeholder="' + esc(t && t.detail ? t.detail.placeholder : '') + '" value="' + esc(a.detail || '') + '"><datalist id="asgSug">' + asgSuggest(sel) + '</datalist><div class="err" id="asgDetail-err"></div></div>' +
-      paidBlock(a, sel, iso) + addrBlock(a, sel, iso, st) + slipHtml(iso, sel) +
+      addrBlock(a, sel, iso, st) +
+      '<div id="asgSlipHost" data-iso="' + iso + '">' + (inPaidSlip ? '' : slipHtml(iso, sel)) + '</div>' +
       '<div class="field" id="asgNotesWrap" style="margin-top:10px"' + (sel ? '' : ' hidden') + '><label for="asgNotes">Assignment notes (optional)</label><textarea id="asgNotes" placeholder="e.g. report to 1 Police Plaza, bring vest">' + esc(a.notes || '') + '</textarea></div>' +
-      '<div class="hint">Assignments don\'t change hours. You can plan any date ahead, even a year or more out. Saved with "Save day" below.</div></div>';
+      '<div class="hint">Assignments don\'t change hours. You can plan any date ahead, even a year or more out. Saved with "Save day" below.</div></div>' +
+      paidSection(a, iso, inPaidSlip ? slipHtml(iso, 'paiddetail') : '');
   }
   // ---------- Cloud: beta accounts (Supabase Auth), approval gate, offline-first sync ----------
   // localStorage stays the working copy. When signed in and approved, changes upload in the background and other devices' changes come down.
@@ -3998,8 +4008,15 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function fmtStamp(isoTs) { var d = new Date(isoTs); if (isNaN(d)) return ''; return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }); }
   function refreshSlip() {
-    var b = document.getElementById('slipBox'); if (!b) return; var sel = daySlipSel();
-    var tmp = document.createElement('div'); tmp.innerHTML = slipHtml(b.dataset.iso, sel); b.parentNode.replaceChild(tmp.firstChild, b); loadSlipThumb();
+    var asg = document.getElementById('asgSlipHost'), pdh = document.getElementById('pdSlipHost');
+    var box = document.getElementById('asgBox'), pb = document.getElementById('asgPaid');
+    var iso = (asg && asg.dataset.iso) || (pdh && pdh.dataset.iso) || (pb && pb.dataset.iso);
+    if (!iso) return;
+    var sel = daySlipSel(), inPaid = !!(pb && !pb.hidden) && !(box && E.slipKind(box.dataset.sel));
+    var html = slipHtml(iso, sel);
+    if (asg) asg.innerHTML = inPaid ? '' : html;
+    if (pdh) pdh.innerHTML = inPaid ? html : '';
+    loadSlipThumb();
   }
   function loadSlipThumb() {
     var b = document.getElementById('slipBox'), im = document.getElementById('slipThumb'); if (!b || !im) return;
@@ -4937,7 +4954,6 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       Array.prototype.forEach.call(t.parentNode.children, function (b) { var on = b === t; b.classList.toggle('on', on); b.style.background = on ? b.dataset.c : ''; });
       var w = document.getElementById('asgDetailWrap'), inp = document.getElementById('asgDetail');
       w.hidden = !(ty && ty.detail); document.getElementById('asgNotesWrap').hidden = !id;
-      if (id === 'paiddetail') showPaidForm(true);
       if (ty && ty.detail) { document.getElementById('asgDetailLbl').textContent = ty.detail.label + (ty.detail.required ? '' : ' (optional)'); inp.placeholder = ty.detail.placeholder || ''; document.getElementById('asgSug').innerHTML = asgSuggest(id); }
       inp.value = id === box.dataset.orig ? box.dataset.odetail : ''; inp.classList.remove('bad'); document.getElementById('asgDetail-err').textContent = '';
       var aw = document.getElementById('asgAddrWrap'), ai = document.getElementById('asgAddr');
