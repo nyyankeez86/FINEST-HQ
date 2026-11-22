@@ -63,11 +63,15 @@ nav.tabs button[data-tab="overtime"] .tablbl{display:block;text-align:center;max
 .otviewseg .btn.on{background:#0f172a;color:#fff;border-color:#0f172a}
 .ottools{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 10px}
 .ottools .btn.on{background:#0f172a;color:#fff;border-color:#0f172a}
-.swrow{position:relative;overflow:hidden;touch-action:pan-y;background:#fff}
-.swrow .item{background:#fff;transition:transform .18s ease,background-color .18s ease}
+.swrow{position:relative;overflow:hidden;touch-action:pan-y;background:#fff;border-radius:10px}
+.swrow .item{background:#fff;transition:transform .18s ease,background-color .18s ease,box-shadow .18s ease}
 .swrow.swiping .item{transition:none}
 .swrow.sw-paid,.swrow.sw-paid .item{background:#d1fae5}
 .swrow.sw-del,.swrow.sw-del .item{background:#fecaca}
+.swrow.sw-sel,.swrow.sw-sel .item{background:#dbeafe}
+.swrow.sw-sel{box-shadow:inset 0 0 0 2px var(--accent)}
+.swrow.sw-paid{box-shadow:inset 0 0 0 2px var(--pay)}
+.swrow.sw-del{box-shadow:inset 0 0 0 2px var(--danger)}
 .item.otitem{padding:5px 2px;min-height:0;gap:6px;align-items:flex-start;line-height:1.2;overflow:hidden}
 .item.otitem .t1,.item.otitem .t2{min-width:0;overflow:hidden;text-overflow:ellipsis}.item.otitem .t1{font-size:13px;font-weight:700}
 .item.otitem .t2{font-size:11.5px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -3612,7 +3616,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
 
   var S = load();
   var T = E.today(), tp = E.parts(T);
-  var ui = { tab: 'schedule', calY: tp.y, calM: tp.m, lookup: T, otYear: tp.y, payYear: tp.y, leaveYear: tp.y, onbSquad: null, x15Year: tp.y, otView: 'ot', otSel: false, otSelIds: {}, otFilter: 'all', otCollapse: {} };
+  var ui = { tab: 'schedule', calY: tp.y, calM: tp.m, lookup: T, otYear: tp.y, payYear: tp.y, leaveYear: tp.y, onbSquad: null, x15Year: tp.y, otView: 'ot', otSel: false, otSelIds: {}, pdSel: false, pdSelIds: {}, otFilter: 'all', otCollapse: {} };
 
   function U() { return S.settings.unit; }
   var PDU = C.pdu;
@@ -4072,8 +4076,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var paidLbl = paid ? ('Paid' + (paidIso ? ' ' + E.fmtMDY(paidIso) : '')) : 'Unpaid';
     var badge = '<span class="otbadge ' + (paid ? 'paid' : 'unpaid') + '">' + paidLbl + '</span>';
     var chk = sel ? '<input type="checkbox" class="otchk" data-act="otSelOne" data-id="' + esc(e.id) + '"' + (ui.otSelIds && ui.otSelIds[e.id] ? ' checked' : '') + ' aria-label="Select overtime entry">' : '';
-    var act = sel ? 'otSelOne' : 'otEdit';
-    return '<div class="swrow" data-swipe="ot" data-id="' + esc(e.id) + '"><button class="item otitem" data-act="' + act + '" data-id="' + esc(e.id) + '">' + chk +
+    var act = sel ? 'otSelOne' : 'otEdit', on = !!(ui.otSelIds && ui.otSelIds[e.id]);
+    return '<div class="swrow' + (on ? ' sw-sel' : '') + '" data-swipe="ot" data-id="' + esc(e.id) + '"><button class="item otitem" data-act="' + act + '" data-id="' + esc(e.id) + '"' + (sel ? ' aria-pressed="' + (on ? 'true' : 'false') + '"' : '') + '>' + chk +
       '<div class="main"><div class="t1">' + esc(otType(e.type).label) + badge +
       (e.linkedTour ? ' <span class="chip otchip">RDO tour</span>' : e.linkedEnd ? ' <span class="chip otchip late">Late end</span>' : '') +
       (function (t) { return t && !t.ineligible && t.minutes ? ' <span class="chip travchip otchip">Travel ' + E.fmtHM(t.minutes) + (t.comp === 'time' ? ' comp' : '') + '</span>' : ''; })(entryPay(e).travel) +
@@ -4150,6 +4154,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     html += '<div class="tot-row" style="margin-bottom:8px"><div class="tot"><small>Total</small><b>' + E.fmtHM(t.minutes) + '</b><span>' + money(t.amount) + '</span><em>' + t.count + ' detail' + (t.count === 1 ? '' : 's') + '</em></div>' +
       '<div class="tot"><small>Worked</small><b>' + money(t.earned) + '</b><em>through today</em></div><div class="tot"><small>Scheduled</small><b>' + money(t.scheduled) + '</b><em>after today</em></div></div>';
     html += '<div class="muted" style="font-size:12.5px;margin:0 2px 8px">' + (t.rate ? 'Flat ' + money(t.rate) + '/hr for your rank' : 'Set your rank in Profile to see pay') + '. Kept separate from overtime and the Captain 180-hour cap.</div>';
+    var pn = 0, pid; for (pid in (ui.pdSelIds || {})) if (ui.pdSelIds[pid]) pn++;
+    html += '<div class="ottools" style="margin:0 0 8px"><button type="button" class="btn sm' + (ui.pdSel ? ' on' : '') + '" data-act="pdSelMode" id="pdSelMode">' + (ui.pdSel ? 'Done selecting' : 'Select') + '</button></div>';
     if (!items.length) {
       html += '<div class="empty">No paid details yet. Use Add paid detail on a day to add one.</div>';
     } else {
@@ -4166,7 +4172,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
           if (mClosed) return;
           html += '<div class="list otlist">';
           g.forEach(function (x) {
-            html += '<div class="swrow" data-swipe="pd" data-iso="' + esc(x.iso) + '"><button class="item otitem" data-act="day" data-d="' + E.toDay(x.iso) + '"><div class="main"><div class="t1">' + esc(x.pd.vendor || 'Paid Detail') + (x.pd.id ? ' · #' + esc(x.pd.id) : '') + '</div>' +
+            var pon = !!(ui.pdSel && ui.pdSelIds && ui.pdSelIds[x.iso]);
+            var pchk = ui.pdSel ? '<input type="checkbox" class="otchk" data-act="pdSelOne" data-iso="' + esc(x.iso) + '"' + (pon ? ' checked' : '') + ' aria-label="Select paid detail entry">' : '';
+            var pact = ui.pdSel ? 'pdSelOne' : 'day';
+            html += '<div class="swrow' + (pon ? ' sw-sel' : '') + '" data-swipe="pd" data-iso="' + esc(x.iso) + '"><button class="item otitem" data-act="' + pact + '" data-d="' + E.toDay(x.iso) + '" data-iso="' + esc(x.iso) + '"' + (ui.pdSel ? ' aria-pressed="' + (pon ? 'true' : 'false') + '"' : '') + '>' + pchk + '<div class="main"><div class="t1">' + esc(x.pd.vendor || 'Paid Detail') + (x.pd.id ? ' · #' + esc(x.pd.id) : '') + '</div>' +
               '<div class="t2">' + fmt(E.toDay(x.work)) + (x.pd.start ? ' · ' + esc(hhmm(x.pd.start)) + (x.pd.end ? '–' + esc(hhmm(x.pd.end)) : '') : '') + '</div></div>' +
               '<div class="right">' + E.fmtHM(x.minutes) + '<small>' + (x.amount ? money(x.amount) : '') + '</small></div></button></div>';
           });
@@ -6181,7 +6190,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function swipeDown(ev) {
     if (ev.button && ev.button !== 0) return;
-    if (ui.otSel) return;
+    if (ui.otSel || ui.pdSel) return;
     if (ev.target.closest && ev.target.closest('input,select,textarea,.otchk')) return;
     var row = ev.target.closest && ev.target.closest('.swrow');
     if (!row || !row.dataset.swipe) return;
@@ -7487,9 +7496,17 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (!confirm(overtimeDeleteMessage(e))) return;
       commitOvertimeDelete(id, true);
     },
-    otView: function (t) { ui.otView = t.dataset.v === 'pd' ? 'pd' : 'ot'; ui.otSel = false; render(); },
+    otView: function (t) { ui.otView = t.dataset.v === 'pd' ? 'pd' : 'ot'; ui.otSel = false; ui.otSelIds = {}; ui.pdSel = false; ui.pdSelIds = {}; render(); },
     otToggle: function (t) { otToggleCollapse(t.dataset.k, t.dataset.v); render(); },
     otSelMode: function () { ui.otSel = !ui.otSel; if (!ui.otSel) ui.otSelIds = {}; render(); },
+    pdSelMode: function () { ui.pdSel = !ui.pdSel; if (!ui.pdSel) ui.pdSelIds = {}; render(); },
+    pdSelOne: function (t, ev) {
+      ui.pdSelIds = ui.pdSelIds || {};
+      var iso = t.dataset.iso; if (!iso) return;
+      ui.pdSelIds[iso] = !ui.pdSelIds[iso];
+      if (ev) ev.stopPropagation();
+      render();
+    },
     otSelOne: function (t, ev) {
       ui.otSelIds = ui.otSelIds || {};
       var id = t.dataset.id; if (!id) return;
