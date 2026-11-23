@@ -19,7 +19,7 @@ so they stay stable when sections move. New sections get the next free letter; r
 | | 1f | Retirement countdown |
 | | 1g | Sync to Apple / Google Calendar button |
 | | 1h | "Finish your profile" prompt (when shown) |
-| | 1i | Leave Balances (moved here from retired page 4). Compact card directly below 1e and above 1f. Collapsed, it shows a one-line summary of leave counts for the selected year; expanded, it has the year selector, leave-type count cards, and + Leave / note / assignment (opens page 14); the year's assignments and leave & notes sit in compact disclosure rows under that. Starting H:MM balances (comp / chart / vacation) stay in Settings 9e. |
+| | 1i | Leave Balances (moved here from the former Leave page). Compact card directly below 1e and above 1f. Collapsed, it shows a one-line summary of leave counts for the selected year; expanded, it has the year selector, leave-type count cards, and + Leave / note / assignment (opens page 14); the year's assignments and leave & notes sit in compact disclosure rows under that. Starting H:MM balances (comp / chart / vacation) stay in Settings 9e. |
 | **2 Overtime/Paid Detail** | 2a | Totals row (OT period / Month / Year), shown in the Overtime view. The “paid” Friday in this row is the expected pay date. |
 | | 2b | + Log overtime |
 | | 2c | Overtime entries grouped by year (top level, newest first) then month; groups are collapsible. Compact rows show type, times, hours, expected pay date, and a Paid / Unpaid badge. In Select mode, a selected entry gets a light accent fill and a 2px inset accent border with rounded corners (no layout shift). Swipe right to mark paid (green while dragging, with a matching green border). Swipe left to delete (red while dragging, with a matching red border). Swipes are off in Select mode. |
@@ -29,7 +29,11 @@ so they stay stable when sections move. New sections get the next free letter; r
 | | 2g | Paid Detail list (Select and everything below it, moved out of 2d). Functionally unchanged: year-then-month groups, Select mode, swipe right to mark paid, swipe left to delete, and the year-end tax report button. |
 | **3 Pay** | 3a | Year summary card (includes chart time accrued this year) |
 | | 3b | Each payday / pay-period card (straight time is 8:00/day; chart time for the regular period, or pending for rotating Sergeants) |
-| **4 Leave (retired)** | 4a–4d | Retired as a standalone tab (the Leave button was removed from the bottom nav). Leave Balances now live on page 1 as 1i. Numbers 4 and 4a–4d are not reused. Lookup stays page 5. |
+| **4 Department Directory** | 4e | Search (name, command number such as 23 or 023, category, or phone — official numbers and the signed-in user's own personal numbers). |
+| | 4f | Category filter chips: All, Patrol, Housing, Transit, Detective, Domestic Violence, Field Training, Specialty, Bureau, My contacts. |
+| | 4g | Results: official name, category, public phone (tel: link) when a number is on an official NYPD page, address, and Google / Apple / Waze when an address is on file. Personal numbers the user added to an entry are labeled (default “My number”, or the user's label such as Desk or Sgt cell), visually distinct from public numbers, tappable to call, and can be edited or deleted by that user only. Users can also add a fully custom contact that is not in the public directory. |
+| | 4h | Add or edit a personal number, or a custom contact. These save only in that user's data (`dirMine`) and sync only to that user's own `user_records` rows (existing RLS: `user_id = auth.uid()`). They are never shared with other users and never merged into the public command catalog. |
+| | 4a–4d | Vacated (former Leave sections). Those letters are not reused. Leave Balances remain on page 1 as 1i. Lookup stays page 5. |
 | **5 Lookup** | 5a | Date picker card |
 | | 5b | Big working / off answer |
 | | 5c | "You" line |

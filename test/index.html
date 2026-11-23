@@ -505,6 +505,24 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after{top:-4px;le
 .endpop .et{font-size:17px;font-weight:800}.endpop .es{font-size:12.5px;opacity:.8}.endpop .enx{margin-top:6px;padding:6px 8px;border-radius:8px;background:#7c3aed;font-weight:700;font-size:13.5px}
 .endpop.pop{animation:popin .28s ease-out}@keyframes popin{from{transform:scale(.96);opacity:.4}to{transform:none;opacity:1}}
 .m-nx{background:#7c3aed;color:#fff}.nxtxt{color:#6d28d9;font-weight:700}.nxchip{background:#7c3aed!important;color:#fff!important;border-color:transparent!important}
+
+.dirq{width:100%;box-sizing:border-box;min-height:42px;border:1px solid var(--line);border-radius:10px;padding:8px 12px;font:inherit;font-size:16px}
+.dirchips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 8px}
+.dirchips .chip{margin:0;cursor:pointer;background:#fff}
+.dirchips .chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.dir-card{padding:12px 14px;margin:0 0 8px}
+.dir-card .t1{font-weight:800;font-size:15px}
+.dir-card .t2{color:var(--muted);font-size:12.5px;margin-top:2px}
+.dir-card.custom{border-left:4px solid #0f766e}
+.dir-tels{display:flex;flex-direction:column;gap:4px;margin-top:8px}
+a.dir-tel{display:inline-flex;align-items:center;gap:6px;font-weight:700;color:var(--navy);text-decoration:none;font-size:15px}
+a.dir-tel:active,a.dir-tel:hover{text-decoration:underline}
+.dir-mine-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#ecfdf8;border:1px solid #99f6e4;border-radius:10px;padding:6px 8px;margin-top:4px}
+.dir-mine-row .tag{background:#0f766e;color:#fff;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:2px 6px}
+a.dir-tel.mine{color:#0f766e}
+.dir-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.dir-empty{color:var(--muted);padding:16px 8px;text-align:center}
+
 </style>
 </head>
 <body>
@@ -529,6 +547,7 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after{top:-4px;le
   <button data-act="tab" data-tab="schedule"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Schedule</button>
   <button data-act="tab" data-tab="overtime"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="tablbl">Overtime/Paid Detail</span></button>
   <button data-act="tab" data-tab="pay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/></svg>Pay</button>
+  <button data-act="tab" data-tab="directory"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 7h6M9 11h6M9 15h4"/></svg>Directory</button>
   <button data-act="tab" data-tab="lookup"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Lookup</button>
 </div></nav>
 <div id="sheetRoot"></div>
@@ -1048,105 +1067,105 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     //   TD 3 and TD 32 ZIPs omitted (the pages print 10019 / 11235, which don't match those streets); TD 2/11 pages give no ZIP.
     commandSources: ['https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page', 'https://www.nyc.gov/site/nypd/bureaus/transit-housing/housing.page', 'https://www.nyc.gov/site/nypd/bureaus/transit-housing/transit.page'],
     commands: [
-      { id: 'pct-1', kind: 'pct', name: '1st Precinct', boro: 'Manhattan', address: '16 Ericsson Place, New York, NY 10013' },
-      { id: 'pct-5', kind: 'pct', name: '5th Precinct', boro: 'Manhattan', address: '19 Elizabeth Street, New York, NY 10013' },
-      { id: 'pct-6', kind: 'pct', name: '6th Precinct', boro: 'Manhattan', address: '233 West 10th Street, New York, NY 10014' },
-      { id: 'pct-7', kind: 'pct', name: '7th Precinct', boro: 'Manhattan', address: '19 1/2 Pitt Street, New York, NY 10002' },
-      { id: 'pct-9', kind: 'pct', name: '9th Precinct', boro: 'Manhattan', address: '321 East 5 Street, New York, NY 10003' },
-      { id: 'pct-10', kind: 'pct', name: '10th Precinct', boro: 'Manhattan', address: '230 West 20th Street, New York, NY 10011' },
-      { id: 'pct-13', kind: 'pct', name: '13th Precinct', boro: 'Manhattan', address: '230 East 21st Street, New York, NY 10010' },
-      { id: 'pct-midtown-south', kind: 'pct', name: 'Midtown South Precinct', boro: 'Manhattan', address: '357 West 35th Street, New York, NY 10001' },
-      { id: 'pct-17', kind: 'pct', name: '17th Precinct', boro: 'Manhattan', address: '167 East 51st Street, New York, NY 10022' },
-      { id: 'pct-midtown-north', kind: 'pct', name: 'Midtown North Precinct', boro: 'Manhattan', address: '306 West 54th Street, New York, NY 10019' },
-      { id: 'pct-19', kind: 'pct', name: '19th Precinct', boro: 'Manhattan', address: '153 East 67th Street, New York, NY 10065' },
-      { id: 'pct-20', kind: 'pct', name: '20th Precinct', boro: 'Manhattan', address: '120 West 82nd Street, New York, NY 10024' },
-      { id: 'pct-central-park', kind: 'pct', name: 'Central Park Precinct', boro: 'Manhattan', address: '86th Street & Transverse Road, New York, NY 10024' },
-      { id: 'pct-23', kind: 'pct', name: '23rd Precinct', boro: 'Manhattan', address: '164 East 102 Street, New York, NY 10029' },
-      { id: 'pct-24', kind: 'pct', name: '24th Precinct', boro: 'Manhattan', address: '151 West 100th Street, New York, NY 10025' },
-      { id: 'pct-25', kind: 'pct', name: '25th Precinct', boro: 'Manhattan', address: '120 East 119th Street, New York, NY 10035' },
-      { id: 'pct-26', kind: 'pct', name: '26th Precinct', boro: 'Manhattan', address: '520 West 126th Street, New York, NY 10027' },
-      { id: 'pct-28', kind: 'pct', name: '28th Precinct', boro: 'Manhattan', address: '2271-89 8th Ave., New York, NY 10027' },
-      { id: 'pct-30', kind: 'pct', name: '30th Precinct', boro: 'Manhattan', address: '451 West 151st Street, New York, NY 10031' },
-      { id: 'pct-32', kind: 'pct', name: '32nd Precinct', boro: 'Manhattan', address: '250 West 135th Street, New York, NY 10030' },
-      { id: 'pct-33', kind: 'pct', name: '33rd Precinct', boro: 'Manhattan', address: '2207 Amsterdam Ave., New York, NY 10032' },
-      { id: 'pct-34', kind: 'pct', name: '34th Precinct', boro: 'Manhattan', address: '4295 Broadway, New York, NY 10033' },
-      { id: 'pct-40', kind: 'pct', name: '40th Precinct', boro: 'Bronx', address: '567 E 149th Street, Bronx, NY 10455' },
-      { id: 'pct-41', kind: 'pct', name: '41st Precinct', boro: 'Bronx', address: '1035 Longwood Ave., Bronx, NY 10459' },
-      { id: 'pct-42', kind: 'pct', name: '42nd Precinct', boro: 'Bronx', address: '830 Washington Ave., Bronx, NY 10451' },
-      { id: 'pct-43', kind: 'pct', name: '43rd Precinct', boro: 'Bronx', address: '900 Fteley Ave., Bronx, NY 10473' },
-      { id: 'pct-44', kind: 'pct', name: '44th Precinct', boro: 'Bronx', address: '2 East 169 Street, Bronx, NY 10452' },
-      { id: 'pct-45', kind: 'pct', name: '45th Precinct', boro: 'Bronx', address: '2877 Barkley Ave., Bronx, NY 10465' },
-      { id: 'pct-46', kind: 'pct', name: '46th Precinct', boro: 'Bronx', address: '2120 Ryer Ave., Bronx, NY 10457' },
-      { id: 'pct-47', kind: 'pct', name: '47th Precinct', boro: 'Bronx', address: '4111 Laconia Avenue, Bronx, NY 10466' },
-      { id: 'pct-48', kind: 'pct', name: '48th Precinct', boro: 'Bronx', address: '450 Cross Bronx Expressway, Bronx, NY 10457' },
-      { id: 'pct-49', kind: 'pct', name: '49th Precinct', boro: 'Bronx', address: '2121 Eastchester Road, Bronx, NY 10461' },
-      { id: 'pct-50', kind: 'pct', name: '50th Precinct', boro: 'Bronx', address: '3450 Kingsbridge Ave., Bronx, NY 10463' },
-      { id: 'pct-52', kind: 'pct', name: '52nd Precinct', boro: 'Bronx', address: '3016 Webster Ave., Bronx, NY 10467' },
-      { id: 'pct-60', kind: 'pct', name: '60th Precinct', boro: 'Brooklyn', address: '2951 West 8th Street, Brooklyn, NY 11224' },
-      { id: 'pct-61', kind: 'pct', name: '61st Precinct', boro: 'Brooklyn', address: '2575 Coney Island Avenue, Brooklyn, NY 11223' },
-      { id: 'pct-62', kind: 'pct', name: '62nd Precinct', boro: 'Brooklyn', address: '1925 Bath Avenue, Brooklyn, NY 11214' },
-      { id: 'pct-63', kind: 'pct', name: '63rd Precinct', boro: 'Brooklyn', address: '1844 Brooklyn Avenue, Brooklyn, NY 11210' },
-      { id: 'pct-66', kind: 'pct', name: '66th Precinct', boro: 'Brooklyn', address: '5822 16th Avenue, Brooklyn, NY 11204' },
-      { id: 'pct-67', kind: 'pct', name: '67th Precinct', boro: 'Brooklyn', address: '2820 Snyder Avenue, Brooklyn, NY 11226' },
-      { id: 'pct-68', kind: 'pct', name: '68th Precinct', boro: 'Brooklyn', address: '333 65th Street, Brooklyn, NY 11220' },
-      { id: 'pct-69', kind: 'pct', name: '69th Precinct', boro: 'Brooklyn', address: '9720 Foster Avenue, Brooklyn, NY 11236' },
-      { id: 'pct-70', kind: 'pct', name: '70th Precinct', boro: 'Brooklyn', address: '154 Lawrence Avenue, Brooklyn, NY 11230' },
-      { id: 'pct-71', kind: 'pct', name: '71st Precinct', boro: 'Brooklyn', address: '421 Empire Boulevard, Brooklyn, NY 11225' },
-      { id: 'pct-72', kind: 'pct', name: '72nd Precinct', boro: 'Brooklyn', address: '830 4th Avenue, Brooklyn, NY 11232' },
-      { id: 'pct-73', kind: 'pct', name: '73rd Precinct', boro: 'Brooklyn', address: '1470 East New York Avenue, Brooklyn, NY 11212' },
-      { id: 'pct-75', kind: 'pct', name: '75th Precinct', boro: 'Brooklyn', address: '1000 Sutter Avenue, Brooklyn, NY 11208' },
-      { id: 'pct-76', kind: 'pct', name: '76th Precinct', boro: 'Brooklyn', address: '191 Union Street, Brooklyn, NY 11231' },
-      { id: 'pct-77', kind: 'pct', name: '77th Precinct', boro: 'Brooklyn', address: '127 Utica Avenue, Brooklyn, NY 11213' },
-      { id: 'pct-78', kind: 'pct', name: '78th Precinct', boro: 'Brooklyn', address: '65 6th Avenue, Brooklyn, NY 11217' },
-      { id: 'pct-79', kind: 'pct', name: '79th Precinct', boro: 'Brooklyn', address: '263 Tompkins Avenue, Brooklyn, NY 11216' },
-      { id: 'pct-81', kind: 'pct', name: '81st Precinct', boro: 'Brooklyn', address: '30 Ralph Avenue, Brooklyn, NY 11221' },
-      { id: 'pct-83', kind: 'pct', name: '83rd Precinct', boro: 'Brooklyn', address: '480 Knickerbocker Avenue, Brooklyn, NY 11237' },
-      { id: 'pct-84', kind: 'pct', name: '84th Precinct', boro: 'Brooklyn', address: '301 Gold Street, Brooklyn, NY 11201' },
-      { id: 'pct-88', kind: 'pct', name: '88th Precinct', boro: 'Brooklyn', address: '298 Classon Avenue, Brooklyn, NY 11205' },
-      { id: 'pct-90', kind: 'pct', name: '90th Precinct', boro: 'Brooklyn', address: '211 Union Avenue, Brooklyn, NY 11211' },
-      { id: 'pct-94', kind: 'pct', name: '94th Precinct', boro: 'Brooklyn', address: '100 Meserole Avenue, Brooklyn, NY 11222' },
-      { id: 'pct-100', kind: 'pct', name: '100th Precinct', boro: 'Queens', address: '92-24 Rockaway Beach Blvd., Queens, NY 11693' },
-      { id: 'pct-101', kind: 'pct', name: '101st Precinct', boro: 'Queens', address: '16-12 Mott Avenue, Far Rockaway, NY 11691' },
-      { id: 'pct-102', kind: 'pct', name: '102nd Precinct', boro: 'Queens', address: '87-34 118th Street, Richmond Hill, NY 11418' },
-      { id: 'pct-103', kind: 'pct', name: '103rd Precinct', boro: 'Queens', address: '168-02 91st Ave, Jamaica, NY 11432' },
-      { id: 'pct-104', kind: 'pct', name: '104th Precinct', boro: 'Queens', address: '64-02 Catalpa Avenue, Queens, NY 11385' },
-      { id: 'pct-105', kind: 'pct', name: '105th Precinct', boro: 'Queens', address: '92-08 222nd Street, Queens Village, NY 11428' },
-      { id: 'pct-106', kind: 'pct', name: '106th Precinct', boro: 'Queens', address: '103-53 101st Street, Ozone Park, NY 11417' },
-      { id: 'pct-107', kind: 'pct', name: '107th Precinct', boro: 'Queens', address: '71-01 Parsons Blvd., Flushing, NY 11365' },
-      { id: 'pct-108', kind: 'pct', name: '108th Precinct', boro: 'Queens', address: '5-47 50th Ave., Long Island City, NY 11101' },
-      { id: 'pct-109', kind: 'pct', name: '109th Precinct', boro: 'Queens', address: '37-05 Union Street, Flushing, NY 11354' },
-      { id: 'pct-110', kind: 'pct', name: '110th Precinct', boro: 'Queens', address: '94-41 43rd Ave., Elmhurst, NY 11373' },
-      { id: 'pct-111', kind: 'pct', name: '111th Precinct', boro: 'Queens', address: '45-06 215th Street, Bayside, NY 11361' },
-      { id: 'pct-112', kind: 'pct', name: '112th Precinct', boro: 'Queens', address: '68-40 Austin Street, Forest Hills, NY 11375' },
-      { id: 'pct-113', kind: 'pct', name: '113th Precinct', boro: 'Queens', address: '167-02 Baisley Blvd., Jamaica, NY 11434' },
-      { id: 'pct-114', kind: 'pct', name: '114th Precinct', boro: 'Queens', address: '34-16 Astoria Blvd., Queens, NY 11103' },
-      { id: 'pct-115', kind: 'pct', name: '115th Precinct', boro: 'Queens', address: '92-15 Northern Blvd., Jackson Hgts., NY 11372' },
-      { id: 'pct-116', kind: 'pct', name: '116th Precinct', boro: 'Queens', address: '244-04 North Conduit Avenue, Queens, NY 11422' },
-      { id: 'pct-120', kind: 'pct', name: '120th Precinct', boro: 'Staten Island', address: '78 Richmond Terrace, St. George, NY 10301' },
-      { id: 'pct-121', kind: 'pct', name: '121st Precinct', boro: 'Staten Island', address: '970 Richmond Avenue, Staten Island, NY 10314' },
-      { id: 'pct-122', kind: 'pct', name: '122nd Precinct', boro: 'Staten Island', address: '2320 Hylan Blvd., New Dorp, NY 10306' },
-      { id: 'pct-123', kind: 'pct', name: '123rd Precinct', boro: 'Staten Island', address: '116 Main Street, Staten Island, NY 10307' },
-      { id: 'psa-1', kind: 'psa', name: 'PSA 1 (Housing)', boro: 'Brooklyn', address: '2860 West 23rd Street, Brooklyn, NY 11224' },
-      { id: 'psa-2', kind: 'psa', name: 'PSA 2 (Housing)', boro: 'Brooklyn', address: '560 Sutter Avenue, Brooklyn, NY 11207' },
-      { id: 'psa-3', kind: 'psa', name: 'PSA 3 (Housing)', boro: 'Brooklyn', address: '25 Central Avenue, Brooklyn, NY 11206' },
-      { id: 'psa-4', kind: 'psa', name: 'PSA 4 (Housing)', boro: 'Manhattan', address: '130 Avenue C, New York, NY 10009' },
-      { id: 'psa-5', kind: 'psa', name: 'PSA 5 (Housing)', boro: 'Manhattan', address: '221 East 123rd Street, New York, NY 10035' },
-      { id: 'psa-6', kind: 'psa', name: 'PSA 6 (Housing)', boro: 'Manhattan', address: '2770 Frederick Douglass Boulevard, New York, NY 10039' },
-      { id: 'psa-7', kind: 'psa', name: 'PSA 7 (Housing)', boro: 'Bronx', address: '737 Melrose Avenue, Bronx, NY 10455' },
-      { id: 'psa-8', kind: 'psa', name: 'PSA 8 (Housing)', boro: 'Bronx', address: '2794 Randall Avenue, Bronx, NY 10465' },
-      { id: 'psa-9', kind: 'psa', name: 'PSA 9 (Housing)', boro: 'Queens', address: '155-09 Jewel Avenue, Flushing, NY 11367' },
-      { id: 'td-1', kind: 'td', name: 'Transit District 1', boro: 'Manhattan', address: '59th Street/Columbus Circle Subway Station, New York, NY 10019' },
-      { id: 'td-2', kind: 'td', name: 'Transit District 2', boro: 'Manhattan', address: 'Canal Street Subway Station, West Broadway & Lispenard Street, New York, NY' },
-      { id: 'td-3', kind: 'td', name: 'Transit District 3', boro: 'Manhattan', address: '145th Street & St. Nicholas Avenue Subway Station, New York, NY' },
-      { id: 'td-4', kind: 'td', name: 'Transit District 4', boro: 'Manhattan', address: 'Union Square Subway Station, 14th Street & Union Square West, New York, NY 10003' },
-      { id: 'td-11', kind: 'td', name: 'Transit District 11', boro: 'Bronx', address: '161st Street/Yankee Stadium Subway Station, Bronx, NY' },
-      { id: 'td-12', kind: 'td', name: 'Transit District 12', boro: 'Bronx', address: '460 Morris Park Avenue, Bronx, NY 10460' },
-      { id: 'td-20', kind: 'td', name: 'Transit District 20', boro: 'Queens', address: 'Briarwood Subway Station, Jamaica, NY 11435' },
-      { id: 'td-23', kind: 'td', name: 'Transit District 23', boro: 'Queens', address: '222 Beach 116th Street, Rockaway Park, NY 11694' },
-      { id: 'td-30', kind: 'td', name: 'Transit District 30', boro: 'Brooklyn', address: 'Hoyt-Schermerhorn Streets Subway Station, Brooklyn, NY 11201' },
-      { id: 'td-32', kind: 'td', name: 'Transit District 32', boro: 'Brooklyn', address: '960 Carroll Street, Brooklyn, NY' },
-      { id: 'td-33', kind: 'td', name: 'Transit District 33', boro: 'Brooklyn', address: 'Broadway Junction Station, 2399 Fulton Street, Brooklyn, NY 11233' },
-      { id: 'td-34', kind: 'td', name: 'Transit District 34', boro: 'Brooklyn', address: 'Coney Island-Stillwell Avenue Station, 1243 Surf Avenue, Brooklyn, NY 11224' }
+      { id: 'pct-1', kind: 'pct', name: '1st Precinct', boro: 'Manhattan', address: '16 Ericsson Place, New York, NY 10013', phone: '212-334-0611', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-5', kind: 'pct', name: '5th Precinct', boro: 'Manhattan', address: '19 Elizabeth Street, New York, NY 10013', phone: '212-334-0711', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-6', kind: 'pct', name: '6th Precinct', boro: 'Manhattan', address: '233 West 10th Street, New York, NY 10014', phone: '212-741-4811', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-7', kind: 'pct', name: '7th Precinct', boro: 'Manhattan', address: '19 1/2 Pitt Street, New York, NY 10002', phone: '212-477-7311', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-9', kind: 'pct', name: '9th Precinct', boro: 'Manhattan', address: '321 East 5 Street, New York, NY 10003', phone: '212-477-7811', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-10', kind: 'pct', name: '10th Precinct', boro: 'Manhattan', address: '230 West 20th Street, New York, NY 10011', phone: '212-741-8211', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-13', kind: 'pct', name: '13th Precinct', boro: 'Manhattan', address: '230 East 21st Street, New York, NY 10010', phone: '212-477-7411', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-midtown-south', kind: 'pct', name: 'Midtown South Precinct', boro: 'Manhattan', address: '357 West 35th Street, New York, NY 10001', phone: '212-239-9811', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-17', kind: 'pct', name: '17th Precinct', boro: 'Manhattan', address: '167 East 51st Street, New York, NY 10022', phone: '212-826-3211', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-midtown-north', kind: 'pct', name: 'Midtown North Precinct', boro: 'Manhattan', address: '306 West 54th Street, New York, NY 10019', phone: '212-767-8400', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-19', kind: 'pct', name: '19th Precinct', boro: 'Manhattan', address: '153 East 67th Street, New York, NY 10065', phone: '212-452-0600', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-20', kind: 'pct', name: '20th Precinct', boro: 'Manhattan', address: '120 West 82nd Street, New York, NY 10024', phone: '212-580-6411', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-central-park', kind: 'pct', name: 'Central Park Precinct', boro: 'Manhattan', address: '86th Street & Transverse Road, New York, NY 10024', phone: '212-570-4820', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-23', kind: 'pct', name: '23rd Precinct', boro: 'Manhattan', address: '164 East 102 Street, New York, NY 10029', phone: '212-860-6411', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-24', kind: 'pct', name: '24th Precinct', boro: 'Manhattan', address: '151 West 100th Street, New York, NY 10025', phone: '212-678-1811', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-25', kind: 'pct', name: '25th Precinct', boro: 'Manhattan', address: '120 East 119th Street, New York, NY 10035', phone: '212-860-6511', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-26', kind: 'pct', name: '26th Precinct', boro: 'Manhattan', address: '520 West 126th Street, New York, NY 10027', phone: '212-678-1311', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-28', kind: 'pct', name: '28th Precinct', boro: 'Manhattan', address: '2271-89 8th Ave., New York, NY 10027', phone: '212-678-1611', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-30', kind: 'pct', name: '30th Precinct', boro: 'Manhattan', address: '451 West 151st Street, New York, NY 10031', phone: '212-690-8811', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-32', kind: 'pct', name: '32nd Precinct', boro: 'Manhattan', address: '250 West 135th Street, New York, NY 10030', phone: '212-690-6311', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-33', kind: 'pct', name: '33rd Precinct', boro: 'Manhattan', address: '2207 Amsterdam Ave., New York, NY 10032', phone: '212-927-3200', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-34', kind: 'pct', name: '34th Precinct', boro: 'Manhattan', address: '4295 Broadway, New York, NY 10033', phone: '212-927-9711', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-40', kind: 'pct', name: '40th Precinct', boro: 'Bronx', address: '567 E 149th Street, Bronx, NY 10455', phone: '718-402-2270', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-41', kind: 'pct', name: '41st Precinct', boro: 'Bronx', address: '1035 Longwood Ave., Bronx, NY 10459', phone: '718-542-4771', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-42', kind: 'pct', name: '42nd Precinct', boro: 'Bronx', address: '830 Washington Ave., Bronx, NY 10451', phone: '718-402-3887', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-43', kind: 'pct', name: '43rd Precinct', boro: 'Bronx', address: '900 Fteley Ave., Bronx, NY 10473', phone: '718-542-0888', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-44', kind: 'pct', name: '44th Precinct', boro: 'Bronx', address: '2 East 169 Street, Bronx, NY 10452', phone: '718-590-5511', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-45', kind: 'pct', name: '45th Precinct', boro: 'Bronx', address: '2877 Barkley Ave., Bronx, NY 10465', phone: '718-822-5411', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-46', kind: 'pct', name: '46th Precinct', boro: 'Bronx', address: '2120 Ryer Ave., Bronx, NY 10457', phone: '718-220-5211', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-47', kind: 'pct', name: '47th Precinct', boro: 'Bronx', address: '4111 Laconia Avenue, Bronx, NY 10466', phone: '718-920-1211', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-48', kind: 'pct', name: '48th Precinct', boro: 'Bronx', address: '450 Cross Bronx Expressway, Bronx, NY 10457', phone: '718-299-3900', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-49', kind: 'pct', name: '49th Precinct', boro: 'Bronx', address: '2121 Eastchester Road, Bronx, NY 10461', phone: '718-918-2000', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-50', kind: 'pct', name: '50th Precinct', boro: 'Bronx', address: '3450 Kingsbridge Ave., Bronx, NY 10463', phone: '718-543-5700', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-52', kind: 'pct', name: '52nd Precinct', boro: 'Bronx', address: '3016 Webster Ave., Bronx, NY 10467', phone: '718-220-5811', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-60', kind: 'pct', name: '60th Precinct', boro: 'Brooklyn', address: '2951 West 8th Street, Brooklyn, NY 11224', phone: '718-946-3311', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-61', kind: 'pct', name: '61st Precinct', boro: 'Brooklyn', address: '2575 Coney Island Avenue, Brooklyn, NY 11223', phone: '718-627-6611', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-62', kind: 'pct', name: '62nd Precinct', boro: 'Brooklyn', address: '1925 Bath Avenue, Brooklyn, NY 11214', phone: '718-236-2611', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-63', kind: 'pct', name: '63rd Precinct', boro: 'Brooklyn', address: '1844 Brooklyn Avenue, Brooklyn, NY 11210', phone: '718-258-4411', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-66', kind: 'pct', name: '66th Precinct', boro: 'Brooklyn', address: '5822 16th Avenue, Brooklyn, NY 11204', phone: '718-851-5611', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-67', kind: 'pct', name: '67th Precinct', boro: 'Brooklyn', address: '2820 Snyder Avenue, Brooklyn, NY 11226', phone: '718-287-3211', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-68', kind: 'pct', name: '68th Precinct', boro: 'Brooklyn', address: '333 65th Street, Brooklyn, NY 11220', phone: '718-439-4211', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-69', kind: 'pct', name: '69th Precinct', boro: 'Brooklyn', address: '9720 Foster Avenue, Brooklyn, NY 11236', phone: '718-257-6211', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-70', kind: 'pct', name: '70th Precinct', boro: 'Brooklyn', address: '154 Lawrence Avenue, Brooklyn, NY 11230', phone: '718-851-5511', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-71', kind: 'pct', name: '71st Precinct', boro: 'Brooklyn', address: '421 Empire Boulevard, Brooklyn, NY 11225', phone: '718-735-0511', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-72', kind: 'pct', name: '72nd Precinct', boro: 'Brooklyn', address: '830 4th Avenue, Brooklyn, NY 11232', phone: '718-965-6311', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-73', kind: 'pct', name: '73rd Precinct', boro: 'Brooklyn', address: '1470 East New York Avenue, Brooklyn, NY 11212', phone: '718-495-5411', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-75', kind: 'pct', name: '75th Precinct', boro: 'Brooklyn', address: '1000 Sutter Avenue, Brooklyn, NY 11208', phone: '718-827-3511', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-76', kind: 'pct', name: '76th Precinct', boro: 'Brooklyn', address: '191 Union Street, Brooklyn, NY 11231', phone: '718-834-3211', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-77', kind: 'pct', name: '77th Precinct', boro: 'Brooklyn', address: '127 Utica Avenue, Brooklyn, NY 11213', phone: '718-735-0611', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-78', kind: 'pct', name: '78th Precinct', boro: 'Brooklyn', address: '65 6th Avenue, Brooklyn, NY 11217', phone: '718-636-6411', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-79', kind: 'pct', name: '79th Precinct', boro: 'Brooklyn', address: '263 Tompkins Avenue, Brooklyn, NY 11216', phone: '718-636-6611', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-81', kind: 'pct', name: '81st Precinct', boro: 'Brooklyn', address: '30 Ralph Avenue, Brooklyn, NY 11221', phone: '718-574-0411', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-83', kind: 'pct', name: '83rd Precinct', boro: 'Brooklyn', address: '480 Knickerbocker Avenue, Brooklyn, NY 11237', phone: '718-574-1605', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-84', kind: 'pct', name: '84th Precinct', boro: 'Brooklyn', address: '301 Gold Street, Brooklyn, NY 11201', phone: '718-875-6811', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-88', kind: 'pct', name: '88th Precinct', boro: 'Brooklyn', address: '298 Classon Avenue, Brooklyn, NY 11205', phone: '718-636-6511', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-90', kind: 'pct', name: '90th Precinct', boro: 'Brooklyn', address: '211 Union Avenue, Brooklyn, NY 11211', phone: '718-963-5311', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-94', kind: 'pct', name: '94th Precinct', boro: 'Brooklyn', address: '100 Meserole Avenue, Brooklyn, NY 11222', phone: '718-383-3879', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-100', kind: 'pct', name: '100th Precinct', boro: 'Queens', address: '92-24 Rockaway Beach Blvd., Queens, NY 11693', phone: '718-318-4200', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-101', kind: 'pct', name: '101st Precinct', boro: 'Queens', address: '16-12 Mott Avenue, Far Rockaway, NY 11691', phone: '718-868-3400', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-102', kind: 'pct', name: '102nd Precinct', boro: 'Queens', address: '87-34 118th Street, Richmond Hill, NY 11418', phone: '718-805-3200', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-103', kind: 'pct', name: '103rd Precinct', boro: 'Queens', address: '168-02 91st Ave, Jamaica, NY 11432', phone: '718-657-8181', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-104', kind: 'pct', name: '104th Precinct', boro: 'Queens', address: '64-02 Catalpa Avenue, Queens, NY 11385', phone: '718-386-3004', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-105', kind: 'pct', name: '105th Precinct', boro: 'Queens', address: '92-08 222nd Street, Queens Village, NY 11428', phone: '718-776-9090', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-106', kind: 'pct', name: '106th Precinct', boro: 'Queens', address: '103-53 101st Street, Ozone Park, NY 11417', phone: '718-845-2211', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-107', kind: 'pct', name: '107th Precinct', boro: 'Queens', address: '71-01 Parsons Blvd., Flushing, NY 11365', phone: '718-969-5100', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-108', kind: 'pct', name: '108th Precinct', boro: 'Queens', address: '5-47 50th Ave., Long Island City, NY 11101', phone: '718-784-5411', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-109', kind: 'pct', name: '109th Precinct', boro: 'Queens', address: '37-05 Union Street, Flushing, NY 11354', phone: '718-321-2250', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-110', kind: 'pct', name: '110th Precinct', boro: 'Queens', address: '94-41 43rd Ave., Elmhurst, NY 11373', phone: '718-476-9311', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-111', kind: 'pct', name: '111th Precinct', boro: 'Queens', address: '45-06 215th Street, Bayside, NY 11361', phone: '718-279-5200', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-112', kind: 'pct', name: '112th Precinct', boro: 'Queens', address: '68-40 Austin Street, Forest Hills, NY 11375', phone: '718-520-9311', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-113', kind: 'pct', name: '113th Precinct', boro: 'Queens', address: '167-02 Baisley Blvd., Jamaica, NY 11434', phone: '718-712-7733', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-114', kind: 'pct', name: '114th Precinct', boro: 'Queens', address: '34-16 Astoria Blvd., Queens, NY 11103', phone: '718-626-9311', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-115', kind: 'pct', name: '115th Precinct', boro: 'Queens', address: '92-15 Northern Blvd., Jackson Hgts., NY 11372', phone: '718-533-2002', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-116', kind: 'pct', name: '116th Precinct', boro: 'Queens', address: '244-04 North Conduit Avenue, Queens, NY 11422', phone: '718-610-4500', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-120', kind: 'pct', name: '120th Precinct', boro: 'Staten Island', address: '78 Richmond Terrace, St. George, NY 10301', phone: '718-876-8500', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-121', kind: 'pct', name: '121st Precinct', boro: 'Staten Island', address: '970 Richmond Avenue, Staten Island, NY 10314', phone: '718-697-8700', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-122', kind: 'pct', name: '122nd Precinct', boro: 'Staten Island', address: '2320 Hylan Blvd., New Dorp, NY 10306', phone: '718-667-2211', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'pct-123', kind: 'pct', name: '123rd Precinct', boro: 'Staten Island', address: '116 Main Street, Staten Island, NY 10307', phone: '718-948-9311', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/patrol/precincts-landing.page' },
+      { id: 'psa-1', kind: 'psa', name: 'PSA 1 (Housing)', boro: 'Brooklyn', address: '2860 West 23rd Street, Brooklyn, NY 11224', phone: '718-265-7300', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/transit-housing/police-service-area-1.page' },
+      { id: 'psa-2', kind: 'psa', name: 'PSA 2 (Housing)', boro: 'Brooklyn', address: '560 Sutter Avenue, Brooklyn, NY 11207', phone: '718-922-8001', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/transit-housing/police-service-area-2.page' },
+      { id: 'psa-3', kind: 'psa', name: 'PSA 3 (Housing)', boro: 'Brooklyn', address: '25 Central Avenue, Brooklyn, NY 11206', phone: '718-386-4101', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/transit-housing/police-service-area-3.page' },
+      { id: 'psa-4', kind: 'psa', name: 'PSA 4 (Housing)', boro: 'Manhattan', address: '130 Avenue C, New York, NY 10009', phone: '212-375-9360', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/transit-housing/police-service-area-4.page' },
+      { id: 'psa-5', kind: 'psa', name: 'PSA 5 (Housing)', boro: 'Manhattan', address: '221 East 123rd Street, New York, NY 10035', phone: '212-860-1212', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/transit-housing/police-service-area-5.page' },
+      { id: 'psa-6', kind: 'psa', name: 'PSA 6 (Housing)', boro: 'Manhattan', address: '2770 Frederick Douglass Boulevard, New York, NY 10039', phone: '212-694-7700', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/transit-housing/police-service-area-6.page' },
+      { id: 'psa-7', kind: 'psa', name: 'PSA 7 (Housing)', boro: 'Bronx', address: '737 Melrose Avenue, Bronx, NY 10455', phone: '718-292-6161', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/transit-housing/police-service-area-7.page' },
+      { id: 'psa-8', kind: 'psa', name: 'PSA 8 (Housing)', boro: 'Bronx', address: '2794 Randall Avenue, Bronx, NY 10465', phone: '718-409-1505', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/transit-housing/police-service-area-8.page' },
+      { id: 'psa-9', kind: 'psa', name: 'PSA 9 (Housing)', boro: 'Queens', address: '155-09 Jewel Avenue, Flushing, NY 11367', phone: '718-969-4029', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/transit-housing/police-service-area-9.page' },
+      { id: 'td-1', kind: 'td', name: 'Transit District 1', boro: 'Manhattan', address: '59th Street/Columbus Circle Subway Station, New York, NY 10019', phone: '212-258-2840', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/transit-housing/transit-district-1.page' },
+      { id: 'td-2', kind: 'td', name: 'Transit District 2', boro: 'Manhattan', address: 'Canal Street Subway Station, West Broadway & Lispenard Street, New York, NY', phone: '212-966-5711', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/transit-housing/transit-district-2.page' },
+      { id: 'td-3', kind: 'td', name: 'Transit District 3', boro: 'Manhattan', address: '145th Street & St. Nicholas Avenue Subway Station, New York, NY', phone: '212-281-5303', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/transit-housing/transit-district-3.page' },
+      { id: 'td-4', kind: 'td', name: 'Transit District 4', boro: 'Manhattan', address: 'Union Square Subway Station, 14th Street & Union Square West, New York, NY 10003', phone: '212-253-7511', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/transit-housing/transit-district-4.page' },
+      { id: 'td-11', kind: 'td', name: 'Transit District 11', boro: 'Bronx', address: '161st Street/Yankee Stadium Subway Station, Bronx, NY', phone: '718-293-8311', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/transit-housing/transit-district-11.page' },
+      { id: 'td-12', kind: 'td', name: 'Transit District 12', boro: 'Bronx', address: '460 Morris Park Avenue, Bronx, NY 10460', phone: '718-794-2300', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/transit-housing/transit-district-12.page' },
+      { id: 'td-20', kind: 'td', name: 'Transit District 20', boro: 'Queens', address: 'Briarwood Subway Station, Jamaica, NY 11435', phone: '718-558-5400', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/transit-housing/transit-district-20.page' },
+      { id: 'td-23', kind: 'td', name: 'Transit District 23', boro: 'Queens', address: '222 Beach 116th Street, Rockaway Park, NY 11694', phone: '718-714-8400', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/transit-housing/transit-district-23.page' },
+      { id: 'td-30', kind: 'td', name: 'Transit District 30', boro: 'Brooklyn', address: 'Hoyt-Schermerhorn Streets Subway Station, Brooklyn, NY 11201', phone: '718-797-1785', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/transit-housing/transit-district-30.page' },
+      { id: 'td-32', kind: 'td', name: 'Transit District 32', boro: 'Brooklyn', address: '960 Carroll Street, Brooklyn, NY', phone: '718-221-6600', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/transit-housing/transit-district-32.page' },
+      { id: 'td-33', kind: 'td', name: 'Transit District 33', boro: 'Brooklyn', address: 'Broadway Junction Station, 2399 Fulton Street, Brooklyn, NY 11233', phone: '718-345-4900', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/transit-housing/transit-district-33.page' },
+      { id: 'td-34', kind: 'td', name: 'Transit District 34', boro: 'Brooklyn', address: 'Coney Island-Stillwell Avenue Station, 1243 Surf Avenue, Brooklyn, NY 11224', phone: '718-714-8400', phoneSrc: 'https://www.nyc.gov/site/nypd/bureaus/transit-housing/transit-district-34.page' }
     ],
     // Investigative, specialty and bureau commands (added 2026-11-16). PUBLIC SOURCES ONLY: an address is filled in only where an official or
     // clearly public page prints it; everything else is '' and the app asks the user to type it (it is never guessed or derived).
@@ -1251,6 +1270,476 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       { id: 'transit-bureau', kind: 'boro', name: 'Transit Bureau (HQ)', boro: 'Brooklyn', address: '130 Livingston St., 3rd Fl., Brooklyn, NY 11201', src: 'gb' },
       { id: 'housing-bureau', kind: 'boro', name: 'Housing Bureau (HQ)', boro: 'Manhattan', address: '1 Police Plaza, Room 902C, New York, NY 10038', src: 'gb' },
       { id: 'traffic-ops', kind: 'boro', name: 'Traffic Operations District', boro: 'Manhattan', address: '138 W. 30th St., New York, NY 10001', src: 'gb' }
+    ],
+    // Round 62: names from the public 50-a.org/commands list (names only; no member, tax, or shield data).
+    // Addresses and phones only from official nyc.gov/NYPD pages; otherwise left blank. Never invented.
+    // Domestic Violence Squad entries share the precinct address only when that precinct page lists a DV number.
+    addedCommands: [
+      {"id": "dv-1", "kind": "dv", "name": "1 Precinct Domestic Violence Squad", "boro": "Manhattan", "address": "16 Ericsson Place, New York, NY 10013", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/1st-precinct.page", "phone": "212-334-2609", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/1st-precinct.page", "precinct": "pct-1"},
+      {"id": "dv-5", "kind": "dv", "name": "5 Precinct Domestic Violence Squad", "boro": "Manhattan", "address": "19 Elizabeth Street, New York, NY 10013", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/5th-precinct.page", "phone": "212-334-0738", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/5th-precinct.page", "precinct": "pct-5"},
+      {"id": "dv-6", "kind": "dv", "name": "6 Precinct Domestic Violence Squad", "boro": "Manhattan", "address": "233 West 10th Street, New York, NY 10014", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/6th-precinct.page", "phone": "212-741-4800", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/6th-precinct.page", "precinct": "pct-6"},
+      {"id": "dv-7", "kind": "dv", "name": "7 Precinct Domestic Violence Squad", "boro": "Manhattan", "address": "19 1/2 Pitt Street, New York, NY 10002", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/7th-precinct.page", "phone": "212-477-7155", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/7th-precinct.page", "precinct": "pct-7"},
+      {"id": "dv-9", "kind": "dv", "name": "9 Precinct Domestic Violence Squad", "boro": "Manhattan", "address": "321 East 5 Street, New York, NY 10003", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/9th-precinct.page", "phone": "212-477-7839", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/9th-precinct.page", "precinct": "pct-9"},
+      {"id": "dv-10", "kind": "dv", "name": "10 Precinct Domestic Violence Squad", "boro": "Manhattan", "address": "230 West 20th Street, New York, NY 10011", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/10th-precinct.page", "phone": "212-741-8216", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/10th-precinct.page", "precinct": "pct-10"},
+      {"id": "dv-13", "kind": "dv", "name": "13 Precinct Domestic Violence Squad", "boro": "Manhattan", "address": "230 East 21st Street, New York, NY 10010", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/13th-precinct.page", "phone": "212-477-3863", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/13th-precinct.page", "precinct": "pct-13"},
+      {"id": "dv-17", "kind": "dv", "name": "17 Precinct Domestic Violence Squad", "boro": "Manhattan", "address": "167 East 51st Street, New York, NY 10022", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/17th-precinct.page", "phone": "212-826-3210", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/17th-precinct.page", "precinct": "pct-17"},
+      {"id": "dv-19", "kind": "dv", "name": "19 Precinct Domestic Violence Squad", "boro": "Manhattan", "address": "153 East 67th Street, New York, NY 10065", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/19th-precinct.page", "phone": "212-452-0663", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/19th-precinct.page", "precinct": "pct-19"},
+      {"id": "dv-20", "kind": "dv", "name": "20 Precinct Domestic Violence Squad", "boro": "Manhattan", "address": "120 West 82nd Street, New York, NY 10024", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/20th-precinct.page", "phone": "212-580-6649", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/20th-precinct.page", "precinct": "pct-20"},
+      {"id": "dv-23", "kind": "dv", "name": "23 Precinct Domestic Violence Squad", "boro": "Manhattan", "address": "164 East 102 Street, New York, NY 10029", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/23rd-precinct.page", "phone": "212-860-6435", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/23rd-precinct.page", "precinct": "pct-23"},
+      {"id": "ftu-23", "kind": "ftu", "name": "23 Precinct Field Training Unit", "boro": "Manhattan", "address": "", "precinct": "pct-23"},
+      {"id": "dv-24", "kind": "dv", "name": "24 Precinct Domestic Violence Squad", "boro": "Manhattan", "address": "151 West 100th Street, New York, NY 10025", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/24th-precinct.page", "phone": "212-678-1850", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/24th-precinct.page", "precinct": "pct-24"},
+      {"id": "dv-25", "kind": "dv", "name": "25 Precinct Domestic Violence Squad", "boro": "Manhattan", "address": "120 East 119th Street, New York, NY 10035", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/25th-precinct.page", "phone": "212-860-6527", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/25th-precinct.page", "precinct": "pct-25"},
+      {"id": "ftu-25", "kind": "ftu", "name": "25 Precinct Field Training Unit", "boro": "Manhattan", "address": "", "precinct": "pct-25"},
+      {"id": "dv-26", "kind": "dv", "name": "26 Precinct Domestic Violence Squad", "boro": "Manhattan", "address": "520 West 126th Street, New York, NY 10027", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/26th-precinct.page", "phone": "212-678-1342", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/26th-precinct.page", "precinct": "pct-26"},
+      {"id": "dv-28", "kind": "dv", "name": "28 Precinct Domestic Violence Squad", "boro": "Manhattan", "address": "2271-89 8th Ave., New York, NY 10027", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/28th-precinct.page", "phone": "212-678-1628", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/28th-precinct.page", "precinct": "pct-28"},
+      {"id": "ftu-28", "kind": "ftu", "name": "28 Precinct Field Training Unit", "boro": "Manhattan", "address": "", "precinct": "pct-28"},
+      {"id": "dv-30", "kind": "dv", "name": "30 Precinct Domestic Violence Squad", "boro": "Manhattan", "address": "451 West 151st Street, New York, NY 10031", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/30th-precinct.page", "phone": "212-690-8803", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/30th-precinct.page", "precinct": "pct-30"},
+      {"id": "dv-32", "kind": "dv", "name": "32 Precinct Domestic Violence Squad", "boro": "Manhattan", "address": "250 West 135th Street, New York, NY 10030", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/32nd-precinct.page", "phone": "212-690-6346", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/32nd-precinct.page", "precinct": "pct-32"},
+      {"id": "ftu-32", "kind": "ftu", "name": "32 Precinct Field Training Unit", "boro": "Manhattan", "address": "", "precinct": "pct-32"},
+      {"id": "dv-33", "kind": "dv", "name": "33 Precinct Domestic Violence Squad", "boro": "Manhattan", "address": "2207 Amsterdam Ave., New York, NY 10032", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/33rd-precinct.page", "phone": "212-927-3893", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/33rd-precinct.page", "precinct": "pct-33"},
+      {"id": "dv-34", "kind": "dv", "name": "34 Precinct Domestic Violence Squad", "boro": "Manhattan", "address": "4295 Broadway, New York, NY 10033", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/34th-precinct.page", "phone": "212-927-0821", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/34th-precinct.page", "precinct": "pct-34"},
+      {"id": "ftu-34", "kind": "ftu", "name": "34 Precinct Field Training Unit", "boro": "Manhattan", "address": "", "precinct": "pct-34"},
+      {"id": "dv-40", "kind": "dv", "name": "40 Precinct Domestic Violence Squad", "boro": "Bronx", "address": "567 E 149th Street, Bronx, NY 10455", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/40th-precinct.page", "phone": "718-402-3802", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/40th-precinct.page", "precinct": "pct-40"},
+      {"id": "ftu-40", "kind": "ftu", "name": "40 Precinct Field Training Unit", "boro": "Bronx", "address": "", "precinct": "pct-40"},
+      {"id": "dv-41", "kind": "dv", "name": "41 Precinct Domestic Violence Squad", "boro": "Bronx", "address": "1035 Longwood Ave., Bronx, NY 10459", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/41st-precinct.page", "phone": "718-542-7960", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/41st-precinct.page", "precinct": "pct-41"},
+      {"id": "ftu-41", "kind": "ftu", "name": "41 Precinct Field Training Unit", "boro": "Bronx", "address": "", "precinct": "pct-41"},
+      {"id": "dv-42", "kind": "dv", "name": "42 Precinct Domestic Violence Squad", "boro": "Bronx", "address": "830 Washington Ave., Bronx, NY 10451", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/42nd-precinct.page", "phone": "718-402-5301", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/42nd-precinct.page", "precinct": "pct-42"},
+      {"id": "ftu-42", "kind": "ftu", "name": "42 Precinct Field Training Unit", "boro": "Bronx", "address": "", "precinct": "pct-42"},
+      {"id": "dv-43", "kind": "dv", "name": "43 Precinct Domestic Violence Squad", "boro": "Bronx", "address": "900 Fteley Ave., Bronx, NY 10473", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/43rd-precinct.page", "phone": "718-542-2422", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/43rd-precinct.page", "precinct": "pct-43"},
+      {"id": "ftu-43", "kind": "ftu", "name": "43 Precinct Field Training Unit", "boro": "Bronx", "address": "", "precinct": "pct-43"},
+      {"id": "dv-44", "kind": "dv", "name": "44 Precinct Domestic Violence Squad", "boro": "Bronx", "address": "2 East 169 Street, Bronx, NY 10452", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/44th-precinct.page", "phone": "718-590-5500", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/44th-precinct.page", "precinct": "pct-44"},
+      {"id": "ftu-44", "kind": "ftu", "name": "44 Precinct Field Training Unit", "boro": "Bronx", "address": "", "precinct": "pct-44"},
+      {"id": "dv-45", "kind": "dv", "name": "45 Precinct Domestic Violence Squad", "boro": "Bronx", "address": "2877 Barkley Ave., Bronx, NY 10465", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/45th-precinct.page", "phone": "718-822-5297", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/45th-precinct.page", "precinct": "pct-45"},
+      {"id": "dv-46", "kind": "dv", "name": "46 Precinct Domestic Violence Squad", "boro": "Bronx", "address": "2120 Ryer Ave., Bronx, NY 10457", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/46th-precinct.page", "phone": "718-220-5254", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/46th-precinct.page", "precinct": "pct-46"},
+      {"id": "ftu-46", "kind": "ftu", "name": "46 Precinct Field Training Unit", "boro": "Bronx", "address": "", "precinct": "pct-46"},
+      {"id": "dv-47", "kind": "dv", "name": "47 Precinct Domestic Violence Squad", "boro": "Bronx", "address": "4111 Laconia Avenue, Bronx, NY 10466", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/47th-precinct.page", "phone": "718-920-1205", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/47th-precinct.page", "precinct": "pct-47"},
+      {"id": "ftu-47", "kind": "ftu", "name": "47 Precinct Field Training Unit", "boro": "Bronx", "address": "", "precinct": "pct-47"},
+      {"id": "dv-48", "kind": "dv", "name": "48 Precinct Domestic Violence Squad", "boro": "Bronx", "address": "450 Cross Bronx Expressway, Bronx, NY 10457", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/48th-precinct.page", "phone": "718-299-4755", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/48th-precinct.page", "precinct": "pct-48"},
+      {"id": "ftu-48", "kind": "ftu", "name": "48 Precinct Field Training Unit", "boro": "Bronx", "address": "", "precinct": "pct-48"},
+      {"id": "dv-49", "kind": "dv", "name": "49 Precinct Domestic Violence Squad", "boro": "Bronx", "address": "2121 Eastchester Road, Bronx, NY 10461", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/49th-precinct.page", "phone": "718-918-2030", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/49th-precinct.page", "precinct": "pct-49"},
+      {"id": "ftu-49", "kind": "ftu", "name": "49 Precinct Field Training Unit", "boro": "Bronx", "address": "", "precinct": "pct-49"},
+      {"id": "dv-50", "kind": "dv", "name": "50 Precinct Domestic Violence Squad", "boro": "Bronx", "address": "3450 Kingsbridge Ave., Bronx, NY 10463", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/50th-precinct.page", "phone": "718-543-6072", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/50th-precinct.page", "precinct": "pct-50"},
+      {"id": "dv-52", "kind": "dv", "name": "52 Precinct Domestic Violence Squad", "boro": "Bronx", "address": "3016 Webster Ave., Bronx, NY 10467", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/52nd-precinct.page", "phone": "718-220-5843", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/52nd-precinct.page", "precinct": "pct-52"},
+      {"id": "ftu-52", "kind": "ftu", "name": "52 Precinct Field Training Unit", "boro": "Bronx", "address": "", "precinct": "pct-52"},
+      {"id": "dv-60", "kind": "dv", "name": "60 Precinct Domestic Violence Squad", "boro": "Brooklyn", "address": "2951 West 8th Street, Brooklyn, NY 11224", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/60th-precinct.page", "phone": "718-946-3362", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/60th-precinct.page", "precinct": "pct-60"},
+      {"id": "ftu-60", "kind": "ftu", "name": "60 Precinct Field Training Unit", "boro": "Brooklyn", "address": "", "precinct": "pct-60"},
+      {"id": "dv-61", "kind": "dv", "name": "61 Precinct Domestic Violence Squad", "boro": "Brooklyn", "address": "2575 Coney Island Avenue, Brooklyn, NY 11223", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/61st-precinct.page", "phone": "718-627-6606", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/61st-precinct.page", "precinct": "pct-61"},
+      {"id": "dv-62", "kind": "dv", "name": "62 Precinct Domestic Violence Squad", "boro": "Brooklyn", "address": "1925 Bath Avenue, Brooklyn, NY 11214", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/62nd-precinct.page", "phone": "718-236-2774", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/62nd-precinct.page", "precinct": "pct-62"},
+      {"id": "dv-63", "kind": "dv", "name": "63 Precinct Domestic Violence Squad", "boro": "Brooklyn", "address": "1844 Brooklyn Avenue, Brooklyn, NY 11210", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/63rd-precinct.page", "phone": "718-258-0585", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/63rd-precinct.page", "precinct": "pct-63"},
+      {"id": "dv-66", "kind": "dv", "name": "66 Precinct Domestic Violence Squad", "boro": "Brooklyn", "address": "5822 16th Avenue, Brooklyn, NY 11204", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/66th-precinct.page", "phone": "718-851-5625", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/66th-precinct.page", "precinct": "pct-66"},
+      {"id": "dv-67", "kind": "dv", "name": "67 Precinct Domestic Violence Squad", "boro": "Brooklyn", "address": "2820 Snyder Avenue, Brooklyn, NY 11226", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/67th-precinct.page", "phone": "718-287-3252", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/67th-precinct.page", "precinct": "pct-67"},
+      {"id": "ftu-67", "kind": "ftu", "name": "67 Precinct Field Training Unit", "boro": "Brooklyn", "address": "", "precinct": "pct-67"},
+      {"id": "dv-68", "kind": "dv", "name": "68 Precinct Domestic Violence Squad", "boro": "Brooklyn", "address": "333 65th Street, Brooklyn, NY 11220", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/68th-precinct.page", "phone": "718-439-4217", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/68th-precinct.page", "precinct": "pct-68"},
+      {"id": "dv-69", "kind": "dv", "name": "69 Precinct Domestic Violence Squad", "boro": "Brooklyn", "address": "9720 Foster Avenue, Brooklyn, NY 11236", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/69th-precinct.page", "phone": "718-257-6210", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/69th-precinct.page", "precinct": "pct-69"},
+      {"id": "ftu-69", "kind": "ftu", "name": "69 Precinct Field Training Unit", "boro": "Brooklyn", "address": "", "precinct": "pct-69"},
+      {"id": "dv-70", "kind": "dv", "name": "70 Precinct Domestic Violence Squad", "boro": "Brooklyn", "address": "154 Lawrence Avenue, Brooklyn, NY 11230", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/70th-precinct.page", "phone": "718-851-5569", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/70th-precinct.page", "precinct": "pct-70"},
+      {"id": "ftu-70", "kind": "ftu", "name": "70 Precinct Field Training Unit", "boro": "Brooklyn", "address": "", "precinct": "pct-70"},
+      {"id": "dv-71", "kind": "dv", "name": "71 Precinct Domestic Violence Squad", "boro": "Brooklyn", "address": "421 Empire Boulevard, Brooklyn, NY 11225", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/71st-precinct.page", "phone": "718-735-5704", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/71st-precinct.page", "precinct": "pct-71"},
+      {"id": "ftu-71", "kind": "ftu", "name": "71 Precinct Field Training Unit", "boro": "Brooklyn", "address": "", "precinct": "pct-71"},
+      {"id": "dv-72", "kind": "dv", "name": "72 Precinct Domestic Violence Squad", "boro": "Brooklyn", "address": "830 4th Avenue, Brooklyn, NY 11232", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/72nd-precinct.page", "phone": "718-965-6363", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/72nd-precinct.page", "precinct": "pct-72"},
+      {"id": "dv-73", "kind": "dv", "name": "73 Precinct Domestic Violence Squad", "boro": "Brooklyn", "address": "1470 East New York Avenue, Brooklyn, NY 11212", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/73rd-precinct.page", "phone": "718-495-6205", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/73rd-precinct.page", "precinct": "pct-73"},
+      {"id": "ftu-73", "kind": "ftu", "name": "73 Precinct Field Training Unit", "boro": "Brooklyn", "address": "", "precinct": "pct-73"},
+      {"id": "dv-75", "kind": "dv", "name": "75 Precinct Domestic Violence Squad", "boro": "Brooklyn", "address": "1000 Sutter Avenue, Brooklyn, NY 11208", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/75th-precinct.page", "phone": "718-827-3502", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/75th-precinct.page", "precinct": "pct-75"},
+      {"id": "ftu-75", "kind": "ftu", "name": "75 Precinct Field Training Unit", "boro": "Brooklyn", "address": "", "precinct": "pct-75"},
+      {"id": "dv-76", "kind": "dv", "name": "76 Precinct Domestic Violence Squad", "boro": "Brooklyn", "address": "191 Union Street, Brooklyn, NY 11231", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/76th-precinct.page", "phone": "718-834-3204", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/76th-precinct.page", "precinct": "pct-76"},
+      {"id": "dv-77", "kind": "dv", "name": "77 Precinct Domestic Violence Squad", "boro": "Brooklyn", "address": "127 Utica Avenue, Brooklyn, NY 11213", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/77th-precinct.page", "phone": "718-735-0600", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/77th-precinct.page", "precinct": "pct-77"},
+      {"id": "ftu-77", "kind": "ftu", "name": "77 Precinct Field Training Unit", "boro": "Brooklyn", "address": "", "precinct": "pct-77"},
+      {"id": "dv-78", "kind": "dv", "name": "78 Precinct Domestic Violence Squad", "boro": "Brooklyn", "address": "65 6th Avenue, Brooklyn, NY 11217", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/78th-precinct.page", "phone": "718-636-6424", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/78th-precinct.page", "precinct": "pct-78"},
+      {"id": "dv-79", "kind": "dv", "name": "79 Precinct Domestic Violence Squad", "boro": "Brooklyn", "address": "263 Tompkins Avenue, Brooklyn, NY 11216", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/79th-precinct.page", "phone": "718-636-6624", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/79th-precinct.page", "precinct": "pct-79"},
+      {"id": "ftu-79", "kind": "ftu", "name": "79 Precinct Field Training Unit", "boro": "Brooklyn", "address": "", "precinct": "pct-79"},
+      {"id": "dv-81", "kind": "dv", "name": "81 Precinct Domestic Violence Squad", "boro": "Brooklyn", "address": "30 Ralph Avenue, Brooklyn, NY 11221", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/81st-precinct.page", "phone": "718-574-0407", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/81st-precinct.page", "precinct": "pct-81"},
+      {"id": "ftu-81", "kind": "ftu", "name": "81 Precinct Field Training Unit", "boro": "Brooklyn", "address": "", "precinct": "pct-81"},
+      {"id": "dv-83", "kind": "dv", "name": "83 Precinct Domestic Violence Squad", "boro": "Brooklyn", "address": "480 Knickerbocker Avenue, Brooklyn, NY 11237", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/83rd-precinct.page", "phone": "718-574-1830", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/83rd-precinct.page", "precinct": "pct-83"},
+      {"id": "ftu-83", "kind": "ftu", "name": "83 Precinct Field Training Unit", "boro": "Brooklyn", "address": "", "precinct": "pct-83"},
+      {"id": "dv-84", "kind": "dv", "name": "84 Precinct Domestic Violence Squad", "boro": "Brooklyn", "address": "301 Gold Street, Brooklyn, NY 11201", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/84th-precinct.page", "phone": "718-834-4579", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/84th-precinct.page", "precinct": "pct-84"},
+      {"id": "ftu-84", "kind": "ftu", "name": "84 Precinct Field Training Unit", "boro": "Brooklyn", "address": "", "precinct": "pct-84"},
+      {"id": "dv-88", "kind": "dv", "name": "88 Precinct Domestic Violence Squad", "boro": "Brooklyn", "address": "298 Classon Avenue, Brooklyn, NY 11205", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/88th-precinct.page", "phone": "718-636-6569", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/88th-precinct.page", "precinct": "pct-88"},
+      {"id": "ftu-88", "kind": "ftu", "name": "88 Precinct Field Training Unit", "boro": "Brooklyn", "address": "", "precinct": "pct-88"},
+      {"id": "dv-90", "kind": "dv", "name": "90 Precinct Domestic Violence Squad", "boro": "Brooklyn", "address": "211 Union Avenue, Brooklyn, NY 11211", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/90th-precinct.page", "phone": "718-963-5321", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/90th-precinct.page", "precinct": "pct-90"},
+      {"id": "ftu-90", "kind": "ftu", "name": "90 Precinct Field Training Unit", "boro": "Brooklyn", "address": "", "precinct": "pct-90"},
+      {"id": "dv-94", "kind": "dv", "name": "94 Precinct Domestic Violence Squad", "boro": "Brooklyn", "address": "100 Meserole Avenue, Brooklyn, NY 11222", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/94th-precinct.page", "phone": "718-383-4250", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/94th-precinct.page", "precinct": "pct-94"},
+      {"id": "dv-100", "kind": "dv", "name": "100 Precinct Domestic Violence Squad", "boro": "Queens", "address": "92-24 Rockaway Beach Blvd., Queens, NY 11693", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/100th-precinct.page", "phone": "718-318-4251", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/100th-precinct.page", "precinct": "pct-100"},
+      {"id": "dv-101", "kind": "dv", "name": "101 Precinct Domestic Violence Squad", "boro": "Queens", "address": "16-12 Mott Avenue, Far Rockaway, NY 11691", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/101st-precinct.page", "phone": "718-868-3443", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/101st-precinct.page", "precinct": "pct-101"},
+      {"id": "ftu-101", "kind": "ftu", "name": "101 Precinct Field Training Unit", "boro": "Queens", "address": "", "precinct": "pct-101"},
+      {"id": "dv-102", "kind": "dv", "name": "102 Precinct Domestic Violence Squad", "boro": "Queens", "address": "87-34 118th Street, Richmond Hill, NY 11418", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/102nd-precinct.page", "phone": "718-805-3248", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/102nd-precinct.page", "precinct": "pct-102"},
+      {"id": "dv-103", "kind": "dv", "name": "103 Precinct Domestic Violence Squad", "boro": "Queens", "address": "168-02 91st Ave, Jamaica, NY 11432", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/103rd-precinct.page", "phone": "718-657-8954", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/103rd-precinct.page", "precinct": "pct-103"},
+      {"id": "ftu-103", "kind": "ftu", "name": "103 Precinct Field Training Unit", "boro": "Queens", "address": "", "precinct": "pct-103"},
+      {"id": "dv-104", "kind": "dv", "name": "104 Precinct Domestic Violence Squad", "boro": "Queens", "address": "64-02 Catalpa Avenue, Queens, NY 11385", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/104th-precinct.page", "phone": "718-386-3044", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/104th-precinct.page", "precinct": "pct-104"},
+      {"id": "dv-105", "kind": "dv", "name": "105 Precinct Domestic Violence Squad", "boro": "Queens", "address": "92-08 222nd Street, Queens Village, NY 11428", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/105th-precinct.page", "phone": "718-776-9415", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/105th-precinct.page", "precinct": "pct-105"},
+      {"id": "dv-106", "kind": "dv", "name": "106 Precinct Domestic Violence Squad", "boro": "Queens", "address": "103-53 101st Street, Ozone Park, NY 11417", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/106th-precinct.page", "phone": "718-845-2227", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/106th-precinct.page", "precinct": "pct-106"},
+      {"id": "dv-107", "kind": "dv", "name": "107 Precinct Domestic Violence Squad", "boro": "Queens", "address": "71-01 Parsons Blvd., Flushing, NY 11365", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/107th-precinct.page", "phone": "718-969-9097", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/107th-precinct.page", "precinct": "pct-107"},
+      {"id": "dv-108", "kind": "dv", "name": "108 Precinct Domestic Violence Squad", "boro": "Queens", "address": "5-47 50th Ave., Long Island City, NY 11101", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/108th-precinct.page", "phone": "718-784-5448", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/108th-precinct.page", "precinct": "pct-108"},
+      {"id": "dv-109", "kind": "dv", "name": "109 Precinct Domestic Violence Squad", "boro": "Queens", "address": "37-05 Union Street, Flushing, NY 11354", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/109th-precinct.page", "phone": "718-321-2279", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/109th-precinct.page", "precinct": "pct-109"},
+      {"id": "ftu-109", "kind": "ftu", "name": "109 Precinct Field Training Unit", "boro": "Queens", "address": "", "precinct": "pct-109"},
+      {"id": "dv-110", "kind": "dv", "name": "110 Precinct Domestic Violence Squad", "boro": "Queens", "address": "94-41 43rd Ave., Elmhurst, NY 11373", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/110th-precinct.page", "phone": "718-476-9321", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/110th-precinct.page", "precinct": "pct-110"},
+      {"id": "ftu-110", "kind": "ftu", "name": "110 Precinct Field Training Unit", "boro": "Queens", "address": "", "precinct": "pct-110"},
+      {"id": "dv-111", "kind": "dv", "name": "111 Precinct Domestic Violence Squad", "boro": "Queens", "address": "45-06 215th Street, Bayside, NY 11361", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/111th-precinct.page", "phone": "718-279-5298", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/111th-precinct.page", "precinct": "pct-111"},
+      {"id": "dv-112", "kind": "dv", "name": "112 Precinct Domestic Violence Squad", "boro": "Queens", "address": "68-40 Austin Street, Forest Hills, NY 11375", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/112th-precinct.page", "phone": "718-520-9284", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/112th-precinct.page", "precinct": "pct-112"},
+      {"id": "dv-113", "kind": "dv", "name": "113 Precinct Domestic Violence Squad", "boro": "Queens", "address": "167-02 Baisley Blvd., Jamaica, NY 11434", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/113th-precinct.page", "phone": "718-712-2986", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/113th-precinct.page", "precinct": "pct-113"},
+      {"id": "ftu-113", "kind": "ftu", "name": "113 Precinct Field Training Unit", "boro": "Queens", "address": "", "precinct": "pct-113"},
+      {"id": "dv-114", "kind": "dv", "name": "114 Precinct Domestic Violence Squad", "boro": "Queens", "address": "34-16 Astoria Blvd., Queens, NY 11103", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/114th-precinct.page", "phone": "718-626-9316", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/114th-precinct.page", "precinct": "pct-114"},
+      {"id": "ftu-114", "kind": "ftu", "name": "114 Precinct Field Training Unit", "boro": "Queens", "address": "", "precinct": "pct-114"},
+      {"id": "dv-115", "kind": "dv", "name": "115 Precinct Domestic Violence Squad", "boro": "Queens", "address": "92-15 Northern Blvd., Jackson Hgts., NY 11372", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/115th-precinct.page", "phone": "718-533-2070", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/115th-precinct.page", "precinct": "pct-115"},
+      {"id": "ftu-115", "kind": "ftu", "name": "115 Precinct Field Training Unit", "boro": "Queens", "address": "", "precinct": "pct-115"},
+      {"id": "dv-116", "kind": "dv", "name": "116 Precinct Domestic Violence Squad", "boro": "Queens", "address": "244-04 North Conduit Avenue, Queens, NY 11422", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/116th-precinct.page", "phone": "718-610-4290", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/116th-precinct.page", "precinct": "pct-116"},
+      {"id": "dv-120", "kind": "dv", "name": "120 Precinct Domestic Violence Squad", "boro": "Staten Island", "address": "78 Richmond Terrace, St. George, NY 10301", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/120th-precinct.page", "phone": "718-876-8515", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/120th-precinct.page", "precinct": "pct-120"},
+      {"id": "ftu-120", "kind": "ftu", "name": "120 Precinct Field Training Unit", "boro": "Staten Island", "address": "", "precinct": "pct-120"},
+      {"id": "dv-121", "kind": "dv", "name": "121 Precinct Domestic Violence Squad", "boro": "Staten Island", "address": "970 Richmond Avenue, Staten Island, NY 10314", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/121st-precinct.page", "phone": "718-697-8800", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/121st-precinct.page", "precinct": "pct-121"},
+      {"id": "dv-122", "kind": "dv", "name": "122 Precinct Domestic Violence Squad", "boro": "Staten Island", "address": "2320 Hylan Blvd., New Dorp, NY 10306", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/122nd-precinct.page", "phone": "718-667-2299", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/122nd-precinct.page", "precinct": "pct-122"},
+      {"id": "dv-123", "kind": "dv", "name": "123 Precinct Domestic Violence Squad", "boro": "Staten Island", "address": "116 Main Street, Staten Island, NY 10307", "src": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/123rd-precinct.page", "phone": "718-948-5970", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/123rd-precinct.page", "precinct": "pct-123"},
+      {"id": "administration-division", "kind": "spec", "name": "Administration Division", "boro": "Manhattan", "address": ""},
+      {"id": "arson-and-explosion-squad", "kind": "spec", "name": "Arson and Explosion Squad", "boro": "Manhattan", "address": ""},
+      {"id": "auxiliary-police-section", "kind": "spec", "name": "Auxiliary Police Section", "boro": "Manhattan", "address": ""},
+      {"id": "bh-division", "kind": "spec", "name": "BH Division", "boro": "Manhattan", "address": ""},
+      {"id": "barrier-section", "kind": "spec", "name": "Barrier Section", "boro": "Manhattan", "address": ""},
+      {"id": "bomb-squad", "kind": "spec", "name": "Bomb Squad", "boro": "Manhattan", "address": ""},
+      {"id": "bronx-court-section", "kind": "spec", "name": "Bronx Court Section", "boro": "Bronx", "address": ""},
+      {"id": "bronx-north-auto-larceny-unit", "kind": "spec", "name": "Bronx North Auto Larceny Unit", "boro": "Bronx", "address": ""},
+      {"id": "bronx-north-crime-analysis-unit", "kind": "spec", "name": "Bronx North Crime Analysis Unit", "boro": "Bronx", "address": ""},
+      {"id": "bronx-north-operational-night-watch", "kind": "spec", "name": "Bronx North Operational Night Watch", "boro": "Bronx", "address": ""},
+      {"id": "bronx-robbery-squad", "kind": "spec", "name": "Bronx Robbery Squad", "boro": "Bronx", "address": ""},
+      {"id": "bronx-south-auto-larceny-unit", "kind": "spec", "name": "Bronx South Auto Larceny Unit", "boro": "Bronx", "address": ""},
+      {"id": "bronx-south-community-affairs-section", "kind": "spec", "name": "Bronx South Community Affairs Section", "boro": "Bronx", "address": ""},
+      {"id": "bronx-south-crime-analysis-unit", "kind": "spec", "name": "Bronx South Crime Analysis Unit", "boro": "Bronx", "address": ""},
+      {"id": "bronx-south-operational-night-watch", "kind": "spec", "name": "Bronx South Operational Night Watch", "boro": "Bronx", "address": ""},
+      {"id": "bronx-standards-and-assessment-unit", "kind": "spec", "name": "Bronx Standards and Assessment Unit", "boro": "Bronx", "address": ""},
+      {"id": "bronx-transit-crimes-squad", "kind": "spec", "name": "Bronx Transit Crimes Squad", "boro": "Bronx", "address": ""},
+      {"id": "brooklyn-adult-sex-crimes-squad", "kind": "spec", "name": "Brooklyn Adult Sex Crimes Squad", "boro": "Brooklyn", "address": ""},
+      {"id": "brooklyn-court-section", "kind": "spec", "name": "Brooklyn Court Section", "boro": "Brooklyn", "address": ""},
+      {"id": "brooklyn-north-auto-larceny-unit", "kind": "spec", "name": "Brooklyn North Auto Larceny Unit", "boro": "Brooklyn", "address": ""},
+      {"id": "brooklyn-robbery-squad", "kind": "spec", "name": "Brooklyn Robbery Squad", "boro": "Brooklyn", "address": ""},
+      {"id": "brooklyn-south-auto-larceny-unit", "kind": "spec", "name": "Brooklyn South Auto Larceny Unit", "boro": "Brooklyn", "address": ""},
+      {"id": "brooklyn-standards-and-assessment-unit", "kind": "spec", "name": "Brooklyn Standards and Assessment Unit", "boro": "Brooklyn", "address": ""},
+      {"id": "brooklyn-transit-crimes-squad", "kind": "spec", "name": "Brooklyn Transit Crimes Squad", "boro": "Brooklyn", "address": ""},
+      {"id": "building-maintenance-section", "kind": "spec", "name": "Building Maintenance Section", "boro": "Manhattan", "address": ""},
+      {"id": "ccrb-liaison-unit", "kind": "spec", "name": "CCRB Liaison Unit", "boro": "Manhattan", "address": ""},
+      {"id": "ceis-healthcare-task-force", "kind": "spec", "name": "CEIS Healthcare Task Force", "boro": "Manhattan", "address": ""},
+      {"id": "ceis-joint-violent-crimes-task-force", "kind": "spec", "name": "CEIS Joint Violent Crimes Task Force", "boro": "Manhattan", "address": ""},
+      {"id": "ceis-metro-safe-streets-task-force", "kind": "spec", "name": "CEIS Metro Safe Streets Task Force", "boro": "Manhattan", "address": ""},
+      {"id": "ceis-violent-gang-task-force", "kind": "spec", "name": "CEIS Violent Gang Task Force", "boro": "Manhattan", "address": ""},
+      {"id": "cod-discovery-liaison-unit", "kind": "spec", "name": "COD Discovery Liaison Unit", "boro": "Manhattan", "address": ""},
+      {"id": "cod-quality-of-life-division", "kind": "spec", "name": "COD Quality Of Life Division", "boro": "Manhattan", "address": ""},
+      {"id": "campus-management-section", "kind": "spec", "name": "Campus Management Section", "boro": "Manhattan", "address": ""},
+      {"id": "candidate-assessment-division", "kind": "spec", "name": "Candidate Assessment Division", "boro": "Manhattan", "address": ""},
+      {"id": "central-investigation-and-research-division", "kind": "spec", "name": "Central Investigation and Research Division", "boro": "Manhattan", "address": ""},
+      {"id": "central-records-division", "kind": "spec", "name": "Central Records Division", "boro": "Manhattan", "address": ""},
+      {"id": "chaplains-unit", "kind": "spec", "name": "Chaplains Unit", "boro": "Manhattan", "address": ""},
+      {"id": "cod-investigation-review-section", "kind": "spec", "name": "Chief of Department Investigation Review Section", "boro": "Manhattan", "address": ""},
+      {"id": "cod-office", "kind": "boro", "name": "Chief of Department Office", "boro": "Manhattan", "address": ""},
+      {"id": "cod-strategic-analysis-section", "kind": "spec", "name": "Chief of Department Strategic Analysis Section", "boro": "Manhattan", "address": ""},
+      {"id": "chief-special-operations", "kind": "boro", "name": "Chief of Special Operations", "boro": "Manhattan", "address": ""},
+      {"id": "city-wide-counterterrorism-unit", "kind": "spec", "name": "City Wide Counterterrorism Unit", "boro": "Manhattan", "address": ""},
+      {"id": "citywide-community-response-team", "kind": "spec", "name": "Citywide Community Response Team", "boro": "Manhattan", "address": ""},
+      {"id": "cold-case-squad", "kind": "spec", "name": "Cold Case Squad", "boro": "Manhattan", "address": ""},
+      {"id": "communications-division", "kind": "spec", "name": "Communications Division", "boro": "Manhattan", "address": ""},
+      {"id": "community-affairs-bureau", "kind": "boro", "name": "Community Affairs Bureau", "boro": "Manhattan", "address": ""},
+      {"id": "cab-community-affairs-section", "kind": "spec", "name": "Community Affairs Bureau Community Affairs Section", "boro": "Manhattan", "address": ""},
+      {"id": "cab-community-outreach-division", "kind": "spec", "name": "Community Affairs Bureau Community Outreach Division", "boro": "Manhattan", "address": ""},
+      {"id": "comp-division-body-worn-camera-unit", "kind": "spec", "name": "Comp Division Body Worn Camera Unit", "boro": "Manhattan", "address": ""},
+      {"id": "compliance-section", "kind": "spec", "name": "Compliance Section", "boro": "Manhattan", "address": ""},
+      {"id": "contract-administration-unit", "kind": "spec", "name": "Contract Administration Unit", "boro": "Manhattan", "address": ""},
+      {"id": "counterterrorism-division", "kind": "spec", "name": "Counterterrorism Division", "boro": "Manhattan", "address": ""},
+      {"id": "counterterrorism-lower-manhattan-security-initia", "kind": "spec", "name": "Counterterrorism Lower Manhattan Security Initiative", "boro": "Manhattan", "address": ""},
+      {"id": "court-monitoring-section", "kind": "spec", "name": "Court Monitoring Section", "boro": "Manhattan", "address": ""},
+      {"id": "crime-control-strategies", "kind": "boro", "name": "Crime Control Strategies", "boro": "Manhattan", "address": ""},
+      {"id": "crime-prevention-division", "kind": "spec", "name": "Crime Prevention Division", "boro": "Manhattan", "address": ""},
+      {"id": "crimes-against-persons-unit", "kind": "spec", "name": "Crimes Against Persons Unit", "boro": "Manhattan", "address": ""},
+      {"id": "criminal-intelligence-section", "kind": "spec", "name": "Criminal Intelligence Section", "boro": "Manhattan", "address": ""},
+      {"id": "criminal-justice-bureau", "kind": "boro", "name": "Criminal Justice Bureau", "boro": "Manhattan", "address": ""},
+      {"id": "custodial-services-section", "kind": "spec", "name": "Custodial Services Section", "boro": "Manhattan", "address": ""},
+      {"id": "da-bronx", "kind": "spec", "name": "DA Bronx", "boro": "Bronx", "address": ""},
+      {"id": "da-brooklyn", "kind": "spec", "name": "DA Brooklyn", "boro": "Brooklyn", "address": ""},
+      {"id": "da-new-york", "kind": "spec", "name": "DA New York", "boro": "Manhattan", "address": ""},
+      {"id": "da-queens", "kind": "spec", "name": "DA Queens", "boro": "Queens", "address": ""},
+      {"id": "da-staten-island", "kind": "spec", "name": "DA Staten Island", "boro": "Staten Island", "address": ""},
+      {"id": "db-brooklyn-north-video-collection-team", "kind": "spec", "name": "DB Brooklyn North Video Collection Team", "boro": "Brooklyn", "address": ""},
+      {"id": "db-brooklyn-south-video-collection-team", "kind": "spec", "name": "DB Brooklyn South Video Collection Team", "boro": "Brooklyn", "address": ""},
+      {"id": "db-manhattan-video-collection-team", "kind": "spec", "name": "DB Manhattan Video Collection Team", "boro": "Manhattan", "address": ""},
+      {"id": "db-queens-south-video-collection-team", "kind": "spec", "name": "DB Queens South Video Collection Team", "boro": "Queens", "address": ""},
+      {"id": "db-transit-crimes-unit", "kind": "spec", "name": "DB Transit Crimes Unit", "boro": "Manhattan", "address": ""},
+      {"id": "dea-firearms-task-force", "kind": "spec", "name": "DEA Firearms Task Force", "boro": "Manhattan", "address": ""},
+      {"id": "data-analysis-and-mapping-section", "kind": "spec", "name": "Data Analysis and Mapping Section", "boro": "Manhattan", "address": ""},
+      {"id": "dept-comm-employee-relations", "kind": "spec", "name": "Department Comm Employee Relations", "boro": "Manhattan", "address": ""},
+      {"id": "dept-comm-employee-relations-ceremonial-unit", "kind": "spec", "name": "Department Comm Employee Relations Ceremonial Unit", "boro": "Manhattan", "address": ""},
+      {"id": "dept-comm-intel-and-counterterrorism", "kind": "spec", "name": "Department Comm Intel & Counterterrorism", "boro": "Manhattan", "address": ""},
+      {"id": "department-of-investigation-squad", "kind": "spec", "name": "Department of Investigation Squad", "boro": "Manhattan", "address": ""},
+      {"id": "dc-department-advocate-office", "kind": "boro", "name": "Deputy Commissioner Department Advocate Office", "boro": "Manhattan", "address": ""},
+      {"id": "dc-management-and-budget", "kind": "boro", "name": "Deputy Commissioner Management and Budget", "boro": "Manhattan", "address": ""},
+      {"id": "dc-public-information", "kind": "boro", "name": "Deputy Commissioner of Public Information", "boro": "Manhattan", "address": ""},
+      {"id": "dc-trials", "kind": "boro", "name": "Deputy Commissioner of Trials", "boro": "Manhattan", "address": ""},
+      {"id": "detective-borough-bronx-north", "kind": "boro", "name": "Detective Borough Bronx North", "boro": "Bronx", "address": ""},
+      {"id": "detective-borough-bronx-north-evidence-collectio", "kind": "spec", "name": "Detective Borough Bronx North Evidence Collection Team", "boro": "Bronx", "address": ""},
+      {"id": "detective-borough-bronx-north-homicide-squad", "kind": "spec", "name": "Detective Borough Bronx North Homicide Squad", "boro": "Bronx", "address": ""},
+      {"id": "detective-borough-bronx-north-video-collection-t", "kind": "spec", "name": "Detective Borough Bronx North Video Collection Team", "boro": "Bronx", "address": ""},
+      {"id": "detective-borough-bronx-north-zone-24", "kind": "spec", "name": "Detective Borough Bronx North Zone 24", "boro": "Bronx", "address": ""},
+      {"id": "detective-borough-bronx-south", "kind": "boro", "name": "Detective Borough Bronx South", "boro": "Bronx", "address": ""},
+      {"id": "detective-borough-bronx-south-evidence-collectio", "kind": "spec", "name": "Detective Borough Bronx South Evidence Collection Team", "boro": "Bronx", "address": ""},
+      {"id": "detective-borough-bronx-south-homicide-squad", "kind": "spec", "name": "Detective Borough Bronx South Homicide Squad", "boro": "Bronx", "address": ""},
+      {"id": "detective-borough-bronx-south-video-collection-t", "kind": "spec", "name": "Detective Borough Bronx South Video Collection Team", "boro": "Bronx", "address": ""},
+      {"id": "detective-borough-bronx-south-zone-23", "kind": "spec", "name": "Detective Borough Bronx South Zone 23", "boro": "Bronx", "address": ""},
+      {"id": "detective-borough-brooklyn-north", "kind": "boro", "name": "Detective Borough Brooklyn North", "boro": "Brooklyn", "address": ""},
+      {"id": "detective-borough-brooklyn-north-evidence-collec", "kind": "spec", "name": "Detective Borough Brooklyn North Evidence Collection Team", "boro": "Brooklyn", "address": ""},
+      {"id": "detective-borough-brooklyn-north-operations", "kind": "spec", "name": "Detective Borough Brooklyn North Operations", "boro": "Brooklyn", "address": ""},
+      {"id": "detective-borough-brooklyn-operations", "kind": "spec", "name": "Detective Borough Brooklyn Operations", "boro": "Brooklyn", "address": ""},
+      {"id": "detective-borough-brooklyn-south", "kind": "boro", "name": "Detective Borough Brooklyn South", "boro": "Brooklyn", "address": ""},
+      {"id": "detective-borough-brooklyn-south-evidence-collec", "kind": "spec", "name": "Detective Borough Brooklyn South Evidence Collection Team", "boro": "Brooklyn", "address": ""},
+      {"id": "detective-borough-manhattan-north", "kind": "boro", "name": "Detective Borough Manhattan North", "boro": "Manhattan", "address": ""},
+      {"id": "detective-borough-manhattan-north-evidence-colle", "kind": "spec", "name": "Detective Borough Manhattan North Evidence Collection Team", "boro": "Manhattan", "address": ""},
+      {"id": "detective-borough-manhattan-north-operations", "kind": "spec", "name": "Detective Borough Manhattan North Operations", "boro": "Manhattan", "address": ""},
+      {"id": "detective-borough-manhattan-south", "kind": "boro", "name": "Detective Borough Manhattan South", "boro": "Manhattan", "address": ""},
+      {"id": "detective-borough-manhattan-south-evidence-colle", "kind": "spec", "name": "Detective Borough Manhattan South Evidence Collection Team", "boro": "Manhattan", "address": ""},
+      {"id": "detective-borough-manhattan-south-operations", "kind": "spec", "name": "Detective Borough Manhattan South Operations", "boro": "Manhattan", "address": ""},
+      {"id": "detective-borough-manhattan-zone-1", "kind": "spec", "name": "Detective Borough Manhattan Zone 1", "boro": "Manhattan", "address": ""},
+      {"id": "detective-borough-queens-homicide-squad", "kind": "spec", "name": "Detective Borough Queens Homicide Squad", "boro": "Queens", "address": ""},
+      {"id": "detective-borough-queens-north", "kind": "boro", "name": "Detective Borough Queens North", "boro": "Queens", "address": ""},
+      {"id": "detective-borough-queens-north-evidence-collecti", "kind": "spec", "name": "Detective Borough Queens North Evidence Collection Team", "boro": "Queens", "address": ""},
+      {"id": "detective-borough-queens-north-operations", "kind": "spec", "name": "Detective Borough Queens North Operations", "boro": "Queens", "address": ""},
+      {"id": "detective-borough-queens-south", "kind": "boro", "name": "Detective Borough Queens South", "boro": "Queens", "address": ""},
+      {"id": "detective-borough-queens-south-evidence-collecti", "kind": "spec", "name": "Detective Borough Queens South Evidence Collection Team", "boro": "Queens", "address": ""},
+      {"id": "detective-borough-queens-south-operations", "kind": "spec", "name": "Detective Borough Queens South Operations", "boro": "Queens", "address": ""},
+      {"id": "detective-borough-sid", "kind": "boro", "name": "Detective Borough SID", "boro": "Manhattan", "address": ""},
+      {"id": "detective-borough-staten-island", "kind": "boro", "name": "Detective Borough Staten Island", "boro": "Staten Island", "address": ""},
+      {"id": "detective-borough-staten-island-evidence-collect", "kind": "spec", "name": "Detective Borough Staten Island Evidence Collection Team", "boro": "Staten Island", "address": ""},
+      {"id": "detective-bureau", "kind": "boro", "name": "Detective Bureau", "boro": "Manhattan", "address": ""},
+      {"id": "db-central-robbery-division", "kind": "spec", "name": "Detective Bureau Central Robbery Division", "boro": "Manhattan", "address": ""},
+      {"id": "db-citywide-task-force-division", "kind": "spec", "name": "Detective Bureau Citywide Task Force Division", "boro": "Manhattan", "address": ""},
+      {"id": "db-criminal-enterprise-division", "kind": "spec", "name": "Detective Bureau Criminal Enterprise Division", "boro": "Manhattan", "address": ""},
+      {"id": "dv-db", "kind": "dv", "name": "Detective Bureau Domestic Violence Unit", "boro": "Manhattan", "address": ""},
+      {"id": "db-financial-crimes-task-force", "kind": "spec", "name": "Detective Bureau Financial Crimes Task Force", "boro": "Manhattan", "address": ""},
+      {"id": "db-gender-based-violence-policy-and-training-uni", "kind": "spec", "name": "Detective Bureau Gender-Based Violence Policy & Training Unit", "boro": "Manhattan", "address": ""},
+      {"id": "db-grand-larceny-division", "kind": "spec", "name": "Detective Bureau Grand Larceny Division", "boro": "Manhattan", "address": ""},
+      {"id": "db-latent-print-section", "kind": "spec", "name": "Detective Bureau Latent Print Section", "boro": "Manhattan", "address": ""},
+      {"id": "db-manhattan-north-homicide-squad", "kind": "spec", "name": "Detective Bureau Manhattan North Homicide Squad", "boro": "Manhattan", "address": ""},
+      {"id": "db-manhattan-south-homicide-squad", "kind": "spec", "name": "Detective Bureau Manhattan South Homicide Squad", "boro": "Manhattan", "address": ""},
+      {"id": "db-special-victims-division", "kind": "spec", "name": "Detective Bureau Special Victims Division", "boro": "Manhattan", "address": ""},
+      {"id": "db-staten-island-operations", "kind": "boro", "name": "Detective Bureau Staten Island Operations", "boro": "Staten Island", "address": ""},
+      {"id": "db-transit-special-investigation-squad", "kind": "spec", "name": "Detective Bureau Transit Special Investigation Squad", "boro": "Manhattan", "address": ""},
+      {"id": "disorder-control-unit", "kind": "spec", "name": "Disorder Control Unit", "boro": "Manhattan", "address": ""},
+      {"id": "dv-zone-1", "kind": "dv", "name": "Domestic Violence Unit Zone 1 Manhattan", "boro": "Manhattan", "address": ""},
+      {"id": "dv-zone-2", "kind": "dv", "name": "Domestic Violence Unit Zone 2 Bronx", "boro": "Bronx", "address": ""},
+      {"id": "dv-zone-3", "kind": "dv", "name": "Domestic Violence Unit Zone 3 Brooklyn", "boro": "Brooklyn", "address": ""},
+      {"id": "dv-zone-4", "kind": "dv", "name": "Domestic Violence Unit Zone 4 Queens", "boro": "Queens", "address": ""},
+      {"id": "dv-zone-5", "kind": "dv", "name": "Domestic Violence Unit Zone 5 Staten Island", "boro": "Staten Island", "address": ""},
+      {"id": "driver-education-and-training-unit", "kind": "spec", "name": "Driver Education and Training Unit", "boro": "Manhattan", "address": ""},
+      {"id": "drug-enforcement-task-force", "kind": "spec", "name": "Drug Enforcement Task Force", "boro": "Manhattan", "address": ""},
+      {"id": "emergency-service-unit-canine-team", "kind": "spec", "name": "Emergency Service Unit Canine Team", "boro": "Manhattan", "address": ""},
+      {"id": "emergency-services-unit", "kind": "spec", "name": "Emergency Services Unit", "boro": "Manhattan", "address": ""},
+      {"id": "enterprise-risk-mgmt-early-intervention-unit", "kind": "spec", "name": "Enterprise Risk Mgmt Early Intervention Unit", "boro": "Manhattan", "address": ""},
+      {"id": "enterprise-risk-mgmt-section", "kind": "spec", "name": "Enterprise Risk Mgmt Section", "boro": "Manhattan", "address": ""},
+      {"id": "equipment-section", "kind": "spec", "name": "Equipment Section", "boro": "Manhattan", "address": ""},
+      {"id": "executive-protection-unit", "kind": "spec", "name": "Executive Protection Unit", "boro": "Manhattan", "address": ""},
+      {"id": "extended-leave-services-group", "kind": "spec", "name": "Extended Leave Services Group", "boro": "Manhattan", "address": ""},
+      {"id": "fis-div", "kind": "spec", "name": "FIS DIV", "boro": "Manhattan", "address": ""},
+      {"id": "facilities-management-division", "kind": "spec", "name": "Facilities Management Division", "boro": "Manhattan", "address": ""},
+      {"id": "family-assistance-section", "kind": "spec", "name": "Family Assistance Section", "boro": "Manhattan", "address": ""},
+      {"id": "federal-monitor-liaison-unit", "kind": "spec", "name": "Federal Monitor Liaison Unit", "boro": "Manhattan", "address": ""},
+      {"id": "firearms-suppression-section", "kind": "spec", "name": "Firearms Suppression Section", "boro": "Manhattan", "address": ""},
+      {"id": "firearms-and-tactics-section", "kind": "spec", "name": "Firearms and Tactics Section", "boro": "Manhattan", "address": ""},
+      {"id": "first-deputy-commissioner", "kind": "boro", "name": "First Deputy Commissioner", "boro": "Manhattan", "address": ""},
+      {"id": "fleet-services-division", "kind": "spec", "name": "Fleet Services Division", "boro": "Manhattan", "address": ""},
+      {"id": "force-investigation-division", "kind": "spec", "name": "Force Investigation Division", "boro": "Manhattan", "address": ""},
+      {"id": "forensic-investigations-division", "kind": "spec", "name": "Forensic Investigations Division", "boro": "Manhattan", "address": ""},
+      {"id": "grants-and-budget-division", "kind": "spec", "name": "Grants and Budget Division", "boro": "Manhattan", "address": ""},
+      {"id": "gun-violence-reduction-squad-zone-2", "kind": "spec", "name": "Gun Violence Reduction Squad Zone 2", "boro": "Manhattan", "address": ""},
+      {"id": "gun-violence-suppression-division", "kind": "spec", "name": "Gun Violence Suppression Division", "boro": "Manhattan", "address": ""},
+      {"id": "gun-violence-suppression-division-zone-1", "kind": "spec", "name": "Gun Violence Suppression Division Zone 01", "boro": "Manhattan", "address": ""},
+      {"id": "gun-violence-suppression-division-zone-2", "kind": "spec", "name": "Gun Violence Suppression Division Zone 02", "boro": "Manhattan", "address": ""},
+      {"id": "hate-crimes-task-force", "kind": "spec", "name": "Hate Crimes Task Force", "boro": "Manhattan", "address": ""},
+      {"id": "headquarters-security", "kind": "spec", "name": "Headquarters Security", "boro": "Manhattan", "address": ""},
+      {"id": "health-and-wellness-section", "kind": "spec", "name": "Health and Wellness Section", "boro": "Manhattan", "address": ""},
+      {"id": "highway-ctg", "kind": "spec", "name": "Highway CTG", "boro": "Manhattan", "address": ""},
+      {"id": "highway-criminal-intelligence-section", "kind": "spec", "name": "Highway Criminal Intelligence Section", "boro": "Manhattan", "address": ""},
+      {"id": "highway-sts", "kind": "spec", "name": "Highway STS", "boro": "Manhattan", "address": ""},
+      {"id": "housing-borough-bronx-queens-impact-response-tea", "kind": "spec", "name": "Housing Borough Bronx/Queens Impact Response Team", "boro": "Bronx", "address": ""},
+      {"id": "housing-borough-brooklyn-impact-response-team", "kind": "spec", "name": "Housing Borough Brooklyn Impact Response Team", "boro": "Brooklyn", "address": ""},
+      {"id": "housing-borough-manhattan-impact-response-team", "kind": "spec", "name": "Housing Borough Manhattan Impact Response Team", "boro": "Manhattan", "address": ""},
+      {"id": "housing-bronx-queens", "kind": "spec", "name": "Housing Bronx/Queens", "boro": "Bronx", "address": ""},
+      {"id": "housing-brooklyn", "kind": "spec", "name": "Housing Brooklyn", "boro": "Brooklyn", "address": ""},
+      {"id": "housing-community-affairs-section", "kind": "spec", "name": "Housing Community Affairs Section", "boro": "Manhattan", "address": ""},
+      {"id": "housing-manhattan", "kind": "spec", "name": "Housing Manhattan", "boro": "Manhattan", "address": ""},
+      {"id": "housing-special-operations-section", "kind": "spec", "name": "Housing Special Operations Section", "boro": "Manhattan", "address": ""},
+      {"id": "human-resources-division", "kind": "spec", "name": "Human Resources Division", "boro": "Manhattan", "address": ""},
+      {"id": "ins-trn", "kind": "spec", "name": "INS TRN", "boro": "Manhattan", "address": ""},
+      {"id": "information-security-office", "kind": "spec", "name": "Information Security Office", "boro": "Manhattan", "address": ""},
+      {"id": "information-technology-services-division", "kind": "spec", "name": "Information Technology Services Division", "boro": "Manhattan", "address": ""},
+      {"id": "intel-municipal-security-section", "kind": "spec", "name": "Intel-Municipal Security Section", "boro": "Manhattan", "address": ""},
+      {"id": "intelligence-bureau-uniformed-operations-unit", "kind": "spec", "name": "Intelligence Bureau Uniformed Operations Unit", "boro": "Manhattan", "address": ""},
+      {"id": "intelligence-division", "kind": "spec", "name": "Intelligence Division", "boro": "Manhattan", "address": ""},
+      {"id": "intelligence-operations-and-analysis-section", "kind": "spec", "name": "Intelligence Operations and Analysis Section", "boro": "Manhattan", "address": ""},
+      {"id": "intelligence-public-security-section", "kind": "spec", "name": "Intelligence Public Security Section", "boro": "Manhattan", "address": ""},
+      {"id": "internal-affairs-bureau", "kind": "boro", "name": "Internal Affairs Bureau", "boro": "Manhattan", "address": ""},
+      {"id": "joint-terrorism-task-force", "kind": "spec", "name": "Joint Terrorism Task Force", "boro": "Manhattan", "address": ""},
+      {"id": "juvenile-crime-section", "kind": "spec", "name": "Juvenile Crime Section", "boro": "Manhattan", "address": ""},
+      {"id": "laguardia-task-force", "kind": "spec", "name": "LaGuardia Task Force", "boro": "Manhattan", "address": ""},
+      {"id": "leadership-training-section", "kind": "spec", "name": "Leadership Training Section", "boro": "Manhattan", "address": ""},
+      {"id": "legal-bureau", "kind": "boro", "name": "Legal Bureau", "boro": "Manhattan", "address": ""},
+      {"id": "license-division", "kind": "spec", "name": "License Division", "boro": "Manhattan", "address": ""},
+      {"id": "life-safety-systems-division", "kind": "spec", "name": "Life Safety Systems Division", "boro": "Manhattan", "address": ""},
+      {"id": "mods", "kind": "spec", "name": "MODS", "boro": "Manhattan", "address": ""},
+      {"id": "manhattan-adult-sex-crimes-squad", "kind": "spec", "name": "Manhattan Adult Sex Crimes Squad", "boro": "Manhattan", "address": ""},
+      {"id": "manhattan-court-section", "kind": "spec", "name": "Manhattan Court Section", "boro": "Manhattan", "address": ""},
+      {"id": "dv-manhattan-north", "kind": "dv", "name": "Manhattan North Domestic Violence Squad", "boro": "Manhattan", "address": ""},
+      {"id": "manhattan-robbery-squad", "kind": "spec", "name": "Manhattan Robbery Squad", "boro": "Manhattan", "address": ""},
+      {"id": "dv-manhattan-south", "kind": "dv", "name": "Manhattan South Domestic Violence Squad", "boro": "Manhattan", "address": ""},
+      {"id": "manhattan-south-transit-district-unit", "kind": "spec", "name": "Manhattan South Transit District Unit", "boro": "Manhattan", "address": ""},
+      {"id": "manhattan-standards-and-assessment-unit", "kind": "spec", "name": "Manhattan Standards and Assessment Unit", "boro": "Manhattan", "address": ""},
+      {"id": "manhattan-transit-crimes-squad", "kind": "spec", "name": "Manhattan Transit Crimes Squad", "boro": "Manhattan", "address": ""},
+      {"id": "medical-division", "kind": "spec", "name": "Medical Division", "boro": "Manhattan", "address": ""},
+      {"id": "military-and-extended-leave-desk", "kind": "spec", "name": "Military and Extended Leave Desk", "boro": "Manhattan", "address": ""},
+      {"id": "missing-persons-squad", "kind": "spec", "name": "Missing Persons Squad", "boro": "Manhattan", "address": ""},
+      {"id": "narcotics-borough-bronx-north", "kind": "spec", "name": "Narcotics Borough Bronx North", "boro": "Bronx", "address": ""},
+      {"id": "narcotics-borough-bronx-north-major-case-unit", "kind": "spec", "name": "Narcotics Borough Bronx North Major Case Unit", "boro": "Bronx", "address": ""},
+      {"id": "narcotics-borough-bronx-south", "kind": "spec", "name": "Narcotics Borough Bronx South", "boro": "Bronx", "address": ""},
+      {"id": "narcotics-borough-bronx-south-major-case-unit", "kind": "spec", "name": "Narcotics Borough Bronx South Major Case Unit", "boro": "Bronx", "address": ""},
+      {"id": "narcotics-section", "kind": "spec", "name": "Narcotics Section", "boro": "Manhattan", "address": ""},
+      {"id": "off-db", "kind": "spec", "name": "OFF DB", "boro": "Manhattan", "address": ""},
+      {"id": "ofscsrg", "kind": "spec", "name": "OFSCSRG", "boro": "Manhattan", "address": ""},
+      {"id": "ops-emergency-prep-and-exercise", "kind": "spec", "name": "OPS Emergency Prep and Exercise", "boro": "Manhattan", "address": ""},
+      {"id": "ops-tactical-support-unit", "kind": "spec", "name": "OPS Tactical Support Unit", "boro": "Manhattan", "address": ""},
+      {"id": "ops-unit", "kind": "spec", "name": "OPS Unit", "boro": "Manhattan", "address": ""},
+      {"id": "office-equal-employment-opportunity", "kind": "spec", "name": "Office Equal Employment Opportunity", "boro": "Manhattan", "address": ""},
+      {"id": "office-of-the-chief-of-patrol", "kind": "boro", "name": "Office Of The Chief Of Patrol", "boro": "Manhattan", "address": ""},
+      {"id": "office-of-equity-and-inclusion", "kind": "spec", "name": "Office of Equity and Inclusion", "boro": "Manhattan", "address": ""},
+      {"id": "office-of-information-technology", "kind": "spec", "name": "Office of Information Technology", "boro": "Manhattan", "address": ""},
+      {"id": "office-of-labor-relations", "kind": "spec", "name": "Office of Labor Relations", "boro": "Manhattan", "address": ""},
+      {"id": "office-of-management-analysis-and-planning", "kind": "spec", "name": "Office of Management Analysis and Planning", "boro": "Manhattan", "address": ""},
+      {"id": "office-of-professional-development", "kind": "spec", "name": "Office of Professional Development", "boro": "Manhattan", "address": ""},
+      {"id": "operations-division", "kind": "spec", "name": "Operations Division", "boro": "Manhattan", "address": ""},
+      {"id": "organized-crime-drug-enforcement-strike-force", "kind": "spec", "name": "Organized Crime Drug Enforcement Strike Force", "boro": "Manhattan", "address": ""},
+      {"id": "organized-crime-investigation-division", "kind": "spec", "name": "Organized Crime Investigation Division", "boro": "Manhattan", "address": ""},
+      {"id": "paid-detail-unit", "kind": "spec", "name": "Paid Detail Unit", "boro": "Manhattan", "address": ""},
+      {"id": "patrol-borough-bronx", "kind": "spec", "name": "Patrol Borough Bronx", "boro": "Bronx", "address": ""},
+      {"id": "patrol-borough-bronx-north-bronx-zoo-detail", "kind": "spec", "name": "Patrol Borough Bronx North Bronx Zoo Detail", "boro": "Bronx", "address": ""},
+      {"id": "patrol-borough-bronx-north-community-affairs-sec", "kind": "spec", "name": "Patrol Borough Bronx North Community Affairs Section", "boro": "Bronx", "address": ""},
+      {"id": "patrol-borough-bronx-north-community-response-te", "kind": "spec", "name": "Patrol Borough Bronx North Community Response Team", "boro": "Bronx", "address": ""},
+      {"id": "patrol-borough-bronx-north-neighborhood-safety-t", "kind": "spec", "name": "Patrol Borough Bronx North Neighborhood Safety Team", "boro": "Bronx", "address": ""},
+      {"id": "patrol-borough-bronx-north-specialized-units", "kind": "spec", "name": "Patrol Borough Bronx North Specialized Units", "boro": "Bronx", "address": ""},
+      {"id": "patrol-borough-bronx-south-community-response-te", "kind": "spec", "name": "Patrol Borough Bronx South Community Response Team", "boro": "Bronx", "address": ""},
+      {"id": "patrol-borough-bronx-south-court-team", "kind": "spec", "name": "Patrol Borough Bronx South Court Team", "boro": "Bronx", "address": ""},
+      {"id": "patrol-borough-bronx-south-specialized-units", "kind": "spec", "name": "Patrol Borough Bronx South Specialized Units", "boro": "Bronx", "address": ""},
+      {"id": "patrol-borough-bronx-specialized-units", "kind": "spec", "name": "Patrol Borough Bronx Specialized Units", "boro": "Bronx", "address": ""},
+      {"id": "patrol-borough-brooklyn-north-community-affairs", "kind": "spec", "name": "Patrol Borough Brooklyn North Community Affairs Section", "boro": "Brooklyn", "address": ""},
+      {"id": "patrol-borough-brooklyn-north-community-response", "kind": "spec", "name": "Patrol Borough Brooklyn North Community Response Team", "boro": "Brooklyn", "address": ""},
+      {"id": "patrol-borough-brooklyn-north-north-neighborhood", "kind": "spec", "name": "Patrol Borough Brooklyn North North Neighborhood Safety Team", "boro": "Brooklyn", "address": ""},
+      {"id": "patrol-borough-brooklyn-north-specialized-units", "kind": "spec", "name": "Patrol Borough Brooklyn North Specialized Units", "boro": "Brooklyn", "address": ""},
+      {"id": "patrol-borough-brooklyn-south-community-affairs", "kind": "spec", "name": "Patrol Borough Brooklyn South Community Affairs Section", "boro": "Brooklyn", "address": ""},
+      {"id": "patrol-borough-brooklyn-south-community-response", "kind": "spec", "name": "Patrol Borough Brooklyn South Community Response Team", "boro": "Brooklyn", "address": ""},
+      {"id": "patrol-borough-brooklyn-south-south-neighborhood", "kind": "spec", "name": "Patrol Borough Brooklyn South South Neighborhood Safety Team", "boro": "Brooklyn", "address": ""},
+      {"id": "patrol-borough-manhattan-north-community-affairs", "kind": "spec", "name": "Patrol Borough Manhattan North Community Affairs Section", "boro": "Manhattan", "address": ""},
+      {"id": "patrol-borough-manhattan-north-community-respons", "kind": "spec", "name": "Patrol Borough Manhattan North Community Response Team", "boro": "Manhattan", "address": ""},
+      {"id": "patrol-borough-manhattan-north-neighborhood-safe", "kind": "spec", "name": "Patrol Borough Manhattan North Neighborhood Safety Team", "boro": "Manhattan", "address": ""},
+      {"id": "patrol-borough-manhattan-north-specialized-units", "kind": "spec", "name": "Patrol Borough Manhattan North Specialized Units", "boro": "Manhattan", "address": ""},
+      {"id": "patrol-borough-manhattan-south-community-affairs", "kind": "spec", "name": "Patrol Borough Manhattan South Community Affairs Section", "boro": "Manhattan", "address": ""},
+      {"id": "patrol-borough-manhattan-south-community-respons", "kind": "spec", "name": "Patrol Borough Manhattan South Community Response Team", "boro": "Manhattan", "address": ""},
+      {"id": "patrol-borough-manhattan-south-neighborhood-safe", "kind": "spec", "name": "Patrol Borough Manhattan South Neighborhood Safety Team", "boro": "Manhattan", "address": ""},
+      {"id": "patrol-borough-manhattan-south-specialized-units", "kind": "spec", "name": "Patrol Borough Manhattan South Specialized Units", "boro": "Manhattan", "address": ""},
+      {"id": "patrol-borough-queens-north-community-affairs-se", "kind": "spec", "name": "Patrol Borough Queens North Community Affairs Section", "boro": "Queens", "address": ""},
+      {"id": "patrol-borough-queens-north-community-response-t", "kind": "spec", "name": "Patrol Borough Queens North Community Response Team", "boro": "Queens", "address": ""},
+      {"id": "patrol-borough-queens-north-neighborhood-safety", "kind": "spec", "name": "Patrol Borough Queens North Neighborhood Safety Team", "boro": "Queens", "address": ""},
+      {"id": "patrol-borough-queens-north-residential-burglary", "kind": "spec", "name": "Patrol Borough Queens North Residential Burglary Task Force", "boro": "Queens", "address": ""},
+      {"id": "patrol-borough-queens-north-specialized-units", "kind": "spec", "name": "Patrol Borough Queens North Specialized Units", "boro": "Queens", "address": ""},
+      {"id": "patrol-borough-queens-south-community-affairs-se", "kind": "spec", "name": "Patrol Borough Queens South Community Affairs Section", "boro": "Queens", "address": ""},
+      {"id": "patrol-borough-queens-south-community-response-t", "kind": "spec", "name": "Patrol Borough Queens South Community Response Team", "boro": "Queens", "address": ""},
+      {"id": "patrol-borough-queens-south-neighborhood-safety", "kind": "spec", "name": "Patrol Borough Queens South Neighborhood Safety Team", "boro": "Queens", "address": ""},
+      {"id": "patrol-borough-queens-south-specialized-units", "kind": "spec", "name": "Patrol Borough Queens South Specialized Units", "boro": "Queens", "address": ""},
+      {"id": "patrol-borough-staten-island-community-affairs-s", "kind": "spec", "name": "Patrol Borough Staten Island Community Affairs Section", "boro": "Staten Island", "address": ""},
+      {"id": "patrol-borough-staten-island-community-response", "kind": "spec", "name": "Patrol Borough Staten Island Community Response Team", "boro": "Staten Island", "address": ""},
+      {"id": "patrol-borough-staten-island-neighborhood-safety", "kind": "spec", "name": "Patrol Borough Staten Island Neighborhood Safety Team", "boro": "Staten Island", "address": ""},
+      {"id": "patrol-service-bureau-community-response-team", "kind": "spec", "name": "Patrol Service Bureau Community Response Team", "boro": "Manhattan", "address": ""},
+      {"id": "patrol-services-bureau", "kind": "boro", "name": "Patrol Services Bureau", "boro": "Manhattan", "address": ""},
+      {"id": "patrol-services-bureau-movie-and-t-v-unit", "kind": "spec", "name": "Patrol Services Bureau Movie and T.V. Unit", "boro": "Manhattan", "address": ""},
+      {"id": "performance-analysis-unit", "kind": "spec", "name": "Performance Analysis Unit", "boro": "Manhattan", "address": ""},
+      {"id": "personnel-bureau", "kind": "boro", "name": "Personnel Bureau", "boro": "Manhattan", "address": ""},
+      {"id": "photo-unit", "kind": "spec", "name": "Photo Unit", "boro": "Manhattan", "address": ""},
+      {"id": "police-academy-payroll-and-roll-call", "kind": "spec", "name": "Police Academy Payroll and Roll Call", "boro": "Manhattan", "address": ""},
+      {"id": "police-cadet-corps-unit", "kind": "spec", "name": "Police Cadet Corps Unit", "boro": "Manhattan", "address": ""},
+      {"id": "police-commissioner-office", "kind": "spec", "name": "Police Commissioner Office", "boro": "Manhattan", "address": ""},
+      {"id": "police-laboratory", "kind": "spec", "name": "Police Laboratory", "boro": "Manhattan", "address": ""},
+      {"id": "police-pension-fund", "kind": "spec", "name": "Police Pension Fund", "boro": "Manhattan", "address": ""},
+      {"id": "ftu-psa-1", "kind": "ftu", "name": "PSA 1 Field Training Unit", "boro": "Brooklyn", "address": "", "precinct": "psa-1"},
+      {"id": "viper-psa-1", "kind": "viper", "name": "Police Service Area 1 VIPER", "boro": "Brooklyn", "address": "", "precinct": "psa-1"},
+      {"id": "ftu-psa-2", "kind": "ftu", "name": "PSA 2 Field Training Unit", "boro": "Brooklyn", "address": "", "precinct": "psa-2"},
+      {"id": "viper-psa-2", "kind": "viper", "name": "Police Service Area 2 VIPER", "boro": "Brooklyn", "address": "", "precinct": "psa-2"},
+      {"id": "ftu-psa-3", "kind": "ftu", "name": "PSA 3 Field Training Unit", "boro": "Brooklyn", "address": "", "precinct": "psa-3"},
+      {"id": "viper-psa-4", "kind": "viper", "name": "Police Service Area 4 VIPER", "boro": "Manhattan", "address": "", "precinct": "psa-4"},
+      {"id": "ftu-psa-5", "kind": "ftu", "name": "PSA 5 Field Training Unit", "boro": "Manhattan", "address": "", "precinct": "psa-5"},
+      {"id": "viper-psa-5", "kind": "viper", "name": "Police Service Area 5 VIPER", "boro": "Manhattan", "address": "", "precinct": "psa-5"},
+      {"id": "ftu-psa-6", "kind": "ftu", "name": "PSA 6 Field Training Unit", "boro": "Manhattan", "address": "", "precinct": "psa-6"},
+      {"id": "viper-psa-6", "kind": "viper", "name": "Police Service Area 6 VIPER", "boro": "Manhattan", "address": "", "precinct": "psa-6"},
+      {"id": "ftu-psa-7", "kind": "ftu", "name": "PSA 7 Field Training Unit", "boro": "Bronx", "address": "", "precinct": "psa-7"},
+      {"id": "viper-psa-7", "kind": "viper", "name": "Police Service Area 7 VIPER", "boro": "Bronx", "address": "", "precinct": "psa-7"},
+      {"id": "ftu-psa-8", "kind": "ftu", "name": "PSA 8 Field Training Unit", "boro": "Bronx", "address": "", "precinct": "psa-8"},
+      {"id": "viper-psa-8", "kind": "viper", "name": "Police Service Area 8 VIPER", "boro": "Bronx", "address": "", "precinct": "psa-8"},
+      {"id": "ftu-psa-9", "kind": "ftu", "name": "PSA 9 Field Training Unit", "boro": "Queens", "address": "", "precinct": "psa-9"},
+      {"id": "viper-psa-9", "kind": "viper", "name": "Police Service Area 9 VIPER", "boro": "Queens", "address": "", "precinct": "psa-9"},
+      {"id": "printing-section", "kind": "spec", "name": "Printing Section", "boro": "Manhattan", "address": ""},
+      {"id": "professional-standards-bureau", "kind": "boro", "name": "Professional Standards Bureau", "boro": "Manhattan", "address": ""},
+      {"id": "property-clerk-division", "kind": "spec", "name": "Property Clerk Division", "boro": "Manhattan", "address": ""},
+      {"id": "protective-services-section-da-protection-unit-b", "kind": "spec", "name": "Protective Services Section DA Protection Unit Bronx", "boro": "Bronx", "address": ""},
+      {"id": "protective-services-section-da-protection-unit-n", "kind": "spec", "name": "Protective Services Section DA Protection Unit New York", "boro": "Manhattan", "address": ""},
+      {"id": "protective-services-section-da-protection-unit-q", "kind": "spec", "name": "Protective Services Section DA Protection Unit Queens", "boro": "Queens", "address": ""},
+      {"id": "protective-services-section-da-protection-unit-s", "kind": "spec", "name": "Protective Services Section DA Protection Unit Staten Island", "boro": "Staten Island", "address": ""},
+      {"id": "public-safety-answering-center-i-security", "kind": "spec", "name": "Public Safety Answering Center I Security", "boro": "Manhattan", "address": ""},
+      {"id": "quality-assurance-division", "kind": "spec", "name": "Quality Assurance Division", "boro": "Manhattan", "address": ""},
+      {"id": "quartermaster-section", "kind": "spec", "name": "Quartermaster Section", "boro": "Manhattan", "address": ""},
+      {"id": "queens-adult-sex-crimes-squad", "kind": "spec", "name": "Queens Adult Sex Crimes Squad", "boro": "Queens", "address": ""},
+      {"id": "queens-court-section", "kind": "spec", "name": "Queens Court Section", "boro": "Queens", "address": ""},
+      {"id": "queens-robbery-squad", "kind": "spec", "name": "Queens Robbery Squad", "boro": "Queens", "address": ""},
+      {"id": "queens-south-auto-larceny-unit", "kind": "spec", "name": "Queens South Auto Larceny Unit", "boro": "Queens", "address": ""},
+      {"id": "queens-standards-and-assessment-unit", "kind": "spec", "name": "Queens Standards and Assessment Unit", "boro": "Queens", "address": ""},
+      {"id": "queens-transit-crimes-squad", "kind": "spec", "name": "Queens Transit Crimes Squad", "boro": "Queens", "address": ""},
+      {"id": "real-time-crime-center", "kind": "spec", "name": "Real Time Crime Center", "boro": "Manhattan", "address": ""},
+      {"id": "recruit-training-section", "kind": "spec", "name": "Recruit Training Section", "boro": "Manhattan", "address": ""},
+      {"id": "recruitment-section", "kind": "spec", "name": "Recruitment Section", "boro": "Manhattan", "address": ""},
+      {"id": "school-safety-division", "kind": "spec", "name": "School Safety Division", "boro": "Manhattan", "address": ""},
+      {"id": "school-safety-division-youth-response-team", "kind": "spec", "name": "School Safety Division Youth Response Team", "boro": "Manhattan", "address": ""},
+      {"id": "special-candidate-assessment-team", "kind": "spec", "name": "Special Candidate Assessment Team", "boro": "Manhattan", "address": ""},
+      {"id": "special-fraud-squad", "kind": "spec", "name": "Special Fraud Squad", "boro": "Manhattan", "address": ""},
+      {"id": "special-investigations-unit", "kind": "spec", "name": "Special Investigations Unit", "boro": "Manhattan", "address": ""},
+      {"id": "special-narcotics-prosecutor", "kind": "spec", "name": "Special Narcotics Prosecutor", "boro": "Manhattan", "address": ""},
+      {"id": "special-victims-division-zone-1", "kind": "spec", "name": "Special Victims Division Zone 1", "boro": "Manhattan", "address": ""},
+      {"id": "special-victims-division-zone-3", "kind": "spec", "name": "Special Victims Division Zone 3", "boro": "Manhattan", "address": ""},
+      {"id": "special-victims-unit", "kind": "spec", "name": "Special Victims Unit", "boro": "Manhattan", "address": ""},
+      {"id": "standards-and-assessments-section", "kind": "spec", "name": "Standards & Assessments Section", "boro": "Manhattan", "address": ""},
+      {"id": "staten-island-auto-larceny-unit", "kind": "spec", "name": "Staten Island Auto Larceny Unit", "boro": "Staten Island", "address": ""},
+      {"id": "staten-island-court-section", "kind": "spec", "name": "Staten Island Court Section", "boro": "Staten Island", "address": ""},
+      {"id": "staten-island-standards-and-assessment-unit", "kind": "spec", "name": "Staten Island Standards and Assessment Unit", "boro": "Staten Island", "address": ""},
+      {"id": "strategic-initiatives-bureau", "kind": "boro", "name": "Strategic Initiatives Bureau", "boro": "Manhattan", "address": ""},
+      {"id": "strategic-pattern-armed-robbery-technical-appreh", "kind": "spec", "name": "Strategic Pattern Armed Robbery Technical Apprehension", "boro": "Manhattan", "address": ""},
+      {"id": "strategic-response-group", "kind": "spec", "name": "Strategic Response Group", "boro": "Manhattan", "address": ""},
+      {"id": "srg-x-crowd-management-unit", "kind": "spec", "name": "Strategic Response Group Crowd Management Unit", "boro": "Manhattan", "address": ""},
+      {"id": "strategic-technology-division", "kind": "spec", "name": "Strategic Technology Division", "boro": "Manhattan", "address": ""},
+      {"id": "support-services-bureau", "kind": "boro", "name": "Support Services Bureau", "boro": "Manhattan", "address": ""},
+      {"id": "technical-assistance-and-response-unit", "kind": "spec", "name": "Technical Assistance and Response Unit", "boro": "Manhattan", "address": ""},
+      {"id": "telephone-analysis-squad", "kind": "spec", "name": "Telephone Analysis Squad", "boro": "Manhattan", "address": ""},
+      {"id": "ftu-times-square", "kind": "ftu", "name": "Times Square Field Training Unit", "boro": "Manhattan", "address": ""},
+      {"id": "training-bureau", "kind": "boro", "name": "Training Bureau", "boro": "Manhattan", "address": ""},
+      {"id": "training-support-section", "kind": "spec", "name": "Training Support Section", "boro": "Manhattan", "address": ""},
+      {"id": "transit-authority-liaison", "kind": "spec", "name": "Transit Authority Liaison", "boro": "Manhattan", "address": ""},
+      {"id": "transit-anti-terrorism-unit", "kind": "spec", "name": "Transit Bureau Anti-Terrorism Unit", "boro": "Manhattan", "address": ""},
+      {"id": "transit-bronx-queens", "kind": "boro", "name": "Transit Bureau Bronx/Queens", "boro": "Bronx", "address": ""},
+      {"id": "transit-brooklyn", "kind": "boro", "name": "Transit Bureau Brooklyn", "boro": "Brooklyn", "address": ""},
+      {"id": "transit-brooklyn-task-force", "kind": "spec", "name": "Transit Bureau Brooklyn Task Force", "boro": "Brooklyn", "address": ""},
+      {"id": "transit-bus-enforcement-unit", "kind": "spec", "name": "Transit Bureau Bus Enforcement Unit", "boro": "Manhattan", "address": ""},
+      {"id": "transit-canine-unit", "kind": "spec", "name": "Transit Bureau Canine Unit", "boro": "Manhattan", "address": ""},
+      {"id": "transit-citywide-vandals-task-force", "kind": "spec", "name": "Transit Bureau Citywide Vandals Task Force", "boro": "Manhattan", "address": ""},
+      {"id": "transit-manhattan", "kind": "boro", "name": "Transit Bureau Manhattan", "boro": "Manhattan", "address": ""},
+      {"id": "transit-manhattan-task-force", "kind": "spec", "name": "Transit Bureau Manhattan Task Force", "boro": "Manhattan", "address": ""},
+      {"id": "transit-special-operations-district", "kind": "boro", "name": "Transit Bureau Special Operations District", "boro": "Manhattan", "address": ""},
+      {"id": "transit-subway-safety-task-force", "kind": "spec", "name": "Transit Bureau Subway Safety Task Force", "boro": "Manhattan", "address": ""},
+      {"id": "transit-larceny-unit", "kind": "spec", "name": "Transit Larceny Unit", "boro": "Manhattan", "address": ""},
+      {"id": "transit-standards-and-assessment-unit", "kind": "spec", "name": "Transit Standards and Assessment Unit", "boro": "Manhattan", "address": ""},
+      {"id": "transportation-bureau", "kind": "boro", "name": "Transportation Bureau", "boro": "Manhattan", "address": ""},
+      {"id": "tb-citywide-traffic", "kind": "boro", "name": "Transportation Bureau Citywide Traffic", "boro": "Manhattan", "address": ""},
+      {"id": "tb-traffic-enforcement-district", "kind": "boro", "name": "Transportation Bureau Traffic Enforcement District", "boro": "Manhattan", "address": ""},
+      {"id": "uniformed-promotions-training-unit", "kind": "spec", "name": "Uniformed Promotions Training Unit", "boro": "Manhattan", "address": ""},
+      {"id": "vice-enforcement", "kind": "spec", "name": "Vice Enforcement", "boro": "Manhattan", "address": ""},
+      {"id": "vice-enforcement-squad-zone-1", "kind": "spec", "name": "Vice Enforcement Squad Zone 1", "boro": "Manhattan", "address": ""},
+      {"id": "vice-enforcement-squad-zone-2", "kind": "spec", "name": "Vice Enforcement Squad Zone 2", "boro": "Manhattan", "address": ""},
+      {"id": "warrant-section", "kind": "spec", "name": "Warrant Section", "boro": "Manhattan", "address": ""},
+      {"id": "workforce-management-and-records-section", "kind": "spec", "name": "Workforce Management and Records Section", "boro": "Manhattan", "address": ""},
+      {"id": "world-trade-center-command", "kind": "spec", "name": "World Trade Center Command", "boro": "Manhattan", "address": ""},
+      {"id": "youth-strategies-division", "kind": "spec", "name": "Youth Strategies Division", "boro": "Manhattan", "address": ""}
     ],
     // Address autocomplete (keyless). See the comment above geoSuggest for services + terms.
     geo: { geosearch: 'https://geosearch.planninglabs.nyc/v2/autocomplete', photon: 'https://photon.komoot.io/api/', focus: { lat: 40.7128, lon: -74.0060 }, minChars: 3, debounceMs: 275, max: 8, nycEnough: 5, photonLimit: 8 },
@@ -3084,6 +3573,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (st.profile) out.push({ kind: 'profile', key: 'main', data: stripPrivate('profile', st.profile) });
     if (st.settings) out.push({ kind: 'settings', key: 'main', data: stripPrivate('settings', st.settings) });
     if (st.sync && Object.keys(st.sync).length) out.push({ kind: 'calsync', key: 'main', data: copy(st.sync) });
+    if (st.dirMine != null) out.push({ kind: 'dirMine', key: 'main', data: cleanDirMine(st.dirMine) });
     SYNC_MAPS.forEach(function (k) { var m = st[k] || {}; Object.keys(m).sort().forEach(function (key) { if (m[key] != null) out.push({ kind: k, key: key, data: copy(m[key]) }); }); });
     (st.overtime || []).forEach(function (e) { if (e && e.id != null) out.push({ kind: 'overtime', key: String(e.id), data: copy(e) }); });
     return out;
@@ -3095,6 +3585,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (kind === 'profile') { if (!data) return s; var keep = {}; CLOUD_PRIVATE.profile.forEach(function (f) { keep[f] = s.profile && s.profile[f] != null ? s.profile[f] : ''; }); s.profile = Object.assign(stripPrivate('profile', data), keep); return s; }
     if (kind === 'settings') { if (!data) return s; var ks = {}; CLOUD_PRIVATE.settings.forEach(function (f) { if (s.settings && s.settings[f] !== undefined) ks[f] = s.settings[f]; }); s.settings = Object.assign({}, s.settings || {}, stripPrivate('settings', data), ks); return s; }
     if (kind === 'calsync') { s.sync = data ? copy(data) : {}; return s; }
+    if (kind === 'dirMine') { s.dirMine = data ? cleanDirMine(data) : emptyDirMine(); return s; }
     if (SYNC_MAPS.indexOf(kind) >= 0) { s[kind] = Object.assign({}, s[kind] || {}); if (data) s[kind][key] = copy(data); else delete s[kind][key]; return s; }
     if (kind === 'overtime') { var list = (s.overtime || []).filter(function (e) { return String(e.id) !== String(key); }); if (data) { var d = copy(data); d.id = d.id != null ? d.id : key; list.push(d); list.sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; }); } s.overtime = list; return s; }
     return s; // unknown kinds from a newer app version are ignored
@@ -3129,7 +3620,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   // local-only records are uploaded afterwards with the current time (see restampDirty).
   function seedMeta(state) { var m = { recs: {} }; syncRecords(state).forEach(function (r) { m.recs[recId(r.kind, r.key)] = { h: hashStr(stableStr(r.data)), t: 1, d: 1 }; }); return m; }
   function restampDirty(meta, now) { var m = copy(meta || {}); Object.keys(m.recs || {}).forEach(function (id) { var c = m.recs[id]; if (c.d && c.t === 1) c.t = now; }); return m; }
-  function hasLocalData(state) { var s = state || {}; return !!(s.profile || (s.overtime || []).length || SYNC_MAPS.some(function (k) { return s[k] && Object.keys(s[k]).length; }) || Object.keys(s.tours || {}).length); }
+  function hasLocalData(state) { var s = state || {}; var dm = s.dirMine && cleanDirMine(s.dirMine); return !!(s.profile || (s.overtime || []).length || SYNC_MAPS.some(function (k) { return s[k] && Object.keys(s[k]).length; }) || Object.keys(s.tours || {}).length || (dm && (Object.keys(dm.numbers).length || dm.custom.length))); }
   // ---------- Court / certification slips: paper detection, perspective correction, scan enhance, minimal PDF ----------
   // All self-contained (no libraries, works offline). Images are { data: Uint8ClampedArray RGBA, width, height }.
   var SLIP = { detectMax: 360, minAreaFrac: 0.12, outMax: 2000, page: { w: 612, h: 792, margin: 18 }, jpegQuality: 0.82, thumbMax: 220, warnBytes: 8 * 1024 * 1024 };
@@ -3313,13 +3804,16 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (c.kind === 'td') { c.abbr = 'TD ' + n; c.name += ' (' + c.abbr + ')'; }
       if (c.kind === 'psa') c.abbr = 'PSA ' + n;
     });
+    var pdsPhones = {"pds-100": {"phone": "718-318-4223", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/100th-precinct.page"}, "pds-101": {"phone": "718-868-3429", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/101st-precinct.page"}, "pds-102": {"phone": "718-805-3212", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/102nd-precinct.page"}, "pds-103": {"phone": "718-657-8220", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/103rd-precinct.page"}, "pds-104": {"phone": "718-386-2735", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/104th-precinct.page"}, "pds-105": {"phone": "718-776-9252", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/105th-precinct.page"}, "pds-106": {"phone": "718-845-2260", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/106th-precinct.page"}, "pds-107": {"phone": "718-969-6844", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/107th-precinct.page"}, "pds-108": {"phone": "718-784-5441", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/108th-precinct.page"}, "pds-109": {"phone": "718-321-2294", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/109th-precinct.page"}, "pds-10": {"phone": "212-741-8245", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/10th-precinct.page"}, "pds-110": {"phone": "718-476-9317", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/110th-precinct.page"}, "pds-111": {"phone": "718-279-5282", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/111th-precinct.page"}, "pds-112": {"phone": "718-520-9250", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/112th-precinct.page"}, "pds-113": {"phone": "718-712-2097", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/113th-precinct.page"}, "pds-114": {"phone": "718-626-9334", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/114th-precinct.page"}, "pds-115": {"phone": "718-533-2039", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/115th-precinct.page"}, "pds-116": {"phone": "718-610-4185", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/116th-precinct.page"}, "pds-120": {"phone": "718-981-2483", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/120th-precinct.page"}, "pds-121": {"phone": "718-697-8712", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/121st-precinct.page"}, "pds-122": {"phone": "718-667-2250", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/122nd-precinct.page"}, "pds-123": {"phone": "718-948-6801", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/123rd-precinct.page"}, "pds-13": {"phone": "212-477-7444", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/13th-precinct.page"}, "pds-17": {"phone": "212-826-3206", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/17th-precinct.page"}, "pds-19": {"phone": "212-452-0635", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/19th-precinct.page"}, "pds-1": {"phone": "212-334-0635", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/1st-precinct.page"}, "pds-20": {"phone": "212-580-6414", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/20th-precinct.page"}, "pds-23": {"phone": "212-860-6441", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/23rd-precinct.page"}, "pds-24": {"phone": "212-678-1863", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/24th-precinct.page"}, "pds-25": {"phone": "212-860-6536", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/25th-precinct.page"}, "pds-26": {"phone": "212-678-1351", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/26th-precinct.page"}, "pds-28": {"phone": "212-678-1608", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/28th-precinct.page"}, "pds-30": {"phone": "212-690-8842", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/30th-precinct.page"}, "pds-32": {"phone": "212-690-6315", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/32nd-precinct.page"}, "pds-33": {"phone": "212-927-3780", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/33rd-precinct.page"}, "pds-34": {"phone": "212-927-0823", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/34th-precinct.page"}, "pds-40": {"phone": "718-402-2555", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/40th-precinct.page"}, "pds-41": {"phone": "718-542-7113", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/41st-precinct.page"}, "pds-42": {"phone": "718-402-5393", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/42nd-precinct.page"}, "pds-43": {"phone": "718-542-5530", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/43rd-precinct.page"}, "pds-44": {"phone": "718-590-5537", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/44th-precinct.page"}, "pds-45": {"phone": "718-822-5414", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/45th-precinct.page"}, "pds-46": {"phone": "718-220-5216", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/46th-precinct.page"}, "pds-47": {"phone": "718-920-1214", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/47th-precinct.page"}, "pds-48": {"phone": "718-299-4119", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/48th-precinct.page"}, "pds-49": {"phone": "718-918-2034", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/49th-precinct.page"}, "pds-50": {"phone": "718-543-6121", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/50th-precinct.page"}, "pds-52": {"phone": "718-220-5819", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/52nd-precinct.page"}, "pds-5": {"phone": "212-334-0742", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/5th-precinct.page"}, "pds-60": {"phone": "718-946-3352", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/60th-precinct.page"}, "pds-61": {"phone": "718-627-6620", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/61st-precinct.page"}, "pds-62": {"phone": "718-236-2695", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/62nd-precinct.page"}, "pds-63": {"phone": "718-258-4401", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/63rd-precinct.page"}, "pds-66": {"phone": "718-851-5603", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/66th-precinct.page"}, "pds-67": {"phone": "718-287-3225", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/67th-precinct.page"}, "pds-68": {"phone": "718-439-4230", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/68th-precinct.page"}, "pds-69": {"phone": "718-257-6215", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/69th-precinct.page"}, "pds-6": {"phone": "212-741-4841", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/6th-precinct.page"}, "pds-70": {"phone": "718-851-5560", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/70th-precinct.page"}, "pds-71": {"phone": "718-735-0500", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/71st-precinct.page"}, "pds-72": {"phone": "718-965-6336", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/72nd-precinct.page"}, "pds-73": {"phone": "718-495-5429", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/73rd-precinct.page"}, "pds-75": {"phone": "718-827-3548", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/75th-precinct.page"}, "pds-76": {"phone": "718-834-3221", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/76th-precinct.page"}, "pds-77": {"phone": "718-735-0663", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/77th-precinct.page"}, "pds-78": {"phone": "718-636-6485", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/78th-precinct.page"}, "pds-79": {"phone": "718-636-6655", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/79th-precinct.page"}, "pds-7": {"phone": "212-477-7671", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/7th-precinct.page"}, "pds-81": {"phone": "718-574-0455", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/81st-precinct.page"}, "pds-83": {"phone": "718-574-1796", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/83rd-precinct.page"}, "pds-84": {"phone": "718-875-6687", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/84th-precinct.page"}, "pds-88": {"phone": "718-636-6547", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/88th-precinct.page"}, "pds-90": {"phone": "718-963-5368", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/90th-precinct.page"}, "pds-94": {"phone": "718-383-8545", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/94th-precinct.page"}, "pds-9": {"phone": "212-477-7817", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/9th-precinct.page"}, "pds-central-park": {"phone": "212-570-4836", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/central-park-precinct.page"}, "pds-midtown-north": {"phone": "212-767-8415", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/midtown-north-precinct.page"}, "pds-midtown-south": {"phone": "212-239-9856", "phoneSrc": "https://www.nyc.gov/site/nypd/bureaus/patrol/precincts/midtown-south-precinct.page"}};
     var pds = CONFIG.commands.filter(function (c) { return c.kind === 'pct'; }).map(function (c) {
       var n = (c.id.match(/^pct-(\d+)$/) || [])[1], base = c.name.replace(/ \(.*\)$/, '');
-      return { id: 'pds-' + c.id.slice(4), kind: 'pds', name: n ? n + ' Precinct Detective Squad (' + n + ' PDU)' : base + ' Detective Squad', abbr: n ? n + ' PDU' : '', boro: c.boro, address: c.address, src: 'user-provided: PDU located in precinct', precinct: c.id };
+      var row = { id: 'pds-' + c.id.slice(4), kind: 'pds', name: n ? n + ' Precinct Detective Squad (' + n + ' PDU)' : base + ' Detective Squad', abbr: n ? n + ' PDU' : '', boro: c.boro, address: c.address, src: 'user-provided: PDU located in precinct', precinct: c.id };
+      var ph = pdsPhones[row.id]; if (ph && ph.phone) { row.phone = ph.phone; row.phoneSrc = ph.phoneSrc; }
+      return row;
     });
-    CONFIG.commands = CONFIG.commands.concat(pds, CONFIG.unitCommands);
+    CONFIG.commands = CONFIG.commands.concat(pds, CONFIG.unitCommands, CONFIG.addedCommands || []);
   })();
-  CONFIG.commandGroups = { pct: 'Precinct', psa: 'Housing PSA', td: 'Transit District', pds: 'Precinct Detective Squad', gls: 'Grand Larceny', svs: 'Special Victims', narc: 'Narcotics', warr: 'Warrant Division', srg: 'Strategic Response Group', crc: 'Critical Response Command', spec: 'Specialty unit', boro: 'Bureau / Patrol Borough' };
+  CONFIG.commandGroups = { pct: 'Precinct', psa: 'Housing PSA', td: 'Transit District', pds: 'Precinct Detective Squad', gls: 'Grand Larceny', svs: 'Special Victims', narc: 'Narcotics', warr: 'Warrant Division', srg: 'Strategic Response Group', crc: 'Critical Response Command', spec: 'Specialty unit', boro: 'Bureau / Patrol Borough', dv: 'Domestic Violence Squad', ftu: 'Field Training Unit', viper: 'Housing VIPER' };
   // ---- Patrol boroughs and overtime travel time ----
   // Precinct -> patrol borough (Zee, 2026-11-18). The Bronx was one patrol borough (PBBX) until it split into PBXS / PBXN on 2026-05-20.
   CONFIG.bronxSplit = '2026-05-20';
@@ -3449,11 +3943,108 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (kind && c.kind !== kind) return false;
       if (pure && !kind && !/^(pct|psa|td|pds)$/.test(c.kind)) return false; // a bare number means a precinct / PSA / TD (and its squad)
       var num = (c.id.match(/-(\d+)$/) || [])[1];
-      if (n && num !== String(+n)) { if (pure || c.address.toLowerCase().indexOf(s) < 0) return false; } // "75", "75th", "PSA 2", "TD 33" match the number only
-      var hay = (c.name + ' ' + (c.aka || '') + ' ' + c.boro + ' ' + c.address + ' ' + (CONFIG.commandGroups[c.kind] || '')).toLowerCase();
-      return words.every(function (w) { return hay.indexOf(w) >= 0; });
+      var phDigits = String(c.phone || '').replace(/\D/g, ''), qDigits = s.replace(/\D/g, '');
+      var phoneHit = !pure && qDigits.length >= 3 && phDigits.indexOf(qDigits) >= 0;
+      if (n && num !== String(+n)) { if (pure || (!phoneHit && c.address.toLowerCase().indexOf(s) < 0)) return false; } // "75", "75th", "PSA 2", "TD 33" match the number only
+      var hay = (c.name + ' ' + (c.aka || '') + ' ' + c.boro + ' ' + c.address + ' ' + (c.phone || '') + ' ' + (CONFIG.commandGroups[c.kind] || '')).toLowerCase();
+      return phoneHit || words.every(function (w) { return hay.indexOf(w) >= 0; });
     });
     return limit ? r.slice(0, limit) : r;
+  }
+
+  function phoneDigits(s) { return String(s || '').replace(/\D/g, ''); }
+  function fmtPhone(s) {
+    var d = phoneDigits(s);
+    if (d.length === 11 && d.charAt(0) === '1') d = d.slice(1);
+    return d.length === 10 ? d.slice(0, 3) + '-' + d.slice(3, 6) + '-' + d.slice(6) : String(s || '').trim();
+  }
+  function telHref(s) {
+    var d = phoneDigits(s);
+    if (!d) return '';
+    if (d.length === 10) d = '1' + d;
+    return 'tel:+' + d;
+  }
+  function emptyDirMine() { return { numbers: {}, custom: [] }; }
+  function cleanDirPhone(p) {
+    if (!p || typeof p !== 'object') return null;
+    var phone = String(p.phone || '').trim(), d = phoneDigits(phone);
+    if (d.length < 7) return null;
+    var id = String(p.id || '').trim(); if (!id) return null;
+    var label = String(p.label || '').trim(); if (label.length > 40) label = label.slice(0, 40);
+    return { id: id, phone: phone, label: label };
+  }
+  function cleanDirCustom(e) {
+    if (!e || typeof e !== 'object') return null;
+    var name = String(e.name || '').trim(); if (!name) return null;
+    if (name.length > 64) name = name.slice(0, 64);
+    var id = String(e.id || '').trim(); if (!id) return null;
+    var address = String(e.address || '').trim();
+    var phones = [];
+    (Array.isArray(e.phones) ? e.phones : []).forEach(function (p) { var c = cleanDirPhone(p); if (c) phones.push(c); });
+    return { id: id, name: name, address: address, phones: phones };
+  }
+  function cleanDirMine(d) {
+    var out = emptyDirMine();
+    if (!d || typeof d !== 'object') return out;
+    Object.keys(d.numbers || {}).forEach(function (cid) {
+      var list = [];
+      (Array.isArray(d.numbers[cid]) ? d.numbers[cid] : []).forEach(function (p) { var c = cleanDirPhone(p); if (c) list.push(c); });
+      if (list.length) out.numbers[cid] = list;
+    });
+    (Array.isArray(d.custom) ? d.custom : []).forEach(function (e) { var c = cleanDirCustom(e); if (c) out.custom.push(c); });
+    return out;
+  }
+  function dirKindMatch(c, chip) {
+    if (!chip || chip === 'mine') return true;
+    if (chip === 'psa') return c.kind === 'psa' || c.kind === 'viper';
+    if (chip === 'det') return /^(pds|gls|svs|narc|warr)$/.test(c.kind) || /homicide|detective borough|detective bureau/i.test(c.name || '');
+    if (chip === 'spec') return /^(spec|srg|crc)$/.test(c.kind) && !/homicide|detective borough|detective bureau/i.test(c.name || '');
+    return c.kind === chip;
+  }
+  function searchDirectory(q, opts) {
+    opts = opts || {};
+    var mine = cleanDirMine(opts.mine), chip = opts.kind || '', limit = opts.limit || 0;
+    var s = String(q || '').toLowerCase().replace(/\s+/g, ' ').trim();
+    var qd = phoneDigits(s);
+    var official = searchCommands(q, 0).filter(function (c) { return dirKindMatch(c, chip); });
+    if (qd.length >= 4 || (!/^\d{1,3}$/.test(s) && qd.length >= 3 && /[-.() ]/.test(String(q || '')))) {
+      var seen = {}; official.forEach(function (c) { seen[c.id] = 1; });
+      CONFIG.commands.forEach(function (c) {
+        if (seen[c.id] || !dirKindMatch(c, chip)) return;
+        if (phoneDigits(c.phone).indexOf(qd) >= 0) { official.push(c); seen[c.id] = 1; }
+      });
+    }
+    var out = [];
+    official.forEach(function (c) {
+      var personal = mine.numbers[c.id] || [];
+      if (chip === 'mine' && !personal.length) return;
+      if (s && personal.length) {
+        var hit = personal.some(function (p) { return (p.label + ' ' + p.phone + ' ' + phoneDigits(p.phone)).toLowerCase().indexOf(s) >= 0 || (qd.length >= 3 && phoneDigits(p.phone).indexOf(qd) >= 0); });
+        if (hit && official.indexOf(c) < 0) { /* already in official if public matched */ }
+      }
+      out.push({ type: 'cmd', id: c.id, command: c, mine: personal });
+    });
+    // commands that did not match the public search but have a personal number / label hit
+    if (s || chip === 'mine') {
+      var have = {}; out.forEach(function (x) { have[x.id] = 1; });
+      Object.keys(mine.numbers).forEach(function (cid) {
+        if (have[cid]) return;
+        var c = commandById(cid); if (!c || !dirKindMatch(c, chip === 'mine' ? '' : chip)) return;
+        var personal = mine.numbers[cid] || [];
+        if (!personal.length) return;
+        var hit = !s || personal.some(function (p) {
+          return (p.label + ' ' + p.phone + ' ' + c.name).toLowerCase().indexOf(s) >= 0 || (qd.length >= 3 && phoneDigits(p.phone).indexOf(qd) >= 0);
+        });
+        if (hit) out.push({ type: 'cmd', id: c.id, command: c, mine: personal });
+      });
+    }
+    mine.custom.forEach(function (e) {
+      if (chip && chip !== 'mine') return;
+      var hay = (e.name + ' ' + (e.address || '') + ' ' + (e.phones || []).map(function (p) { return p.label + ' ' + p.phone + ' ' + phoneDigits(p.phone); }).join(' ')).toLowerCase();
+      var hit = !s || hay.indexOf(s) >= 0 || (qd.length >= 3 && hay.replace(/\D/g, '').indexOf(qd) >= 0);
+      if (hit) out.push({ type: 'custom', id: e.id, entry: e, mine: e.phones || [] });
+    });
+    return limit ? out.slice(0, limit) : out;
   }
   function cleanCommand(c) {
     if (!c || !c.id) return null;
@@ -3833,7 +4424,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     tour17Key: tour17Key, tour17Squad: tour17Squad, tour17Offset: tour17Offset, tour17WorkPhase: tour17WorkPhase, tour17WorkSquad: tour17WorkSquad, tour17IsOff: tour17IsOff, tour17SquadsOff: tour17SquadsOff, tour17SquadsWorking: tour17SquadsWorking, tour17OvertimeMin: tour17OvertimeMin,
     nextDayOff: nextDayOff, nextWorkday: nextWorkday, countRDOs: countRDOs, isTourChange: isTourChange, countTourChanges: countTourChanges, isPayday: isPayday, nextPayday: nextPayday,
     periodsForPayday: periodsForPayday, regularPaydayFor: regularPaydayFor, overtimePaydayFor: overtimePaydayFor, regularPeriodFor: regularPeriodFor, overtimePeriodFor: overtimePeriodFor, payPeriodsInYear: payPeriodsInYear, hoursBetween: hoursBetween, entryHours: entryHours,
-    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, fmtMDY: fmtMDY, defaultTourWindow: defaultTourWindow, tourSpanMinutes: tourSpanMinutes, suggestEndDate: suggestEndDate, workedVsScheduled: workedVsScheduled, cleanTourEntry: cleanTourEntry, tourEntries: tourEntries, isAssignmentEntry: isAssignmentEntry, cleanAssignmentEntry: cleanAssignmentEntry, assignmentEntries: assignmentEntries, mergeTourEntries: mergeTourEntries, writeAssignmentEntries: writeAssignmentEntries, assignmentTimeText: assignmentTimeText, assignmentReminderText: assignmentReminderText, paidDetailBrief: paidDetailBrief, dayAssignments: dayAssignments, assignmentEventWindow: assignmentEventWindow, dayTour: dayTour, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, assignmentNavAddress: assignmentNavAddress, upcomingItems: upcomingItems, commandById: commandById, isPduCommand: isPduCommand, searchCommands: searchCommands, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, stripBoroSuffix: stripBoroSuffix, splitPaidAddress: splitPaidAddress, joinPaidAddress: joinPaidAddress, mergePaidVendors: mergePaidVendors, rememberPaidVendor: rememberPaidVendor, paidVendorKey: paidVendorKey, parsePaidAmount: parsePaidAmount, paidDetailAmount: paidDetailAmount, paidDetailTaxDate: paidDetailTaxDate, daysBetweenISO: daysBetweenISO, paidDetailTiming: paidDetailTiming, paidDetailTimingCaptions: paidDetailTimingCaptions, paidVendorNames: paidVendorNames, cleanVendorGroups: cleanVendorGroups, vendorReportName: vendorReportName, addVendorToGroup: addVendorToGroup, removeVendorFromGroup: removeVendorFromGroup, renameVendorGroup: renameVendorGroup, ungroupVendor: ungroupVendor, suggestVendorGroups: suggestVendorGroups, paidDetailTaxReport: paidDetailTaxReport, buildPaidDetailXlsx: buildPaidDetailXlsx, buildPaidDetailCsv: buildPaidDetailCsv, parseXlsx: parseXlsx, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, addYearsISO: addYearsISO, retirementDateOf: retirementDateOf, retirementRemain: retirementRemain, retirementCountdown: retirementCountdown, endCompare: endCompare, syncEndOT: syncEndOT, syncWorkedOT: syncWorkedOT, syncEntryOT: syncEntryOT, leaveBalances: leaveBalances, fmtChart: fmtChart, chartTimeFromTour: chartTimeFromTour, isDetectiveRank: isDetectiveRank, isSergeantRank: isSergeantRank, isLieutenantRank: isLieutenantRank, isPoliceOfficerRank: isPoliceOfficerRank, chartKind: chartKind, rankStartDate: rankStartDate, yearsInRankAtLeast: yearsInRankAtLeast, chartTimeEligibility: chartTimeEligibility, chartTimeForDay: chartTimeForDay, chartTimeRange: chartTimeRange, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
+    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, fmtMDY: fmtMDY, defaultTourWindow: defaultTourWindow, tourSpanMinutes: tourSpanMinutes, suggestEndDate: suggestEndDate, workedVsScheduled: workedVsScheduled, cleanTourEntry: cleanTourEntry, tourEntries: tourEntries, isAssignmentEntry: isAssignmentEntry, cleanAssignmentEntry: cleanAssignmentEntry, assignmentEntries: assignmentEntries, mergeTourEntries: mergeTourEntries, writeAssignmentEntries: writeAssignmentEntries, assignmentTimeText: assignmentTimeText, assignmentReminderText: assignmentReminderText, paidDetailBrief: paidDetailBrief, dayAssignments: dayAssignments, assignmentEventWindow: assignmentEventWindow, dayTour: dayTour, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, assignmentNavAddress: assignmentNavAddress, upcomingItems: upcomingItems, commandById: commandById, isPduCommand: isPduCommand, searchCommands: searchCommands, phoneDigits: phoneDigits, fmtPhone: fmtPhone, telHref: telHref, cleanDirMine: cleanDirMine, cleanDirPhone: cleanDirPhone, cleanDirCustom: cleanDirCustom, emptyDirMine: emptyDirMine, dirKindMatch: dirKindMatch, searchDirectory: searchDirectory, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, stripBoroSuffix: stripBoroSuffix, splitPaidAddress: splitPaidAddress, joinPaidAddress: joinPaidAddress, mergePaidVendors: mergePaidVendors, rememberPaidVendor: rememberPaidVendor, paidVendorKey: paidVendorKey, parsePaidAmount: parsePaidAmount, paidDetailAmount: paidDetailAmount, paidDetailTaxDate: paidDetailTaxDate, daysBetweenISO: daysBetweenISO, paidDetailTiming: paidDetailTiming, paidDetailTimingCaptions: paidDetailTimingCaptions, paidVendorNames: paidVendorNames, cleanVendorGroups: cleanVendorGroups, vendorReportName: vendorReportName, addVendorToGroup: addVendorToGroup, removeVendorFromGroup: removeVendorFromGroup, renameVendorGroup: renameVendorGroup, ungroupVendor: ungroupVendor, suggestVendorGroups: suggestVendorGroups, paidDetailTaxReport: paidDetailTaxReport, buildPaidDetailXlsx: buildPaidDetailXlsx, buildPaidDetailCsv: buildPaidDetailCsv, parseXlsx: parseXlsx, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, addYearsISO: addYearsISO, retirementDateOf: retirementDateOf, retirementRemain: retirementRemain, retirementCountdown: retirementCountdown, endCompare: endCompare, syncEndOT: syncEndOT, syncWorkedOT: syncWorkedOT, syncEntryOT: syncEntryOT, leaveBalances: leaveBalances, fmtChart: fmtChart, chartTimeFromTour: chartTimeFromTour, isDetectiveRank: isDetectiveRank, isSergeantRank: isSergeantRank, isLieutenantRank: isLieutenantRank, isPoliceOfficerRank: isPoliceOfficerRank, chartKind: chartKind, rankStartDate: rankStartDate, yearsInRankAtLeast: yearsInRankAtLeast, chartTimeEligibility: chartTimeEligibility, chartTimeForDay: chartTimeForDay, chartTimeRange: chartTimeRange, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
     steadyKey: steadyKey, parseChart: parseChart, validChartKey: validChartKey, chartInfo: chartInfo, sortCharts: sortCharts, chartAt: chartAt, chartChanges: chartChanges, nextOff: nextOff, nextOn: nextOn, reviewOverrides: reviewOverrides, DOW3: DOW3,
     stripAddrLabels: stripAddrLabels, paidAddressSuggestions: paidAddressSuggestions,
     rankAbbr: rankAbbr, rankLabel: rankLabel, displayName: displayName, formatFullName: formatFullName, normMiddleInitial: normMiddleInitial, migrateProfile: migrateProfile, validateProfile: validateProfile,
@@ -3887,7 +4478,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       leave: d.leave && typeof d.leave === 'object' && !Array.isArray(d.leave) ? d.leave : {},
       extra15: d.extra15 && typeof d.extra15 === 'object' && !Array.isArray(d.extra15) ? d.extra15 : {}, // per-month +15 range overrides
       assignments: d.assignments && typeof d.assignments === 'object' && !Array.isArray(d.assignments) ? E.migrateAssignments(d.assignments).map : {},
-      slips: (function (m) { var o = {}; if (m && typeof m === 'object') Object.keys(m).forEach(function (k) { var c = /^\d{4}-\d{2}-\d{2}$/.test(k) && E.cleanSlipMeta(m[k]); if (c) o[k] = c; }); return o; })(d.slips) }; // slip metadata (files live in IndexedDB) // daily assignments by date (preset name in training text -> location)
+      slips: (function (m) { var o = {}; if (m && typeof m === 'object') Object.keys(m).forEach(function (k) { var c = /^\d{4}-\d{2}-\d{2}$/.test(k) && E.cleanSlipMeta(m[k]); if (c) o[k] = c; }); return o; })(d.slips), // slip metadata (files live in IndexedDB) // daily assignments by date (preset name in training text -> location)
+      dirMine: E.cleanDirMine(d.dirMine) };
   }
   // Earliest date with anything saved (first history record for profiles without a hire date).
   function earliestEntry(d) {
@@ -3901,7 +4493,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
 
   var S = load();
   var T = E.today(), tp = E.parts(T);
-  var ui = { tab: 'schedule', calY: tp.y, calM: tp.m, lookup: T, otYear: tp.y, payYear: tp.y, leaveYear: tp.y, leaveOpen: false, pdY: tp.y, pdM: tp.m, onbSquad: null, x15Year: tp.y, otView: 'ot', otSel: false, otSelIds: {}, pdSel: false, pdSelIds: {}, otFilter: 'all', otCollapse: {}, calPeek: null, calPeekPicker: false, todayOpen: false, glanceOpen: false };
+  var ui = { tab: 'schedule', calY: tp.y, calM: tp.m, lookup: T, otYear: tp.y, payYear: tp.y, leaveYear: tp.y, leaveOpen: false, pdY: tp.y, pdM: tp.m, onbSquad: null, x15Year: tp.y, otView: 'ot', otSel: false, otSelIds: {}, pdSel: false, pdSelIds: {}, otFilter: 'all', otCollapse: {}, calPeek: null, calPeekPicker: false, todayOpen: false, glanceOpen: false, dirQ: '', dirKind: '' };
 
   function U() { return S.settings.unit; }
   var PDU = C.pdu;
@@ -3979,7 +4571,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     document.getElementById('hdrSub').innerHTML = esc(E.displayName(S.profile)) + ' &middot; <button class="badge-sq" data-act="chartOpen" aria-label="My chart: ' + esc(sq.name) + '" style="background:' + sq.color + ';color:' + sq.ink + ';cursor:pointer;font:inherit;font-weight:700;font-size:12px">' + esc(sq.name) + ' &#9662;</button>';
     if (ui.tab === 'leave') { ui.tab = 'schedule'; ui.leaveOpen = true; }
     Array.prototype.forEach.call(document.querySelectorAll('nav.tabs button'), function (b) { b.classList.toggle('on', b.dataset.tab === ui.tab); b.setAttribute('aria-current', b.dataset.tab === ui.tab ? 'page' : 'false'); });
-    view.innerHTML = ({ schedule: viewSchedule, overtime: viewOvertime, pay: viewPay, lookup: viewLookup })[ui.tab]();
+    view.innerHTML = ({ schedule: viewSchedule, overtime: viewOvertime, pay: viewPay, directory: viewDirectory, lookup: viewLookup })[ui.tab]();
     if (CL.enabled && S.profile && !S.profile.taxNumber && !ui.privDismiss) view.insertAdjacentHTML('afterbegin', '<div class="privbanner" id="privBanner">&#128274; Add your tax and reference numbers in Settings. They\'re kept on this device only and never synced, so each new device asks once. <button class="btn sm" data-act="settings">Settings</button> <button class="linkbtn" data-act="privDismiss">Later</button></div>');
     if (ui.tab === 'pay' && ui.scrollCurrent) { ui.scrollCurrent = false; var c = document.getElementById('curPeriod'); if (c) c.scrollIntoView({ block: 'start' }); }
     if (!onb && ui.tab === 'schedule') startRetireTick(); else stopRetireTick();
@@ -4787,6 +5379,98 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     return html + '</div>';
   }
 
+
+  function dirNewId(prefix) { return prefix + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+  function dirMineState() { return E.cleanDirMine(S.dirMine); }
+  function dirSaveMine(next) { S.dirMine = E.cleanDirMine(next); save(true); }
+  function dirPhoneLink(num, label, mine) {
+    var href = E.telHref(num); if (!href) return '';
+    return '<a class="dir-tel' + (mine ? ' mine' : '') + '" href="' + esc(href) + '">' + esc(label || E.fmtPhone(num)) + '</a>';
+  }
+  function dirMineRows(list, ownerId, isCustom) {
+    return (list || []).map(function (p) {
+      var lab = p.label ? esc(p.label) + ' · ' : '';
+      return '<div class="dir-mine-row"><span class="tag">My number</span>' + dirPhoneLink(p.phone, lab + E.fmtPhone(p.phone), true) +
+        '<button type="button" class="btn sm" data-act="dirEditPhone" data-id="' + esc(ownerId) + '" data-nid="' + esc(p.id) + '"' + (isCustom ? ' data-custom="1"' : '') + '>Edit</button>' +
+        '<button type="button" class="btn sm danger" data-act="dirDelPhone" data-id="' + esc(ownerId) + '" data-nid="' + esc(p.id) + '"' + (isCustom ? ' data-custom="1"' : '') + '>Delete</button></div>';
+    }).join('');
+  }
+  function dirCardHtml(item) {
+    if (item.type === 'custom') {
+      var e = item.entry, addr = e.address || '';
+      return '<div class="card dir-card custom" data-sec="4g" data-id="' + esc(e.id) + '"><div class="t1">' + esc(e.name) + '</div>' +
+        '<div class="t2">My contact</div>' +
+        '<div class="dir-tels">' + dirMineRows(e.phones, e.id, true) + '</div>' +
+        (addr ? '<div class="t2" style="margin-top:6px">' + esc(addr) + '</div>' + navLinks(addr) : '') +
+        '<div class="dir-actions"><button type="button" class="btn sm" data-act="dirAddPhone" data-id="' + esc(e.id) + '" data-custom="1">Add my number</button>' +
+        '<button type="button" class="btn sm" data-act="dirEditCustom" data-id="' + esc(e.id) + '">Edit contact</button>' +
+        '<button type="button" class="btn sm danger" data-act="dirDelCustom" data-id="' + esc(e.id) + '">Delete contact</button></div></div>';
+    }
+    var c = item.command, grp = C.commandGroups[c.kind] || c.kind, pub = c.phone ? dirPhoneLink(c.phone, E.fmtPhone(c.phone), false) : '';
+    return '<div class="card dir-card" data-sec="4g" data-id="' + esc(c.id) + '"><div class="t1">' + esc(c.name) + '</div>' +
+      '<div class="t2">' + esc(grp) + (c.boro ? ' · ' + esc(c.boro) : '') + '</div>' +
+      (pub ? '<div class="dir-tels">' + pub + '</div>' : '') +
+      dirMineRows(item.mine, c.id, false) +
+      (c.address ? '<div class="t2" style="margin-top:6px">' + esc(c.address) + '</div>' + navLinks(c.address) : '') +
+      '<div class="dir-actions"><button type="button" class="btn sm" data-act="dirAddPhone" data-id="' + esc(c.id) + '">Add my number</button></div></div>';
+  }
+  function dirResultsHtml() {
+    var mine = dirMineState(), q = ui.dirQ || '', chip = ui.dirKind || '';
+    var items = E.searchDirectory(q, { kind: chip, mine: mine, limit: 200 });
+    if (!items.length) {
+      var msg = q ? 'No matches for “' + esc(q) + '”.' : (chip === 'mine' ? 'No personal numbers or custom contacts yet.' : 'No commands in this category.');
+      return '<div class="dir-empty" data-sec="4g">' + msg + '</div>';
+    }
+    var n = items.length, more = n === 200 ? ' (first 200)' : '';
+    return '<div class="muted" style="font-size:12.5px;margin:4px 0 8px">' + n + ' result' + (n === 1 ? '' : 's') + more + '</div>' + items.map(dirCardHtml).join('');
+  }
+  function refreshDirList() {
+    var el = document.getElementById('dirList');
+    if (el) el.innerHTML = dirResultsHtml();
+  }
+  var DIR_CHIPS = [
+    { id: '', label: 'All' }, { id: 'pct', label: 'Patrol' }, { id: 'psa', label: 'Housing' }, { id: 'td', label: 'Transit' },
+    { id: 'det', label: 'Detective' }, { id: 'dv', label: 'Domestic Violence' }, { id: 'ftu', label: 'Field Training' },
+    { id: 'spec', label: 'Specialty' }, { id: 'boro', label: 'Bureau' }, { id: 'mine', label: 'My contacts' }
+  ];
+  function viewDirectory() {
+    var q = ui.dirQ || '', chip = ui.dirKind || '';
+    var chips = '<div class="dirchips" data-sec="4f">' + DIR_CHIPS.map(function (x) {
+      return '<button type="button" class="chip' + (chip === x.id ? ' on' : '') + '" data-act="dirChip" data-kind="' + esc(x.id) + '">' + esc(x.label) + '</button>';
+    }).join('') + '</div>';
+    return suggestBar('Department Directory') + '<div class="card" data-sec="4e"><h3>Department Directory</h3>' +
+      '<input id="dirQ" class="dirq" type="search" value="' + esc(q) + '" placeholder="Name, number, category, or phone" aria-label="Search the directory" autocomplete="off">' +
+      chips +
+      '<div class="dir-actions" style="margin:0 0 8px"><button type="button" class="btn primary sm" data-act="dirAddCustom">Add custom contact</button></div>' +
+      '<p class="muted" style="font-size:12.5px;margin:0 0 8px">Public numbers come from official NYPD pages. Numbers you add stay on your account only and are not shared.</p></div>' +
+      '<div id="dirList">' + dirResultsHtml() + '</div>';
+  }
+  function dirPhoneSheet(opts) {
+    opts = opts || {};
+    var isCustom = !!opts.custom, existing = opts.phone || {}, title = existing.id ? 'Edit my number' : 'Add my number';
+    var body = '<form id="dirPhoneForm" data-id="' + esc(opts.id || '') + '" data-nid="' + esc(existing.id || '') + '"' + (isCustom ? ' data-custom="1"' : '') + '>' +
+      '<label class="field">Label <span class="muted">(optional)</span><input id="dirPhoneLabel" value="' + esc(existing.label || '') + '" placeholder="Desk, Sgt cell…" maxlength="40"></label>' +
+      '<label class="field">Number<input id="dirPhoneNum" type="tel" value="' + esc(existing.phone || '') + '" placeholder="917-555-0100" required></label>' +
+      '<div id="dirPhoneErr" class="err" hidden></div>' +
+      '<button type="button" class="btn primary block" data-act="dirSavePhone">Save</button></form>';
+    openSheet(title, body, '4h');
+    setTimeout(function () { var i = document.getElementById('dirPhoneNum'); if (i) i.focus(); }, 50);
+  }
+  function dirCustomSheet(existing) {
+    existing = existing || {};
+    var title = existing.id ? 'Edit custom contact' : 'Add custom contact';
+    var p0 = (existing.phones || [])[0] || {};
+    var body = '<form id="dirCustomForm" data-id="' + esc(existing.id || '') + '">' +
+      '<label class="field">Name<input id="dirCustName" value="' + esc(existing.name || '') + '" placeholder="Name or unit" maxlength="64" required></label>' +
+      '<label class="field">Number <span class="muted">(optional)</span><input id="dirCustPhone" type="tel" value="' + esc(p0.phone || '') + '" placeholder="917-555-0100"></label>' +
+      '<label class="field">Label <span class="muted">(optional)</span><input id="dirCustLabel" value="' + esc(p0.label || '') + '" placeholder="Desk, Sgt cell…" maxlength="40"></label>' +
+      '<label class="field">Address <span class="muted">(optional)</span><input id="dirCustAddr" class="acIn" data-ac="asg" value="' + esc(existing.address || '') + '" placeholder="Street address"></label>' +
+      '<div id="dirCustErr" class="err" hidden></div>' +
+      '<button type="button" class="btn primary block" data-act="dirSaveCustom">Save</button></form>';
+    openSheet(title, body, '4h');
+    setTimeout(function () { var i = document.getElementById('dirCustName'); if (i) i.focus(); }, 50);
+  }
+
   function viewLookup() {
     var u = U(), d = ui.lookup, off = E.squadsOff(d, u), work = E.squadsWorking(d, u), sq = mySquad(ui.lookup);
     if (sq.type === '12hr') { off = E.tour12SquadsOff(d); work = E.tour12SquadsWorking(d); }
@@ -4837,7 +5521,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   var NAV = { stack: [], cur: null, pending: null };
   // Beta section numbers: pages 1-5 are the bottom tabs; sheets have fixed numbers here (see SECTION-NUMBERS.md). Never computed from order.
   var SHEET_PAGES = { day: '6', sum: '7', ot: '8', settings: '9', hist: '10', suggest: '11', inbox: '12', admin: '13', leaveNew: '14', sync: '15', x15: '16', x15ed: '17', chart: '18', pd: '19', pdTax: '20' };
-  var TAB_PAGES = { schedule: '1', overtime: '2', pay: '3', leave: '4', lookup: '5' };
+  var TAB_PAGES = { schedule: '1', overtime: '2', pay: '3', leave: '4', directory: '4', lookup: '5' };
   function navable(name, f, keyFn) {
     return function () {
       var a = arguments, prev = NAV.pending, me = { key: name + '|' + (keyFn ? keyFn.apply(null, a) : String(a[0] == null ? '' : a[0])) };
@@ -8577,6 +9261,96 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       downloadText(E.toICS([e], { now: new Date(), calName: e.summary || 'Patrol Schedule' }), 'finest-hq-' + E.toISO(d) + '.ics', 'text/calendar;charset=utf-8');
       toast('Calendar file downloaded');
     },
+    dirChip: function (t) { ui.dirKind = t.dataset.kind || ''; refreshDirList(); document.querySelectorAll('.dirchips .chip').forEach(function (b) { b.classList.toggle('on', (b.dataset.kind || '') === ui.dirKind); }); },
+    dirAddPhone: function (t) { dirPhoneSheet({ id: t.dataset.id, custom: t.dataset.custom === '1' }); },
+    dirEditPhone: function (t) {
+      var id = t.dataset.id, nid = t.dataset.nid, mine = dirMineState(), rec = null;
+      if (t.dataset.custom === '1') {
+        var e = mine.custom.filter(function (x) { return x.id === id; })[0];
+        rec = e && (e.phones || []).filter(function (p) { return p.id === nid; })[0];
+      } else {
+        rec = ((mine.numbers[id] || []).filter(function (p) { return p.id === nid; })[0]);
+      }
+      if (!rec) return toast('Number not found');
+      dirPhoneSheet({ id: id, custom: t.dataset.custom === '1', phone: rec });
+    },
+    dirDelPhone: function (t) {
+      if (!confirm('Delete this number from your contacts? It is only saved on your account.')) return;
+      var id = t.dataset.id, nid = t.dataset.nid, mine = dirMineState();
+      if (t.dataset.custom === '1') {
+        mine.custom = mine.custom.map(function (e) {
+          if (e.id !== id) return e;
+          return { id: e.id, name: e.name, address: e.address, phones: (e.phones || []).filter(function (p) { return p.id !== nid; }) };
+        });
+      } else {
+        mine.numbers[id] = (mine.numbers[id] || []).filter(function (p) { return p.id !== nid; });
+        if (!mine.numbers[id].length) delete mine.numbers[id];
+      }
+      dirSaveMine(mine); refreshDirList(); toast('Number removed');
+    },
+    dirSavePhone: function () {
+      var form = document.getElementById('dirPhoneForm'); if (!form) return;
+      var id = form.dataset.id, nid = form.dataset.nid, isCustom = form.dataset.custom === '1';
+      var label = ((document.getElementById('dirPhoneLabel') || {}).value || '').trim();
+      var phone = ((document.getElementById('dirPhoneNum') || {}).value || '').trim();
+      var err = document.getElementById('dirPhoneErr');
+      if (E.phoneDigits(phone).length < 7) { if (err) { err.hidden = false; err.textContent = 'Enter a valid phone number.'; } return; }
+      var mine = dirMineState();
+      var rec = { id: nid || dirNewId('n-'), phone: phone, label: label };
+      if (isCustom) {
+        var found = false;
+        mine.custom = mine.custom.map(function (e) {
+          if (e.id !== id) return e;
+          found = true;
+          var phones = (e.phones || []).slice();
+          if (nid) phones = phones.map(function (p) { return p.id === nid ? rec : p; });
+          else phones.push(rec);
+          return { id: e.id, name: e.name, address: e.address, phones: phones };
+        });
+        if (!found) { if (err) { err.hidden = false; err.textContent = 'Contact not found.'; } return; }
+      } else {
+        var list = (mine.numbers[id] || []).slice();
+        if (nid) list = list.map(function (p) { return p.id === nid ? rec : p; });
+        else list.push(rec);
+        mine.numbers[id] = list;
+      }
+      dirSaveMine(mine); closeSheet(); refreshDirList(); toast(nid ? 'Number updated' : 'Number saved to your account');
+    },
+    dirAddCustom: function () { dirCustomSheet({}); },
+    dirEditCustom: function (t) {
+      var mine = dirMineState(), e = mine.custom.filter(function (x) { return x.id === t.dataset.id; })[0];
+      if (!e) return toast('Contact not found');
+      dirCustomSheet(e);
+    },
+    dirDelCustom: function (t) {
+      if (!confirm('Delete this custom contact? It is only saved on your account.')) return;
+      var mine = dirMineState();
+      mine.custom = mine.custom.filter(function (e) { return e.id !== t.dataset.id; });
+      dirSaveMine(mine); refreshDirList(); toast('Contact removed');
+    },
+    dirSaveCustom: function () {
+      var form = document.getElementById('dirCustomForm'); if (!form) return;
+      var id = form.dataset.id, name = ((document.getElementById('dirCustName') || {}).value || '').trim();
+      var phone = ((document.getElementById('dirCustPhone') || {}).value || '').trim();
+      var label = ((document.getElementById('dirCustLabel') || {}).value || '').trim();
+      var address = ((document.getElementById('dirCustAddr') || {}).value || '').trim();
+      var err = document.getElementById('dirCustErr');
+      if (!name) { if (err) { err.hidden = false; err.textContent = 'Enter a name.'; } return; }
+      if (phone && E.phoneDigits(phone).length < 7) { if (err) { err.hidden = false; err.textContent = 'Enter a valid phone number, or leave it blank.'; } return; }
+      var mine = dirMineState();
+      var existing = id && mine.custom.filter(function (e) { return e.id === id; })[0];
+      var phones = existing ? (existing.phones || []).slice() : [];
+      if (phone) {
+        if (phones[0]) phones[0] = { id: phones[0].id, phone: phone, label: label || phones[0].label || '' };
+        else phones.unshift({ id: dirNewId('n-'), phone: phone, label: label });
+      } else if (phones[0] && !phone && existing) {
+        /* leave other saved numbers; first field blank means keep existing unless user cleared? keep as typed */
+      }
+      var rec = { id: id || dirNewId('myc-'), name: name, address: address, phones: phones };
+      if (existing) mine.custom = mine.custom.map(function (e) { return e.id === rec.id ? rec : e; });
+      else mine.custom.push(rec);
+      dirSaveMine(mine); closeSheet(); refreshDirList(); toast(existing ? 'Contact updated' : 'Contact saved to your account');
+    },
     sheetBg: function (t, ev) { if (ev.target === t) navBack(); },
     closeSheet: function () { navBack(); },
     navBack: function () { navBack(); }
@@ -8723,6 +9497,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (ev.target.getAttribute('inputmode') === 'numeric' && !ev.target.classList.contains('tourIn') && !ev.target.classList.contains('timeIn') && !ev.target.classList.contains('otSplitIn') && /\D/.test(ev.target.value)) ev.target.value = ev.target.value.replace(/\D/g, '');
     if (ev.target.maxLength > 0 && ev.target.getAttribute('inputmode') === 'numeric' && ev.target.value.length > ev.target.maxLength) ev.target.value = ev.target.value.slice(0, ev.target.maxLength); // paste can exceed maxlength
     if (ev.target.classList.contains('cmdq')) cmdResults(ev.target.dataset.px, ev.target.value);
+    if (ev.target.id === 'dirQ') { ui.dirQ = ev.target.value; refreshDirList(); }
     if (ev.target.classList.contains('otSplitIn')) {
       var sv = ev.target.value, del = /^delete/.test(ev.inputType || '');
       var sf = /^\d{1,2}:\d{2}$/.test(String(sv).trim()) ? String(sv).trim() : E.formatTimeInput(sv, del);
