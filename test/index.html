@@ -99,6 +99,22 @@ nav.tabs button.on::before{content:"";position:absolute;margin-top:-58px;width:3
 .stat .lbl{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700}
 .stat .big{font-size:24px;font-weight:800;margin-top:2px;line-height:1.15}
 .stat .small{font-size:13px;color:var(--muted);margin-top:2px}
+.home-strip{display:flex;gap:6px;margin:0 0 10px}
+.home-strip .hstat{flex:1;min-width:0;background:var(--card);border:1px solid #e1e6ee;border-radius:12px;padding:6px 8px;margin:0;box-shadow:0 1px 2px rgba(15,23,42,.06)}
+.home-strip .hstat-today{flex:1.25}
+.home-strip .lbl{font-size:9px;letter-spacing:.4px;margin:0;line-height:1.2}
+.home-strip .big{font-size:13px;font-weight:800;margin:1px 0 0;line-height:1.2}
+.home-strip .small{font-size:11px;color:var(--muted);margin-top:1px;line-height:1.25}
+.peekbar{display:flex;align-items:center;gap:8px;margin:0 0 10px;padding:8px 10px;border:1.5px solid var(--line,#e5e7eb);border-radius:14px;background:#eef4ff}
+.peekbar .peekmsg{flex:1;min-width:0;font-size:13px;font-weight:700;line-height:1.3}
+.peekbar .btn{min-height:34px;padding:0 10px;font-size:12px;flex:0 0 auto;white-space:nowrap}
+.calpeek-pick{margin:0 0 10px;padding:10px 12px;border:1.5px solid var(--line,#e5e7eb);border-radius:14px;background:#fff}
+.calpeek-pick .peek-gl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);margin:8px 0 4px}
+.calpeek-pick .peek-gl:first-child{margin-top:0}
+.calpeek-pick .picks{margin:0;display:flex;flex-wrap:wrap;gap:6px}
+.calpeek-pick .pick{min-height:34px;padding:0 10px;font-size:12px}
+.cfmchoices{grid-template-columns:1fr}
+.cfmchoices .btn.choice{min-height:44px;font-weight:800}
 h2{font-size:18px;margin:4px 0 10px}
 h3{font-size:17px;margin:0 0 6px}
 .muted{color:var(--muted)}
@@ -449,7 +465,7 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after{top:-4px;le
 .cfmwrap{position:fixed;inset:0;z-index:300;background:rgba(15,23,42,.55);display:flex;align-items:center;justify-content:center;padding:16px}
 .cfm{background:#fff;color:#0f172a;border-radius:16px;padding:18px 16px 14px;width:100%;max-width:380px;max-height:calc(100vh - 32px);overflow:auto;box-shadow:0 20px 50px rgba(0,0,0,.35);min-width:0}
 .cfm h3{margin:0 0 8px;font-size:18px}.cfmbody{font-size:14.5px;line-height:1.4;overflow-wrap:anywhere}.cfmbody p{margin:0 0 8px}.cfmlist{margin:0 0 10px;padding-left:20px}.cfmlist li{margin:2px 0}
-.cfmbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.cfmbtns .btn{min-width:0;padding:0 8px}
+.cfmbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.cfmbtns .btn{min-width:0;padding:0 8px}.cfmbtns.cfmchoices{grid-template-columns:1fr}.cfmbtns.cfmchoices .btn.choice{min-height:44px;font-weight:800}
 .paycard{border:1px solid var(--line,#e5e7eb);border-radius:12px;padding:10px 12px;margin-bottom:8px;background:#f8fafc}.paygrid{display:flex;flex-direction:column}.payrow{display:grid;grid-template-columns:minmax(0,42%) minmax(0,1fr);gap:8px;padding:6px 0;border-bottom:1px solid #eef0f4;font-size:14px;align-items:baseline}.payrow:last-child{border-bottom:0}.payrow span{color:var(--muted);min-width:0;overflow-wrap:anywhere}.payrow b{min-width:0;overflow-wrap:anywhere;text-align:right}.payrow small{display:block;font-weight:400;color:var(--muted);font-size:12px}.payprompt{background:#fffbeb;border:1px solid #fde68a;color:#92400e;border-radius:10px;padding:8px 10px;font-size:13px;margin-top:6px;overflow-wrap:anywhere}.paynote{color:var(--muted);font-size:12.5px;margin-top:6px;overflow-wrap:anywhere}.paynote.ov{color:#1e3a8a;background:#eff6ff;border-radius:10px;padding:8px 10px}#stOvWrap[hidden]{display:none}.ovchk{display:flex;gap:8px;align-items:center;min-height:44px;font-size:14px}.otrate{font-size:12.5px;margin:2px 0 4px;overflow-wrap:anywhere}.ratechip{display:inline-block;background:#dcfce7;color:#166534;border-radius:999px;padding:0 7px;font-size:11.5px;font-weight:700}.ratechip.comp{background:#ede9fe;color:#5b21b6}.paidbox{margin-top:10px;border-top:1px solid #e5e7eb;padding-top:10px}.paidbox[hidden]{display:none}
 .pdnote{border:1px solid #fcd34d;background:#fffbeb;color:#713f12;border-radius:10px;padding:8px 10px;margin:8px 0;font-size:13.5px;overflow-wrap:anywhere}.pdnote[hidden]{display:none}.pdnote.bad{border-color:#f87171;background:#fef2f2;color:#7f1d1d}.pdnote ul{margin:4px 0 2px;padding-left:18px}.pdnote li{margin:2px 0}.pdnote li.bad{font-weight:600;color:#b91c1c}.pdnt{font-weight:700}.pdcard .tot{padding:8px 6px;min-width:0}.pdcard .tot b{font-size:16px;overflow-wrap:anywhere}.pdcard .tot-row{gap:6px}.pdcard,.pdlog{overflow-x:hidden;min-width:0;max-width:100%}.pdpay{margin:6px 0 2px;font-size:14px;color:#14532d;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:7px 10px}.pdpay:empty{display:none}.pdpay span{font-size:12px;color:#166534}.pdnf{font-size:12px;opacity:.8}.pdscan{margin-bottom:8px}.pdup{display:inline-flex;align-items:center;gap:6px;cursor:pointer}.pdstat{margin-top:6px;font-size:13px;background:#ecfdf5;color:#065f46;border-radius:10px;padding:8px 10px;overflow-wrap:anywhere}.pdstat.bad{background:#fef2f2;color:#991b1b}.pdstat[hidden],.pdwarn[hidden]{display:none}.pdwarn{color:#92400e}#otComp button:disabled{opacity:.4;cursor:not-allowed}.otsplit{margin:10px 0 0}.otsplit[hidden]{display:none}#otCompNote:empty{display:none}.balgrid{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}.balrow{display:grid;grid-template-columns:minmax(0,1fr) 92px;gap:2px 10px;align-items:center}.balrow label{font-weight:700;font-size:14px;min-width:0;overflow-wrap:anywhere}.balrow input{min-width:0;width:100%;box-sizing:border-box}
 .balinfo{grid-column:1 / -1;font-size:12.5px;color:#475569}.balinfo .neg{color:#b91c1c}.baldet{margin:0 0 12px}.baldet summary{min-height:40px;font-weight:700;cursor:pointer}
@@ -3670,7 +3686,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
 
   var S = load();
   var T = E.today(), tp = E.parts(T);
-  var ui = { tab: 'schedule', calY: tp.y, calM: tp.m, lookup: T, otYear: tp.y, payYear: tp.y, leaveYear: tp.y, onbSquad: null, x15Year: tp.y, otView: 'ot', otSel: false, otSelIds: {}, pdSel: false, pdSelIds: {}, otFilter: 'all', otCollapse: {} };
+  var ui = { tab: 'schedule', calY: tp.y, calM: tp.m, lookup: T, otYear: tp.y, payYear: tp.y, leaveYear: tp.y, onbSquad: null, x15Year: tp.y, otView: 'ot', otSel: false, otSelIds: {}, pdSel: false, pdSelIds: {}, otFilter: 'all', otCollapse: {}, calPeek: null, calPeekPicker: false };
 
   function U() { return S.settings.unit; }
   var PDU = C.pdu;
@@ -3954,6 +3970,46 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
 
   function onbTourToggle(k) { var pdu = /^pdu/.test(k || ''), a = document.getElementById('onbTourWrap'), b = document.getElementById('onbPduInfo'); if (a) a.hidden = pdu; if (b) b.hidden = !pdu; }
+  function peekLabel(peek) {
+    if (!peek) return '';
+    if (peek.kind === 'all') {
+      return peek.chart === '12hr' ? 'All 12 hour tour squads' : peek.chart === 'pdu' ? 'All PDU teams' : 'All patrol squads';
+    }
+    var ci = E.chartInfo(peek.key, U());
+    return ci ? ci.name.replace(' · ', ' — ') : String(peek.key || '');
+  }
+  function otherCalPickerHtml() {
+    var peek = ui.calPeek || null, onAll = function (c) { return peek && peek.kind === 'all' && peek.chart === c ? ' on' : ''; }, onKey = function (k) { return peek && peek.kind === 'chart' && peek.key === k ? ' on' : ''; };
+    var h = '<div class="calpeek-pick" id="otherCalPicker"><div class="muted" style="font-size:12px;margin-bottom:6px">Temporary view only. Your chart and entries are not changed.</div>';
+    h += '<div class="peek-gl">Overviews</div><div class="picks">';
+    h += '<button type="button" class="pick' + onAll('patrol') + '" data-act="calPeek" data-kind="all" data-chart="patrol">All patrol squads</button>';
+    h += '<button type="button" class="pick' + onAll('12hr') + '" data-act="calPeek" data-kind="all" data-chart="12hr">All 12 hour tour squads</button>';
+    h += '<button type="button" class="pick' + onAll('pdu') + '" data-act="calPeek" data-kind="all" data-chart="pdu">All PDU teams</button></div>';
+    h += '<div class="peek-gl">Patrol</div><div class="picks">';
+    E.unit(U()).squads.forEach(function (sq) {
+      h += '<button type="button" class="pick' + onKey(sq.id) + '" data-act="calPeek" data-kind="chart" data-key="' + sq.id + '" style="background:' + sq.color + ';color:' + sq.ink + '">' + esc(sq.name) + '</button>';
+    });
+    h += '</div><div class="peek-gl">12 hour tour RDO</div><div class="picks">';
+    C.tour12.squads.forEach(function (sq) {
+      var k = E.tour12Key(sq.id);
+      h += '<button type="button" class="pick' + onKey(k) + '" data-act="calPeek" data-kind="chart" data-key="' + k + '" style="background:' + sq.color + ';color:' + sq.ink + '">' + esc(sq.name) + '</button>';
+    });
+    h += '</div><div class="peek-gl">Steady RDO</div><div class="picks">';
+    C.steady.quickPairs.concat(C.steady.customPairs).forEach(function (a) {
+      var k = E.steadyKey(a);
+      h += '<button type="button" class="pick' + onKey(k) + '" data-act="calPeek" data-kind="chart" data-key="' + k + '">' + E.DOW3[a] + '/' + E.DOW3[(a + 1) % 7] + '</button>';
+    });
+    h += '</div><div class="peek-gl">PDU</div><div class="picks">';
+    PDU.teams.forEach(function (t) {
+      var k = E.pduKey(t.id);
+      h += '<button type="button" class="pick' + onKey(k) + '" data-act="calPeek" data-kind="chart" data-key="' + k + '">' + esc(t.name) + '</button>';
+    });
+    return h + '</div></div>';
+  }
+  function peekBannerHtml(peek) {
+    return '<div class="peekbar" id="calPeekBar" data-sec="1d"><div class="peekmsg">Viewing: ' + esc(peekLabel(peek)) + '</div>' +
+      '<button type="button" class="btn sm" data-act="calPeekBack">Back to my calendar</button></div>';
+  }
   function viewSchedule() {
     var sq = mySquad(), u = U(), po = payOpts();
     // countdown
@@ -3968,22 +4024,34 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var np = E.nextPayday(T, po), pn = np - T;
     var pd = '<div class="big">' + (pn === 0 ? 'Today' : pn === 1 ? 'Tomorrow' : 'In ' + pn + ' days') + '</div><div class="small">' + fmt(np) + '</div>';
     var tt = E.dayTour(T, sq.id, tourOpts());
-    var todayLine = '<div class="card" style="padding:10px 14px" data-sec="1a"><b>Today:</b> ' + (tt.working ? (tt.onLeave ? 'On leave' : 'Working ' + tourText(tt)) + (tt.extra ? ' (extra tour, overtime)' : tt.ddWork ? ' (day for day)' : '') : 'Off' + (tt.dropped ? ' (not working)' : tt.ddOff ? ' (day for day)' : '')) +
-      '<div class="muted" style="font-size:12.5px">' + (sq.type === 'pdu' ? esc(sq.name) + ' &middot; ' + (tt.pdu ? '<span class="cdot" style="background:' + pduColorInfo(T).color + '"></span> ' + pduColorInfo(T).name + ' day &middot; ' : '') + shiftText('pm') + ' &middot; ' + shiftText('am') : 'Regular tour ' + E.fmtHM(S.profile.tourLen) + (S.profile.tourStart ? ' from ' + S.profile.tourStart : '')) + '</div></div>';
-    if (Object.keys(E.validateProfile(S.profile)).length) todayLine = '<div class="ddpair" data-sec="1h" style="border-color:#b45309;background:#fffbeb;margin:0 0 12px"><b>Finish your profile</b><div style="font-size:13.5px">Rank, first and last name, tax number and reference number are required.</div><button class="btn sm" data-act="settings" style="margin-top:6px">Open settings</button></div>' + todayLine;
-    var html = suggestBar('Calendar') + todayLine + '<div class="row"><div class="card stat" data-sec="1b"><div class="lbl">Next day off</div>' + cd + '</div><div class="card stat" data-sec="1c"><div class="lbl">Next payday</div>' + pd + '</div></div>';
+    var todayBig = tt.working ? (tt.onLeave ? 'On leave' : 'Working') + (tt.extra ? ' · OT' : tt.ddWork ? ' · D/D' : '') : 'Off' + (tt.dropped ? ' · not working' : tt.ddOff ? ' · D/D' : '');
+    var todaySmall = tt.working && !tt.onLeave ? tourText(tt) : (sq.type === 'pdu' ? esc(sq.name) + (tt.pdu ? ' · ' + pduColorInfo(T).name : '') : (S.profile.tourStart ? S.profile.tourStart + ' · ' : '') + E.fmtHM(S.profile.tourLen));
+    var todayLine = '<div class="home-strip" id="homeStrip">' +
+      '<div class="hstat hstat-today" data-sec="1a"><div class="lbl">Today</div><div class="big">' + todayBig + '</div><div class="small">' + todaySmall + '</div></div>' +
+      '<div class="hstat" data-sec="1b"><div class="lbl">Next off</div>' + cd + '</div>' +
+      '<div class="hstat" data-sec="1c"><div class="lbl">Payday</div>' + pd + '</div></div>';
+    if (Object.keys(E.validateProfile(S.profile)).length) todayLine = '<div class="ddpair" data-sec="1h" style="border-color:#b45309;background:#fffbeb;margin:0 0 10px"><b>Finish your profile</b><div style="font-size:13.5px">Rank, first and last name, tax number and reference number are required.</div><button class="btn sm" data-act="settings" style="margin-top:6px">Open settings</button></div>' + todayLine;
+    var html = suggestBar('Calendar') + todayLine;
 
     // calendar
     var y = ui.calY, m = ui.calM, first = E.fromYMD(y, m, 1), last = E.fromYMD(m === 12 ? y + 1 : y, m === 12 ? 1 : m + 1, 1) - 1;
-    var ob = otByDate(), all = S.settings.calendarView === 'all';
+    var ob = otByDate();
+    var peek = ui.calPeek || null, peeking = !!peek, peekAll = peeking && peek.kind === 'all', peekAllKind = peekAll ? (peek.chart || 'patrol') : '';
+    var calKey = (peeking && peek.kind === 'chart') ? peek.key : null;
+    var calInfo = calKey ? (E.chartInfo(calKey, u) || { name: 'Chart', short: '?', color: '#64748b', ink: '#fff', type: E.parseChart(calKey).type }) : sq;
+    var calSq = calKey ? Object.assign({}, calInfo, { id: calKey }) : sq;
+    var all = peekAll;
+    var pdView = peekAll ? peekAllKind === 'pdu' : calSq.type === 'pdu';
+    var t12View = peekAll ? peekAllKind === '12hr' : calSq.type === '12hr';
+    var calOpts = peeking ? { defaultLen: calSq.tourLen || S.profile.tourLen, defaultStart: S.profile.tourStart || '', hist: null, tours: {}, leave: {}, unit: u, extra15: {} } : tourOpts();
     var cells = DOW.map(function (d) { return '<div class="dow">' + d + '</div>'; }).join('');
     for (var b = 0; b < E.parts(first).dow; b++) cells += '<div class="cell blank"></div>';
-    var rdoCount = 0, chgMap = {}, chgList = [], pdView = sq.type === 'pdu', t12View = sq.type === '12hr';
-    E.chartChanges(myWho()).forEach(function (c) { chgMap[c.day] = c; if (c.day >= first && c.day <= last) chgList.push(c); });
+    var rdoCount = 0, chgMap = {}, chgList = [];
+    if (!peeking) E.chartChanges(myWho()).forEach(function (c) { chgMap[c.day] = c; if (c.day >= first && c.day <= last) chgList.push(c); });
     for (var d = first; d <= last; d++) {
-      var iso = E.toISO(d), mine = E.isRDO(d, sq.id, u), off = t12View ? E.tour12OffSquad(d) : E.squadsOff(d, u)[0], tr = E.dayTour(d, sq.id, tourOpts()), cs = mySquad(d), chg = chgMap[d];
+      var iso = E.toISO(d), mine = peekAll ? false : E.isRDO(d, calSq.id, u), off = t12View ? E.tour12OffSquad(d) : E.squadsOff(d, u)[0], tr = E.dayTour(d, calSq.id, calOpts), cs = peeking ? calSq : mySquad(d), chg = peeking ? null : chgMap[d];
       if (!tr.working || tr.extra) rdoCount++;
-      var lv = S.leave[iso], lt = lv && lvType(lv.type), ots = ob[iso];
+      var lv = peeking ? null : S.leave[iso], lt = lv && lvType(lv.type), ots = peeking ? null : ob[iso];
       var style = '', tag = '', pc = tr.pdu ? PDU.colors[tr.pduColor] : null, pdAll = all && pdView;
       if (pdAll) { var pon = E.pduTeamsOn(d), dc = pduColorInfo(d); style = 'background:' + dc.color + ';color:' + dc.ink; tag = mine ? 'OFF' : pon.rdo.short + ' off'; }
       else if (all) { style = 'background:' + off.color + ';color:' + off.ink; tag = mine ? 'OFF' : (t12View ? off.short : 'S' + off.short) + ' off'; }
@@ -4014,7 +4082,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     }
     html += '<div class="card" data-sec="1d"><div class="monthnav"><button class="navbtn" data-act="calPrev" aria-label="Previous month">&lsaquo;</button>' +
       '<div class="title">' + MONTHS[m - 1] + ' ' + y + '</div><button class="navbtn" data-act="calNext" aria-label="Next month">&rsaquo;</button></div>' +
-      '<div class="seg" style="margin-bottom:10px"><button data-act="calView" data-v="mine" class="' + (all ? '' : 'on') + '">My schedule</button><button data-act="calView" data-v="all" class="' + (all ? 'on' : '') + '">' + (pdView ? 'All PDU teams' : 'All squads') + '</button></div>' +
+      '<div class="seg" style="margin-bottom:10px"><button data-act="calView" data-v="mine" class="' + (peeking || ui.calPeekPicker ? '' : 'on') + '">My schedule</button><button data-act="calView" data-v="other" class="' + (peeking || ui.calPeekPicker ? 'on' : '') + '">Other Calendars</button></div>' +
+      (ui.calPeekPicker ? otherCalPickerHtml() : '') +
+      (peeking ? peekBannerHtml(peek) : '') +
       '<div class="cal">' + cells + '</div>' +
       '<div class="calfoot"><span class="cfcount">' + rdoCount + ' days off this month</span><span class="cfbtns">' + ((y !== tp.y || m !== tp.m) ? '<button class="btn sm" data-act="calToday">Today</button>' : '') +
       '<button class="btn sm legbtn' + (S.settings.legendOpen ? ' on' : '') + '" data-act="legendToggle" aria-expanded="' + (S.settings.legendOpen ? 'true' : 'false') + '" aria-controls="calLegend">Legend <span class="chev" aria-hidden="true">&#9662;</span></button></span></div>' +
@@ -4022,8 +4092,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       (all && pdView ? ['blue', 'yellow', 'green'].map(function (x) { var t = PDU.teams.filter(function (tm) { return tm.map[x] === 'rdo'; })[0]; return '<span><i class="sw" style="background:' + PDU.colors[x].color + '"></i>' + PDU.colors[x].name + ': ' + esc(t.name) + ' off</span>'; }).join('')
            : all && t12View ? C.tour12.squads.map(function (s) { return '<span><i class="sw" style="background:' + s.color + '"></i>' + esc(s.name) + ' off</span>'; }).join('')
            : all ? E.unit(u).squads.map(function (s) { return '<span><i class="sw" style="background:' + s.color + '"></i>' + esc(s.name) + ' off</span>'; }).join('')
-           : pdView ? '<span><i class="sw" style="background:' + PDU.shifts.pm.color + '"></i>PM 4p–1a (9:00)</span><span><i class="sw" style="background:#fff"></i>AM 8a–4p (8:00)</span><span><i class="sw" style="background:' + sq.color + '"></i>Your RDO (' + esc(sq.colorName) + ')</span><span><i class="sw" style="background:#fff;box-shadow:inset 0 5px 0 ' + PDU.colors.blue.color + '"></i>Top stripe = chart color</span><span><i class="m-p15" style="font-style:normal;font-size:10px;font-weight:800;padding:1px 4px;border-radius:4px">+15</i>Extra 15 min (PM 9:15, AM 8:15)</span>'
-           : '<span><i class="sw" style="background:' + sq.color + '"></i>Your RDO</span><span><i class="sw" style="background:#f7f9fc"></i>Workday</span>') +
+           : pdView ? '<span><i class="sw" style="background:' + PDU.shifts.pm.color + '"></i>PM 4p–1a (9:00)</span><span><i class="sw" style="background:#fff"></i>AM 8a–4p (8:00)</span><span><i class="sw" style="background:' + calSq.color + '"></i>' + (peeking ? esc(calSq.name) + ' RDO' : 'Your RDO') + ' (' + esc(calSq.colorName) + ')</span><span><i class="sw" style="background:#fff;box-shadow:inset 0 5px 0 ' + PDU.colors.blue.color + '"></i>Top stripe = chart color</span><span><i class="m-p15" style="font-style:normal;font-size:10px;font-weight:800;padding:1px 4px;border-radius:4px">+15</i>Extra 15 min (PM 9:15, AM 8:15)</span>'
+           : '<span><i class="sw" style="background:' + calSq.color + '"></i>' + (peeking ? esc(calSq.name) + ' RDO' : 'Your RDO') + '</span><span><i class="sw" style="background:#f7f9fc"></i>Workday</span>') +
       '<span><i class="m-ot" style="font-style:normal;font-size:10px;font-weight:800;padding:1px 4px;border-radius:4px;background:var(--ot);color:#fff">OT</i>Overtime</span>' +
       '<span><i style="font-style:normal;font-size:10px;font-weight:800;padding:1px 4px;border-radius:4px;background:var(--pay);color:#fff">PAY</i>Payday</span>' +
       '<span><i class="m-tour" style="font-style:normal;font-size:10px;font-weight:800;padding:1px 4px;border-radius:4px">9:15</i>Modified tour</span><span><i class="m-nx" style="font-style:normal;font-size:10px;font-weight:800;padding:1px 4px;border-radius:4px">22&rarr;+1</i>Starts 20:00+ (counts next day)</span>' +
@@ -5894,6 +5964,28 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (wk && !wk.hidden) wk.scrollIntoView({ block: 'center' });
     return true;
   }
+  function askWorkdayRdoKind(prevSel) {
+    choiceDlg({
+      title: 'Record this RDO',
+      body: '<p>This is a scheduled workday. Do you want to record it as Day-for-Day or as RDO Overtime?</p>',
+      choices: [
+        { id: 'dd', label: 'Day-for-Day' },
+        { id: 'ot', label: 'RDO Overtime' }
+      ],
+      onCancel: function () { setDaySel(prevSel || 'working'); var tb = document.getElementById('tourBox'); if (tb) { tb.dataset.status = tb.dataset.orig || ''; tb.dataset.asked = ''; } syncDayEntry(); },
+      onChoice: function (id) {
+        var tb = document.getElementById('tourBox');
+        setDaySel('rdo');
+        if (tb) {
+          tb.dataset.status = id === 'dd' ? 'ddoffnew' : 'rdootoff';
+          tb.dataset.asked = '1';
+        }
+        syncDayEntry();
+        var dp = document.getElementById('ddPicker');
+        if (dp && !dp.hidden && dp.scrollIntoView) dp.scrollIntoView({ block: 'center' });
+      }
+    });
+  }
   function dayIsWorkdayForSched() {
     var sel = daySel(), box = document.getElementById('tourBox'), rdo = !!(box && box.dataset.rdo === '1'), st = box ? box.dataset.status : '';
     return (!rdo && sel !== 'rdo' && !dayIsLeave(sel)) || st === 'dd' || st === 'ddnew';
@@ -5909,7 +6001,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (lh) lh.hidden = !(rdo && leave);
     var showPrompt = rdo && sel === 'working' && st !== 'dd' && st !== 'ddoff';
     if (wk) wk.hidden = !showPrompt;
-    if (dp) dp.hidden = st !== 'ddnew';
+    if (dp) dp.hidden = st !== 'ddnew' && st !== 'ddoffnew' && st !== 'rdootoff';
+    var dpl = document.getElementById('ddPickLabel'), dph = document.getElementById('ddSwapHint');
+    if (dpl) dpl.textContent = st === 'rdootoff' ? 'RDO you will work as overtime (same week)' : st === 'ddoffnew' ? 'RDO you will work instead (same week)' : (dpl.textContent || '');
+    if (dph) dph.textContent = (st === 'ddoffnew' || st === 'rdootoff') ? 'Must be one of your scheduled RDOs.' : 'Must be one of your scheduled workdays.';
     if (lw) lw.hidden = false;
     syncSchedBoxVisibility();
     var th = document.getElementById('tourTimeHint');
@@ -5918,7 +6013,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       ? 'Enter the start and end of the tour. The whole span is one overtime entry (for example 01:30 to 16:00 is 14:30 of overtime). 24-hour time: type digits (130 &rarr; 01:30).'
       : th.dataset.def;
     var help = document.getElementById('tourHelp');
-    if (help) help.textContent = st === 'work' ? 'The hours you work are saved as one overtime tour, using the overtime rules for your rank (Cash / Time / Split, and the Captain cap).' : st === 'ddnew' || st === 'dd' ? 'Day for day: this RDO counts as a regular workday; the day you pick below becomes an RDO.' : 'Pick one, then enter the tour times.';
+    if (help) help.textContent = st === 'work' ? 'The hours you work are saved as one overtime tour, using the overtime rules for your rank (Cash / Time / Split, and the Captain cap).' : st === 'ddnew' || st === 'dd' ? 'Day for day: this RDO counts as a regular workday; the day you pick below becomes an RDO.' : st === 'ddoffnew' ? 'Day for day: this workday becomes an RDO; the RDO you pick below is the day you work.' : st === 'rdootoff' ? 'This workday is recorded as not working. Pick the RDO you will work; its hours are saved as RDO overtime.' : 'Pick one, then enter the tour times.';
     var now = document.getElementById('tourNow');
     if (now) now.hidden = !!(rdo && sel === 'working' && !st);
     if (box) {
@@ -5997,7 +6092,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       html += '<div id="ddPicker" hidden><div class="field"><label>Take this workday off instead (same week)</label><div class="picks" style="margin-top:0">' + (sugg || '<span class="muted" style="font-size:13px">No open workdays this week; pick any date below.</span>') + '</div></div>' +
         '<div class="field"><label for="ddSwap">Or any date</label><input type="date" id="ddSwap"><div class="hint">Must be one of your scheduled workdays.</div></div></div>' + lenFields;
     } else {
+      var rdoSugg = '', wsR = d - E.parts(d).dow, iR;
+      for (iR = 0; iR < 7; iR++) { var yR = wsR + iR, yT = E.dayTour(yR, sq.id, tourOpts()); if (yT.rdo && !yT.modified) rdoSugg += '<button type="button" class="pick" data-act="ddPick" data-v="' + E.toISO(yR) + '">' + fmt(yR, 'short').replace(',', '') + '</button>'; }
       html += lenFields;
+      html += '<div id="ddPicker"' + (st === 'ddoffnew' || st === 'rdootoff' ? '' : ' hidden') + '><div class="field"><label id="ddPickLabel">' + (st === 'rdootoff' ? 'RDO you will work as overtime (same week)' : 'RDO you will work instead (same week)') + '</label><div class="picks" style="margin-top:0">' + (rdoSugg || '<span class="muted" style="font-size:13px">No open RDOs this week; pick any date below.</span>') + '</div></div>' +
+        '<div class="field"><label for="ddSwap">Or any date</label><input type="date" id="ddSwap"><div class="hint" id="ddSwapHint">Must be one of your scheduled RDOs.</div></div></div>';
     }
     html += '<div class="muted" style="font-size:13px" id="tourNow">' + (t.working ? 'Currently: working ' + tourText(t) + (t.extra ? ' (overtime)' : '') + (pduWork && t.startChanged && t.lenKept ? ' &middot; ' + PDU.shifts[t.shift].label + ' day, start changed, still counts ' + E.fmtHM(t.len) : '') : 'Currently: off') + '</div>' +
       (t.modified && !t.dd && !addEntry ? '<button type="button" class="btn sm" data-act="tourReset" data-d="' + d + '" style="margin-top:8px">Reset to default</button>' : '') + '</div>';
@@ -6154,6 +6253,26 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     slipDel(iso).then(function () { if (r.removed.slip) slipQueue(iso, 'del'); }, function () {}).then(fin, fin); // slip PDF: this device (IndexedDB) and the cloud bucket
   }
   // Small in-app confirm (native confirm() can't be styled and blocks the page)
+  function choiceDlg(o) {
+    var old = document.getElementById('cfmDlg'); if (old) old.remove();
+    var w = document.createElement('div'); w.id = 'cfmDlg'; w.className = 'cfmwrap';
+    var choices = (o.choices || []).map(function (c) {
+      return '<button type="button" class="btn primary choice" data-choice="' + esc(c.id) + '">' + esc(c.label) + '</button>';
+    }).join('');
+    w.innerHTML = '<div class="cfm" role="dialog" aria-modal="true" aria-labelledby="cfmT"><h3 id="cfmT">' + esc(o.title) + '</h3><div class="cfmbody">' + o.body + '</div><div class="cfmbtns cfmchoices">' + choices + '<button type="button" class="btn" id="cfmNo">Cancel</button></div></div>';
+    document.body.appendChild(w);
+    var close = function () { w.remove(); document.removeEventListener('keydown', key, true); }, key = function (e) { if (e.key === 'Escape') { e.stopPropagation(); if (o.onCancel) o.onCancel(); close(); } };
+    document.addEventListener('keydown', key, true);
+    w.addEventListener('click', function (e) {
+      if (e.target === w || e.target.id === 'cfmNo') { if (o.onCancel) o.onCancel(); close(); }
+      else if (e.target && e.target.getAttribute && e.target.getAttribute('data-choice')) {
+        var id = e.target.getAttribute('data-choice');
+        close();
+        if (o.onChoice) o.onChoice(id);
+      }
+    });
+    var first = w.querySelector('[data-choice]'); if (first) first.focus();
+  }
   function confirmDlg(o) {
     var old = document.getElementById('cfmDlg'); if (old) old.remove();
     var w = document.createElement('div'); w.id = 'cfmDlg'; w.className = 'cfmwrap';
@@ -7074,7 +7193,21 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     calPrev: function () { ui.calM--; if (ui.calM < 1) { ui.calM = 12; ui.calY--; } render(); },
     calNext: function () { ui.calM++; if (ui.calM > 12) { ui.calM = 1; ui.calY++; } render(); },
     calToday: function () { ui.calY = tp.y; ui.calM = tp.m; render(); },
-    calView: function (t) { S.settings.calendarView = t.dataset.v; save(); render(); },
+    calView: function (t) {
+      var v = t.dataset.v;
+      if (v === 'mine') { ui.calPeek = null; ui.calPeekPicker = false; render(); return; }
+      if (v === 'other') { ui.calPeekPicker = !ui.calPeekPicker; render(); return; }
+      // legacy data-v="all" opens the temporary picker (not saved)
+      if (v === 'all') { ui.calPeekPicker = true; render(); return; }
+    },
+    calPeek: function (t) {
+      var kind = t.dataset.kind;
+      if (kind === 'all') ui.calPeek = { kind: 'all', chart: t.dataset.chart || 'patrol' };
+      else ui.calPeek = { kind: 'chart', key: t.dataset.key };
+      ui.calPeekPicker = false;
+      render();
+    },
+    calPeekBack: function () { ui.calPeek = null; ui.calPeekPicker = false; render(); },
     day: function (t) { var d = +t.dataset.d; if (E.dayHasEntries(S, E.toISO(d))) daySummary(d); else daySheet(d); },
     dayEdit: function (t) { daySheet(+t.dataset.d, { addEntry: t.dataset.add === '1', entryId: t.dataset.eid || '' }); var f = t.dataset.focus, el = f === 'paid' ? document.getElementById('pdSec') : f === 'asg' ? document.getElementById('asgBox') : f === 'note' ? document.getElementById('lvNote') : document.getElementById('dayEntry'); if (el && el.scrollIntoView) el.scrollIntoView({ block: 'start' }); if (f === 'paid') pdSheet(E.toISO(+t.dataset.d)); },
     lenToggle: function () {
@@ -7090,7 +7223,13 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       else closeDaySel();
     },
     lvPick: function (t) {
-      var tb = document.getElementById('tourBox'), id = t.dataset.t, rdo = tb && tb.dataset.rdo === '1';
+      var tb = document.getElementById('tourBox'), id = t.dataset.t, rdo = tb && tb.dataset.rdo === '1', prev = daySel();
+      // Scheduled workday flipped to RDO: ask Day-for-Day vs RDO Overtime before changing 6b. Already-an-RDO and other statuses do not ask.
+      if (id === 'rdo' && tb && !rdo && prev !== 'rdo' && tb.dataset.orig !== 'dd' && tb.dataset.orig !== 'ddoff') {
+        closeDaySel();
+        askWorkdayRdoKind(prev);
+        return;
+      }
       setDaySel(id);
       if (tb && tb.dataset.orig !== 'dd' && tb.dataset.orig !== 'ddoff') {
         if (id === 'rdo') { tb.dataset.status = rdo ? '' : 'off'; tb.dataset.asked = ''; }
@@ -7110,8 +7249,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (asgErr) { var ae = document.getElementById('asgDetail-err'); ae.textContent = asgErr; document.getElementById('asgDetail').classList.add('bad'); document.getElementById('asgDetail').focus(); return toast(asgErr); }
       var box = document.getElementById('tourBox'), status = box.dataset.status, orig = box.dataset.orig, lenTxt = document.getElementById('dayLen').value.trim(), len = lenTxt ? E.parseHM(lenTxt) : null, start = document.getElementById('dayStart').value.trim();
       var mine = box.dataset.rdo === '1', rdoOt = null;
-      if (rawType === 'rdo') status = (orig === 'ddoff' || orig === 'dd') ? orig : (mine ? '' : 'off');
-      if (rawType === 'rdo' && status !== 'dd' && status !== 'ddoff') { start = ''; end = ''; len = null; lenTxt = ''; }
+      if (rawType === 'rdo') {
+        if (status !== 'ddoffnew' && status !== 'rdootoff') status = (orig === 'ddoff' || orig === 'dd') ? orig : (mine ? '' : 'off');
+      }
+      if (rawType === 'rdo' && status !== 'dd' && status !== 'ddoff' && status !== 'ddoffnew' && status !== 'rdootoff') { start = ''; end = ''; len = null; lenTxt = ''; }
       if (rawType === 'working' && mine) {
         if (status === 'paid') status = '';
         else if (status === '' || status === 'off') return toast('Is this a day-for-day or overtime?');
@@ -7184,6 +7325,24 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         if (stt.modified) return toast(fmt(sd) + ' already has a change; reset it first');
         S.tours = E.setDayForDay(S.tours, iso, sw, { len: len, start: start }); msg = 'Day for day set: off ' + fmt(sd);
         if (S.tours[iso]) stampTimes(S.tours[iso]);
+      } else if (status === 'ddoffnew') {
+        var swOff = document.getElementById('ddSwap').value; if (!swOff) return toast('Pick the RDO you will work');
+        var sdOff = E.toDay(swOff), stOff = E.dayTour(sdOff, sq.id, tourOpts());
+        if (sdOff === d) return toast('Pick a different day');
+        if (!stOff.rdo) return toast(fmt(sdOff) + ' is not an RDO; pick a scheduled RDO');
+        if (stOff.modified) return toast(fmt(sdOff) + ' already has a change; reset it first');
+        S.tours = E.setDayForDay(S.tours, swOff, iso, { len: len, start: start }); msg = 'Day for day set: off ' + fmt(d) + ', work ' + fmt(sdOff);
+        if (S.tours[iso]) stampTimes(S.tours[iso]);
+      } else if (status === 'rdootoff') {
+        var swOt = document.getElementById('ddSwap').value; if (!swOt) return toast('Pick the RDO you will work as overtime');
+        var sdOt = E.toDay(swOt), stOt = E.dayTour(sdOt, sq.id, tourOpts());
+        if (sdOt === d) return toast('Pick a different day');
+        if (!stOt.rdo) return toast(fmt(sdOt) + ' is not an RDO; pick a scheduled RDO');
+        if (stOt.modified) return toast(fmt(sdOt) + ' already has a change; reset it first');
+        S.tours[iso] = endX({ status: 'off', start: '', len: null, entries: (S.tours[iso] || {}).entries });
+        S.tours[swOt] = Object.assign({}, S.tours[swOt] || {}, { status: 'work' });
+        ui.openRdoOt = swOt;
+        msg = 'Workday marked off. Enter the overtime tour on ' + fmt(sdOt);
       } else if (status === 'dd') { var prevDd = S.tours[iso] || {}; S.tours[iso] = endX({ status: 'dd', swap: prevDd.swap, len: len, start: start, entries: prevDd.entries });
       } else if (status === 'ddoff') { /* paired workday: only leave/note editable */
       } else {
@@ -7216,7 +7375,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var hadAsg = !!S.assignments[iso], ca = E.cleanAssignment(asgIn);
       if (ca) { var prevA = S.assignments[iso]; if (!prevA || prevA.type !== ca.type || prevA.detail !== ca.detail || prevA.notes !== ca.notes || (prevA.address || '') !== (ca.address || '') || (prevA.place || '') !== (ca.place || '') || (prevA.boro || '') !== (ca.boro || '')) { ca.updated = new Date().toISOString(); S.assignments[iso] = ca; if (!msg) msg = (hadAsg ? 'Assignment updated: ' : 'Assignment saved: ') + E.assignmentLabel(ca); } }
       else if (hadAsg) { delete S.assignments[iso]; if (!msg) msg = 'Assignment removed'; }
-      save(); closeSheet(); render(); var dm = msg || (type ? lvType(type).label + ' saved' : note ? 'Note saved' : 'Day saved'); if (E.dayHasEntries(S, iso)) daySummary(+t.dataset.d, dm); toast(dm);
+      save(); closeSheet(); render(); var dm = msg || (type ? lvType(type).label + ' saved' : note ? 'Note saved' : 'Day saved'); var openOt = ui.openRdoOt; ui.openRdoOt = ''; if (openOt) { toast(dm); daySheet(E.toDay(openOt)); } else { if (E.dayHasEntries(S, iso)) daySummary(+t.dataset.d, dm); toast(dm); }
     },
     leaveNew: function (t) {
       var asg = t && t.dataset && t.dataset.kind === 'asg';

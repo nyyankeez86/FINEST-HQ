@@ -11,10 +11,10 @@ so they stay stable when sections move. New sections get the next free letter; r
 
 | Page | Section | What |
 |---|---|---|
-| **1 Schedule** | 1a | Today (status line) |
-| | 1b | Next day off |
-| | 1c | Next payday |
-| | 1d | Calendar (month grid, legend, chart changes; 12 hour tour RDO colors Squad A blue / Squad B red) |
+| **1 Schedule** | 1a | Today (compact card in the home strip: status line and tour times) |
+| | 1b | Next day off (compact card in the home strip) |
+| | 1c | Next payday (compact card in the home strip) |
+| | 1d | Calendar (month grid, legend, chart changes; 12 hour tour RDO colors Squad A blue / Squad B red). Other Calendars is a temporary view of any other chart or overview (patrol squads, 12 hour tour RDO A/B, steady RDO, PDU, or an all-squads overview) without changing the user’s settings, entries, or OT. A banner such as “Viewing: 12 hour tour RDO — Squad B” and a one-tap “Back to my calendar” button appear while peeking. The view is not saved to the profile or sync and resets on reload or Back. |
 | | 1e | Upcoming assignments |
 | | 1f | Retirement countdown |
 | | 1g | Sync to Apple / Google Calendar button |
@@ -42,7 +42,7 @@ so they stay stable when sections move. New sections get the next free letter; r
 | Page | Section | What |
 |---|---|---|
 | **6 Day page** | 6a | Status line (your schedule for that day only by default) |
-| | 6b | This day (leave / status picker) |
+| | 6b | This day (leave / status picker). Changing a scheduled workday’s status to RDO immediately opens a dialog asking whether the day is Day-for-Day or RDO Overtime, then routes to the matching existing recording flow. Cancel reverts 6b to its previous status. The prompt is not shown when the day was already an RDO, or for other status changes. |
 | | 6c | Tour this day: Time actually worked only (framed Date from / Date to, Scheduled time button, empty-until-entered hint on focus). Typing Tour start live-fills Tour end from the default tour length (end date moves if it crosses midnight). A manual Tour end is kept until start is edited again. Time scheduled to work is not on this screen — it appears on page 8 when overtime is incurred. Chart time for the day is shown under the tour when it accrues or is pending. |
 | | 6d | Assignment (court picker includes NYC Family Court in each borough; sign-in location field reserved, not shown) |
 | | 6e | Paid detail (own section below Assignment: Add paid detail opens page 19; a saved detail shows a summary + Edit). Not an assignment option. |
