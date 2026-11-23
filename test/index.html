@@ -527,6 +527,9 @@ a.dir-tel.mine{color:#0f766e}
 .dirviewseg{display:flex;gap:6px;margin:0 0 10px}
 .dirviewseg .btn{flex:1}
 .dirviewseg .btn.on{background:#0f172a;color:#fff;border-color:#0f172a}
+.dirviewseg.compact{display:flex;gap:0;margin:0;flex:0 0 auto;align-self:center;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:#fff}
+.dirviewseg.compact .btn{flex:0 0 auto;min-height:32px;padding:0 9px;font-size:11px;font-weight:800;border:0;border-radius:0;box-shadow:none;margin:0;line-height:32px}
+.dirviewseg.compact .btn.on{background:#0f172a;color:#fff;border-color:transparent}
 #dirMapWrap{position:relative;z-index:0;margin:0 0 12px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#dbe3ee}
 #dirMap{height:min(62vh,520px);min-height:320px;z-index:0}
 #dirMap .leaflet-container{font:inherit;background:#dbe3ee}
@@ -555,6 +558,10 @@ a.dir-tel.mine{color:#0f766e}
 .cmd-shield img{display:block;width:100%;height:100%;object-fit:contain;object-position:center;pointer-events:none;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))}
 .cmd-shield.mine img{filter:drop-shadow(0 0 3px #f59e0b) drop-shadow(0 1px 2px rgba(0,0,0,.4))}
 .cmd-shield-lab{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);margin:0;padding:0;max-width:66%;font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-weight:800;color:#0b1f3a;text-align:center;line-height:1.05;white-space:nowrap;pointer-events:none}
+.cmd-shield.has-fuel .cmd-shield-lab.with-pump{top:36%}
+.cmd-shield-pump{position:absolute;left:50%;top:63%;transform:translate(-50%,-50%);margin:0;padding:0;line-height:0;pointer-events:none;width:28%;height:auto}
+.cmd-shield-pump.solo{top:50%;width:38%}
+.cmd-shield-pump svg{display:block;width:100%;height:auto}
 .map-cover .cov-sub{font-size:11px;color:#64748b;margin:0 0 2px 0;font-weight:400}
 .fuelchips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 10px}
 .fuelchips .chip{font-weight:800;padding:8px 14px;min-height:40px;font-size:14px;border-width:2px}
@@ -5720,7 +5727,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       b.classList.toggle('on', on);
       b.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
-    if (dirMap) refreshFuelMarkers();
+    if (dirMap) { refreshFuelMarkers(); refreshCommandShields(); }
     var list = document.getElementById('nearestFuelList');
     if (list) fillNearestList(list);
     var empty = document.getElementById('fuelFilterEmpty');
@@ -5772,6 +5779,51 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     // Do not invent sites or add markers until that list is in hand.
     if (dirEvLayer) { try { if (dirMap) dirMap.removeLayer(dirEvLayer); } catch (e) {} dirEvLayer = null; }
   }
+  var FUEL_MERGE_METERS = 75;
+  function fuelCommandId(site) {
+    var id = site && site.id;
+    if (!id) return null;
+    if (id.indexOf('fuel-pct-') === 0) return 'pct-' + id.slice(9);
+    if (id === 'fuel-mts') return 'pct-midtown-south';
+    if (id === 'fuel-mtn') return 'pct-midtown-north';
+    if (id.indexOf('fuel-psa-') === 0) return 'psa-' + id.slice(9);
+    if (id.indexOf('fuel-td-') === 0) return 'td-' + id.slice(8);
+    return null;
+  }
+  function metersBetween(aLat, aLon, bLat, bLon) {
+    return E.haversineMiles(+aLat, +aLon, +bLat, +bLon) * 1609.344;
+  }
+  function fuelSiteMergedTo(cmd, siteMap) {
+    if (!cmd) return null;
+    var sites = C.fuelLocations || [], i, s, cid, ll;
+    for (i = 0; i < sites.length; i++) {
+      s = sites[i];
+      cid = fuelCommandId(s);
+      if (cid !== cmd.id || s.lat == null || s.lon == null) continue;
+      ll = commandLL(cmd, siteMap);
+      if (ll && metersBetween(s.lat, s.lon, ll[0], ll[1]) <= FUEL_MERGE_METERS) return s;
+    }
+    return null;
+  }
+  function fuelIsMerged(site, siteMap) {
+    var cid = fuelCommandId(site);
+    if (!cid || !site) return false;
+    var m = fuelSiteMergedTo(E.commandById(cid), siteMap);
+    return !!(m && m.id === site.id);
+  }
+  function shieldFuelVisible(cmd) {
+    if (ui.dirFuelOn === false) return null;
+    var s = fuelSiteMergedTo(cmd);
+    if (!s) return null;
+    return E.fuelMatches(s, fuelFilter()) ? s : null;
+  }
+  function commandFuelHtml(cmd) {
+    var site = fuelSiteMergedTo(cmd);
+    if (!site) return '';
+    var auto = site.noAuto ? '<p class="fuel-rmp">Not accessible by automobile. Left out of Nearest.</p>' : '';
+    return '<div class="cmd-fuel" data-fuel-id="' + esc(site.id) + '"><p style="margin:8px 0 6px"><strong>Fuel:</strong> ' + esc(fuelTypeLabels(site)) + '</p>' +
+      fuelRmpHtml(site) + auto + fuelSourceHtml() + '</div>';
+  }
   function refreshFuelMarkers() {
     if (!dirMap || typeof L === 'undefined') return;
     if (dirFuelLayer) { dirMap.removeLayer(dirFuelLayer); dirFuelLayer = null; }
@@ -5780,6 +5832,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     dirFuelLayer = L.layerGroup();
     (C.fuelLocations || []).forEach(function (site) {
       if (site.lat == null || site.lon == null) return;
+      if (fuelIsMerged(site)) return;
       if (!E.fuelMatches(site, types)) return;
       var m = L.marker([site.lat, site.lon], { icon: fuelIcon(site), title: site.name, riseOnHover: true, keyboard: true });
       m.on('click', function () { fuelSiteSheet(site); });
@@ -5846,9 +5899,15 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var w = spec.w + (isMine ? (spec.text ? 6 : 4) : 0);
     var d = shieldDims(w);
     var label = commandShieldLabel(cmd);
-    var lab = (spec.text && label) ? ('<span class="cmd-shield-lab" style="font-size:' + shieldLabelFont(label, d.w) + 'px">' + esc(label) + "</span>") : "";
-    var html = '<div class="cmd-shield' + (isMine ? " mine" : "") + '" data-id="' + esc(cmd.id) + '" data-kind="' + esc(cmd.kind) + '">' +
-      '<img src="' + SHIELD_SRC + '" alt="" width="' + d.w + '" height="' + d.h + '" draggable="false">' + lab + "</div>";
+    var fuel = shieldFuelVisible(cmd);
+    var showPump = !!(fuel && d.w >= 24);
+    var labCls = 'cmd-shield-lab' + (showPump && spec.text ? ' with-pump' : '');
+    var lab = (spec.text && label) ? ('<span class="' + labCls + '" style="font-size:' + shieldLabelFont(label, d.w) + 'px">' + esc(label) + "</span>") : "";
+    var pumpSz = Math.max(8, Math.round(d.w * (spec.text ? 0.28 : 0.38)));
+    var pump = showPump ? ('<span class="cmd-shield-pump' + (spec.text ? '' : ' solo') + '" data-fuel-id="' + esc(fuel.id) + '">' + badgeSvg(GAS_ICON, pumpSz) + '</span>') : '';
+    var html = '<div class="cmd-shield' + (isMine ? " mine" : "") + (showPump ? " has-fuel" : "") + '" data-id="' + esc(cmd.id) + '" data-kind="' + esc(cmd.kind) + '"' +
+      (showPump ? ' data-fuel-id="' + esc(fuel.id) + '"' : '') + '>' +
+      '<img src="' + SHIELD_SRC + '" alt="" width="' + d.w + '" height="' + d.h + '" draggable="false">' + lab + pump + "</div>";
     return L.divIcon({ className: "cmd-shield-icon", html: html, iconSize: [d.w, d.h], iconAnchor: [d.w / 2, d.h] });
   }
   function addCommandShields() {
@@ -5889,6 +5948,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var addr = c.address || "";
     var pub = c.phone ? dirPhoneLink(c.phone, E.fmtPhone(c.phone), false) : '<p class="muted">No official phone on file.</p>';
     var body = '<div data-sec="4j">' + pub + (addr ? '<p style="margin:8px 0">' + esc(addr) + "</p>" + navLinks(addr) : "") +
+      commandFuelHtml(c) +
       '<div class="dir-actions"><button type="button" class="btn primary sm" data-act="dirJump" data-id="' + esc(id) + '">View in Directory</button></div></div>';
     openSheet(c.name, body, "Map/Directory");
   }
@@ -5898,10 +5958,13 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (typeof L === 'undefined') { el.innerHTML = '<p class="muted" style="padding:16px">Map library could not load.</p>'; return; }
     teardownDirMap();
     dirMap = L.map(el, { zoomControl: true, attributionControl: true, maxZoom: 19, minZoom: 9 }); el._dirMap = dirMap;
-    // OpenStreetMap standard tiles (https://tile.openstreetmap.org). CARTO Voyager/light_all
-    // started returning watermark tiles ("API KEY REQUIRED", etag wm-*) for this origin on 2026-11-23.
+    // OSM tile usage policy: show the required copyright attribution, load only tiles
+    // for the current view (no bulk prefetch), and use the browser's default caching
+    // (no cache-buster on the tile URL). CARTO Voyager/light_all started returning
+    // watermark tiles ("API KEY REQUIRED", etag wm-*) for this origin on 2026-11-23.
+    if (dirMap.attributionControl) dirMap.attributionControl.setPrefix(false);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>',
       maxZoom: 19
     }).addTo(dirMap);
     var geo = loadPctBounds();
@@ -5917,7 +5980,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         }
       }).addTo(dirMap);
     }
-    dirMap.fitBounds([[40.496, -74.26], [40.92, -73.7]]);
+    dirMap.fitBounds([[40.496, -74.26], [40.92, -73.7]], { animate: false });
     addCommandShields();
     if (mine) {
       var mineCmd = E.commandById(commandIdFromPct(mine));
@@ -5928,7 +5991,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
           if (feats[i].properties && feats[i].properties.pct === mine) { mineLL = pctCentroid(feats[i]); break; }
         }
       }
-      if (mineLL) dirMap.setView(mineLL, 13);
+      if (mineLL) dirMap.setView(mineLL, 13, { animate: false });
     }
     refreshFuelMarkers();
     refreshEvMarkers();
@@ -5944,6 +6007,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var addr = (c && c.address) || '';
     var pub = c && c.phone ? dirPhoneLink(c.phone, E.fmtPhone(c.phone), false) : '<p class="muted">No official phone on file.</p>';
     var body = '<div data-sec="4j">' + pub + (addr ? '<p style="margin:8px 0">' + esc(addr) + '</p>' + navLinks(addr) : '') +
+      commandFuelHtml(c) +
       '<div class="dir-actions"><button type="button" class="btn primary sm" data-act="dirJump" data-id="' + esc(id) + '">View in Directory</button></div></div>';
     openSheet(name, body, 'Map/Directory');
   }
@@ -6021,12 +6085,14 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     } else {
       lines.push('<div class="cov-row" data-sec="4j"><strong>Precinct:</strong> N/A</div>');
     }
+    if (cov.development) {
+      lines.push('<div class="cov-row"><strong>NYCHA development:</strong> ' + esc(cov.development) + '</div>');
+    }
     if (cov.psa) {
       var psaCmd = psaCommand(cov.psa);
       var psaLabel = 'PSA ' + cov.psa;
       var psaTxt = psaCmd ? ('<button type="button" class="linkbtn" data-act="dirJump" data-id="' + esc(psaCmd.id) + '">' + esc(psaLabel) + '</button>') : esc(psaLabel);
       lines.push('<div class="cov-row"><strong>Housing:</strong> ' + psaTxt + '</div>');
-      if (cov.development) lines.push('<div class="cov-sub">' + esc(cov.development) + '</div>');
     } else {
       lines.push('<div class="cov-row"><strong>Housing:</strong> N/A</div>');
     }
@@ -6204,18 +6270,18 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var dirTools = chips +
       '<div class="dir-actions" style="margin:0 0 8px"><button type="button" class="btn primary sm" data-act="dirAddCustom">Add custom contact</button></div>' +
       '<p class="muted" style="font-size:12.5px;margin:0 0 8px">Public numbers come from official NYPD pages. Numbers you add stay on your account only and are not shared.</p>';
-    var mapSrc = '<p class="map-src" style="margin-top:8px">Sources: Precinct boundaries — NYC Open Data Police Precincts (y76i-bdw7). NYCHA footprints — NYC Open Data NYCHA Public Housing Developments (phvi-damg). Housing PSA — NYPD Housing Bureau Compstat Eagle Report (period ending Nov 15, 2026) and official NYPD PSA pages. The Open Data “NYCHA PSA” file (72wx-vdjr / bvi6-r9nk) is office locations, not coverage polygons. Address search — NYC GeoSearch. Command shields sit at public station-house addresses already in the official directory, geocoded with NYC GeoSearch (precincts fall back to the precinct polygon if an address does not geocode; when a Transit District address is a named subway station that GeoSearch did not resolve, the official MTA Subway Stations point (data.ny.gov 39hk-dx4f) is used). Streets — OpenStreetMap standard tiles (tile.openstreetmap.org). Fuel sites — ' + esc(E.FUEL_SOURCE_NOTE) + ' Address search does not assign a Transit District: no public NYPD Transit District boundary or station-to-district table was found. Transit District shields on the map mark public command locations only. Your device location and searched addresses are not stored or synced.</p>';
     var mapOpts = '<div id="dirMapOpts" class="dir-map-opts" hidden>' +
-      toggle +
       fuelChipBar() +
-      '<p class="muted" id="fuelFilterEmpty"' + ((fuelFilter() || []).length ? ' hidden' : '') + '>Select a fuel type to see sites on the map and in Nearest.</p>' +
       '<div class="map-toolbar">' +
       '<button type="button" class="btn sm' + (ui.dirFuelOn === false ? '' : ' on') + '" data-act="dirFuelLayer" aria-pressed="' + (ui.dirFuelOn === false ? 'false' : 'true') + '">Fuel sites</button>' +
       '<button type="button" class="btn primary sm" data-act="dirNearest">Nearest fuel</button></div>' +
       '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p></div>' +
-      '<p class="fuel-src">Sites that offer only Diesel and/or Premium: Does not dispense into a regular RMP. Harbor A is diesel only and is not accessible by automobile, so it is left out of Nearest.</p>' +
-      mapSrc + '</div>';
-    var mapTools = '<div class="dir-map-chrome"><div class="dir-map-search"><input id="dirQ" class="dirq acIn" data-ac="map" type="text" value="' + esc(q) + '" placeholder="Search an address or precinct" aria-label="Search an address or precinct" autocomplete="off"></div>' +
+      '</div>';
+    var mapToggle = '<div class="dirviewseg compact" data-sec="4i" role="group" aria-label="Map or Directory">' +
+      '<button type="button" class="btn sm' + (mapOn ? ' on' : '') + '" data-act="dirView" data-v="map">Map</button>' +
+      '<button type="button" class="btn sm' + (!mapOn ? ' on' : '') + '" data-act="dirView" data-v="dir">Directory</button></div>';
+    var mapTools = '<div class="dir-map-chrome">' + mapToggle +
+      '<div class="dir-map-search"><input id="dirQ" class="dirq acIn" data-ac="map" type="text" value="' + esc(q) + '" placeholder="Search an address or precinct" aria-label="Search an address or precinct" autocomplete="off"></div>' +
       '<button type="button" class="btn sm" id="dirMapOptsBtn" data-act="dirMapOpts" aria-expanded="false" aria-controls="dirMapOpts">Options</button></div>' + mapOpts;
     var mapPane = '<div id="dirMapWrap" class="dir-map-fill" data-sec="4j"><div id="dirMap" role="application" aria-label="NYPD precincts, NYCHA developments, and fuel sites"></div>' +
       '<div id="mapCoverCard" class="map-cover" hidden></div></div>';
@@ -10047,6 +10113,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var on = ui.dirFuelOn !== false;
       if (t) { t.classList.toggle('on', on); t.setAttribute('aria-pressed', on ? 'true' : 'false'); }
       refreshFuelMarkers();
+      refreshCommandShields();
     },
     dirNearest: function () { nearestFuelSheet(); },
     dirMapOpts: function () {
