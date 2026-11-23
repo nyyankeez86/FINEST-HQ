@@ -51,7 +51,7 @@ so they stay stable when sections move. New sections get the next free letter; r
 |---|---|---|
 | **6 Day page** | 6a | Status line (your schedule for that day only by default) |
 | | 6b | This day (leave / status picker). Changing a scheduled workday’s status to RDO immediately opens a dialog asking whether the day is Day-for-Day or RDO Overtime, then routes to the matching existing recording flow. Cancel reverts 6b to its previous status. The prompt is not shown when the day was already an RDO, or for other status changes. |
-| | 6c | Tour this day: Time actually worked only (framed Date from / Date to, Scheduled time button, empty-until-entered hint on focus). Typing Tour start live-fills Tour end from the default tour length (end date moves if it crosses midnight). A manual Tour end is kept until start is edited again. Time scheduled to work is not on this screen — it appears on page 8 when overtime is incurred. Chart time for the day is shown under the tour when it accrues or is pending. |
+| | 6c | Tour this day: Time actually worked only (framed Date from / Date to, Default Tour button, empty-until-entered hint on focus). Typing Tour start live-fills Tour end from the default tour length (end date moves if it crosses midnight). A manual Tour end is kept until start is edited again. Time scheduled to work is not on this screen — it appears on page 8 when overtime is incurred. Chart time for the day is shown under the tour when it accrues or is pending. |
 | | 6d | Assignment (court picker includes NYC Family Court in each borough; sign-in location field reserved, not shown) |
 | | 6e | Paid detail (own section below Assignment: Add paid detail opens page 19; a saved detail shows a summary + Edit). Not an assignment option. |
 | | 6f | Note |

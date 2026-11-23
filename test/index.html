@@ -7597,12 +7597,12 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var timePair = function (prefix, startId, endId, startVal, endVal, startDate, endDate, fillAct) {
       return '<div class="sebox"' + (prefix === 'worked' ? ' id="seBox" data-d="' + d + '" data-sl="' + (regLen || '') + '" data-ss="' + esc(defStart) + '"' : '') + '><div class="row">' +
         '<div class="field">' + dateFrame(prefix + 'StartDate', startDate, 'Date from') + '<label for="' + startId + '">Tour start</label><input id="' + startId + '" class="timeIn" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="HH:MM" value="' + esc(startVal) + '"><div class="err" id="' + startId + '-err"></div>' +
-        '<button type="button" class="btn sm schedfill" data-act="fillSched" data-for="' + prefix + '">Scheduled time</button></div>' +
+        '<button type="button" class="btn sm schedfill" data-act="fillSched" data-for="' + prefix + '">Default Tour</button></div>' +
         '<div class="field">' + dateFrame(prefix + 'EndDate', endDate, 'Date to') + '<label for="' + endId + '">Tour end</label><input id="' + endId + '" class="timeIn" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="HH:MM" value="' + esc(endVal) + '"><div class="err" id="' + endId + '-err"></div></div></div></div>';
     };
     var workedBlock = '<div id="workedBox" class="tourblock" style="border-top:0;padding-top:0;margin-top:8px"><h4>Time actually worked</h4>' +
       timePair('worked', 'dayStart', 'dayEnd', wStart, wEnd, wStartDate, wEndDate) +
-      '<div class="hint entryhint" id="tourTimeHint">Empty until you type a time or tap Scheduled time (fills your default tour). 24-hour time: type digits (730 &rarr; 07:30, 2300 &rarr; 23:00).</div>' +
+      '<div class="hint entryhint" id="tourTimeHint">Empty until you type a time or tap Default Tour (fills your default tour). 24-hour time: type digits (730 &rarr; 07:30, 2300 &rarr; 23:00).</div>' +
       '<div id="endPop" class="endpop" role="status" aria-live="polite" hidden></div>' +
       '<div id="endNote" class="endnote" role="status" aria-live="polite" hidden></div>' +
       '<div id="shortBox" class="shortbox" data-sel="' + esc(ov.short && ov.short.type || '') + '" hidden><div class="sbq" id="shortQ">Which balance should be charged?</div><div class="shortopts">' +
