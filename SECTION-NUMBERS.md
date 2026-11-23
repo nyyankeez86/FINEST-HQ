@@ -14,7 +14,7 @@ so they stay stable when sections move. New sections get the next free letter; r
 | **1 Schedule** | 1a | Today (status line) |
 | | 1b | Next day off |
 | | 1c | Next payday |
-| | 1d | Calendar (month grid, legend, chart changes) |
+| | 1d | Calendar (month grid, legend, chart changes; 12 hour tour RDO colors Squad A red / Squad B blue) |
 | | 1e | Upcoming assignments |
 | | 1f | Retirement countdown |
 | | 1g | Sync to Apple / Google Calendar button |
@@ -50,7 +50,7 @@ so they stay stable when sections move. New sections get the next free letter; r
 | | 6g | Overtime this day |
 | | 6h | Delete this entry |
 | | 6i | Add to calendar (one-off Google link or Apple .ics; subscribe is recommended) |
-| | 6j | Other squads (button on the day page; expands Off / Working / PDU details for other squads) |
+| | 6j | Other squads (button on the day page; expands Off / Working / PDU details for other squads; on the 12 hour tour RDO chart, Squad A and Squad B) |
 | **7 Day summary** | 7a | Entries list |
 | | 7b | Overtime list |
 | | 7c | Edit / Done buttons |
@@ -69,7 +69,7 @@ so they stay stable when sections move. New sections get the next free letter; r
 | | 8k | Compensation option (Cash and Time rows; only when Paid as is Split). Hrs:Min uses the same time-typing rule as the rest of the app. |
 | **9 Settings** | 9a | Account |
 | | 9b | Profile (first name, M.I. (optional, no asterisk), last name, ID numbers; name boxes aligned on one row) |
-| | 9c | Rank & assignment history |
+| | 9c | Rank & assignment history (chart picker includes 12 hour tour RDO with Squad A / Squad B) |
 | | 9d | Pay |
 | | 9e | Leave balances |
 | | 9f | Google Maps API key (collapsed by default; title button expands it) |
