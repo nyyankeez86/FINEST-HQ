@@ -5774,7 +5774,22 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
     return u;
   }
+  function isiOSDevice() { return /iPad|iPhone|iPod/.test(navigator.userAgent || '') || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); }
+  function isStandaloneApp() { return !!(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || !!(window.navigator && window.navigator.standalone); }
   function pushSupported() { return !!(navigator.serviceWorker && window.PushManager && document.querySelector('link[rel="manifest"]') && /^(https:|http:\/\/(localhost|127\.0\.0\.1))/.test(location.href)); }
+  function pushNeedsHomeScreen() { return isiOSDevice() && !isStandaloneApp(); }
+  function pushEnableError(e) {
+    var m = errText(e);
+    if (/Notifications were not allowed/i.test(m) || /^(denied|default)$/i.test(m)) return 'Notifications were not allowed. Allow them for FINEST HQ in the browser or system settings, then try again.';
+    if (/sign in again/i.test(m)) return 'Sign in again, then turn notifications on.';
+    if (/not approved/i.test(m)) return 'Only an approved signed-in user can enable notifications.';
+    if (/admins only/i.test(m)) return 'The notification service rejected this sign-in. Sign out, sign back in, and try again.';
+    if (/notification key|couldn\'t get a notification key/i.test(m)) return 'Couldn\'t get a notification key from the server. Try again in a moment.';
+    if (/incomplete/i.test(m)) return 'The browser did not finish creating the notification subscription. Try again.';
+    if (/failed to fetch|network|load failed|offline|abort/i.test(m)) return 'No connection. Check the network and try again.';
+    if (pushNeedsHomeScreen() || /home screen|homescreen/i.test(m)) return 'On iPhone, add FINEST HQ to your Home Screen (iOS 16.4 or later), open it from there, and then turn notifications on.';
+    return 'Couldn\'t enable notifications: ' + m;
+  }
   function sessionAccessToken() {
     return Promise.resolve(cloudClient().auth.getSession()).then(function (r) { return r && r.data && r.data.session && r.data.session.access_token; });
   }
@@ -5782,7 +5797,12 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     return sessionAccessToken().then(function (tok) {
       if (!tok) throw new Error('Sign in again');
       return fetch(functionsUrl('notify-suggestion'), { method: 'GET', headers: { Authorization: 'Bearer ' + tok, apikey: (CL.cfg && CL.cfg.SUPABASE_ANON_KEY) || '' } });
-    }).then(function (r) { return r.json().then(function (j) { if (!r.ok || !j.publicKey) throw new Error((j && j.error) || 'Couldn\'t get a notification key'); return j.publicKey; }); });
+    }).then(function (r) {
+      return r.json().then(function (j) {
+        if (!r.ok || !j || !j.publicKey) throw new Error((j && j.error) || (r.status === 401 ? 'Sign in again' : 'Couldn\'t get a notification key'));
+        return j.publicKey;
+      }, function () { throw new Error(r.status === 401 ? 'Sign in again' : 'Couldn\'t get a notification key'); });
+    });
   }
   function currentPushSub() {
     if (!pushSupported()) return Promise.resolve(null);
@@ -5795,8 +5815,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function setPushEnabled(on) {
     var el = document.getElementById('pushToggle');
-    if (!cloudReady() || CS.role !== 'admin') { if (el) el.checked = false; return toast('Only the admin can enable notifications'); }
-    if (!pushSupported()) { if (el) el.checked = false; return toast('Add FINEST HQ to your Home Screen (and use iOS 16.4 or later on iPhone) to enable notifications'); }
+    if (!cloudReady()) { if (el) el.checked = false; return toast('Sign in with an approved account to enable notifications'); }
+    if (pushNeedsHomeScreen()) { if (el) el.checked = false; return toast('On iPhone, add FINEST HQ to your Home Screen (iOS 16.4 or later), open it from there, and then turn notifications on.'); }
+    if (!pushSupported()) { if (el) el.checked = false; return toast('Notifications are not supported in this browser. On iPhone, add FINEST HQ to your Home Screen (iOS 16.4 or later) and open it from there.'); }
     if (!on) {
       return currentPushSub().then(function (sub) {
         var ep = sub && sub.endpoint;
@@ -5821,7 +5842,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         if (!tok) return;
         return fetch(functionsUrl('notify-suggestion'), { method: 'POST', headers: { Authorization: 'Bearer ' + tok, apikey: (CL.cfg && CL.cfg.SUPABASE_ANON_KEY) || '', 'Content-Type': 'application/json' }, body: JSON.stringify({ test: true }) }).catch(function () {});
       }).then(function () { toast('Notifications on. You\'ll get a notice when a tester sends a suggestion.'); pushToggleState(); });
-    }).catch(function (e) { if (el) el.checked = false; toast('Couldn\'t enable notifications: ' + errText(e)); });
+    }).catch(function (e) { if (el) el.checked = false; toast(pushEnableError(e)); });
   }
 
   function adminSheet() {

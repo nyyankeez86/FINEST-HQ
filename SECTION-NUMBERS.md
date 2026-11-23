@@ -93,7 +93,7 @@ so they stay stable when sections move. New sections get the next free letter; r
 | **11 Send a suggestion** | 11a | Section |
 | | 11b | Your suggestion |
 | | 11c | Screenshot |
-| **12 Suggestions inbox (admin)** | — | header tag only |
+| **12 Suggestions inbox (admin)** | — | header tag only. The Enable notifications checkbox is in this sheet (admins). Approved signed-in users may save and delete only their own push subscription. New-suggestion broadcasts still go only to admin devices. On iPhone, add the app to the Home Screen (iOS 16.4 or later) and open it from there; otherwise the toggle explains that requirement. |
 | **13 Beta users (admin)** | 13a | User list (approve / revoke / Beta tags on-off) |
 | **14 Add leave / note / assignment** | 14a | Date |
 | **15 Calendar sync** | 15a | Sync options |
