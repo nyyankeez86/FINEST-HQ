@@ -155,6 +155,8 @@ h3{font-size:17px;margin:0 0 6px}
 .cell .marks i.m-pay{background:var(--pay);color:#fff}
 .cell .marks{margin-top:auto;display:flex;gap:2px;flex-wrap:wrap}
 .cell .marks i{font-style:normal;font-size:9.5px;font-weight:800;padding:1px 3px;border-radius:4px;line-height:1.25}
+.cell .marks i.m-asg-lg,.legend i.m-asg-lg{font-size:8px;font-weight:800;letter-spacing:-.03em;padding:0 2px;line-height:1.05;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;white-space:nowrap;max-width:100%}
+.cell .marks i.m-asg-lg span,.legend i.m-asg-lg span{display:block;line-height:1.05}
 .m-ot{background:var(--ot);color:#fff}
 .m-lv{color:#fff;border:1px solid rgba(255,255,255,.7)}
 .m-chg{background:#7c2d12;color:#fff}
@@ -4126,6 +4128,14 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     return '<div class="peekbar" id="calPeekBar" data-sec="1d"><div class="peekmsg">Viewing: ' + esc(peekLabel(peek)) + '</div>' +
       '<button type="button" class="btn sm" data-act="calPeekBack">Back to my calendar</button></div>';
   }
+  function asgCalendarBadge(at) {
+    var paid = !!(at && (at.paid || at.id === 'paiddetail' || at.short === 'PAID'));
+    var court = !!(at && (at.id === 'court' || at.short === 'CRT'));
+    var color = (at && at.color) || (paid ? '#A16207' : '#374151');
+    if (paid) return '<i class="m-asg m-asg-lg" style="background:' + color + '"><span>Paid</span><span>Detail</span></i>';
+    if (court) return '<i class="m-asg m-asg-lg" style="background:' + color + '">Court</i>';
+    return '<i class="m-asg" style="background:' + color + '">' + esc((at && at.short) || '') + '</i>';
+  }
   function reminderParts(d, sq) {
     var iso = E.toISO(d), tt = E.dayTour(d, sq.id, tourOpts()), parts = [], asg = S.assignments[iso], asgT = asg && E.assignmentType(asg.type);
     if (tt.extra) parts.push('RDO OT');
@@ -4263,14 +4273,13 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var style = '', tag = '', pc = tr.pdu ? PDU.colors[tr.pduColor] : null, pdAll = all && pdView;
       if (pdAll) { var pon = E.pduTeamsOn(d), dc = pduColorInfo(d); style = 'background:' + dc.color + ';color:' + dc.ink; tag = mine ? 'RDO' : pon.rdo.short + ' RDO'; }
       else if (all) { style = 'background:' + off.color + ';color:' + off.ink; tag = mine ? 'RDO' : (t12View ? off.short : 'S' + off.short) + ' RDO'; }
-      else if (tr.extra) { style = 'border:2px dashed ' + cs.color + ';background:#fffbe6'; tag = 'EXTRA OT'; }
       else if (tr.ddWork) { style = 'border:2px solid #0f172a;background:#f7f9fc'; tag = 'WORK'; }
       else if (tr.ddOff) { style = 'background:' + cs.color + ';color:' + cs.ink + ';border:2px solid #0f172a'; tag = 'RDO'; }
       else if (tr.dropped) { style = 'background:#dde3ec;color:#334155'; tag = 'NOT WKG'; }
       else if (mine) { style = 'background:' + (pc ? pc.color : cs.color) + ';color:' + (pc ? pc.ink : cs.ink); tag = 'RDO'; }
       else if (pc && (tr.shift === 'pm' || tr.shift === 'am')) { var sx = PDU.shifts[tr.shift]; style = 'background:' + sx.color + ';color:' + sx.ink + ';box-shadow:inset 0 5px 0 ' + pc.color; tag = sx.label + (tr.start ? '<span class="tm">' + t12(tr.start) + '–' + t12(tr.end) + '</span>' : ''); }
       if (pc && !all && tr.ddWork) tag += tr.start ? '<span class="tm">' + t12(tr.start) + '–' + t12(tr.end) + '</span>' : '';
-      if (all && (tr.extra || tr.dropped || tr.dd)) tag = tr.extra ? 'EXTRA OT' : tr.dropped ? 'NOT WKG' : tr.ddWork ? 'WORK' : 'RDO';
+      if (all && (tr.dropped || tr.dd)) tag = tr.dropped ? 'NOT WKG' : tr.ddWork ? 'WORK' : 'RDO';
       var marks = E.isPayday(d, po) ? '<i class="m-pay">PAY</i>' : '';
       if (ots) { var h = 0; ots.forEach(function (e) { h += E.entryHours(e); }); marks += '<i class="m-ot">OT ' + hrs(h) + '</i>'; }
       if (chg) marks += '<i class="m-chg" title="Chart change">&#8644;</i>';
@@ -4281,14 +4290,14 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var asgMarks = E.dayAssignments(S, iso), am = 0;
       asgMarks.forEach(function (ax) {
         var at = E.assignmentType(ax.type);
-        if (at && am < 3) { marks += '<i class="m-asg" style="background:' + at.color + '">' + at.short + '</i>'; am++; }
+        if (at && am < 3) { marks += asgCalendarBadge(at); am++; }
       });
       if (asgMarks.length > 3) marks += '<i class="m-asg" style="background:#334155">+' + (asgMarks.length - 3) + '</i>';
-      if (asgT && asgT.paid) marks += '<i class="m-asg" style="background:' + asgT.color + '">' + asgT.short + '</i>';
-      else if (E.hasPaidDetail(asg)) marks += '<i class="m-asg" style="background:#A16207">PAID</i>';
+      if (asgT && asgT.paid) marks += asgCalendarBadge(asgT);
+      else if (E.hasPaidDetail(asg)) marks += asgCalendarBadge({ id: 'paiddetail', paid: true, short: 'PAID', color: '#A16207' });
       if (lt) marks += '<i class="m-lv" style="background:' + lt.color + '">' + lt.short + '</i>';
       else if (lv && lv.note) marks += '<i class="m-note">Note</i>';
-      var label = fmt(d, 'long') + (pc ? ', ' + pc.name + ' day' + (tr.shift === 'pm' || tr.shift === 'am' ? ', ' + PDU.shifts[tr.shift].label + ' tour ' + tr.start + ' to ' + tr.end : '') : '') + (tr.extra ? ', extra tour on RDO (overtime)' : tr.ddWork ? ', day for day: working this RDO' : tr.ddOff ? ', day for day: RDO' : tr.dropped ? ', not working' : mine ? ', your RDO' : ', workday') + (asgT ? ', assignment: ' + E.assignmentLabel(asg) : '') + (tr.plus15 ? ', plus 15 minutes, tour ' + E.fmtHM(tr.len) : '') + (tr.modified ? ', modified tour ' + E.fmtHM(tr.len) : '') + (E.isPayday(d, po) ? ', payday' : '') + (lt ? ', ' + lt.label : '') + (ots ? ', overtime logged' : '');
+      var label = fmt(d, 'long') + (pc ? ', ' + pc.name + ' day' + (tr.shift === 'pm' || tr.shift === 'am' ? ', ' + PDU.shifts[tr.shift].label + ' tour ' + tr.start + ' to ' + tr.end : '') : '') + (tr.ddWork ? ', day for day: working this RDO' : tr.ddOff ? ', day for day: RDO' : tr.dropped ? ', not working' : mine ? ', your RDO' : ', workday') + (asgT ? ', assignment: ' + E.assignmentLabel(asg) : '') + (tr.plus15 ? ', plus 15 minutes, tour ' + E.fmtHM(tr.len) : '') + (tr.modified ? ', modified tour ' + E.fmtHM(tr.len) : '') + (E.isPayday(d, po) ? ', payday' : '') + (lt ? ', ' + lt.label : '') + (ots ? ', overtime logged' : '');
       cells += '<button class="cell' + (mine ? ' rdo' : ' work') + (E.isPayday(d, po) ? ' payday' : '') + (d === T ? ' today' : '') + (lt ? ' leave' : '') + '" style="' + style + '" data-act="day" data-d="' + d + '" aria-label="' + esc(label) + '">' +
         '<span class="dn">' + E.parts(d).d + '</span>' + (tag ? '<span class="tag">' + tag + '</span>' : '') +
         '<span class="marks">' + marks + '</span></button>';
@@ -4311,11 +4320,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<span><i class="m-ot" style="font-style:normal;font-size:10px;font-weight:800;padding:1px 4px;border-radius:4px;background:var(--ot);color:#fff">OT</i>Overtime</span>' +
       '<span><i style="font-style:normal;font-size:10px;font-weight:800;padding:1px 4px;border-radius:4px;background:var(--pay);color:#fff">PAY</i>Payday</span>' +
       '<span><i class="m-nx" style="font-style:normal;font-size:10px;font-weight:800;padding:1px 4px;border-radius:4px">22&rarr;+1</i>Starts 20:00+ (counts next day)</span>' +
-      '<span><i class="sw" style="background:#fffbe6;border:2px dashed ' + sq.color + '"></i>Extra tour on RDO (OT)</span>' +
       '<span><i class="m-dd" style="font-style:normal;font-size:10px;font-weight:800;padding:0 4px;border-radius:4px">D/D</i>Day for day swap</span>' +
       '<span><i class="m-chg" style="font-style:normal;font-size:10px;font-weight:800;padding:0 4px;border-radius:4px">&#8644;</i>Chart change</span>' +
       C.leaveTypes.filter(function (l) { return !l.hidden; }).map(function (l) { return '<span><i style="font-style:normal;font-size:10px;font-weight:800;padding:1px 5px;border-radius:4px;background:' + l.color + ';color:#fff">' + l.short + '</i>' + l.label + '</span>'; }).join('') +
-      C.assignmentTypes.filter(function (a) { return !a.retired || Object.keys(S.assignments).some(function (k) { return S.assignments[k] && S.assignments[k].type === a.id; }); }).map(function (a) { return '<span><i style="font-style:normal;font-size:10px;font-weight:800;padding:1px 4px;border-radius:4px;background:' + a.color + ';color:#fff">' + a.short + '</i>' + esc(a.label) + '</span>'; }).join('') +
+      C.assignmentTypes.filter(function (a) { return !a.retired || Object.keys(S.assignments).some(function (k) { return S.assignments[k] && S.assignments[k].type === a.id; }); }).map(function (a) { return '<span>' + asgCalendarBadge(a) + esc(a.label) + '</span>'; }).join('') +
       '</div><div class="cfhint">Tap any day to add an assignment, leave, notes or overtime.</div>' +
       chgList.map(function (c) { var ci = E.chartInfo(c.chart, u); return '<div class="chgline"><i class="m-chg">&#8644;</i> Chart change: <b>' + esc(ci ? ci.name : c.chart) + '</b> from ' + fmt(c.day) + '</div>'; }).join('') + '</div>';
     html += upcomingCard();
