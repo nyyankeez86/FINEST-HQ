@@ -29,10 +29,15 @@ so they stay stable when sections move. New sections get the next free letter; r
 | | 2g | Paid Detail list (Select and everything below it, moved out of 2d). Functionally unchanged: year-then-month groups, Select mode, swipe right to mark paid, swipe left to delete, and the year-end tax report button. |
 | **3 Pay** | 3a | Year summary card (includes chart time accrued this year) |
 | | 3b | Each payday / pay-period card (straight time is 8:00/day; chart time for the regular period, or pending for rotating Sergeants) |
-| **4 Department Directory** | 4e | Search (name, command number such as 23 or 023, category, or phone — official numbers and the signed-in user's own personal numbers). |
-| | 4f | Category filter chips: All, Patrol, Housing, Transit, Detective, Domestic Violence, Field Training, Specialty, Bureau, My contacts. |
-| | 4g | Results: official name, category, public phone (tel: link) when a number is on an official NYPD page, address, and Google / Apple / Waze when an address is on file. Personal numbers the user added to an entry are labeled (default “My number”, or the user's label such as Desk or Sgt cell), visually distinct from public numbers, tappable to call, and can be edited or deleted by that user only. Users can also add a fully custom contact that is not in the public directory. |
+| **4 Map/Directory** | 4e | Search (name, command number such as 23 or 023, category, or phone — official numbers and the signed-in user's own personal numbers). On the map, the same box jumps to a matching precinct or fuel site. |
+| | 4f | Directory category filter chips: All, Patrol, Housing, Transit, Detective, Domestic Violence, Field Training, Specialty, Bureau, My contacts. |
+| | 4g | Directory results: official name, category, public phone (tel: link) when a number is on an official NYPD page, address, and Google / Apple / Waze when an address is on file. Personal numbers the user added to an entry are labeled (default “My number”, or the user's label such as Desk or Sgt cell), visually distinct from public numbers, tappable to call, and can be edited or deleted by that user only. Users can also add a fully custom contact that is not in the public directory. |
 | | 4h | Add or edit a personal number, or a custom contact. These save only in that user's data (`dirMine`) and sync only to that user's own `user_records` rows (existing RLS: `user_id = auth.uid()`). They are never shared with other users and never merged into the public command catalog. |
+| | 4i | Map / Directory view toggle. |
+| | 4j | Reference map of official NYC Open Data Police Precincts (y76i-bdw7) with precinct numbers, directory info on tap (phone, address, Google / Apple / Waze, link to the directory entry), and a fuel-site marker layer (PD 171-011). Not for in-map navigation. |
+| | 4k | Prominent multi-select fuel-type chips: Unleaded, Premium, Diesel, Electric. Unleaded is on by default. The chips filter both map markers and the Nearest list. The last choice is remembered on the device (`settings.fuelFilter`). |
+| | 4l | Nearest fuel: uses the device location (permission prompt; never stored or synced) to list the closest matching sites by straight-line distance, or a precinct / address if location is denied. Harbor A is not accessible by automobile and is left out of this list. Default filter is Unleaded only (regular RMP). |
+| | 4m | Map legend and source notes: PD 171-011 (12/19), may be outdated; sites that offer only Diesel and/or Premium do not dispense into a regular RMP. |
 | | 4a–4d | Vacated (former Leave sections). Those letters are not reused. Leave Balances remain on page 1 as 1i. Lookup stays page 5. |
 | **5 Lookup** | 5a | Date picker card |
 | | 5b | Big working / off answer |
