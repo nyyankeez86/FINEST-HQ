@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b1f3a">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Patrol Schedule">
-<title>Patrol Schedule</title>
+<meta name="apple-mobile-web-app-title" content="FINEST HQ">
+<title>FINEST HQ</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
@@ -14,7 +14,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Patrol">
+<meta name="apple-mobile-web-app-title" content="FINEST HQ">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
 <style>
@@ -320,8 +320,9 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after{top:-4px;le
 .onb .hero h2{margin:0 0 4px;font-size:22px}
 .sqpick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .sqpick button{min-height:64px;border-radius:12px;border:3px solid transparent;font-weight:900;font-size:16px;cursor:pointer}
-.sqpick .steadybtn{grid-column:1/-1;min-height:52px}
+.sqpick .steadybtn,.sqpick .t12btn{grid-column:1/-1;min-height:52px}
 .steadypanel{margin-top:10px;padding:10px;border:2px solid #0F766E;border-radius:12px;background:#f0fdfa}
+.t12panel{margin-top:10px;padding:10px;border:2px solid #9B1C1C;border-radius:12px;background:#fef2f2}
 .pdupanel{margin-top:10px;padding:10px;border:2px solid #4338CA;border-radius:12px;background:#eef2ff}
 .pdupanel .teams{display:grid;grid-template-columns:1fr;gap:6px}
 .pdupanel .teams button{min-height:48px;border-radius:10px;border:2px solid #c7d2fe;background:#fff;font-weight:800;font-size:15px;text-align:left;padding:6px 12px;cursor:pointer;display:flex;align-items:center;gap:10px}
@@ -459,7 +460,7 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after{top:-4px;le
 <body>
 <div id="app">
   <header class="top">
-    <div class="brand"><img class="hdrlogo" src="icons/icon-192.png" alt="FINEST HQ"><div><h1>Patrol Schedule</h1><div class="sub" id="hdrSub"></div></div></div>
+    <div class="brand"><img class="hdrlogo" src="icons/icon-192.png" alt="FINEST HQ"><div><h1>FINEST HQ</h1><div class="sub" id="hdrSub"></div></div></div>
     <div class="headacts" id="headActs" hidden>
       <button type="button" class="hdrchip" id="btnSuggest" data-act="suggestOpen">Suggest</button>
       <button type="button" class="iconbtn inboxbtn" id="btnInbox" data-act="inboxOpen" hidden aria-label="Suggestion inbox">
@@ -857,6 +858,21 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       // Reproduces every extra-15 tour on the 2025 and 2026 charts. Per-month overrides live in state.extra15.
       extra15: { anchor: '2024-12-31', cycle: 84, on: 52, stagger: 28, minutes: 15 }
     },
+    // 12 hour tour RDO: fixed 6-day cycle with no gaps — Squad A off 3 days, then Squad B off 3 days.
+    // Anchor: Dec 31, 2026 and Jan 1–2, 2027 are Squad A off (red); Jan 3–5, 2027 are Squad B off (blue). Retroactive through 2026 and open-ended.
+    // TODO: annual and paid hours and give-back for this chart are deferred.
+    tour12: {
+      name: '12 hour tour RDO',
+      cycle: 6,
+      block: 3,
+      anchor: '2026-12-31',
+      tourLen: 720,      // 12:00 scheduled length and OT base
+      otAfterMin: 734,   // 12:14 threshold: at or under = no OT; over = all minutes beyond tourLen
+      squads: [
+        { id: 'a', name: 'Squad A', short: 'A', color: '#D7261E', ink: '#FFFFFF', colorName: 'Red' },
+        { id: 'b', name: 'Squad B', short: 'B', color: '#1F4ED8', ink: '#FFFFFF', colorName: 'Blue' }
+      ]
+    },
     // standard tours first (user's list), then the longer options that were already offered
     tourPicks: ['8:15', '8:23', '8:30', '8:35', '8:44', '8:45', '8:57', '9:00', '9:15', '10:00', '12:00', '17:00'], // 17:00 = 17-hour tour
     // Tour START presets (24-hour). 17:00 added for the upcoming 17:00 schedule; details come later.
@@ -1224,10 +1240,25 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   var DOW3 = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   function steadyKey(a) { return 'steady:' + a + '-' + ((a + 1) % 7); }
   function parseChart(key) {
-    key = String(key == null ? '' : key); var m = key.match(/^steady:(\d)-(\d)$/), p = key.match(/^pdu:(\w+)$/);
-    return m ? { type: 'steady', days: [+m[1], +m[2]], key: key } : p ? { type: 'pdu', team: p[1], key: key } : { type: 'squad', squad: key, key: key };
+    key = String(key == null ? '' : key); var m = key.match(/^steady:(\d)-(\d)$/), p = key.match(/^pdu:(\w+)$/), t12 = key.match(/^12hr:([ab])$/i);
+    return m ? { type: 'steady', days: [+m[1], +m[2]], key: key } : p ? { type: 'pdu', team: p[1], key: key } : t12 ? { type: '12hr', squad: t12[1].toLowerCase(), key: '12hr:' + t12[1].toLowerCase() } : { type: 'squad', squad: key, key: key };
   }
-  function validChartKey(key, unitId) { var c = parseChart(key); return c.type === 'steady' ? (c.days[0] < 7 && c.days[1] === (c.days[0] + 1) % 7) : c.type === 'pdu' ? !!pduTeam(c.team) : !!squad(c.squad, unitId); }
+  function validChartKey(key, unitId) { var c = parseChart(key); return c.type === 'steady' ? (c.days[0] < 7 && c.days[1] === (c.days[0] + 1) % 7) : c.type === 'pdu' ? !!pduTeam(c.team) : c.type === '12hr' ? !!tour12Squad(c.squad) : !!squad(c.squad, unitId); }
+  // ---- 12 hour tour RDO ----
+  function tour12Key(id) { return '12hr:' + String(id || '').toLowerCase(); }
+  function tour12Squad(id) { var t = CONFIG.tour12.squads, k = String(id || '').toLowerCase(); for (var i = 0; i < t.length; i++) if (t[i].id === k) return t[i]; return null; }
+  function tour12Offset(day) { var C12 = CONFIG.tour12; return mod(day - toDay(C12.anchor), C12.cycle); }
+  function tour12OffPhase(day) { return Math.floor(tour12Offset(day) / CONFIG.tour12.block); } // 0 = A off, 1 = B off
+  function tour12OffSquad(day) { var ph = tour12OffPhase(day), t = CONFIG.tour12.squads; return t[ph] || t[0]; }
+  function tour12IsOff(day, squadId) { var s = tour12Squad(squadId); return !!s && CONFIG.tour12.squads.indexOf(s) === tour12OffPhase(day); }
+  function tour12SquadsOff(day) { return [tour12OffSquad(day)]; }
+  function tour12SquadsWorking(day) { var off = tour12OffSquad(day); return CONFIG.tour12.squads.filter(function (s) { return s.id !== off.id; }); }
+  // Regular-day OT: 12:14 is a threshold, not a deduction. At or under 12:14 → no OT. Over 12:14 → all minutes beyond the 12:00 base.
+  function tour12OvertimeMin(workedMin) {
+    var base = CONFIG.tour12.tourLen, thr = CONFIG.tour12.otAfterMin;
+    if (!(workedMin > thr)) return 0;
+    return Math.max(0, workedMin - base);
+  }
   // ---- PDU ----
   function pduKey(team) { return 'pdu:' + team; }
   function pduTeam(id) { var t = CONFIG.pdu.teams; for (var i = 0; i < t.length; i++) if (t[i].id === String(id)) return t[i]; return null; }
@@ -1265,6 +1296,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function pduCycleDay(day) { var P = CONFIG.pdu; return mod(day - toDay(P.anchor), P.blockDays * P.colorOrder.length) + 1; }
   function chartInfo(key, unitId) {
     var c = parseChart(key);
+    if (c.type === '12hr') { var s12 = tour12Squad(c.squad); if (!s12) return null;
+      return { key: c.key, type: '12hr', name: CONFIG.tour12.name + ' · ' + s12.name, short: s12.short, color: s12.color, ink: s12.ink, colorName: s12.colorName, squad: s12.id, tourLen: CONFIG.tour12.tourLen }; }
     if (c.type === 'pdu') { var t = pduTeam(c.team); if (!t) return null; var rc = CONFIG.pdu.colors[Object.keys(t.map).filter(function (k) { return t.map[k] === 'rdo'; })[0]];
       return { key: c.key, type: 'pdu', name: 'PDU ' + t.name, short: t.short, team: t.id, color: rc.color, ink: rc.ink, colorName: rc.name, rdoColor: rc.name }; }
     if (c.type === 'steady') { var nm = DOW3[c.days[0]] + '/' + DOW3[c.days[1]]; return { key: c.key, type: 'steady', name: 'Steady ' + nm, short: nm, color: CONFIG.steady.color, ink: CONFIG.steady.ink, colorName: 'Teal', days: c.days }; }
@@ -1282,6 +1315,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var c = parseChart(chartAt(day, who));
     if (c.type === 'steady') return c.days.indexOf(parts(day).dow) >= 0;
     if (c.type === 'pdu') return pduShift(day, c.team) === 'rdo';
+    if (c.type === '12hr') return tour12IsOff(day, c.squad);
     var s = squad(c.squad, unitId); return !!s && s.offsets.indexOf(cycleOffset(day, unitId)) >= 0;
   }
   function nextDayOff(fromDay, squadId, unitId) {
@@ -1413,8 +1447,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   // Overtime from worked vs scheduled windows. Minutes worked outside the scheduled window (early start and/or late end).
   // Shorter-than-scheduled work is 'early' (shortMin), not overtime. A 1-14 min late end is 'late' (no OT), matching endCompare.
-  function workedVsScheduled(worked, sched) {
-    worked = worked || {}; sched = sched || {};
+  function workedVsScheduled(worked, sched, opts) {
+    worked = worked || {}; sched = sched || {}; opts = opts || {};
     var wm = tourSpanMinutes(worked.startDate, worked.start, worked.endDate, worked.end);
     var sm = tourSpanMinutes(sched.startDate, sched.start, sched.endDate, sched.end);
     if (!(wm > 0)) return null;
@@ -1425,6 +1459,18 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var earlyStart = Math.max(0, Math.min(w1, s0) - w0), lateEnd = Math.max(0, w1 - Math.max(w0, s1));
     var otMin = Math.max(0, wm - inter), shortMin = Math.max(0, sm - wm);
     var T = CONFIG.otThresholdMin, r = { workedMin: wm, schedMin: sm, otMin: otMin, shortMin: shortMin, start: worked.start, end: worked.end, startDate: worked.startDate, endDate: worked.endDate, sched: sched.end, delta: lateEnd };
+    if (opts.tour12) {
+      var base = CONFIG.tour12.tourLen, otAmt = tour12OvertimeMin(wm);
+      r.otMin = otAmt; r.shortMin = Math.max(0, (sm || base) - wm); r.delta = lateEnd;
+      if (wm > CONFIG.tour12.otAfterMin) {
+        r.kind = 'ot';
+        if (lateEnd && !earlyStart) { r.otStart = sched.end; r.otEnd = worked.end; r.otStartDate = sched.endDate; r.otEndDate = worked.endDate; }
+        else { r.otStart = worked.start; r.otEnd = worked.end; r.otStartDate = worked.startDate; r.otEndDate = worked.endDate; }
+      } else if (wm > sm) r.kind = 'late';
+      else if (wm < sm) r.kind = 'early';
+      else r.kind = 'on';
+      return r;
+    }
     if (otMin >= T) {
       r.kind = 'ot';
       if (inter <= 0) { r.otStart = worked.start; r.otEnd = worked.end; r.otStartDate = worked.startDate; r.otEndDate = worked.endDate; }
@@ -1464,6 +1510,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (hr) { dl = hr.tourLen || dl; ds = hr.tourStart || ''; } // regular tour from the record in effect that day
     // +15 applies to regularly scheduled PDU tours (and a D/D-worked RDO) on dates inside the team's window; never to extra (OT) tours
     var p15 = function (d, team) { return opts.extra15 !== false && extra15On(d, team, opts.extra15) ? CONFIG.pdu.extra15.minutes : 0; };
+    if (c.type === '12hr') {
+      return { shift: null, len: CONFIG.tour12.tourLen, start: ds };
+    }
     if (c.type === 'pdu') {
       var sh = pduShift(day, c.team), P = CONFIG.pdu.shifts, x;
       if (sh === 'pm' || sh === 'am') { x = p15(day, c.team); return { shift: sh, len: P[sh].len + x, start: P[sh].start, plus15: !!x }; }
@@ -1618,7 +1667,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function isPoliceOfficerRank(rank) { return (rank || '') === 'po'; }
   function chartKind(chart) {
     var c = parseChart(chart || '');
-    return c.type === 'steady' ? 'steady' : 'rotating';
+    return c.type === 'steady' ? 'steady' : c.type === '12hr' ? '12hr' : 'rotating';
   }
   // Date used for years-in-rank (chart time). Optional hist `promoted` on the first entry of this rank stint wins;
   // otherwise the existing promotionDate / stint effective date / hire date. Does not change pay-step promotionDate.
@@ -1652,6 +1701,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var p = profileAt(profile || {}, iso) || profile || {}, rank = p.rank || '', rec = (p.assignHist && p.assignHist.length) ? histAt(p.assignHist, iso) : null;
     var chart = (rec && rec.chart) || p.chart || (p.squad && !Array.isArray(p.squad) ? p.squad : '') || chartAt(isISODate(iso) ? toDay(iso) : today(), p.charts);
     var kind = chartKind(chart), inv = !!(rec && rec.investigative) || !!p.investigative;
+    if (parseChart(chart).type === '12hr') return { ok: false, status: 'ineligible', reason: '12hr', rank: rank, chartKind: '12hr', chart: chart }; // no chart time on 12 hour tour RDO
     if (isPoliceOfficerRank(rank)) {
       if (kind !== 'steady') return { ok: false, status: 'ineligible', reason: 'po-rotating', rank: rank, chartKind: kind, chart: chart };
       return { ok: true, status: 'accrue', reason: 'po-steady', rank: rank, chartKind: kind, chart: chart };
@@ -3544,6 +3594,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   root.PatrolEngine = { timeToMin: timeToMin, pad2: pad2,
     CONFIG: CONFIG, DAY: DAY, mod: mod, toDay: toDay, fromYMD: fromYMD, toISO: toISO, parts: parts, today: today,
     unit: unit, squad: squad, cycleOffset: cycleOffset, squadsOff: squadsOff, squadsWorking: squadsWorking, isRDO: isRDO,
+    tour12Key: tour12Key, tour12Squad: tour12Squad, tour12Offset: tour12Offset, tour12OffPhase: tour12OffPhase, tour12OffSquad: tour12OffSquad, tour12IsOff: tour12IsOff, tour12SquadsOff: tour12SquadsOff, tour12SquadsWorking: tour12SquadsWorking, tour12OvertimeMin: tour12OvertimeMin,
     nextDayOff: nextDayOff, nextWorkday: nextWorkday, countRDOs: countRDOs, isPayday: isPayday, nextPayday: nextPayday,
     periodsForPayday: periodsForPayday, regularPaydayFor: regularPaydayFor, overtimePaydayFor: overtimePaydayFor, regularPeriodFor: regularPeriodFor, overtimePeriodFor: overtimePeriodFor, payPeriodsInYear: payPeriodsInYear, hoursBetween: hoursBetween, entryHours: entryHours,
     otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, fmtMDY: fmtMDY, defaultTourWindow: defaultTourWindow, tourSpanMinutes: tourSpanMinutes, suggestEndDate: suggestEndDate, workedVsScheduled: workedVsScheduled, cleanTourEntry: cleanTourEntry, tourEntries: tourEntries, dayTour: dayTour, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, commandById: commandById, isPduCommand: isPduCommand, searchCommands: searchCommands, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, stripBoroSuffix: stripBoroSuffix, splitPaidAddress: splitPaidAddress, joinPaidAddress: joinPaidAddress, mergePaidVendors: mergePaidVendors, rememberPaidVendor: rememberPaidVendor, paidVendorKey: paidVendorKey, parsePaidAmount: parsePaidAmount, paidDetailAmount: paidDetailAmount, paidDetailTaxDate: paidDetailTaxDate, daysBetweenISO: daysBetweenISO, paidDetailTiming: paidDetailTiming, paidDetailTimingCaptions: paidDetailTimingCaptions, paidVendorNames: paidVendorNames, cleanVendorGroups: cleanVendorGroups, vendorReportName: vendorReportName, addVendorToGroup: addVendorToGroup, removeVendorFromGroup: removeVendorFromGroup, renameVendorGroup: renameVendorGroup, ungroupVendor: ungroupVendor, suggestVendorGroups: suggestVendorGroups, paidDetailTaxReport: paidDetailTaxReport, buildPaidDetailXlsx: buildPaidDetailXlsx, buildPaidDetailCsv: buildPaidDetailCsv, parseXlsx: parseXlsx, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, addYearsISO: addYearsISO, retirementDateOf: retirementDateOf, retirementRemain: retirementRemain, retirementCountdown: retirementCountdown, endCompare: endCompare, syncEndOT: syncEndOT, syncWorkedOT: syncWorkedOT, syncEntryOT: syncEntryOT, leaveBalances: leaveBalances, fmtChart: fmtChart, chartTimeFromTour: chartTimeFromTour, isDetectiveRank: isDetectiveRank, isSergeantRank: isSergeantRank, isLieutenantRank: isLieutenantRank, isPoliceOfficerRank: isPoliceOfficerRank, chartKind: chartKind, rankStartDate: rankStartDate, yearsInRankAtLeast: yearsInRankAtLeast, chartTimeEligibility: chartTimeEligibility, chartTimeForDay: chartTimeForDay, chartTimeRange: chartTimeRange, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
@@ -3632,6 +3683,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function profNow() { return profAt(E.toISO(T)); }
   function syncProfileHist() { E.syncHist(S.profile, E.toISO(T)); }
   function tourOpts() { return { defaultLen: S.profile.tourLen, defaultStart: S.profile.tourStart || '', hist: S.profile.assignHist || null, tours: S.tours, leave: S.leave, unit: U(), extra15: S.extra15 || {} }; }
+  function workedVS(worked, sched, iso) {
+    var day = iso == null ? T : (E.isISODate(iso) ? E.toDay(iso) : iso);
+    var c = E.parseChart(E.chartAt(day, myWho()));
+    return E.workedVsScheduled(worked, sched, c.type === '12hr' ? { tour12: true } : null);
+  }
   function tourText(t) { return E.fmtHM(t.len) + (t.start ? ' &middot; ' + t.start + '–' + t.end + (t.nextDay ? ' (+1 day)' : '') : ''); }
   function tourField(id, val, label, startId) {
     return '<div class="field"><label for="' + id + '">' + label + '</label><input id="' + id + '" class="tourIn" data-start="' + (startId || '') + '" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="H:MM, e.g. 8:15" value="' + esc(val) + '">' +
@@ -3817,16 +3873,19 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   // ---------- charts (squad / steady RDO) ----------
   function chartPicker(px, key) {
-    var c = key ? E.parseChart(key) : null, steady = c && c.type === 'steady', pdu = c && c.type === 'pdu', q = C.steady.quickPairs, cu = C.steady.customPairs;
+    var c = key ? E.parseChart(key) : null, steady = c && c.type === 'steady', pdu = c && c.type === 'pdu', t12 = c && c.type === '12hr', q = C.steady.quickPairs, cu = C.steady.customPairs;
     var curA = steady ? c.days[0] : null, inQuick = steady && q.indexOf(curA) >= 0;
     var h = '<div id="' + px + 'ChartBox"><div class="sqpick">' + E.unit(U()).squads.map(function (s) {
       return '<button type="button" data-act="chartPick" data-px="' + px + '" data-key="' + s.id + '" class="' + (key === s.id ? 'on' : '') + '" style="background:' + s.color + ';color:' + s.ink + '">' + esc(s.name) + '</button>';
     }).join('') + '<button type="button" class="steadybtn' + (steady ? ' on' : '') + '" data-act="chartPick" data-px="' + px + '" data-key="steady" style="background:' + C.steady.color + ';color:' + C.steady.ink + '">Steady RDO</button>' +
-      '<button type="button" class="steadybtn' + (pdu ? ' on' : '') + '" data-act="chartPick" data-px="' + px + '" data-key="pdu" style="background:' + PDU.color + ';color:' + PDU.ink + '">PDU (Precinct Detective Squad)</button></div>' +
+      '<button type="button" class="steadybtn' + (pdu ? ' on' : '') + '" data-act="chartPick" data-px="' + px + '" data-key="pdu" style="background:' + PDU.color + ';color:' + PDU.ink + '">PDU (Precinct Detective Squad)</button>' +
+      '<button type="button" class="t12btn' + (t12 ? ' on' : '') + '" data-act="chartPick" data-px="' + px + '" data-key="12hr" style="background:#7F1D1D;color:#fff">12 hour tour RDO</button></div>' +
       '<div id="' + px + 'Pdu" class="pdupanel"' + (pdu ? '' : ' hidden') + '><div class="muted" style="font-size:13px;margin-bottom:6px">Pick your PDU team:</div><div class="teams">' +
       PDU.teams.map(function (t) { var k = E.pduKey(t.id), rc = PDU.colors[Object.keys(t.map).filter(function (x) { return t.map[x] === 'rdo'; })[0]];
         return '<button type="button" class="' + (key === k ? 'on' : '') + '" data-act="chartPick" data-px="' + px + '" data-key="' + k + '"><span class="cdot" style="background:' + rc.color + '"></span>' + esc(t.name) +
           '<small>' + ['blue', 'yellow', 'green'].map(function (x) { return PDU.colors[x].name[0] + '=' + (t.map[x] === 'rdo' ? 'RDO' : t.map[x].toUpperCase()); }).join(' ') + '</small></button>'; }).join('') + '</div></div>' +
+      '<div id="' + px + 'T12" class="t12panel"' + (t12 ? '' : ' hidden') + '><div class="muted" style="font-size:13px;margin-bottom:6px">Pick your squad. Tours are 12 hours (typically 05:00–17:00 or 17:00–05:00); set any default start below. You work the days your squad is not on RDO. Squad A is off 3 days, then Squad B is off 3 days, with no gaps.</div><div class="teams">' +
+      C.tour12.squads.map(function (s) { var k = E.tour12Key(s.id); return '<button type="button" class="' + (key === k ? 'on' : '') + '" data-act="chartPick" data-px="' + px + '" data-key="' + k + '" style="background:' + s.color + ';color:' + s.ink + '">' + esc(s.name) + '<small>' + esc(s.colorName) + '</small></button>'; }).join('') + '</div></div>' +
       '<div id="' + px + 'Steady" class="steadypanel"' + (steady ? '' : ' hidden') + '><div class="muted" style="font-size:13px;margin-bottom:6px">Pick your two weekly days off:</div><div class="picks" style="margin-top:0">' +
       q.map(function (a) { var k = E.steadyKey(a); return '<button type="button" class="pick' + (key === k ? ' on' : '') + '" data-act="chartPick" data-px="' + px + '" data-key="' + k + '">' + E.DOW3[a] + '/' + E.DOW3[(a + 1) % 7] + '</button>'; }).join('') + '</div>' +
       '<div class="field" style="margin:10px 0 0"><label for="' + px + 'SteadyOther">Other consecutive days</label><select id="' + px + 'SteadyOther" data-px="' + px + '"><option value="">Choose&hellip;</option>' +
@@ -3838,9 +3897,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var k = document.getElementById(px + 'Chart').value, el = document.getElementById(px + 'ChartHint'), er = document.getElementById(px + 'Chart-err'); if (!el) return;
     if (er && k) er.textContent = '';
     var ci = k && E.chartInfo(k, U());
-    el.textContent = !ci ? 'Squad 1 RDOs are yellow, Squad 2 blue, Squad 3 red (rotating 15-day chart). Steady RDO = the same two days off every week (teal). PDU = detective squad teams.'
+    el.textContent = !ci ? 'Squad 1 RDOs are yellow, Squad 2 blue, Squad 3 red (rotating 15-day chart). Steady RDO = the same two days off every week (teal). PDU = detective squad teams. 12 hour tour RDO = Squad A and Squad B on a 6-day cycle.'
       : ci.type === 'pdu' ? ci.name + ': PM, PM, AM, AM, RDO, RDO. ' + shiftText('pm') + ', ' + shiftText('am') + '. RDOs on ' + ci.colorName + ' days.'
-      : ci.type === 'steady' ? ci.name + ': ' + ci.short + ' off every week; all other days are workdays.' : ci.name + ': rotating 15-day chart (5 on, 3 off, 5 on, 2 off).';
+      : ci.type === 'steady' ? ci.name + ': ' + ci.short + ' off every week; all other days are workdays.'
+      : ci.type === '12hr' ? ci.name + ': 12-hour tours, 6-day cycle (Squad A off 3 days, then Squad B off 3 days). No chart time on this chart.'
+      : ci.name + ': rotating 15-day chart (5 on, 3 off, 5 on, 2 off).';
   }
   function syncLegacySquad() { S.profile.charts = E.sortCharts(S.profile.charts); S.profile.squad = E.chartAt(T, S.profile.charts); }
   function refreshChart() { var w = document.getElementById('chartWrap'); if (w) w.innerHTML = chartPanel(); var h = document.getElementById('histWrap'); if (h) h.innerHTML = histPanel(); }
@@ -3912,15 +3973,15 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var ob = otByDate(), all = S.settings.calendarView === 'all';
     var cells = DOW.map(function (d) { return '<div class="dow">' + d + '</div>'; }).join('');
     for (var b = 0; b < E.parts(first).dow; b++) cells += '<div class="cell blank"></div>';
-    var rdoCount = 0, chgMap = {}, chgList = [], pdView = sq.type === 'pdu';
+    var rdoCount = 0, chgMap = {}, chgList = [], pdView = sq.type === 'pdu', t12View = sq.type === '12hr';
     E.chartChanges(myWho()).forEach(function (c) { chgMap[c.day] = c; if (c.day >= first && c.day <= last) chgList.push(c); });
     for (var d = first; d <= last; d++) {
-      var iso = E.toISO(d), mine = E.isRDO(d, sq.id, u), off = E.squadsOff(d, u)[0], tr = E.dayTour(d, sq.id, tourOpts()), cs = mySquad(d), chg = chgMap[d];
+      var iso = E.toISO(d), mine = E.isRDO(d, sq.id, u), off = t12View ? E.tour12OffSquad(d) : E.squadsOff(d, u)[0], tr = E.dayTour(d, sq.id, tourOpts()), cs = mySquad(d), chg = chgMap[d];
       if (!tr.working || tr.extra) rdoCount++;
       var lv = S.leave[iso], lt = lv && lvType(lv.type), ots = ob[iso];
       var style = '', tag = '', pc = tr.pdu ? PDU.colors[tr.pduColor] : null, pdAll = all && pdView;
       if (pdAll) { var pon = E.pduTeamsOn(d), dc = pduColorInfo(d); style = 'background:' + dc.color + ';color:' + dc.ink; tag = mine ? 'OFF' : pon.rdo.short + ' off'; }
-      else if (all) { style = 'background:' + off.color + ';color:' + off.ink; tag = mine ? 'OFF' : 'S' + off.short + ' off'; }
+      else if (all) { style = 'background:' + off.color + ';color:' + off.ink; tag = mine ? 'OFF' : (t12View ? off.short : 'S' + off.short) + ' off'; }
       else if (tr.extra) { style = 'border:2px dashed ' + cs.color + ';background:#fffbe6'; tag = 'EXTRA OT'; }
       else if (tr.ddWork) { style = 'border:2px solid #0f172a;background:#f7f9fc'; tag = 'WORK'; }
       else if (tr.ddOff) { style = 'background:' + cs.color + ';color:' + cs.ink + ';border:2px solid #0f172a'; tag = 'OFF'; }
@@ -3954,6 +4015,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<button class="btn sm legbtn' + (S.settings.legendOpen ? ' on' : '') + '" data-act="legendToggle" aria-expanded="' + (S.settings.legendOpen ? 'true' : 'false') + '" aria-controls="calLegend">Legend <span class="chev" aria-hidden="true">&#9662;</span></button></span></div>' +
       '<div class="legend" id="calLegend"' + (S.settings.legendOpen ? '' : ' hidden') + '>' +
       (all && pdView ? ['blue', 'yellow', 'green'].map(function (x) { var t = PDU.teams.filter(function (tm) { return tm.map[x] === 'rdo'; })[0]; return '<span><i class="sw" style="background:' + PDU.colors[x].color + '"></i>' + PDU.colors[x].name + ': ' + esc(t.name) + ' off</span>'; }).join('')
+           : all && t12View ? C.tour12.squads.map(function (s) { return '<span><i class="sw" style="background:' + s.color + '"></i>' + esc(s.name) + ' off</span>'; }).join('')
            : all ? E.unit(u).squads.map(function (s) { return '<span><i class="sw" style="background:' + s.color + '"></i>' + esc(s.name) + ' off</span>'; }).join('')
            : pdView ? '<span><i class="sw" style="background:' + PDU.shifts.pm.color + '"></i>PM 4p–1a (9:00)</span><span><i class="sw" style="background:#fff"></i>AM 8a–4p (8:00)</span><span><i class="sw" style="background:' + sq.color + '"></i>Your RDO (' + esc(sq.colorName) + ')</span><span><i class="sw" style="background:#fff;box-shadow:inset 0 5px 0 ' + PDU.colors.blue.color + '"></i>Top stripe = chart color</span><span><i class="m-p15" style="font-style:normal;font-size:10px;font-weight:800;padding:1px 4px;border-radius:4px">+15</i>Extra 15 min (PM 9:15, AM 8:15)</span>'
            : '<span><i class="sw" style="background:' + sq.color + '"></i>Your RDO</span><span><i class="sw" style="background:#f7f9fc"></i>Workday</span>') +
@@ -4278,7 +4340,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
 
   function viewLookup() {
-    var u = U(), d = ui.lookup, off = E.squadsOff(d, u), work = E.squadsWorking(d, u), sq = mySquad(ui.lookup), o = off[0];
+    var u = U(), d = ui.lookup, off = E.squadsOff(d, u), work = E.squadsWorking(d, u), sq = mySquad(ui.lookup);
+    if (sq.type === '12hr') { off = E.tour12SquadsOff(d); work = E.tour12SquadsWorking(d); }
+    var o = off[0];
     var html = suggestBar('Lookup') + '<div class="card" data-sec="5a"><div class="field" style="margin-bottom:8px"><label for="lkDate">Pick a date</label><input type="date" id="lkDate" value="' + E.toISO(d) + '"></div>' +
       '<div class="row"><button class="btn sm" data-act="lkShift" data-n="-1">&lsaquo; Prev day</button><button class="btn sm" data-act="lkToday">Today</button><button class="btn sm" data-act="lkShift" data-n="1">Next day &rsaquo;</button></div></div>';
     var headLen = html.length;
@@ -4286,11 +4350,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div>Working: ' + work.map(function (s) { return esc(s.name); }).join(' & ') + '</div></div>';
     var mine = E.isRDO(d, sq.id, u), lv = S.leave[E.toISO(d)], lt = lv && lvType(lv.type), tr = E.dayTour(d, sq.id, tourOpts());
     html += '<div class="card" data-sec="5c"><b>You (' + esc(sq.name) + '):</b> ' + (tr.working ? (tr.extra ? 'Extra tour on RDO (overtime)' : tr.ddWork ? 'Day for day: working this RDO' : 'Scheduled to work') + ', tour ' + tourText(tr) : tr.dropped ? 'Not working (changed)' : tr.ddOff ? 'Day for day: off' : 'Regular day off') + (lt ? ' &middot; ' + lt.label + ' leave' : '') + (E.isPayday(d, payOpts()) ? ' &middot; <b style="color:var(--pay)">Payday</b>' : '') +
-      '<div class="muted" style="font-size:13px;margin-top:4px">' + (tr.pdu ? 'PDU ' + pduColorInfo(d).name + ' day (day ' + E.pduCycleDay(d) + ' of 6)' + (tr.shift === 'pm' || tr.shift === 'am' ? ' &middot; your ' + PDU.shifts[tr.shift].label + ' tour' : '') : 'Cycle day ' + (E.cycleOffset(d, u) + 1) + ' of ' + E.unit(u).pattern.cycleLength + ' (' + esc(E.unit(u).pattern.description) + ')') + '</div></div>';
+      '<div class="muted" style="font-size:13px;margin-top:4px">' + (tr.pdu ? 'PDU ' + pduColorInfo(d).name + ' day (day ' + E.pduCycleDay(d) + ' of 6)' + (tr.shift === 'pm' || tr.shift === 'am' ? ' &middot; your ' + PDU.shifts[tr.shift].label + ' tour' : '') : sq.type === '12hr' ? '6-day 12 hour tour RDO cycle (day ' + (E.tour12Offset(d) + 1) + ' of 6): ' + esc(E.tour12OffSquad(d).name) + ' off' : 'Cycle day ' + (E.cycleOffset(d, u) + 1) + ' of ' + E.unit(u).pattern.cycleLength + ' (' + esc(E.unit(u).pattern.description) + ')') + '</div></div>';
     var ws = d - E.parts(d).dow, strip = '';
     for (var i = 0; i < 7; i++) {
-      var x = ws + i, s = E.squadsOff(x, u)[0], p = E.parts(x);
-      strip += '<button class="wd' + (x === d ? ' sel' : '') + '" data-act="lkSet" data-d="' + x + '" style="background:' + s.color + ';color:' + s.ink + '" aria-label="' + esc(fmt(x, 'long') + ': ' + s.name + ' off') + '"><div class="a">' + DOW[p.dow] + '</div><div class="b">' + p.d + '</div><div class="c">S' + s.short + ' off</div></button>';
+      var x = ws + i, s = (sq.type === '12hr' ? E.tour12OffSquad(x) : E.squadsOff(x, u)[0]), p = E.parts(x);
+      strip += '<button class="wd' + (x === d ? ' sel' : '') + '" data-act="lkSet" data-d="' + x + '" style="background:' + s.color + ';color:' + s.ink + '" aria-label="' + esc(fmt(x, 'long') + ': ' + s.name + ' off') + '"><div class="a">' + DOW[p.dow] + '</div><div class="b">' + p.d + '</div><div class="c">' + (sq.type === '12hr' ? s.short : 'S' + s.short) + ' off</div></button>';
     }
     html += '<div class="card" data-sec="5d"><div class="monthnav"><button class="navbtn" data-act="lkShift" data-n="-7" aria-label="Previous week">&lsaquo;</button><div class="title" style="font-size:16px">Who\'s off: week of ' + fmt(ws, 'md') + '</div><button class="navbtn" data-act="lkShift" data-n="7" aria-label="Next week">&rsaquo;</button></div><div class="week">' + strip + '</div>' +
       '<div class="legend">' + E.unit(u).squads.map(function (s) { return '<span><i class="sw" style="background:' + s.color + '"></i>' + esc(s.name) + '</span>'; }).join('') + '</div></div>';
@@ -4366,6 +4430,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function daySheet(d, sheetOpts) {
     sheetOpts = sheetOpts || {};
     var iso = E.toISO(d), u = U(), sq = mySquad(d), mine = E.isRDO(d, sq.id, u), lv = S.leave[iso] || {}, off = E.squadsOff(d, u), work = E.squadsWorking(d, u);
+    if (sq.type === '12hr') { off = E.tour12SquadsOff(d); work = E.tour12SquadsWorking(d); }
     var dt = E.dayTour(d, sq.id, tourOpts()), offNow = !dt.working, lbl = dt.extra ? 'Your RDO · extra tour (OT)' : dt.ddWork ? 'Your RDO · worked D/D' : dt.ddOff ? 'Your workday · off D/D' : dt.dropped ? 'Your workday · not working' : mine ? 'Your RDO' : dt.pdu ? 'Your ' + PDU.shifts[dt.shift].label + ' tour' : 'Your workday';
     var pon = E.pduTeamsOn(d), dcol = pduColorInfo(d);
     var status = '<div class="status-line" data-sec="6a"><span class="chip" style="' + (offNow || dt.extra ? 'background:' + sq.color + ';color:' + sq.ink + ';border-color:transparent' : '') + '">' + lbl + '</span>' +
@@ -4375,8 +4440,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       (function () { var c = E.chartChanges(myWho()).filter(function (x) { return x.day === d; })[0], ci = c && E.chartInfo(c.chart, u); return c ? '<span class="chip" style="background:#7c2d12;color:#fff;border-color:transparent">Chart change: ' + esc(ci ? ci.name : c.chart) + '</span>' : ''; })() +
       '<button type="button" class="btn sm othersquads-btn" data-act="otherSquads" data-sec="6j" aria-expanded="false" aria-controls="otherSquads">Other squads</button>' +
       '<div id="otherSquads" class="othersquads-box" hidden>' +
-      '<span class="chip">Off (patrol): ' + off.map(function (s) { return s.name; }).join(', ') + '</span><span class="chip">Working: ' + work.map(function (s) { return s.short; }).join(' & ') + '</span>' +
-      '<span class="chip"><span class="cdot" style="background:' + dcol.color + '"></span>&nbsp;PDU ' + dcol.name + ': PM ' + pon.pm.short + ' · AM ' + pon.am.short + ' · ' + pon.rdo.short + ' off</span></div></div>';
+      '<span class="chip">Off (' + (sq.type === '12hr' ? '12 hour tour RDO' : 'patrol') + '): ' + off.map(function (s) { return s.name; }).join(', ') + '</span><span class="chip">Working: ' + work.map(function (s) { return s.short; }).join(' & ') + '</span>' +
+      (sq.type === '12hr' ? '' : '<span class="chip"><span class="cdot" style="background:' + dcol.color + '"></span>&nbsp;PDU ' + dcol.name + ': PM ' + pon.pm.short + ' · AM ' + pon.am.short + ' · ' + pon.rdo.short + ' off</span>') + '</div></div>';
     var entry = E.dayEntryOf(d, sq.id, tourOpts());
     var curOpt = E.dayEntryOption(entry.id) || { id: entry.id, label: entry.id, color: '#334155' };
     var opts = E.dayEntryOptions(entry.leaveType).map(function (l) {
@@ -4992,7 +5057,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function authTabs(on) { return '<div class="authtabs" role="tablist"><button type="button" role="tab" aria-selected="' + (on === 'signin') + '" class="' + (on === 'signin' ? 'on' : '') + '" data-act="authTab" data-t="signin">Sign in</button><button type="button" role="tab" aria-selected="' + (on === 'request') + '" class="' + (on === 'request' ? 'on' : '') + '" data-act="authTab" data-t="request">Request beta access</button></div>'; }
   function offlineNote() { return online() ? '' : '<div class="authwarn" id="authOffline">You\'re offline. Signing in needs a connection the first time on this device.</div>'; }
   function viewSignIn() {
-    return '<div class="card authcard" id="authSignIn"><div class="authlogo"><img src="icons/icon-192.png" alt="FINEST HQ"></div><h2>Patrol Schedule <span class="betatag">beta</span></h2><p class="muted">Invite-only. Sign in with the username and password you requested.</p>' + authTabs('signin') + offlineNote() +
+    return '<div class="card authcard" id="authSignIn"><div class="authlogo"><img src="icons/icon-192.png" alt="FINEST HQ"></div><h2>FINEST HQ <span class="betatag">beta</span></h2><p class="muted">Invite-only. Sign in with the username and password you requested.</p>' + authTabs('signin') + offlineNote() +
       '<form id="siForm" data-act-submit="authSignIn" autocomplete="on" onsubmit="return false">' +
       '<div class="field"><label for="siUser">Username</label><input id="siUser" name="username" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" value="' + esc(ui.lastUser || '') + '"><div class="err" id="siUser-err"></div></div>' +
       '<div class="field"><label for="siPass">Password</label><input id="siPass" name="password" type="password" autocomplete="current-password"><div class="err" id="siPass-err"></div></div>' +
@@ -6067,7 +6132,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (!wr.startDate && sc.startDate) wr.startDate = sc.startDate;
       if (wr.start && wr.end && !wr.endDate) wr.endDate = E.suggestEndDate(wr.startDate, wr.start, '', wr.end);
     }
-    var vs = (wr.start && wr.end && sc && sc.start && sc.end) ? E.workedVsScheduled(wr, sc) : null;
+    var vs = (wr.start && wr.end && sc && sc.start && sc.end) ? workedVS(wr, sc) : null;
     if (vs) c = vs;
     if (c && c.kind === 'late') note.innerHTML = '<b>Ended ' + mm(c.delta || (c.otMin || 0)) + ' late</b>' + (c.sched ? ' (scheduled ' + esc(c.sched) + ')' : '') + '. No overtime: OT starts at ' + C.otThresholdMin + ' minutes past the scheduled end.';
     else if (c && c.kind === 'ot') note.innerHTML = '<b>Overtime: ' + E.fmtHM(c.otMin) + '</b>' + (c.sched ? ' (' + esc(c.sched) + '&ndash;' + esc(c.end) + ')' : '') + '. Saved to your Overtime log for this day.' + (box ? otEditHtml(E.toISO(+box.dataset.d)) : '');
@@ -6395,7 +6460,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       kind = otMin > 0 ? 'ot' : 'on';
     } else {
       var sc = otReadSched(true);
-      if (wr.start && wr.end && sc && sc.start && sc.end) vs = E.workedVsScheduled(wr, sc);
+      if (wr.start && wr.end && sc && sc.start && sc.end) vs = workedVS(wr, sc);
       if (vs) { otMin = vs.kind === 'ot' ? vs.otMin : 0; kind = vs.kind; }
       if (schedBox) schedBox.hidden = !(custom || kind === 'ot');
       var sEl = document.getElementById('otSchedDur');
@@ -6432,7 +6497,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var sc = x.schedStart ? { start: x.schedStart, end: x.schedEnd, startDate: x.schedStartDate, endDate: x.schedEndDate } : otReadSched(true);
     if (kind === 'end') {
       S.tours[iso] = Object.assign(tour, wr);
-      var vs = (wr.start && wr.end && sc && sc.start && sc.end) ? E.workedVsScheduled(wr, sc) : null;
+      var vs = (wr.start && wr.end && sc && sc.start && sc.end) ? workedVS(wr, sc) : null;
       S.overtime = E.syncWorkedOT(S.overtime, iso, vs, uid());
     } else if (kind === 'tour') {
       var span = E.rdoOtSpan(wr.start, wr.end);
@@ -6448,7 +6513,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       tour.entries = entries;
       S.tours[iso] = tour;
       var ent = entries.filter(function (en) { return en.id === eid; })[0];
-      var evs = (ent && sc && sc.start && sc.end) ? E.workedVsScheduled(ent, sc) : null;
+      var evs = (ent && sc && sc.start && sc.end) ? workedVS(ent, sc) : null;
       S.overtime = E.syncEntryOT(S.overtime, iso, ent, evs, uid());
     }
   }
@@ -6573,7 +6638,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (meta.hideForRdo) { start = wr.start; end = wr.end; startDate = wr.startDate; endDate = wr.endDate; }
       else {
         var base = otReadSched(true);
-        if (base && base.start && base.end) vs = E.workedVsScheduled(wr, base);
+        if (base && base.start && base.end) vs = workedVS(wr, base);
         if (vs && vs.kind === 'ot') { start = vs.otStart; end = vs.otEnd; startDate = vs.otStartDate; endDate = vs.otEndDate; otMin = vs.otMin; }
       }
     }
@@ -6941,12 +7006,13 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (chev) chev.innerHTML = open ? '&#9662;' : '&#9656;';
     },
     chartPick: function (t) {
-      var px = t.dataset.px, k = t.dataset.key, inp = document.getElementById(px + 'Chart'), panel = document.getElementById(px + 'Steady'), pp = document.getElementById(px + 'Pdu'), box = document.getElementById(px + 'ChartBox');
-      if (k === 'steady' || k === 'pdu') { if (inp.value.indexOf(k + ':') !== 0) inp.value = ''; }
+      var px = t.dataset.px, k = t.dataset.key, inp = document.getElementById(px + 'Chart'), panel = document.getElementById(px + 'Steady'), pp = document.getElementById(px + 'Pdu'), t12p = document.getElementById(px + 'T12'), box = document.getElementById(px + 'ChartBox');
+      if (k === 'steady' || k === 'pdu' || k === '12hr') { if (inp.value.indexOf(k + ':') !== 0) inp.value = ''; }
       else inp.value = k;
-      panel.hidden = !(k === 'steady' || /^steady:/.test(inp.value)); pp.hidden = !(k === 'pdu' || /^pdu:/.test(inp.value));
-      Array.prototype.forEach.call(box.querySelectorAll('[data-act="chartPick"]'), function (b) { var bk = b.dataset.key; b.classList.toggle('on', bk === inp.value || (bk === 'steady' && !panel.hidden) || (bk === 'pdu' && !pp.hidden)); });
-      if (px === 'onb') onbTourToggle(inp.value || (k === 'pdu' ? 'pdu:' : ''));
+      panel.hidden = !(k === 'steady' || /^steady:/.test(inp.value)); pp.hidden = !(k === 'pdu' || /^pdu:/.test(inp.value)); if (t12p) t12p.hidden = !(k === '12hr' || /^12hr:/.test(inp.value));
+      Array.prototype.forEach.call(box.querySelectorAll('[data-act="chartPick"]'), function (b) { var bk = b.dataset.key; b.classList.toggle('on', bk === inp.value || (bk === 'steady' && !panel.hidden) || (bk === 'pdu' && !pp.hidden) || (bk === '12hr' && t12p && !t12p.hidden)); });
+      if (/^12hr:/.test(inp.value)) { var tl = document.getElementById(px === 'he' ? 'heTour' : px === 'onb' ? 'onbTour' : ''); if (tl) tl.value = '12:00'; }
+      if (px === 'onb') onbTourToggle(inp.value || (k === 'pdu' ? 'pdu:' : k === '12hr' ? '12hr:' : ''));
       if (px === 'he') { var hw = document.getElementById('heTourWrap'); if (hw) hw.hidden = /^pdu/.test(inp.value || (k === 'pdu' ? 'pdu:' : '')); histDiffLine(); }
       var sel = document.getElementById(px + 'SteadyOther'); if (sel && k !== 'steady' && sel.value !== k) sel.value = '';
       chartHint(px); if (px === 'onb') ui.onbChart = inp.value;
@@ -7073,7 +7139,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var wr = { startDate: wStartDate || iso, start: start || effStart, endDate: wEndDate || '', end: end };
       if (!wr.endDate && wr.start) wr.endDate = E.suggestEndDate(wr.startDate, wr.start, '', wr.end || wr.start);
       var sch = (schedStart && schedEnd) ? { startDate: sStartDate || iso, start: schedStart, endDate: sEndDate || sStartDate || iso, end: schedEnd } : defWin;
-      var vs = (!rdoOt && wr.start && wr.end) ? E.workedVsScheduled(wr, sch) : null;
+      var vs = (!rdoOt && wr.start && wr.end) ? workedVS(wr, sch) : null;
       var ec = vs || ((rdoOt || !end || !effStart) ? null : E.endCompare(effStart, effLen, end));
       if (ec && ec.kind === 'on') { if (!timesSet) end = ''; ec = null; } // the scheduled end isn't a change
       if (!rdoOt && end && !effStart) { document.getElementById('dayEnd-err').textContent = 'Set the tour start first'; return toast('Set a tour start to use a tour end'); }
@@ -7101,7 +7167,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         if (!found) list.push(ent);
         S.tours[iso] = Object.assign({}, prevT, { entries: list, updated: new Date().toISOString() });
         var evs = (schedStart && schedEnd) ? { startDate: sStartDate || iso, start: schedStart, endDate: sEndDate || iso, end: schedEnd } : defWin;
-        var evs2 = E.workedVsScheduled(ent, evs);
+        var evs2 = workedVS(ent, evs);
         S.overtime = E.syncEntryOT(S.overtime, iso, ent, evs2, uid());
         msg = found ? 'Entry updated' : 'Additional entry saved';
         if (evs2 && evs2.kind === 'ot') msg = 'Overtime added: ' + E.fmtHM(evs2.otMin);
@@ -7672,7 +7738,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         var eid = box.dataset.eid || uid(); box.dataset.eid = eid;
         var ent = E.cleanTourEntry({ id: eid, start: wr.start, end: wr.end, startDate: wr.startDate, endDate: wr.endDate }) || { id: eid, start: wr.start, end: wr.end, startDate: wr.startDate, endDate: wr.endDate };
         ent.id = eid;
-        var evs = E.workedVsScheduled(ent, readSchedTimes(true));
+        var evs = workedVS(ent, readSchedTimes(true));
         S.overtime = E.syncEntryOT(S.overtime, iso, ent, evs, uid());
         var e1 = S.overtime.filter(function (o) { return o.linkedEntry === eid; })[0];
         if (e1) otSheet(e1); else toast('No overtime to edit yet');
@@ -7687,7 +7753,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         if (e2) otSheet(e2); else toast('No overtime to edit yet');
         return;
       }
-      var vs = E.workedVsScheduled(wr, readSchedTimes(true));
+      var vs = workedVS(wr, readSchedTimes(true));
       S.overtime = E.syncWorkedOT(S.overtime, iso, vs, uid());
       var e3 = S.overtime.filter(function (o) { return o.linkedEnd === iso; })[0];
       if (e3) otSheet(e3); else toast('No overtime to edit yet');

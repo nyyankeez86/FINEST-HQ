@@ -1,6 +1,6 @@
 {
-  "name": "Patrol Schedule",
-  "short_name": "Patrol",
+  "name": "FINEST HQ",
+  "short_name": "FINEST HQ",
   "description": "NYPD chart, overtime, leave and pay periods (beta)",
   "start_url": "./",
   "scope": "./",
