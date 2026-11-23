@@ -108,6 +108,17 @@ nav.tabs button.on::before{content:"";position:absolute;margin-top:-58px;width:3
 .home-strip .hstat-today .big{margin:0}
 .home-strip .small{font-size:11px;color:var(--muted);margin-top:1px;line-height:1.25}
 .home-strip .glin{font-size:11px;font-weight:700;line-height:1.35;margin-top:2px}
+.home-strip .hstat{cursor:pointer;-webkit-user-select:none;user-select:none}
+.home-strip .hstat-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:6px}
+.home-strip .chev{flex:0 0 auto;font-size:12px;line-height:1.2;color:#64748b;margin-top:1px}
+.home-strip .hstat.open .chev{color:#0f172a}
+.home-strip .small .tourline{display:block}
+.home-strip .small .remline{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.home-strip .today-detail,.home-strip .glance-detail{margin-top:6px;padding-top:6px;border-top:1px solid #e2e8f0;font-size:11.5px;font-weight:600;line-height:1.45;color:#334155;text-align:left}
+.home-strip .dlbl{font-weight:800;color:#0f172a;margin-top:6px}
+.home-strip .dlbl:first-child{margin-top:0}
+.home-strip .drow{margin-top:2px;font-weight:600;color:#334155;white-space:normal}
+.home-strip .dsub{font-weight:600;color:#64748b;font-size:11px}
 .peekbar{display:flex;align-items:center;gap:8px;margin:0 0 10px;padding:8px 10px;border:1.5px solid var(--line,#e5e7eb);border-radius:14px;background:#eef4ff}
 .peekbar .peekmsg{flex:1;min-width:0;font-size:13px;font-weight:700;line-height:1.3}
 .peekbar .btn{min-height:34px;padding:0 10px;font-size:12px;flex:0 0 auto;white-space:nowrap}
@@ -1508,6 +1519,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   // Additional same-day worked tours live on tours[iso].entries (array). Older days have no entries array; the top-level start/end remain the first/only tour.
   function cleanTourEntry(e) {
     if (!e || typeof e !== 'object') return null;
+    if (e.kind === 'assignment' || e.kind === 'asg') return null;
     var st = normTime(e.start || '') || '', en = normTime(e.end || '') || '';
     if (!st && !en) return null;
     var r = { id: String(e.id || ''), start: st, end: en, startDate: isISODate(e.startDate) ? e.startDate : '', endDate: isISODate(e.endDate) ? e.endDate : '' };
@@ -1521,6 +1533,76 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var list = [], t = tour || {};
     if (Array.isArray(t.entries)) t.entries.forEach(function (e) { var c = cleanTourEntry(e); if (c) list.push(c); });
     return list;
+  }
+  function isAssignmentEntry(e) { return !!(e && (e.kind === 'assignment' || e.kind === 'asg')); }
+  function cleanAssignmentEntry(e) {
+    if (!isAssignmentEntry(e)) return null;
+    var typ = e.type, t = assignmentType(typ);
+    if (!t || t.paid) return null;
+    if (typ !== 'court' && typ !== 'training' && typ !== 'detail' && typ !== 'other') return null;
+    var r = { id: String(e.id || ''), kind: 'assignment', type: typ };
+    var st = normTime(e.start || '') || '', en = normTime(e.end || '') || '';
+    if (st) r.start = st;
+    if (en) r.end = en;
+    if (t.detail) r.detail = String(e.detail || '').trim();
+    r.notes = String(e.notes || '').trim();
+    if (t.address) {
+      r.address = String(e.address || '').trim();
+      r.place = String(e.place || '').trim();
+      r.boro = String(e.boro || '').trim();
+    }
+    if (e.updated) r.updated = e.updated;
+    return r;
+  }
+  function entryTimeMin(e) { var m = e && e.start ? timeToMin(e.start) : null; return m === null ? 9999 : m; }
+  function assignmentEntries(tour) {
+    var list = [], t = tour || {};
+    if (Array.isArray(t.entries)) t.entries.forEach(function (e) { var c = cleanAssignmentEntry(e); if (c) list.push(c); });
+    list.sort(function (a, b) { return entryTimeMin(a) - entryTimeMin(b) || String(a.id || '').localeCompare(String(b.id || '')); });
+    return list;
+  }
+  function mergeTourEntries(tour, tourList) {
+    return assignmentEntries(tour).concat((tourList || []).map(cleanTourEntry).filter(Boolean));
+  }
+  function writeAssignmentEntries(tour, asgList) {
+    return tourEntries(tour).concat((asgList || []).map(cleanAssignmentEntry).filter(Boolean));
+  }
+  function assignmentTimeText(e) {
+    if (!e || !e.start) return '';
+    return e.end ? (e.start + '–' + e.end) : e.start;
+  }
+  function assignmentReminderText(e) {
+    if (!e || !e.type) return '';
+    var t = assignmentType(e.type), lb = t ? t.label : e.type, tm = assignmentTimeText(e);
+    return tm ? (lb + ' ' + tm) : lb;
+  }
+  function paidDetailBrief(pd) {
+    pd = pd || {};
+    var bits = [], vendor = String(pd.vendor || '').trim();
+    if (vendor) bits.push(vendor);
+    var st = normTime(pd.start || '') || '', en = normTime(pd.end || '') || '';
+    if (st) bits.push(en ? (st + '–' + en) : st);
+    var addr = String(pd.address1 || pd.address || '').trim().split(/\n/)[0];
+    if (addr) bits.push(addr);
+    return bits.join(' · ');
+  }
+  function dayAssignments(data, iso) {
+    var out = [], a = ((data && data.assignments) || {})[iso];
+    if (a && a.type) {
+      var t = assignmentType(a.type);
+      if (t && !t.paid) out.push(Object.assign({ source: 'day' }, a, { id: a.id || 'day' }));
+    }
+    assignmentEntries(((data && data.tours) || {})[iso]).forEach(function (e) { out.push(Object.assign({ source: 'entry' }, e)); });
+    out.sort(function (a, b) { return entryTimeMin(a) - entryTimeMin(b) || String(a.id || '').localeCompare(String(b.id || '')); });
+    return out;
+  }
+  function assignmentEventWindow(e, dayISO) {
+    var st = normTime((e && e.start) || '') || '';
+    if (!st) return { allDay: true };
+    var en = normTime((e && e.end) || '') || '';
+    var dur = en ? tourSpanMinutes(dayISO, st, dayISO, en) : 30;
+    if (!(dur > 0)) dur = 30;
+    return { allDay: false, startMin: timeToMin(st), durMin: dur };
   }
   function tourEnd(start, lenMin) { // handles tours that cross midnight
     var a = timeToMin(start); if (a === null || !lenMin) return null;
@@ -3578,6 +3660,17 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       }
       // assignment: its own all-day event, so it shows even on RDOs, leave days, or with tours turned off
       if (inc.assign && asg) { var at = assignmentType(asg.type); allDay('asg-' + k, 'Assignment: ' + assignmentLabel(asg), [at ? at.label : asg.type, asg.detail && asg.type !== 'other' ? asg.detail : '', asg.place ? (asg.type === 'court' ? 'Court: ' : 'Location: ') + asg.place + (asg.boro ? ' (' + asg.boro + ')' : '') : '', asg.address ? 'Address: ' + asg.address : '', asg.notes ? 'Notes: ' + asg.notes : ''].filter(Boolean).join('\n'), d, 'Assignment'); if (assignmentLocation(asg)) ev[ev.length - 1].location = assignmentLocation(asg); }
+      if (inc.assign) {
+        assignmentEntries((data.tours || {})[toISO(d)]).forEach(function (ent) {
+          var at = assignmentType(ent.type), label = 'Assignment: ' + assignmentLabel(ent);
+          var desc = [at ? at.label : ent.type, ent.detail && ent.type !== 'other' ? ent.detail : '', ent.place ? (ent.type === 'court' ? 'Court: ' : 'Location: ') + ent.place + (ent.boro ? ' (' + ent.boro + ')' : '') : '', ent.address ? 'Address: ' + ent.address : '', ent.notes ? 'Notes: ' + ent.notes : '', ent.start ? ('Scheduled: ' + assignmentTimeText(ent)) : ''].filter(Boolean).join('\n');
+          var id = String(ent.id || '').replace(/[^A-Za-z0-9_-]/g, '') || ('n' + ev.length);
+          var win = assignmentEventWindow(ent, toISO(d));
+          if (win.allDay) allDay('asgent-' + k + '-' + id, label, desc, d, 'Assignment');
+          else timed('asgent-' + k + '-' + id, label + (ent.start ? ' (' + assignmentTimeText(ent) + ')' : ''), desc, d, win.startMin, win.durMin, 'Assignment');
+          if (assignmentLocation(ent)) ev[ev.length - 1].location = assignmentLocation(ent);
+        });
+      }
       if (inc.tours || inc.overtime) {
         tourEntries((data.tours || {})[toISO(d)]).forEach(function (ent) {
           var dur = tourSpanMinutes(ent.startDate || toISO(d), ent.start, ent.endDate || ent.startDate || toISO(d), ent.end);
@@ -3640,7 +3733,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     tour12Key: tour12Key, tour12Squad: tour12Squad, tour12Offset: tour12Offset, tour12OffPhase: tour12OffPhase, tour12OffSquad: tour12OffSquad, tour12IsOff: tour12IsOff, tour12SquadsOff: tour12SquadsOff, tour12SquadsWorking: tour12SquadsWorking, tour12OvertimeMin: tour12OvertimeMin,
     nextDayOff: nextDayOff, nextWorkday: nextWorkday, countRDOs: countRDOs, isTourChange: isTourChange, countTourChanges: countTourChanges, isPayday: isPayday, nextPayday: nextPayday,
     periodsForPayday: periodsForPayday, regularPaydayFor: regularPaydayFor, overtimePaydayFor: overtimePaydayFor, regularPeriodFor: regularPeriodFor, overtimePeriodFor: overtimePeriodFor, payPeriodsInYear: payPeriodsInYear, hoursBetween: hoursBetween, entryHours: entryHours,
-    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, fmtMDY: fmtMDY, defaultTourWindow: defaultTourWindow, tourSpanMinutes: tourSpanMinutes, suggestEndDate: suggestEndDate, workedVsScheduled: workedVsScheduled, cleanTourEntry: cleanTourEntry, tourEntries: tourEntries, dayTour: dayTour, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, commandById: commandById, isPduCommand: isPduCommand, searchCommands: searchCommands, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, stripBoroSuffix: stripBoroSuffix, splitPaidAddress: splitPaidAddress, joinPaidAddress: joinPaidAddress, mergePaidVendors: mergePaidVendors, rememberPaidVendor: rememberPaidVendor, paidVendorKey: paidVendorKey, parsePaidAmount: parsePaidAmount, paidDetailAmount: paidDetailAmount, paidDetailTaxDate: paidDetailTaxDate, daysBetweenISO: daysBetweenISO, paidDetailTiming: paidDetailTiming, paidDetailTimingCaptions: paidDetailTimingCaptions, paidVendorNames: paidVendorNames, cleanVendorGroups: cleanVendorGroups, vendorReportName: vendorReportName, addVendorToGroup: addVendorToGroup, removeVendorFromGroup: removeVendorFromGroup, renameVendorGroup: renameVendorGroup, ungroupVendor: ungroupVendor, suggestVendorGroups: suggestVendorGroups, paidDetailTaxReport: paidDetailTaxReport, buildPaidDetailXlsx: buildPaidDetailXlsx, buildPaidDetailCsv: buildPaidDetailCsv, parseXlsx: parseXlsx, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, addYearsISO: addYearsISO, retirementDateOf: retirementDateOf, retirementRemain: retirementRemain, retirementCountdown: retirementCountdown, endCompare: endCompare, syncEndOT: syncEndOT, syncWorkedOT: syncWorkedOT, syncEntryOT: syncEntryOT, leaveBalances: leaveBalances, fmtChart: fmtChart, chartTimeFromTour: chartTimeFromTour, isDetectiveRank: isDetectiveRank, isSergeantRank: isSergeantRank, isLieutenantRank: isLieutenantRank, isPoliceOfficerRank: isPoliceOfficerRank, chartKind: chartKind, rankStartDate: rankStartDate, yearsInRankAtLeast: yearsInRankAtLeast, chartTimeEligibility: chartTimeEligibility, chartTimeForDay: chartTimeForDay, chartTimeRange: chartTimeRange, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
+    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, fmtMDY: fmtMDY, defaultTourWindow: defaultTourWindow, tourSpanMinutes: tourSpanMinutes, suggestEndDate: suggestEndDate, workedVsScheduled: workedVsScheduled, cleanTourEntry: cleanTourEntry, tourEntries: tourEntries, isAssignmentEntry: isAssignmentEntry, cleanAssignmentEntry: cleanAssignmentEntry, assignmentEntries: assignmentEntries, mergeTourEntries: mergeTourEntries, writeAssignmentEntries: writeAssignmentEntries, assignmentTimeText: assignmentTimeText, assignmentReminderText: assignmentReminderText, paidDetailBrief: paidDetailBrief, dayAssignments: dayAssignments, assignmentEventWindow: assignmentEventWindow, dayTour: dayTour, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, commandById: commandById, isPduCommand: isPduCommand, searchCommands: searchCommands, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, stripBoroSuffix: stripBoroSuffix, splitPaidAddress: splitPaidAddress, joinPaidAddress: joinPaidAddress, mergePaidVendors: mergePaidVendors, rememberPaidVendor: rememberPaidVendor, paidVendorKey: paidVendorKey, parsePaidAmount: parsePaidAmount, paidDetailAmount: paidDetailAmount, paidDetailTaxDate: paidDetailTaxDate, daysBetweenISO: daysBetweenISO, paidDetailTiming: paidDetailTiming, paidDetailTimingCaptions: paidDetailTimingCaptions, paidVendorNames: paidVendorNames, cleanVendorGroups: cleanVendorGroups, vendorReportName: vendorReportName, addVendorToGroup: addVendorToGroup, removeVendorFromGroup: removeVendorFromGroup, renameVendorGroup: renameVendorGroup, ungroupVendor: ungroupVendor, suggestVendorGroups: suggestVendorGroups, paidDetailTaxReport: paidDetailTaxReport, buildPaidDetailXlsx: buildPaidDetailXlsx, buildPaidDetailCsv: buildPaidDetailCsv, parseXlsx: parseXlsx, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, addYearsISO: addYearsISO, retirementDateOf: retirementDateOf, retirementRemain: retirementRemain, retirementCountdown: retirementCountdown, endCompare: endCompare, syncEndOT: syncEndOT, syncWorkedOT: syncWorkedOT, syncEntryOT: syncEntryOT, leaveBalances: leaveBalances, fmtChart: fmtChart, chartTimeFromTour: chartTimeFromTour, isDetectiveRank: isDetectiveRank, isSergeantRank: isSergeantRank, isLieutenantRank: isLieutenantRank, isPoliceOfficerRank: isPoliceOfficerRank, chartKind: chartKind, rankStartDate: rankStartDate, yearsInRankAtLeast: yearsInRankAtLeast, chartTimeEligibility: chartTimeEligibility, chartTimeForDay: chartTimeForDay, chartTimeRange: chartTimeRange, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
     steadyKey: steadyKey, parseChart: parseChart, validChartKey: validChartKey, chartInfo: chartInfo, sortCharts: sortCharts, chartAt: chartAt, chartChanges: chartChanges, nextOff: nextOff, nextOn: nextOn, reviewOverrides: reviewOverrides, DOW3: DOW3,
     stripAddrLabels: stripAddrLabels, paidAddressSuggestions: paidAddressSuggestions,
     rankAbbr: rankAbbr, rankLabel: rankLabel, displayName: displayName, formatFullName: formatFullName, normMiddleInitial: normMiddleInitial, migrateProfile: migrateProfile, validateProfile: validateProfile,
@@ -3708,7 +3801,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
 
   var S = load();
   var T = E.today(), tp = E.parts(T);
-  var ui = { tab: 'schedule', calY: tp.y, calM: tp.m, lookup: T, otYear: tp.y, payYear: tp.y, leaveYear: tp.y, onbSquad: null, x15Year: tp.y, otView: 'ot', otSel: false, otSelIds: {}, pdSel: false, pdSelIds: {}, otFilter: 'all', otCollapse: {}, calPeek: null, calPeekPicker: false };
+  var ui = { tab: 'schedule', calY: tp.y, calM: tp.m, lookup: T, otYear: tp.y, payYear: tp.y, leaveYear: tp.y, onbSquad: null, x15Year: tp.y, otView: 'ot', otSel: false, otSelIds: {}, pdSel: false, pdSelIds: {}, otFilter: 'all', otCollapse: {}, calPeek: null, calPeekPicker: false, todayOpen: false, glanceOpen: false };
 
   function U() { return S.settings.unit; }
   var PDU = C.pdu;
@@ -4035,10 +4128,13 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function reminderParts(d, sq) {
     var iso = E.toISO(d), tt = E.dayTour(d, sq.id, tourOpts()), parts = [], asg = S.assignments[iso], asgT = asg && E.assignmentType(asg.type);
     if (tt.extra) parts.push('RDO OT');
-    if (tt.rdo && asgT && (asgT.id === 'detail' || asgT.id === 'court' || asgT.id === 'training' || asgT.id === 'other')) parts.push(asgT.label);
+    if (asgT && !asgT.paid && (asgT.id === 'detail' || asgT.id === 'court' || asgT.id === 'training' || asgT.id === 'other')) {
+      parts.push(E.assignmentReminderText(asg) || asgT.label);
+    }
+    E.assignmentEntries((S.tours || {})[iso]).forEach(function (e) { var lb = E.assignmentReminderText(e); if (lb) parts.push(lb); });
     if (E.hasPaidDetail(asg) || (asgT && asgT.paid)) {
-      var vendor = (asg && asg.pd && asg.pd.vendor) ? String(asg.pd.vendor).trim() : '';
-      parts.push(vendor ? 'Paid: ' + vendor : 'Paid detail');
+      var brief = E.paidDetailBrief((asg && asg.pd) || {});
+      parts.push(brief ? 'Paid Detail: ' + brief : 'Paid Detail');
     }
     return parts;
   }
@@ -4048,6 +4144,69 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (d === today) return parts.join(' · ');
     var when = (d === today + 1) ? 'Tomorrow' : new Date(d * E.DAY).toLocaleDateString('en-US', { timeZone: 'UTC', weekday: 'short' });
     return when + ': ' + parts.join(' · ');
+  }
+  function reminderWhen(d, today) {
+    if (d === today) return '';
+    return (d === today + 1) ? 'Tomorrow: ' : (new Date(d * E.DAY).toLocaleDateString('en-US', { timeZone: 'UTC', weekday: 'short' }) + ': ');
+  }
+  function dayExpandHtml(d) {
+    var iso = E.toISO(d), sq = mySquad(d), o = tourOpts(), tt = E.dayTour(d, sq.id, o), ov = (S.tours || {})[iso] || {}, a = S.assignments[iso], rows = [];
+    var status = tt.working ? (tt.onLeave ? 'On leave' : 'Working') + (tt.extra ? ' · OT' : tt.ddWork ? ' · D/D' : '') : (tt.dropped ? 'Not working' : 'RDO' + (tt.ddOff ? ' · D/D' : ''));
+    rows.push('<div class="dlbl">Tour</div><div class="drow">' + esc(status) + (tt.working && !tt.onLeave ? ' · ' + tourText(tt) : '') + '</div>');
+    if (ov.schedStart || ov.schedEnd) rows.push('<div class="dsub">Scheduled ' + esc((ov.schedStart || '') + (ov.schedEnd ? '\u2013' + ov.schedEnd : '')) + '</div>');
+    var asgs = E.dayAssignments(S, iso);
+    if (asgs.length) {
+      rows.push('<div class="dlbl">Assignments</div>');
+      asgs.forEach(function (ax) {
+        var loc = E.assignmentLocation ? E.assignmentLocation(ax) : (ax.place || ax.address || '');
+        rows.push('<div class="drow">' + esc(E.assignmentLabel(ax) || E.assignmentReminderText(ax) || ax.type) + (E.assignmentTimeText(ax) ? ' · ' + esc(E.assignmentTimeText(ax)) : '') + '</div>');
+        if (ax.place && loc && loc.indexOf(ax.place) === -1) rows.push('<div class="dsub">' + esc(ax.place + (ax.boro ? ' (' + ax.boro + ')' : '')) + '</div>');
+        else if (loc) rows.push('<div class="dsub">' + esc(loc) + '</div>');
+        if (ax.address && ax.address !== loc) rows.push('<div class="dsub">' + esc(ax.address) + '</div>');
+        if (ax.notes) rows.push('<div class="dsub">' + esc(ax.notes) + '</div>');
+      });
+    } else {
+      rows.push('<div class="dlbl">Assignments</div><div class="drow">None</div>');
+    }
+    if (E.hasPaidDetail(a)) {
+      var pd = E.cleanPaidDetail(a.pd || {}), amt = E.paidDetailAmount(pd, S.profile), paid = pd.paid ? ('Paid' + (pd.paidDate ? ' ' + esc(E.fmtMDY(pd.paidDate)) : '')) : 'Unpaid';
+      rows.push('<div class="dlbl">Paid Detail</div>');
+      if (pd.id) rows.push('<div class="drow">ID ' + esc(pd.id) + '</div>');
+      if (pd.vendor) rows.push('<div class="drow">' + esc(pd.vendor) + '</div>');
+      var tline = (pd.start || '') + (pd.end ? '\u2013' + pd.end : '');
+      if (tline) rows.push('<div class="drow">' + esc(tline) + (pd.durationMin ? ' \u00b7 ' + esc(E.fmtHM(pd.durationMin)) : '') + '</div>');
+      if (pd.address1 || pd.address) rows.push('<div class="dsub">' + esc(pd.address1 || pd.address) + '</div>');
+      if (pd.address2) rows.push('<div class="dsub">' + esc(pd.address2) + '</div>');
+      if (amt && amt.ok) rows.push('<div class="drow">' + money(amt.amount) + '</div>');
+      rows.push('<div class="drow">' + paid + '</div>');
+    }
+    return '<div class="today-detail" id="todayDetail">' + rows.join('') + '</div>';
+  }
+  function glanceDetailHtml(nextRdo, np, po) {
+    var sq = mySquad(), o = tourOpts(), rows = [];
+    if (nextRdo) {
+      rows.push('<div class="dlbl">Next RDO</div>');
+      rows.push('<div class="drow">' + esc(fmt(nextRdo.blockStart) + ' \u2013 ' + fmt(nextRdo.blockEnd) + ' (' + nextRdo.length + (nextRdo.length === 1 ? ' day' : ' days') + ')') + '</div>');
+      var following = E.nextOff(nextRdo.blockEnd + 1, sq.id, o);
+      if (following) rows.push('<div class="dsub">Following block: ' + esc(fmt(following.blockStart) + ' \u2013 ' + fmt(following.blockEnd) + ' (' + following.length + (following.length === 1 ? ' day' : ' days') + ')') + '</div>');
+    } else {
+      rows.push('<div class="dlbl">Next RDO</div><div class="drow">None upcoming</div>');
+    }
+    rows.push('<div class="dlbl">Next Payday</div>');
+    if (np || np === 0) {
+      var pp = E.periodsForPayday(np, po);
+      rows.push('<div class="drow">Pay period: ' + esc(fmt(pp.regular.start) + ' \u2013 ' + fmt(pp.regular.end)) + '</div>');
+      if (pp.overtime && (pp.overtime.start !== pp.regular.start || pp.overtime.end !== pp.regular.end)) {
+        rows.push('<div class="dsub">Overtime period: ' + esc(fmt(pp.overtime.start) + ' \u2013 ' + fmt(pp.overtime.end)) + '</div>');
+      }
+      var otWin = pp.overtime || pp.regular, otSum = sumOT(otInRange(otWin.start, otWin.end));
+      rows.push('<div class="drow">Expected overtime: ' + hrs(otSum.h) + '</div>');
+      var after = E.nextPayday(np + 1, po);
+      if (after || after === 0) rows.push('<div class="dsub">Next payday after: ' + esc(fmt(after)) + '</div>');
+    } else {
+      rows.push('<div class="drow">None upcoming</div>');
+    }
+    return '<div class="glance-detail" id="glanceDetail">' + rows.join('') + '</div>';
   }
   function glanceWhen(n) {
     return n === 0 ? 'Today' : n === 1 ? 'Tomorrow' : 'in ' + n + ' days';
@@ -4063,20 +4222,20 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var payGlance = (np || np === 0) ? (fmt(np) + ' (' + glanceWhen(np - T) + ')') : '—';
     var tt = E.dayTour(T, sq.id, tourOpts());
     var todayStatus = tt.working ? (tt.onLeave ? 'On leave' : 'Working') + (tt.extra ? ' · OT' : tt.ddWork ? ' · D/D' : '') : (tt.dropped ? 'Not working' : 'RDO' + (tt.ddOff ? ' · D/D' : ''));
-    var todayBits = [];
-    if (tt.regular && !tt.onLeave && !tt.rdo) todayBits.push(tourText(tt));
-    var todayRem = reminderLine(T, sq, T);
-    if (todayRem) todayBits.push(esc(todayRem));
-    else {
-      var rd, nxtRem;
-      for (rd = 1; rd <= 7; rd++) { nxtRem = reminderLine(T + rd, sq, T); if (nxtRem) { todayBits.push(esc(nxtRem)); break; } }
+    var remDay = T, remParts = reminderParts(T, sq), remPrefix = '';
+    if (!remParts.length) {
+      var rd, nxtParts;
+      for (rd = 1; rd <= 7; rd++) { nxtParts = reminderParts(T + rd, sq); if (nxtParts.length) { remDay = T + rd; remParts = nxtParts; remPrefix = reminderWhen(remDay, T); break; } }
     }
-    var todaySmall = todayBits.join(' · ');
+    var todaySmallParts = [];
+    if (tt.regular && !tt.onLeave && !tt.rdo) todaySmallParts.push('<div class="tourline">' + tourText(tt) + '</div>');
+    remParts.forEach(function (p, i) { todaySmallParts.push('<div class="remline">' + esc((i === 0 ? remPrefix : remPrefix) + p) + '</div>'); });
+    var todaySmall = todaySmallParts.join('');
     var todayLine = '<div class="home-strip" id="homeStrip">' +
-      '<div class="hstat hstat-today" data-sec="1a"><div class="big">Today: ' + todayStatus + '</div>' + (todaySmall ? '<div class="small">' + todaySmall + '</div>' : '') + '</div>' +
-      '<div class="hstat hstat-glance" data-sec="1b"><div class="lbl">At a Glance</div>' +
+      '<div class="hstat hstat-today' + (ui.todayOpen ? ' open' : '') + '" data-sec="1a" data-act="todayToggle" role="button" tabindex="0" aria-expanded="' + (ui.todayOpen ? 'true' : 'false') + '"><div class="hstat-hd"><div class="big">Today: ' + todayStatus + '</div><span class="chev" aria-hidden="true">' + (ui.todayOpen ? '▾' : '▸') + '</span></div>' + (todaySmall ? '<div class="small">' + todaySmall + '</div>' : '') + (ui.todayOpen ? dayExpandHtml(T) : '') + '</div>' +
+      '<div class="hstat hstat-glance' + (ui.glanceOpen ? ' open' : '') + '" data-sec="1b" data-act="glanceToggle" role="button" tabindex="0" aria-expanded="' + (ui.glanceOpen ? 'true' : 'false') + '"><div class="hstat-hd"><div class="lbl">At a Glance</div><span class="chev" aria-hidden="true">' + (ui.glanceOpen ? '▾' : '▸') + '</span></div>' +
         '<div class="glin">Next RDO: ' + rdoGlance + '</div>' +
-        '<div class="glin" data-sec="1c">Next Payday: ' + payGlance + '</div></div></div>';
+        '<div class="glin" data-sec="1c">Next Payday: ' + payGlance + '</div>' + (ui.glanceOpen ? glanceDetailHtml(nextRdo, np, po) : '') + '</div></div>';
     if (Object.keys(E.validateProfile(S.profile)).length) todayLine = '<div class="ddpair" data-sec="1h" style="border-color:#b45309;background:#fffbeb;margin:0 0 10px"><b>Finish your profile</b><div style="font-size:13.5px">Rank, first and last name, tax number and reference number are required.</div><button class="btn sm" data-act="settings" style="margin-top:6px">Open settings</button></div>' + todayLine;
     var html = suggestBar('Calendar') + todayLine;
 
@@ -4117,8 +4276,15 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (tr.dd) marks += '<i class="m-dd">D/D</i>';
       if (tr.plus15) marks += '<i class="m-p15">+15</i>';
       if (tr.countsNext) marks += '<i class="m-nx" title="Starts ' + tr.start + ': counts for the next day">' + tr.start.slice(0, 2) + '&rarr;+1</i>';
-      var asg = S.assignments[iso], asgT = asg && E.assignmentType(asg.type); if (asgT) marks += '<i class="m-asg" style="background:' + asgT.color + '">' + asgT.short + '</i>';
-      if (E.hasPaidDetail(asg) && !(asgT && asgT.paid)) marks += '<i class="m-asg" style="background:#A16207">PAID</i>';
+      var asg = S.assignments[iso], asgT = asg && E.assignmentType(asg.type);
+      var asgMarks = E.dayAssignments(S, iso), am = 0;
+      asgMarks.forEach(function (ax) {
+        var at = E.assignmentType(ax.type);
+        if (at && am < 3) { marks += '<i class="m-asg" style="background:' + at.color + '">' + at.short + '</i>'; am++; }
+      });
+      if (asgMarks.length > 3) marks += '<i class="m-asg" style="background:#334155">+' + (asgMarks.length - 3) + '</i>';
+      if (asgT && asgT.paid) marks += '<i class="m-asg" style="background:' + asgT.color + '">' + asgT.short + '</i>';
+      else if (E.hasPaidDetail(asg)) marks += '<i class="m-asg" style="background:#A16207">PAID</i>';
       if (lt) marks += '<i class="m-lv" style="background:' + lt.color + '">' + lt.short + '</i>';
       else if (lv && lv.note) marks += '<i class="m-note">Note</i>';
       var label = fmt(d, 'long') + (pc ? ', ' + pc.name + ' day' + (tr.shift === 'pm' || tr.shift === 'am' ? ', ' + PDU.shifts[tr.shift].label + ' tour ' + tr.start + ' to ' + tr.end : '') : '') + (tr.extra ? ', extra tour on RDO (overtime)' : tr.ddWork ? ', day for day: working this RDO' : tr.ddOff ? ', day for day: RDO' : tr.dropped ? ', not working' : mine ? ', your RDO' : ', workday') + (asgT ? ', assignment: ' + E.assignmentLabel(asg) : '') + (tr.plus15 ? ', plus 15 minutes, tour ' + E.fmtHM(tr.len) : '') + (tr.modified ? ', modified tour ' + E.fmtHM(tr.len) : '') + (E.isPayday(d, po) ? ', payday' : '') + (lt ? ', ' + lt.label : '') + (ots ? ', overtime logged' : '');
@@ -4581,6 +4747,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       tourSection(d, sheetOpts) +
       chartTimeDayHtml(d, dt) +
       asgSection(iso, d, dt) +
+      (sheetOpts.addEntry ? '' : asgEntryListHtml(iso, d)) +
       '<div class="field" data-sec="6f"><label for="lvNote">Note (optional)</label><textarea id="lvNote" placeholder="e.g. Approved by Sgt. Zee">' + esc(lv.note || '') + '</textarea></div>' +
             '<button class="btn primary block" data-act="lvSave" data-d="' + d + '">Save day</button>' +
       '<h3 style="margin-top:18px" data-sec="6g">Overtime this day</h3>' + (ots.length ? '<div class="list">' + ots.map(otRow).join('') + '</div>' : '<div class="muted" style="margin-bottom:8px">None logged. Log overtime from the Overtime tab.</div>') +
@@ -6947,6 +7114,111 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
 
   // ---------- Day summary: what's saved on a date; tap an entry to view or change it ----------
+
+  function dayHasLoggedTour(iso) {
+    var tr = S.tours[iso] || {};
+    return !!(tr.start || tr.end || tr.len || tr.status === 'work' || tr.status === 'dd' || tr.timesSet);
+  }
+  function readAsgEntryFields() {
+    var box = document.getElementById('asgBox'), typ = box ? box.dataset.sel : '';
+    var addrEl = document.getElementById('asgAddr'), placeId = typ === 'training' ? 'asgTrLoc' : 'asgPlace';
+    var placeEl = document.getElementById(placeId), boroEl = document.getElementById('asgBoro');
+    var addr = addrEl ? addrEl.value : '', place = placeEl ? placeEl.value : '', boro = boroEl ? boroEl.value : '';
+    if (typ === 'court') boro = (E.selectedCourts(addr, place, boro).boro) || boro;
+    return {
+      type: typ,
+      detail: (document.getElementById('asgDetail') || {}).value || '',
+      notes: (document.getElementById('asgNotes') || {}).value || '',
+      address: addr,
+      place: place,
+      boro: boro
+    };
+  }
+  function asgEntryListHtml(iso, d) {
+    var list = E.assignmentEntries((S.tours || {})[iso]);
+    if (!list.length) return '';
+    var rows = list.map(function (ent) {
+      var tm = E.assignmentTimeText(ent);
+      return '<button type="button" class="item" data-act="asgEntryEdit" data-d="' + d + '" data-eid="' + esc(ent.id) + '"><div class="main"><div class="t1">' + esc(E.assignmentLabel(ent) || E.assignmentReminderText(ent) || 'Assignment') + '</div>' + (tm ? '<div class="t2">' + esc(tm) + '</div>' : '') + '</div><div class="right sumgo">View / edit &rsaquo;</div></button>';
+    }).join('');
+    return '<div class="card" id="asgEntryList" style="padding:10px 12px"><h3 style="font-size:15px;margin:0 0 8px">Additional assignments</h3><div class="list">' + rows + '</div></div>';
+  }
+  function asgEntrySheet(d, eid) {
+    var iso = E.toISO(d), list = E.assignmentEntries((S.tours || {})[iso]), a = { type: '' }, i;
+    if (eid) { for (i = 0; i < list.length; i++) if (list[i].id === eid) a = list[i]; }
+    var sel = a.type || '', t = E.assignmentType(sel);
+    var opts = C.assignmentTypes.filter(function (x) { return !x.retired && !x.paid; }).map(function (x) {
+      var on = sel === x.id;
+      return '<button type="button" data-act="asgPick" data-t="' + x.id + '" data-c="' + x.color + '" class="' + (on ? 'on' : '') + '" style="' + (on ? 'background:' + x.color : '') + '">' + esc(x.label) + '</button>';
+    }).join('');
+    var st = a.start || '', en = a.end || '';
+    var html = '<div class="card asgbox" id="asgBox" data-sec="6k" data-sel="' + esc(sel) + '" data-orig="' + esc(sel) + '" data-odetail="' + esc(a.detail || '') + '" data-d="' + d + '" data-eid="' + esc(eid || '') + '"><h3 style="font-size:15px;margin-top:0">' + (eid ? 'Edit assignment' : 'Assignment') + '</h3>' +
+      '<div class="hint">This is an assignment only — it does not add a tour or change hours, overtime, chart time, or the tour-change count.</div>' +
+      '<div class="asgopts" id="asgOpts">' + opts + '</div>' +
+      '<div class="field" id="asgDetailWrap" style="margin-top:10px"' + (t && t.detail ? '' : ' hidden') + '><label for="asgDetail" id="asgDetailLbl">' + esc(t && t.detail ? t.detail.label + (t.detail.required ? '' : ' (optional)') : '') + '</label>' +
+      '<input id="asgDetail" list="asgSug" autocomplete="off" placeholder="' + esc(t && t.detail ? t.detail.placeholder : '') + '" value="' + esc(a.detail || '') + '"><datalist id="asgSug">' + asgSuggest(sel) + '</datalist><div class="err" id="asgDetail-err"></div></div>' +
+      addrBlock(a, sel, iso, st) +
+      '<div id="asgSlipHost" hidden data-iso="' + iso + '"></div>' +
+      '<div class="field" id="asgNotesWrap" style="margin-top:10px"' + (sel ? '' : ' hidden') + '><label for="asgNotes">Assignment notes (optional)</label><textarea id="asgNotes" placeholder="e.g. report to 1 Police Plaza, bring vest">' + esc(a.notes || '') + '</textarea></div>' +
+      '<div class="sebox" id="asgEntTimes" data-sec="6k"><div class="row"><div class="field"><label for="asgEntStart">Scheduled start (optional)</label><input id="asgEntStart" class="timeIn" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="HH:MM" value="' + esc(st) + '"><div class="err" id="asgEntStart-err"></div></div>' +
+      '<div class="field"><label for="asgEntEnd">Scheduled end (optional)</label><input id="asgEntEnd" class="timeIn" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="HH:MM" value="' + esc(en) + '"><div class="err" id="asgEntEnd-err"></div></div></div>' +
+      '<div class="hint">24-hour time: type digits (730 &rarr; 07:30, 1030 &rarr; 10:30). End can be left blank, e.g. court at 10:30.</div></div>' +
+      '<button type="button" class="btn primary block" id="asgEntrySave" data-act="asgEntrySave" data-d="' + d + '" data-eid="' + esc(eid || '') + '" style="margin-top:12px">Save assignment</button>' +
+      (eid ? '<button type="button" class="btn block delbtn" id="asgEntryDel" data-act="asgEntryDel" data-d="' + d + '" data-eid="' + esc(eid || '') + '" style="margin-top:8px">Delete this assignment</button>' : '') +
+      '<button type="button" class="btn block" data-act="closeSheet" style="margin-top:8px">Cancel</button></div>';
+    openSheet((eid ? 'Edit assignment' : 'Add assignment'), html, 'Assignment');
+  }
+  function asgEntrySave(d, eid) {
+    var iso = E.toISO(d), prevT = S.tours[iso];
+    if (!dayHasLoggedTour(iso) && !prevT) return toast('Save a tour for this day first');
+    if (!prevT) return toast('Save a tour for this day first');
+    var fields = readAsgEntryFields();
+    if (!fields.type) return toast('Pick an assignment type');
+    var startEl = document.getElementById('asgEntStart'), endEl = document.getElementById('asgEntEnd');
+    var rawS = startEl ? String(startEl.value || '').trim() : '', rawE = endEl ? String(endEl.value || '').trim() : '';
+    var st = E.normTime(rawS) || '', en = E.normTime(rawE) || '';
+    if (rawS && !st) return toast('Start time: use HHMM, e.g. 1030');
+    if (rawE && !en) return toast('End time: use HHMM, e.g. 1200');
+    if (en && !st) return toast('Enter a start time, or clear the end time');
+    var rec = {
+      id: eid || uid(), kind: 'assignment', type: fields.type,
+      start: st, end: en, detail: fields.detail, notes: fields.notes,
+      address: fields.address, place: fields.place, boro: fields.boro,
+      updated: new Date().toISOString()
+    };
+    var err = E.validateAssignment(rec);
+    if (err) {
+      var ae = document.getElementById('asgDetail-err'); if (ae) ae.textContent = err;
+      var det = document.getElementById('asgDetail'); if (det) { det.classList.add('bad'); det.focus(); }
+      return toast(err);
+    }
+    var clean = E.cleanAssignmentEntry(rec);
+    if (!clean) return toast('Could not save this assignment');
+    clean.updated = rec.updated;
+    var list = E.assignmentEntries(prevT), found = false;
+    list = list.map(function (e) { if (e.id === clean.id) { found = true; return clean; } return e; });
+    if (!found) list.push(clean);
+    S.tours[iso] = Object.assign({}, prevT, { entries: E.writeAssignmentEntries(prevT, list), updated: new Date().toISOString() });
+    save();
+    daySummary(d, found ? 'Assignment updated' : 'Assignment saved');
+  }
+  function asgEntryDel(d, eid) {
+    if (!eid) return;
+    confirmDlg({
+      title: 'Delete this assignment?',
+      body: '<p>Remove this assignment from the day. The tour and hours are unchanged.</p>',
+      ok: 'Delete',
+      danger: true,
+      onOk: function () {
+        var iso = E.toISO(d), prevT = S.tours[iso] || {};
+        var list = E.assignmentEntries(prevT).filter(function (e) { return e.id !== eid; });
+        S.tours[iso] = Object.assign({}, prevT, { entries: E.writeAssignmentEntries(prevT, list), updated: new Date().toISOString() });
+        save();
+        if (E.dayHasEntries(S, iso)) daySummary(d, 'Assignment deleted');
+        else closeSheet();
+      }
+    });
+  }
   function daySummary(d, savedMsg) {
     if (!E.dayHasEntries(S, E.toISO(d)) && !savedMsg) return daySheet(d);
     var iso = E.toISO(d), sq = mySquad(d), o = tourOpts(), dt = E.dayTour(d, sq.id, o), en = E.dayEntryOf(d, sq.id, o), opt = E.dayEntryOption(en.id) || { label: en.id, color: '#334155' };
@@ -6960,8 +7232,21 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (a && a.type && !(E.assignmentType(a.type) || {}).paid) rows.push(item('asg', (function (t) { return sw(t.color, esc(t.short)); })(E.assignmentType(a.type) || { short: '?', color: '#64748b' }), esc(E.assignmentLabel(a)), esc(E.assignmentLocation(a) || ''), 'sumAsg'));
     if (E.hasPaidDetail(a)) { var pd = a.pd; rows.push(item('paid', sw('#047857', 'PD'), 'Paid Detail' + (pd.vendor ? ': ' + esc(pd.vendor) : ''), [pd.start ? esc(pd.start) + (pd.end ? '–' + esc(pd.end) : '') : '', pd.durationMin ? E.fmtHM(pd.durationMin) : '', pd.id ? 'ID ' + esc(pd.id) : ''].filter(Boolean).join(' &middot; '), 'sumPaid')); }
     if (sm) rows.push(item('asg', sw('#334155', '&#128206;'), esc(slipKindOf(iso)), 'Saved on this device', 'sumSlip'));
-    E.tourEntries(ov).forEach(function (ent, i) {
-      rows.push('<button type="button" class="item sumrow" data-act="dayEdit" data-d="' + d + '" data-add="1" data-eid="' + esc(ent.id) + '" id="sumEntry' + i + '">' + sw('#1d4ed8', '+' + (i + 2)) + '<div class="main"><div class="t1">Additional entry</div><div class="t2">' + esc((ent.start || '') + (ent.end ? '–' + ent.end : '')) + (ent.startDate && ent.startDate !== iso ? ' · from ' + esc(E.fmtMDY(ent.startDate)) : '') + '</div></div><div class="right sumgo">View / edit &rsaquo;</div></button>');
+    var extras = [];
+    E.tourEntries(ov).forEach(function (ent) {
+      var sort = E.timeToMin(ent.start); if (sort === null) sort = 9999;
+      extras.push({ kind: 'tour', sort: sort, id: ent.id, html: '<button type="button" class="item sumrow" data-act="dayEdit" data-d="' + d + '" data-add="1" data-eid="' + esc(ent.id) + '" id="sumEntry' + esc(ent.id) + '">' + sw('#1d4ed8', '+') + '<div class="main"><div class="t1">Additional entry</div><div class="t2">' + esc((ent.start || '') + (ent.end ? '–' + ent.end : '')) + (ent.startDate && ent.startDate !== iso ? ' · from ' + esc(E.fmtMDY(ent.startDate)) : '') + '</div></div><div class="right sumgo">View / edit &rsaquo;</div></button>' });
+    });
+    E.assignmentEntries(ov).forEach(function (ent) {
+      var sort = E.timeToMin(ent.start); if (sort === null) sort = 9999;
+      var tm = E.assignmentTimeText(ent);
+      extras.push({ sort: sort, id: ent.id, html: '<button type="button" class="item sumrow" data-act="asgEntryEdit" data-d="' + d + '" data-eid="' + esc(ent.id) + '" id="sumAsgEnt' + esc(ent.id) + '">' + sw((E.assignmentType(ent.type) || {}).color || '#1d4ed8', (E.assignmentType(ent.type) || {}).short || 'A') + '<div class="main"><div class="t1">' + esc(E.assignmentLabel(ent) || E.assignmentReminderText(ent) || 'Assignment') + '</div>' + (tm ? '<div class="t2">' + esc(tm) + '</div>' : '') + '</div><div class="right sumgo">View / edit &rsaquo;</div></button>' });
+    });
+    extras.sort(function (a, b) { return a.sort - b.sort || String(a.id || '').localeCompare(String(b.id || '')); });
+    var tourN = 0;
+    extras.forEach(function (x) {
+      if (x.kind === 'tour') x.html = x.html.replace('id="sumEntry' + esc(x.id) + '"', 'id="sumEntry' + (tourN++) + '"');
+      rows.push(x.html);
     });
     openSheet(fmt(d, 'long'),
       '<div id="daySum">' + (savedMsg ? '<div class="savedban" id="daySaved" role="status">&#10003; Saved &middot; ' + esc(savedMsg) + '</div>' : '') +
@@ -6970,7 +7255,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div class="muted" style="font-size:12.5px;margin:8px 0">Tap an entry to view or change it.</div>' +
       '<div data-sec="7c"><button class="btn primary block" data-act="dayEdit" data-d="' + d + '" data-focus="day" id="sumEdit">Edit this day</button>' +
       '<button class="btn block" data-act="closeSheet" style="margin-top:8px" id="sumDone">Done</button></div>' +
-      '<div data-sec="7e" style="margin-top:10px"><button type="button" class="btn block" data-act="dayAddEntry" data-d="' + d + '" id="sumAddEntry">Add another entry</button><div class="muted" style="font-size:12.5px;margin-top:6px">Log another overtime tour on this same day. Your earlier entries stay saved.</div></div>' +
+      '<div data-sec="7e" style="margin-top:10px"><button type="button" class="btn block" data-act="dayAddEntry" data-d="' + d + '" id="sumAddEntry">Add another entry</button><div class="muted" style="font-size:12.5px;margin-top:6px">Add another overtime tour, or an assignment without a tour time (Court, Training, Detail, or Other). Your earlier entries stay saved.</div></div>' +
       '<div class="daydel" data-sec="7d"><button type="button" class="btn block delbtn" id="dayDelBtn" data-act="dayDelAsk" data-d="' + d + '">Delete this entry</button></div></div>', 'Day summary');
   }
 
@@ -7358,7 +7643,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         var list = E.tourEntries(prevT), found = false;
         list = list.map(function (e) { if (e.id === eid) { found = true; return ent; } return e; });
         if (!found) list.push(ent);
-        S.tours[iso] = Object.assign({}, prevT, { entries: list, updated: new Date().toISOString() });
+        S.tours[iso] = Object.assign({}, prevT, { entries: E.mergeTourEntries(prevT, list), updated: new Date().toISOString() });
         var evs = (schedStart && schedEnd) ? { startDate: sStartDate || iso, start: schedStart, endDate: sEndDate || iso, end: schedEnd } : defWin;
         var evs2 = workedVS(ent, evs);
         S.overtime = E.syncEntryOT(S.overtime, iso, ent, evs2, uid());
@@ -7396,7 +7681,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         if (orig === 'dd' || orig === 'ddoff') S.tours = E.clearDayForDay(S.tours, iso);
         var keepEnt = (S.tours[iso] || {}).entries;
         if (rdoOt) S.tours[iso] = stampTimes({ status: 'work', len: rdoOt.len, start: rdoOt.start, end: rdoOt.end, entries: keepEnt });
-        else if (!status && !len && !start && !end && !timesSet && !E.tourEntries(S.tours[iso] || {}).length) delete S.tours[iso];
+        else if (!status && !len && !start && !end && !timesSet && !E.tourEntries(S.tours[iso] || {}).length && !E.assignmentEntries(S.tours[iso] || {}).length) delete S.tours[iso];
         else S.tours[iso] = endX({ status: status, len: len, start: start, entries: keepEnt });
       }
       var tr = E.dayTour(d, sq.id, tourOpts());
@@ -7907,7 +8192,28 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     sugPopDismiss: function () { hideSugPop(); },
     sugMark: function (t) { sugMark(t.dataset.id); },
     pushToggle: function (t) { setPushEnabled(!!t.checked); },
-    dayAddEntry: function (t) { daySheet(+t.dataset.d, { addEntry: true }); },
+    dayAddEntry: function (t) {
+      var d = +t.dataset.d, iso = E.toISO(d), tr = S.tours[iso] || {};
+      var hasTour = !!(tr.start || tr.end || tr.len || tr.status === 'work' || tr.status === 'dd' || tr.timesSet);
+      if (!hasTour) { daySheet(d, { addEntry: true }); return; }
+      choiceDlg({
+        title: 'Add another entry',
+        body: '<p>Add an overtime tour, or an assignment without a tour time (Court, Training, Detail, or Other).</p>',
+        choices: [
+          { id: 'tour', label: 'Overtime tour' },
+          { id: 'asg', label: 'Assignment' }
+        ],
+        onChoice: function (id) {
+          if (id === 'tour') daySheet(d, { addEntry: true });
+          else if (id === 'asg') asgEntrySheet(d);
+        }
+      });
+    },
+    todayToggle: function () { ui.todayOpen = !ui.todayOpen; render(); },
+    glanceToggle: function () { ui.glanceOpen = !ui.glanceOpen; render(); },
+    asgEntryEdit: function (t) { asgEntrySheet(+t.dataset.d, t.dataset.eid || ''); },
+    asgEntrySave: function (t) { asgEntrySave(+t.dataset.d, t.dataset.eid || ''); },
+    asgEntryDel: function (t) { asgEntryDel(+t.dataset.d, t.dataset.eid || ''); },
     fillSched: function (t) { fillScheduled(t.dataset.for); },
     otherSquads: function (t) {
       var box = document.getElementById('otherSquads'); if (!box) return;

@@ -11,9 +11,9 @@ so they stay stable when sections move. New sections get the next free letter; r
 
 | Page | Section | What |
 |---|---|---|
-| **1 Schedule** | 1a | Today (compact card in the home strip: status line, plus the actual scheduled tour times only on a working day). Off days (and any other non-working day) do not show the default tour start or length. A short reminder appears when today has RDO overtime (an extra tour on an RDO), an assignment on an RDO (Detail, Court, Training, Other), or a scheduled paid detail (vendor name when present). If today is clean, the next upcoming reminder within 7 days may appear as “Tomorrow: …” or “Fri: …”. If there is nothing to show, the card stays clean with no filler line. |
-| | 1b | Next day off (compact card in the home strip) |
-| | 1c | Next payday (compact card in the home strip) |
+| **1 Schedule** | 1a | Today (compact card in the home strip: status line, plus the actual scheduled tour times only on a working day). Off days (and any other non-working day) do not show the default tour start or length. Reminders each appear on their own line: RDO overtime (an extra tour on an RDO); an assignment (the day assignment or an additional assignment-only entry — e.g. “Court 10:30”); or a paid detail as “Paid Detail:” plus a one-line summary (vendor, time, and a short address if it fits, truncated with an ellipsis). If today is clean, the next upcoming reminder within 7 days may appear as “Tomorrow: …” or “Fri: …”. If there is nothing to show, the card stays clean with no filler line. The card is tappable (chevron) and expands in place with a detailed layout of the day’s tour, each assignment (court location, times, notes), and the paid detail (ID, vendor, times, address lines, amount, paid status). Tapping again collapses it. |
+| | 1b | At a Glance (compact two-line card in the home strip, combined with 1c). Next RDO is the start of the next RDO block that is not already in progress. The card is tappable (chevron) and expands in place: the full next RDO block (start–end and number of days) plus the following block. Tapping again collapses it. |
+| | 1c | Next Payday (the second line of the At a Glance card). The compact line stays “Next Payday: <date> (Today/Tomorrow/in N days)”. When the card is expanded, it also shows the pay period that payday covers, expected overtime being paid that payday when computable (H:MM), and the next payday after it. |
 | | 1d | Calendar (month grid, legend, chart changes; 12 hour tour RDO colors Squad A blue / Squad B red). Scheduled days off are labeled RDO (not “Off”/“OFF”), including Other Calendars overviews (e.g. “A RDO”, “S2 RDO”) and the legend (“Squad A RDO”). There is no monthly days-off counter. OT marks use H:MM (e.g. OT 14:30), not decimal hours. Tour changes (a different start, end, or length on a regular workday; not RDO OT) are not marked on the calendar; a muted “Tour changes: N this month · N this year” line sits under the month grid on My schedule. Dropped workdays still use the gray NOT WKG cell style. Other Calendars is a temporary view of any other chart or overview (patrol squads, 12 hour tour RDO A/B, steady RDO, PDU, or an all-squads overview) without changing the user’s settings, entries, or OT. A banner such as “Viewing: 12 hour tour RDO — Squad B” and a one-tap “Back to my calendar” button appear while peeking. The view is not saved to the profile or sync and resets on reload or Back. |
 | | 1e | Upcoming assignments |
 | | 1f | Retirement countdown |
@@ -51,11 +51,12 @@ so they stay stable when sections move. New sections get the next free letter; r
 | | 6h | Delete this entry |
 | | 6i | Add to calendar (one-off Google link or Apple .ics; subscribe is recommended) |
 | | 6j | Other squads (button on the day page; expands Off / Working / PDU details for other squads; on the 12 hour tour RDO chart, Squad A and Squad B) |
+| | 6k | Additional assignment-only entry (from 7e Add another entry, only when a tour is already saved). Types Court, Training, Detail, Other; existing court picker (including family courts) and assignment fields; optional scheduled start and optional end using the app’s 24-hour time-typing rule in framed boxes. Stored as a linked additional entry on tours[iso].entries with kind “assignment”. Does not create a tour or change hours, overtime, chart time, or the tour-change count. Several may be saved on the same day. Shown on the day sheet and 7e in time order, in the calendar assignment badge, in 1a, and in the calendar feed/export as their own timed events (all-day if there is no time). Edit and delete work like other entries. |
 | **7 Day summary** | 7a | Entries list |
 | | 7b | Overtime list |
 | | 7c | Edit / Done buttons |
 | | 7d | Delete this entry |
-| | 7e | Add another entry |
+| | 7e | Add another entry (opens a choice when a tour is already saved: another overtime tour, or an assignment without a tour time). If no tour is entered yet, the button still opens the additional overtime-tour form, unchanged. Additional assignment-only entries appear in the 7e list in time order with their scheduled time. |
 | **8 Overtime entry** | 8a | Date |
 | | 8b | Type |
 | | 8c | Overtime location (command / precinct) |
