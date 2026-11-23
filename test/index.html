@@ -5895,9 +5895,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (typeof L === 'undefined') { el.innerHTML = '<p class="muted" style="padding:16px">Map library could not load.</p>'; return; }
     teardownDirMap();
     dirMap = L.map(el, { zoomControl: true, attributionControl: true, maxZoom: 19, minZoom: 9 }); el._dirMap = dirMap;
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>',
-      subdomains: 'abcd',
+    // OpenStreetMap standard tiles (https://tile.openstreetmap.org). CARTO Voyager/light_all
+    // started returning watermark tiles ("API KEY REQUIRED", etag wm-*) for this origin on 2026-11-23.
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
       maxZoom: 19
     }).addTo(dirMap);
     var geo = loadPctBounds();
@@ -6215,7 +6216,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var dirTools = chips +
       '<div class="dir-actions" style="margin:0 0 8px"><button type="button" class="btn primary sm" data-act="dirAddCustom">Add custom contact</button></div>' +
       '<p class="muted" style="font-size:12.5px;margin:0 0 8px">Public numbers come from official NYPD pages. Numbers you add stay on your account only and are not shared.</p>';
-    var mapSrc = '<p class="map-src" style="margin-top:8px">Sources: Precinct boundaries — NYC Open Data Police Precincts (y76i-bdw7). NYCHA footprints — NYC Open Data NYCHA Public Housing Developments (phvi-damg). Housing PSA — NYPD Housing Bureau Compstat Eagle Report (period ending Nov 15, 2026) and official NYPD PSA pages. The Open Data “NYCHA PSA” file (72wx-vdjr / bvi6-r9nk) is office locations, not coverage polygons. Address search — NYC GeoSearch. Command shields sit at public station-house addresses already in the official directory, geocoded with NYC GeoSearch (precincts fall back to the precinct polygon if an address does not geocode; when a Transit District address is a named subway station that GeoSearch did not resolve, the official MTA Subway Stations point (data.ny.gov 39hk-dx4f) is used). Streets — OpenStreetMap / CARTO Voyager. Fuel sites — ' + esc(E.FUEL_SOURCE_NOTE) + ' Transit Districts — no public NYPD Transit District boundary or station-to-district table was found; nearest subway station is from MTA Subway Stations (data.ny.gov 39hk-dx4f) for context only. Your device location and searched addresses are not stored or synced.</p>';
+    var mapSrc = '<p class="map-src" style="margin-top:8px">Sources: Precinct boundaries — NYC Open Data Police Precincts (y76i-bdw7). NYCHA footprints — NYC Open Data NYCHA Public Housing Developments (phvi-damg). Housing PSA — NYPD Housing Bureau Compstat Eagle Report (period ending Nov 15, 2026) and official NYPD PSA pages. The Open Data “NYCHA PSA” file (72wx-vdjr / bvi6-r9nk) is office locations, not coverage polygons. Address search — NYC GeoSearch. Command shields sit at public station-house addresses already in the official directory, geocoded with NYC GeoSearch (precincts fall back to the precinct polygon if an address does not geocode; when a Transit District address is a named subway station that GeoSearch did not resolve, the official MTA Subway Stations point (data.ny.gov 39hk-dx4f) is used). Streets — OpenStreetMap standard tiles (tile.openstreetmap.org). Fuel sites — ' + esc(E.FUEL_SOURCE_NOTE) + ' Transit Districts — no public NYPD Transit District boundary or station-to-district table was found; nearest subway station is from MTA Subway Stations (data.ny.gov 39hk-dx4f) for context only. Your device location and searched addresses are not stored or synced.</p>';
     var mapOpts = '<div id="dirMapOpts" class="dir-map-opts" hidden>' +
       toggle +
       fuelChipBar() +
