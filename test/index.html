@@ -551,9 +551,11 @@ a.dir-tel.mine{color:#0f766e}
 .map-cover .cov-close{float:right;border:0;background:transparent;font-size:18px;line-height:1;padding:0 2px;cursor:pointer}
 .pct-lab{background:rgba(255,255,255,.88);border:1px solid #16345f;border-radius:4px;color:#16345f;font-size:10px;font-weight:800;line-height:16px;text-align:center;box-shadow:0 1px 2px rgba(0,0,0,.18)}
 .cmd-shield-icon{background:transparent;border:0}
-.cmd-shield{line-height:0;cursor:pointer}
-.cmd-shield svg{display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4));pointer-events:none}
-.cmd-shield.mine svg{filter:drop-shadow(0 0 3px #f59e0b) drop-shadow(0 1px 2px rgba(0,0,0,.4))}
+.cmd-shield{position:relative;line-height:0;cursor:pointer;width:100%;height:100%}
+.cmd-shield img{display:block;width:100%;height:100%;object-fit:contain;object-position:center;pointer-events:none;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))}
+.cmd-shield.mine img{filter:drop-shadow(0 0 3px #f59e0b) drop-shadow(0 1px 2px rgba(0,0,0,.4))}
+.cmd-shield-lab{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);margin:0;padding:0;max-width:66%;font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-weight:800;color:#0b1f3a;text-align:center;line-height:1.05;white-space:nowrap;pointer-events:none}
+.map-cover .cov-sub{font-size:11px;color:#64748b;margin:0 0 2px 0;font-weight:400}
 .fuelchips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 10px}
 .fuelchips .chip{font-weight:800;padding:8px 14px;min-height:40px;font-size:14px;border-width:2px}
 .fuelchips .chip.on{background:#0b1f3a;color:#fff;border-color:#0b1f3a}
@@ -5792,7 +5794,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       fuelRmpHtml(site) + auto + navLinks(site.address) + fuelSourceHtml() + '</div>';
     openSheet(site.name, body, 'Fuel site');
   }
-  var SHIELD_D = "M45 2.5 C36 6 28 9 22 14 L7 22 C8 34 11 42 14.5 49 C12 56 10.5 61 12 66 C16 80 29 91 45 97.5 C61 91 74 80 78 66 C79.5 61 78 56 75.5 49 C79 42 82 34 83 22 L68 14 C62 9 54 6 45 2.5 Z";
+  var SHIELD_SRC = "vendor/icons/shield.png";
+  var SHIELD_ASPECT = 218 / 256;
   function commandShieldLabel(cmd) {
     if (!cmd) return "";
     if (cmd.kind === "psa") return "PSA " + String(cmd.id || "").replace("psa-", "");
@@ -5800,17 +5803,14 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var n = E.pctNumFromId(cmd.id);
     return n ? (n + " Pct") : (cmd.name || "");
   }
-  function shieldSvg(label, width, showText) {
-    width = width || 40;
-    var height = Math.round(width / 0.9);
-    var fs = (label && label.length > 6) ? 13.8 : 16.6;
-    var text = (showText && label) ? ('<text x="45" y="46" text-anchor="middle" dominant-baseline="middle" font-family="system-ui,-apple-system,Segoe UI,sans-serif" font-weight="800" font-size="' + fs + '" fill="#0b1f3a">' + esc(label) + "</text>") : "";
-    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 100" width="' + width + '" height="' + height + '" aria-hidden="true">' +
-      '<path d="' + SHIELD_D + '" fill="#E8C800" stroke="#FFE84A" stroke-width="1.2"/>' +
-      '<path d="' + SHIELD_D + '" fill="#1030E0" transform="translate(45 50) scale(0.94) translate(-45 -50)"/>' +
-      '<path d="' + SHIELD_D + '" fill="#E8C800" transform="translate(45 50) scale(0.825) translate(-45 -50)"/>' +
-      '<path d="' + SHIELD_D + '" fill="#fff" transform="translate(45 50) scale(0.79) translate(-45 -50)"/>' +
-      text + "</svg>";
+  function shieldDims(width) {
+    var w = Math.round(width);
+    return { w: w, h: Math.round(w / SHIELD_ASPECT) };
+  }
+  function shieldLabelFont(label, width) {
+    var inner = width * 0.62;
+    var n = Math.max(String(label || "").length, 3);
+    return Math.max(7, Math.min(width * 0.26, inner / (n * 0.62)));
   }
   function shieldZoomSpec(z) {
     z = +z;
@@ -5844,9 +5844,12 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function shieldIconFor(cmd, spec, isMine) {
     var w = spec.w + (isMine ? (spec.text ? 6 : 4) : 0);
-    var h = Math.round(w / 0.9);
-    var html = '<div class="cmd-shield' + (isMine ? " mine" : "") + '" data-id="' + esc(cmd.id) + '" data-kind="' + esc(cmd.kind) + '">' + shieldSvg(commandShieldLabel(cmd), w, spec.text) + "</div>";
-    return L.divIcon({ className: "cmd-shield-icon", html: html, iconSize: [w, h], iconAnchor: [w / 2, h] });
+    var d = shieldDims(w);
+    var label = commandShieldLabel(cmd);
+    var lab = (spec.text && label) ? ('<span class="cmd-shield-lab" style="font-size:' + shieldLabelFont(label, d.w) + 'px">' + esc(label) + "</span>") : "";
+    var html = '<div class="cmd-shield' + (isMine ? " mine" : "") + '" data-id="' + esc(cmd.id) + '" data-kind="' + esc(cmd.kind) + '">' +
+      '<img src="' + SHIELD_SRC + '" alt="" width="' + d.w + '" height="' + d.h + '" draggable="false">' + lab + "</div>";
+    return L.divIcon({ className: "cmd-shield-icon", html: html, iconSize: [d.w, d.h], iconAnchor: [d.w / 2, d.h] });
   }
   function addCommandShields() {
     if (!dirMap || typeof L === "undefined") return;
@@ -6005,43 +6008,28 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (!opts.keepView) dirMap.setView([lat, lon], Math.max(dirMap.getZoom() || 0, 16));
     var psaByPct = (nychaData && nychaData.psaByPct) || {};
     var cov = E.coverAt(lon, lat, loadPctBounds(), nychaData, psaByPct);
-    var stations = (mtaStationData && (mtaStationData.stations || mtaStationData.features)) || [];
-    var near = E.nearestStation(lat, lon, stations, 0.25);
     if (cov.developmentFeat && cov.developmentFeat.geometry) {
       dirCoverLayer = L.geoJSON(cov.developmentFeat, { style: { color: '#0f766e', weight: 2.2, fillColor: '#5eead4', fillOpacity: 0.28 } }).addTo(dirMap);
     }
-    var pctName = cov.precinct ? ((E.commandById(commandIdFromPct(cov.precinct)) || {}).name || (cov.precinct + 'th Precinct')) : 'Not inside a published precinct boundary';
     var lines = [];
     lines.push('<button type="button" class="cov-close" data-act="mapCoverClose" aria-label="Close result">&times;</button>');
     lines.push('<h4>' + esc(label || 'Selected point') + '</h4>');
     if (cov.precinct) {
       var pctId = commandIdFromPct(cov.precinct);
-      lines.push('<div class="cov-row" data-sec="4j"><strong>Patrol precinct:</strong> <button type="button" class="linkbtn" data-act="dirJump" data-id="' + esc(pctId) + '">' + esc(pctName) + '</button></div>');
+      var pctShort = cov.precinct + ' Pct';
+      lines.push('<div class="cov-row" data-sec="4j"><strong>Precinct:</strong> <button type="button" class="linkbtn" data-act="dirJump" data-id="' + esc(pctId) + '">' + esc(pctShort) + '</button></div>');
     } else {
-      lines.push('<div class="cov-row"><strong>Patrol precinct:</strong> Not inside a published precinct boundary.</div>');
+      lines.push('<div class="cov-row" data-sec="4j"><strong>Precinct:</strong> N/A</div>');
     }
-    if (cov.development) {
-      var psaTxt;
-      if (cov.psa) {
-        var psaCmd = psaCommand(cov.psa);
-        var psaLabel = psaCmd ? psaCmd.name : ('PSA ' + cov.psa + ' (Housing)');
-        var psaBtn = psaCmd ? ('<button type="button" class="linkbtn" data-act="dirJump" data-id="' + esc(psaCmd.id) + '">' + esc(psaLabel) + '</button>') : esc(psaLabel);
-        psaTxt = psaBtn + (cov.psaHow === 'psa-page' ? ' <span class="muted" style="display:inline">from the official PSA page for this precinct</span>' : '');
-      } else {
-        psaTxt = 'No Housing PSA is listed for this development in the public Compstat table or official PSA pages.';
-      }
-      lines.push('<div class="cov-row"><strong>NYCHA development:</strong> ' + esc(cov.development) + '</div>');
-      lines.push('<div class="cov-row"><strong>Housing PSA:</strong> ' + psaTxt + '</div>');
+    if (cov.psa) {
+      var psaCmd = psaCommand(cov.psa);
+      var psaLabel = 'PSA ' + cov.psa;
+      var psaTxt = psaCmd ? ('<button type="button" class="linkbtn" data-act="dirJump" data-id="' + esc(psaCmd.id) + '">' + esc(psaLabel) + '</button>') : esc(psaLabel);
+      lines.push('<div class="cov-row"><strong>Housing:</strong> ' + psaTxt + '</div>');
+      if (cov.development) lines.push('<div class="cov-sub">' + esc(cov.development) + '</div>');
     } else {
-      lines.push('<div class="cov-row"><strong>Housing PSA:</strong> Not a NYCHA development (no Housing PSA).</div>');
+      lines.push('<div class="cov-row"><strong>Housing:</strong> N/A</div>');
     }
-    if (near && near.station) {
-      var st = near.station, stName = st.n || st.name || 'Subway station';
-      var routes = st.r || st.routes || '';
-      var mi = near.miles < 0.1 ? (Math.round(near.miles * 5280) + ' ft') : (near.miles.toFixed(2) + ' mi');
-      lines.push('<div class="cov-row"><strong>Nearest subway station:</strong> ' + esc(stName) + (routes ? ' (' + esc(routes) + ')' : '') + ' · ' + esc(mi) + '</div>');
-    }
-    lines.push('<div class="muted">Transit Districts cover the subway system. No public TD boundary file is available, so a district is not assigned from this address.</div>');
     var card = document.getElementById('mapCoverCard');
     if (card) { card.innerHTML = lines.join(''); card.hidden = false; }
   }
@@ -6216,7 +6204,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var dirTools = chips +
       '<div class="dir-actions" style="margin:0 0 8px"><button type="button" class="btn primary sm" data-act="dirAddCustom">Add custom contact</button></div>' +
       '<p class="muted" style="font-size:12.5px;margin:0 0 8px">Public numbers come from official NYPD pages. Numbers you add stay on your account only and are not shared.</p>';
-    var mapSrc = '<p class="map-src" style="margin-top:8px">Sources: Precinct boundaries — NYC Open Data Police Precincts (y76i-bdw7). NYCHA footprints — NYC Open Data NYCHA Public Housing Developments (phvi-damg). Housing PSA — NYPD Housing Bureau Compstat Eagle Report (period ending Nov 15, 2026) and official NYPD PSA pages. The Open Data “NYCHA PSA” file (72wx-vdjr / bvi6-r9nk) is office locations, not coverage polygons. Address search — NYC GeoSearch. Command shields sit at public station-house addresses already in the official directory, geocoded with NYC GeoSearch (precincts fall back to the precinct polygon if an address does not geocode; when a Transit District address is a named subway station that GeoSearch did not resolve, the official MTA Subway Stations point (data.ny.gov 39hk-dx4f) is used). Streets — OpenStreetMap standard tiles (tile.openstreetmap.org). Fuel sites — ' + esc(E.FUEL_SOURCE_NOTE) + ' Transit Districts — no public NYPD Transit District boundary or station-to-district table was found; nearest subway station is from MTA Subway Stations (data.ny.gov 39hk-dx4f) for context only. Your device location and searched addresses are not stored or synced.</p>';
+    var mapSrc = '<p class="map-src" style="margin-top:8px">Sources: Precinct boundaries — NYC Open Data Police Precincts (y76i-bdw7). NYCHA footprints — NYC Open Data NYCHA Public Housing Developments (phvi-damg). Housing PSA — NYPD Housing Bureau Compstat Eagle Report (period ending Nov 15, 2026) and official NYPD PSA pages. The Open Data “NYCHA PSA” file (72wx-vdjr / bvi6-r9nk) is office locations, not coverage polygons. Address search — NYC GeoSearch. Command shields sit at public station-house addresses already in the official directory, geocoded with NYC GeoSearch (precincts fall back to the precinct polygon if an address does not geocode; when a Transit District address is a named subway station that GeoSearch did not resolve, the official MTA Subway Stations point (data.ny.gov 39hk-dx4f) is used). Streets — OpenStreetMap standard tiles (tile.openstreetmap.org). Fuel sites — ' + esc(E.FUEL_SOURCE_NOTE) + ' Address search does not assign a Transit District: no public NYPD Transit District boundary or station-to-district table was found. Transit District shields on the map mark public command locations only. Your device location and searched addresses are not stored or synced.</p>';
     var mapOpts = '<div id="dirMapOpts" class="dir-map-opts" hidden>' +
       toggle +
       fuelChipBar() +
