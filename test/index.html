@@ -101,10 +101,13 @@ nav.tabs button.on::before{content:"";position:absolute;margin-top:-58px;width:3
 .stat .small{font-size:13px;color:var(--muted);margin-top:2px}
 .home-strip{display:flex;gap:6px;margin:0 0 10px}
 .home-strip .hstat{flex:1;min-width:0;background:var(--card);border:1px solid #e1e6ee;border-radius:12px;padding:6px 8px;margin:0;box-shadow:0 1px 2px rgba(15,23,42,.06)}
-.home-strip .hstat-today{flex:1.25}
+.home-strip .hstat-today{flex:1.1}
+.home-strip .hstat-glance{flex:1.5}
 .home-strip .lbl{font-size:9px;letter-spacing:.4px;margin:0;line-height:1.2}
 .home-strip .big{font-size:13px;font-weight:800;margin:1px 0 0;line-height:1.2}
+.home-strip .hstat-today .big{margin:0}
 .home-strip .small{font-size:11px;color:var(--muted);margin-top:1px;line-height:1.25}
+.home-strip .glin{font-size:11px;font-weight:700;line-height:1.35;margin-top:2px}
 .peekbar{display:flex;align-items:center;gap:8px;margin:0 0 10px;padding:8px 10px;border:1.5px solid var(--line,#e5e7eb);border-radius:14px;background:#eef4ff}
 .peekbar .peekmsg{flex:1;min-width:0;font-size:13px;font-weight:700;line-height:1.3}
 .peekbar .btn{min-height:34px;padding:0 10px;font-size:12px;flex:0 0 auto;white-space:nowrap}
@@ -4046,21 +4049,20 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var when = (d === today + 1) ? 'Tomorrow' : new Date(d * E.DAY).toLocaleDateString('en-US', { timeZone: 'UTC', weekday: 'short' });
     return when + ': ' + parts.join(' · ');
   }
+  function glanceWhen(n) {
+    return n === 0 ? 'Today' : n === 1 ? 'Tomorrow' : 'in ' + n + ' days';
+  }
   function viewSchedule() {
     var sq = mySquad(), u = U(), po = payOpts();
-    // countdown
-    var nd = E.nextOff(T, sq.id, tourOpts()), cd;
-    if (nd && nd.day === T) {
-      var back = E.nextOn(T, sq.id, tourOpts()), left = nd.blockEnd - T;
-      cd = '<div class="big">Off today</div><div class="small">' + (left > 0 ? left + ' more day' + (left > 1 ? 's' : '') + ' off &middot; ' : '') + 'back ' + fmt(back) + '</div>';
-    } else if (nd) {
-      var n = nd.day - T;
-      cd = '<div class="big">' + (n === 1 ? 'Tomorrow' : 'In ' + n + ' days') + '</div><div class="small">' + fmt(nd.day) + ' &middot; ' + nd.length + '-day break</div>';
-    } else cd = '<div class="big">&mdash;</div>';
-    var np = E.nextPayday(T, po), pn = np - T;
-    var pd = '<div class="big">' + (pn === 0 ? 'Today' : pn === 1 ? 'Tomorrow' : 'In ' + pn + ' days') + '</div><div class="small">' + fmt(np) + '</div>';
+    // At a Glance: Next RDO is the next block that is not the one already in progress.
+    var nd = E.nextOff(T, sq.id, tourOpts()), nextRdo = null;
+    if (nd && nd.day === T) nextRdo = E.nextOff(nd.blockEnd + 1, sq.id, tourOpts());
+    else nextRdo = nd;
+    var rdoGlance = nextRdo ? (fmt(nextRdo.day) + ' (' + glanceWhen(nextRdo.day - T) + ')') : '—';
+    var np = E.nextPayday(T, po);
+    var payGlance = (np || np === 0) ? (fmt(np) + ' (' + glanceWhen(np - T) + ')') : '—';
     var tt = E.dayTour(T, sq.id, tourOpts());
-    var todayBig = tt.working ? (tt.onLeave ? 'On leave' : 'Working') + (tt.extra ? ' · OT' : tt.ddWork ? ' · D/D' : '') : 'Off' + (tt.dropped ? ' · not working' : tt.ddOff ? ' · D/D' : '');
+    var todayStatus = tt.working ? (tt.onLeave ? 'On leave' : 'Working') + (tt.extra ? ' · OT' : tt.ddWork ? ' · D/D' : '') : (tt.dropped ? 'Not working' : 'RDO' + (tt.ddOff ? ' · D/D' : ''));
     var todayBits = [];
     if (tt.regular && !tt.onLeave && !tt.rdo) todayBits.push(tourText(tt));
     var todayRem = reminderLine(T, sq, T);
@@ -4071,9 +4073,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     }
     var todaySmall = todayBits.join(' · ');
     var todayLine = '<div class="home-strip" id="homeStrip">' +
-      '<div class="hstat hstat-today" data-sec="1a"><div class="lbl">Today</div><div class="big">' + todayBig + '</div>' + (todaySmall ? '<div class="small">' + todaySmall + '</div>' : '') + '</div>' +
-      '<div class="hstat" data-sec="1b"><div class="lbl">Next off</div>' + cd + '</div>' +
-      '<div class="hstat" data-sec="1c"><div class="lbl">Payday</div>' + pd + '</div></div>';
+      '<div class="hstat hstat-today" data-sec="1a"><div class="big">Today: ' + todayStatus + '</div>' + (todaySmall ? '<div class="small">' + todaySmall + '</div>' : '') + '</div>' +
+      '<div class="hstat hstat-glance" data-sec="1b"><div class="lbl">At a Glance</div>' +
+        '<div class="glin">Next RDO: ' + rdoGlance + '</div>' +
+        '<div class="glin" data-sec="1c">Next Payday: ' + payGlance + '</div></div></div>';
     if (Object.keys(E.validateProfile(S.profile)).length) todayLine = '<div class="ddpair" data-sec="1h" style="border-color:#b45309;background:#fffbeb;margin:0 0 10px"><b>Finish your profile</b><div style="font-size:13.5px">Rank, first and last name, tax number and reference number are required.</div><button class="btn sm" data-act="settings" style="margin-top:6px">Open settings</button></div>' + todayLine;
     var html = suggestBar('Calendar') + todayLine;
 
@@ -4090,25 +4093,24 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var calOpts = peeking ? { defaultLen: calSq.tourLen || S.profile.tourLen, defaultStart: S.profile.tourStart || '', hist: null, tours: {}, leave: {}, unit: u, extra15: {} } : tourOpts();
     var cells = DOW.map(function (d) { return '<div class="dow">' + d + '</div>'; }).join('');
     for (var b = 0; b < E.parts(first).dow; b++) cells += '<div class="cell blank"></div>';
-    var rdoCount = 0, chgMap = {}, chgList = [];
+    var chgMap = {}, chgList = [];
     var tcMonth = peeking ? 0 : E.countTourChanges(first, last, sq.id, tourOpts());
     var tcYear = peeking ? 0 : E.countTourChanges(E.fromYMD(y, 1, 1), E.fromYMD(y, 12, 31), sq.id, tourOpts());
     if (!peeking) E.chartChanges(myWho()).forEach(function (c) { chgMap[c.day] = c; if (c.day >= first && c.day <= last) chgList.push(c); });
     for (var d = first; d <= last; d++) {
       var iso = E.toISO(d), mine = peekAll ? false : E.isRDO(d, calSq.id, u), off = t12View ? E.tour12OffSquad(d) : E.squadsOff(d, u)[0], tr = E.dayTour(d, calSq.id, calOpts), cs = peeking ? calSq : mySquad(d), chg = peeking ? null : chgMap[d];
-      if (!tr.working || tr.extra) rdoCount++;
       var lv = peeking ? null : S.leave[iso], lt = lv && lvType(lv.type), ots = peeking ? null : ob[iso];
       var style = '', tag = '', pc = tr.pdu ? PDU.colors[tr.pduColor] : null, pdAll = all && pdView;
-      if (pdAll) { var pon = E.pduTeamsOn(d), dc = pduColorInfo(d); style = 'background:' + dc.color + ';color:' + dc.ink; tag = mine ? 'OFF' : pon.rdo.short + ' off'; }
-      else if (all) { style = 'background:' + off.color + ';color:' + off.ink; tag = mine ? 'OFF' : (t12View ? off.short : 'S' + off.short) + ' off'; }
+      if (pdAll) { var pon = E.pduTeamsOn(d), dc = pduColorInfo(d); style = 'background:' + dc.color + ';color:' + dc.ink; tag = mine ? 'RDO' : pon.rdo.short + ' RDO'; }
+      else if (all) { style = 'background:' + off.color + ';color:' + off.ink; tag = mine ? 'RDO' : (t12View ? off.short : 'S' + off.short) + ' RDO'; }
       else if (tr.extra) { style = 'border:2px dashed ' + cs.color + ';background:#fffbe6'; tag = 'EXTRA OT'; }
       else if (tr.ddWork) { style = 'border:2px solid #0f172a;background:#f7f9fc'; tag = 'WORK'; }
-      else if (tr.ddOff) { style = 'background:' + cs.color + ';color:' + cs.ink + ';border:2px solid #0f172a'; tag = 'OFF'; }
+      else if (tr.ddOff) { style = 'background:' + cs.color + ';color:' + cs.ink + ';border:2px solid #0f172a'; tag = 'RDO'; }
       else if (tr.dropped) { style = 'background:#dde3ec;color:#334155'; tag = 'NOT WKG'; }
-      else if (mine) { style = 'background:' + (pc ? pc.color : cs.color) + ';color:' + (pc ? pc.ink : cs.ink); tag = pc ? 'RDO' : 'OFF'; }
+      else if (mine) { style = 'background:' + (pc ? pc.color : cs.color) + ';color:' + (pc ? pc.ink : cs.ink); tag = 'RDO'; }
       else if (pc && (tr.shift === 'pm' || tr.shift === 'am')) { var sx = PDU.shifts[tr.shift]; style = 'background:' + sx.color + ';color:' + sx.ink + ';box-shadow:inset 0 5px 0 ' + pc.color; tag = sx.label + (tr.start ? '<span class="tm">' + t12(tr.start) + '–' + t12(tr.end) + '</span>' : ''); }
       if (pc && !all && tr.ddWork) tag += tr.start ? '<span class="tm">' + t12(tr.start) + '–' + t12(tr.end) + '</span>' : '';
-      if (all && (tr.extra || tr.dropped || tr.dd)) tag = tr.extra ? 'EXTRA OT' : tr.dropped ? 'NOT WKG' : tr.ddWork ? 'WORK' : 'OFF';
+      if (all && (tr.extra || tr.dropped || tr.dd)) tag = tr.extra ? 'EXTRA OT' : tr.dropped ? 'NOT WKG' : tr.ddWork ? 'WORK' : 'RDO';
       var marks = E.isPayday(d, po) ? '<i class="m-pay">PAY</i>' : '';
       if (ots) { var h = 0; ots.forEach(function (e) { h += E.entryHours(e); }); marks += '<i class="m-ot">OT ' + hrs(h) + '</i>'; }
       if (chg) marks += '<i class="m-chg" title="Chart change">&#8644;</i>';
@@ -4119,7 +4121,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (E.hasPaidDetail(asg) && !(asgT && asgT.paid)) marks += '<i class="m-asg" style="background:#A16207">PAID</i>';
       if (lt) marks += '<i class="m-lv" style="background:' + lt.color + '">' + lt.short + '</i>';
       else if (lv && lv.note) marks += '<i class="m-note">Note</i>';
-      var label = fmt(d, 'long') + (pc ? ', ' + pc.name + ' day' + (tr.shift === 'pm' || tr.shift === 'am' ? ', ' + PDU.shifts[tr.shift].label + ' tour ' + tr.start + ' to ' + tr.end : '') : '') + (tr.extra ? ', extra tour on RDO (overtime)' : tr.ddWork ? ', day for day: working this RDO' : tr.ddOff ? ', day for day: off' : tr.dropped ? ', not working' : mine ? ', your day off' : ', workday') + (asgT ? ', assignment: ' + E.assignmentLabel(asg) : '') + (tr.plus15 ? ', plus 15 minutes, tour ' + E.fmtHM(tr.len) : '') + (tr.modified ? ', modified tour ' + E.fmtHM(tr.len) : '') + (E.isPayday(d, po) ? ', payday' : '') + (lt ? ', ' + lt.label : '') + (ots ? ', overtime logged' : '');
+      var label = fmt(d, 'long') + (pc ? ', ' + pc.name + ' day' + (tr.shift === 'pm' || tr.shift === 'am' ? ', ' + PDU.shifts[tr.shift].label + ' tour ' + tr.start + ' to ' + tr.end : '') : '') + (tr.extra ? ', extra tour on RDO (overtime)' : tr.ddWork ? ', day for day: working this RDO' : tr.ddOff ? ', day for day: RDO' : tr.dropped ? ', not working' : mine ? ', your RDO' : ', workday') + (asgT ? ', assignment: ' + E.assignmentLabel(asg) : '') + (tr.plus15 ? ', plus 15 minutes, tour ' + E.fmtHM(tr.len) : '') + (tr.modified ? ', modified tour ' + E.fmtHM(tr.len) : '') + (E.isPayday(d, po) ? ', payday' : '') + (lt ? ', ' + lt.label : '') + (ots ? ', overtime logged' : '');
       cells += '<button class="cell' + (mine ? ' rdo' : ' work') + (E.isPayday(d, po) ? ' payday' : '') + (d === T ? ' today' : '') + (lt ? ' leave' : '') + '" style="' + style + '" data-act="day" data-d="' + d + '" aria-label="' + esc(label) + '">' +
         '<span class="dn">' + E.parts(d).d + '</span>' + (tag ? '<span class="tag">' + tag + '</span>' : '') +
         '<span class="marks">' + marks + '</span></button>';
@@ -4130,13 +4132,13 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       (ui.calPeekPicker ? otherCalPickerHtml() : '') +
       (peeking ? peekBannerHtml(peek) : '') +
       '<div class="cal">' + cells + '</div>' +
-      '<div class="calfoot"><span class="cfcount">' + rdoCount + ' days off this month</span><span class="cfbtns">' + ((y !== tp.y || m !== tp.m) ? '<button class="btn sm" data-act="calToday">Today</button>' : '') +
+      '<div class="calfoot"><span class="cfbtns">' + ((y !== tp.y || m !== tp.m) ? '<button class="btn sm" data-act="calToday">Today</button>' : '') +
       '<button class="btn sm legbtn' + (S.settings.legendOpen ? ' on' : '') + '" data-act="legendToggle" aria-expanded="' + (S.settings.legendOpen ? 'true' : 'false') + '" aria-controls="calLegend">Legend <span class="chev" aria-hidden="true">&#9662;</span></button></span></div>' +
       (peeking ? '' : '<div class="cfchanges" id="tourChangesLine">Tour changes: ' + tcMonth + ' this month · ' + tcYear + ' this year</div>') +
       '<div class="legend" id="calLegend"' + (S.settings.legendOpen ? '' : ' hidden') + '>' +
-      (all && pdView ? ['blue', 'yellow', 'green'].map(function (x) { var t = PDU.teams.filter(function (tm) { return tm.map[x] === 'rdo'; })[0]; return '<span><i class="sw" style="background:' + PDU.colors[x].color + '"></i>' + PDU.colors[x].name + ': ' + esc(t.name) + ' off</span>'; }).join('')
-           : all && t12View ? C.tour12.squads.map(function (s) { return '<span><i class="sw" style="background:' + s.color + '"></i>' + esc(s.name) + ' off</span>'; }).join('')
-           : all ? E.unit(u).squads.map(function (s) { return '<span><i class="sw" style="background:' + s.color + '"></i>' + esc(s.name) + ' off</span>'; }).join('')
+      (all && pdView ? ['blue', 'yellow', 'green'].map(function (x) { var t = PDU.teams.filter(function (tm) { return tm.map[x] === 'rdo'; })[0]; return '<span><i class="sw" style="background:' + PDU.colors[x].color + '"></i>' + PDU.colors[x].name + ': ' + esc(t.name) + ' RDO</span>'; }).join('')
+           : all && t12View ? C.tour12.squads.map(function (s) { return '<span><i class="sw" style="background:' + s.color + '"></i>' + esc(s.name) + ' RDO</span>'; }).join('')
+           : all ? E.unit(u).squads.map(function (s) { return '<span><i class="sw" style="background:' + s.color + '"></i>' + esc(s.name) + ' RDO</span>'; }).join('')
            : pdView ? '<span><i class="sw" style="background:' + PDU.shifts.pm.color + '"></i>PM 4p–1a (9:00)</span><span><i class="sw" style="background:#fff"></i>AM 8a–4p (8:00)</span><span><i class="sw" style="background:' + calSq.color + '"></i>' + (peeking ? esc(calSq.name) + ' RDO' : 'Your RDO') + ' (' + esc(calSq.colorName) + ')</span><span><i class="sw" style="background:#fff;box-shadow:inset 0 5px 0 ' + PDU.colors.blue.color + '"></i>Top stripe = chart color</span><span><i class="m-p15" style="font-style:normal;font-size:10px;font-weight:800;padding:1px 4px;border-radius:4px">+15</i>Extra 15 min (PM 9:15, AM 8:15)</span>'
            : '<span><i class="sw" style="background:' + calSq.color + '"></i>' + (peeking ? esc(calSq.name) + ' RDO' : 'Your RDO') + '</span><span><i class="sw" style="background:#f7f9fc"></i>Workday</span>') +
       '<span><i class="m-ot" style="font-style:normal;font-size:10px;font-weight:800;padding:1px 4px;border-radius:4px;background:var(--ot);color:#fff">OT</i>Overtime</span>' +
