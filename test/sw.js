@@ -1,6 +1,6 @@
 // Offline cache for the home-screen app. The version changes with every build, so updates replace the old copy.
-const CACHE = 'patrol-test-b10513d7683d'; // TEST build: own cache, scope /FINEST-HQ/test/
-const FILES = ['./', './index.html', './config.js', './manifest.webmanifest', './icons/favicon-16.png', './icons/favicon-32.png', './icons/apple-touch-icon.png', './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png', './vendor/leaflet/leaflet.js', './vendor/leaflet/leaflet.css'];
+const CACHE = 'patrol-test-3e858db97412'; // TEST build: own cache, scope /FINEST-HQ/test/
+const FILES = ["./","./index.html","./config.js","./manifest.webmanifest","./icons/favicon-16.png","./icons/favicon-32.png","./icons/apple-touch-icon.png","./icons/icon-192.png","./icons/icon-512.png","./icons/icon-maskable-512.png","./vendor/leaflet/leaflet.js","./vendor/leaflet/leaflet.css","./vendor/data/mta-stations.json","./vendor/data/nycha-developments.json"];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE && k.indexOf('patrol-test-') === 0).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener('fetch', e => {
