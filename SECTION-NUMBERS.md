@@ -52,7 +52,7 @@ so they stay stable when sections move. New sections get the next free letter; r
 | | 6i | Add to calendar (one-off Google link or Apple .ics; subscribe is recommended) |
 | | 6j | Other squads (button on the day page; expands Off / Working / PDU details for other squads; on the 12 hour tour RDO chart, Squad A and Squad B) |
 | | 6k | Additional assignment-only entry (from 7e Add another entry, only when a tour is already saved). Types Court, Training, Detail, Other; existing court picker (including family courts) and assignment fields; optional scheduled start and optional end using the app’s 24-hour time-typing rule in framed boxes. Stored as a linked additional entry on tours[iso].entries with kind “assignment”. Does not create a tour or change hours, overtime, chart time, or the tour-change count. Several may be saved on the same day. Shown on the day sheet and 7e in time order, in the calendar assignment badge, in 1a, and in the calendar feed/export as their own timed events (all-day if there is no time). Edit and delete work like other entries. |
-| **7 Day summary** | 7a | Entries list |
+| **7 Day summary** | 7a | Entries list. Swipe left to delete the tour entry, an additional (overtime) tour entry, or an assignment-only entry. Same rules as 2c: the row turns red only while dragging, a 72px threshold, a horizontal lock only after |dx|>12 and |dx|>|dy|×1.15 so vertical scroll is not hijacked, the same inset red border, and a confirmation dialog. Cancel snaps the row back. Confirm uses that entry’s existing delete path (linked overtime is removed; assignment-only deletes leave the tour and hours unchanged). There is no swipe-right action in 7a. |
 | | 7b | Overtime list |
 | | 7c | Edit / Done buttons |
 | | 7d | Delete this entry |

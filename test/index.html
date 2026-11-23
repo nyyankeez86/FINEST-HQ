@@ -72,6 +72,7 @@ nav.tabs button[data-tab="overtime"] .tablbl{display:block;text-align:center;max
 .swrow.sw-sel{box-shadow:inset 0 0 0 2px var(--accent)}
 .swrow.sw-paid{box-shadow:inset 0 0 0 2px var(--pay)}
 .swrow.sw-del{box-shadow:inset 0 0 0 2px var(--danger)}
+#sumList>.swrow:first-child .item{border-top:0}
 .item.otitem{padding:5px 2px;min-height:0;gap:6px;align-items:flex-start;line-height:1.2;overflow:hidden}
 .item.otitem .t1,.item.otitem .t2{min-width:0;overflow:hidden;text-overflow:ellipsis}.item.otitem .t1{font-size:13px;font-weight:700}
 .item.otitem .t2{font-size:11.5px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -6563,12 +6564,27 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       }
     });
   }
-  function openSwipeDeleteDialog(kind, key) {
+  function openSwipeDeleteDialog(kind, key, row) {
     if (kind === 'ot') {
       var e = overtimeById(key); if (!e) return;
       confirmDlg({ title: 'Delete overtime', body: '<p>' + esc(overtimeDeleteMessage(e)) + '</p>', ok: 'Delete', danger: true, onOk: function () { commitOvertimeDelete(key, false); } });
-    } else {
+    } else if (kind === 'pd') {
       confirmDlg({ title: 'Delete paid detail', body: '<p>Remove this paid detail from the day?</p>', ok: 'Delete', danger: true, onOk: function () { commitPaidDetailDelete(key); } });
+    } else if (kind === 'sumAsg') {
+      var dA = +((row && row.dataset.d) || 0), eidA = (row && (row.dataset.eid || row.dataset.id)) || key;
+      if (!eidA) return;
+      confirmDlg({ title: 'Delete this assignment?', body: '<p>Remove this assignment from the day. The tour and hours are unchanged.</p>', ok: 'Delete', danger: true, onOk: function () { commitAsgEntryDelete(dA, eidA); } });
+    } else if (kind === 'sumEntry') {
+      var dE = +((row && row.dataset.d) || 0), eidE = (row && (row.dataset.eid || row.dataset.id)) || key;
+      if (!eidE) return;
+      confirmDlg({ title: 'Delete this entry?', body: '<p>Remove this additional tour from the day. Linked overtime is also removed. Other entries stay saved.</p>', ok: 'Delete', danger: true, onOk: function () { commitAdditionalTourDelete(dE, eidE); } });
+    } else if (kind === 'sumTour') {
+      var dT = +((row && row.dataset.d) || 0), isoT = (row && row.dataset.iso) || (dT ? E.toISO(dT) : ''), tr = (S.tours || {})[isoT] || {};
+      if (!isoT) return;
+      var bodyT = '<p>Remove this tour from the day. Linked overtime is also removed. Assignments and other entries stay saved.</p>';
+      if (tr.status === 'dd' || tr.status === 'ddoff') bodyT = '<p>Remove this tour from the day. The day-for-day swap' + (tr.swap ? ' with ' + esc(fmt(E.toDay(tr.swap), 'md')) : '') + ' is also cleared. Assignments and other entries stay saved. Linked overtime is removed.</p>';
+      else if (tr.short) bodyT = '<p>Remove this tour from the day. Linked overtime is also removed, and the early leave is refunded. Assignments and other entries stay saved.</p>';
+      confirmDlg({ title: 'Delete this tour?', body: bodyT, ok: 'Delete', danger: true, onOk: function () { commitSumTourDelete(dT); } });
     }
   }
   var SW = { row: null, id: 0, x0: 0, y0: 0, dx: 0, axis: '', locked: false, suppressClick: false, suppressRow: null };
@@ -6583,8 +6599,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (!animate) { void item.offsetWidth; item.style.transition = ''; }
     }
   }
+  function swipeCanPay(kind) { return kind === 'ot' || kind === 'pd'; }
   function swipeTint(row, dx) {
-    row.classList.toggle('sw-paid', dx > 8);
+    row.classList.toggle('sw-paid', swipeCanPay(row.dataset.swipe) && dx > 8);
     row.classList.toggle('sw-del', dx < -8);
     var item = row.querySelector('.item');
     if (item) item.style.transform = 'translateX(' + dx + 'px)';
@@ -6614,13 +6631,13 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function swipeUp(ev) {
     if (!SW.row || ev.pointerId !== SW.id) return;
-    var row = SW.row, kind = row.dataset.swipe, key = kind === 'pd' ? row.dataset.iso : row.dataset.id, dx = SW.dx, axis = SW.axis;
+    var row = SW.row, kind = row.dataset.swipe, key = kind === 'pd' ? row.dataset.iso : (row.dataset.id || row.dataset.eid || row.dataset.iso || ''), dx = SW.dx, axis = SW.axis;
     try { row.releasePointerCapture(ev.pointerId); } catch (err) {}
     SW.row = null; SW.id = 0; SW.axis = ''; SW.locked = false; SW.dx = 0;
     row.classList.remove('swiping');
     if (axis === 'x' && Math.abs(dx) >= 8) { SW.suppressClick = true; SW.suppressRow = row; }
-    if (axis === 'x' && dx >= SW_THRESH) { swipeClear(row, true); openSwipePaidDialog(kind, key); return; }
-    if (axis === 'x' && dx <= -SW_THRESH) { swipeClear(row, true); openSwipeDeleteDialog(kind, key); return; }
+    if (axis === 'x' && dx >= SW_THRESH) { swipeClear(row, true); if (swipeCanPay(kind)) openSwipePaidDialog(kind, key); return; }
+    if (axis === 'x' && dx <= -SW_THRESH) { swipeClear(row, true); openSwipeDeleteDialog(kind, key, row); return; }
     swipeClear(row, true);
   }
   function pduKeep() {
@@ -7202,6 +7219,55 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     save();
     daySummary(d, found ? 'Assignment updated' : 'Assignment saved');
   }
+  function pruneEmptyTour(iso) {
+    var t = (S.tours || {})[iso];
+    if (!t) return;
+    if (!t.start && !t.end && !t.len && !t.status && !t.timesSet && !t.short && !E.tourEntries(t).length && !E.assignmentEntries(t).length) delete S.tours[iso];
+  }
+  function afterSumEntryDelete(d, msg) {
+    var iso = E.toISO(d);
+    pruneEmptyTour(iso);
+    save();
+    render();
+    if (E.dayHasEntries(S, iso)) daySummary(d, msg);
+    else closeSheet();
+  }
+  function commitAsgEntryDelete(d, eid) {
+    if (!eid) return;
+    var iso = E.toISO(d), prevT = S.tours[iso] || {};
+    var list = E.assignmentEntries(prevT).filter(function (e) { return e.id !== eid; });
+    S.tours[iso] = Object.assign({}, prevT, { entries: E.writeAssignmentEntries(prevT, list), updated: new Date().toISOString() });
+    afterSumEntryDelete(d, 'Assignment deleted');
+  }
+  function commitAdditionalTourDelete(d, eid) {
+    if (!eid) return;
+    var iso = E.toISO(d), prevT = S.tours[iso] || {};
+    var tours = E.tourEntries(prevT).filter(function (e) { return e.id !== eid; });
+    S.tours[iso] = Object.assign({}, prevT, { entries: E.mergeTourEntries(prevT, tours), updated: new Date().toISOString() });
+    S.overtime = E.syncEntryOT(S.overtime, iso, { id: eid }, null);
+    afterSumEntryDelete(d, 'Entry deleted');
+  }
+  function commitSumTourDelete(d) {
+    var iso = E.toISO(d), prevT = S.tours[iso] || {};
+    var keepEntries = prevT.entries;
+    if (prevT.status === 'dd' || prevT.status === 'ddoff') {
+      var partner = prevT.swap;
+      var strip = function (id) {
+        var t = (S.tours || {})[id]; if (!t) return;
+        S.tours[id] = { entries: t.entries, updated: new Date().toISOString() };
+        S.overtime = (S.overtime || []).filter(function (e) { return e.linkedEnd !== id && e.linkedTour !== id; });
+        pruneEmptyTour(id);
+      };
+      strip(iso); if (partner) strip(partner);
+    } else {
+      var next = { entries: keepEntries, updated: new Date().toISOString() };
+      S.tours[iso] = next;
+      if (prevT.status === 'work') S.overtime = E.syncExtraOT(S.overtime, iso, null);
+      S.overtime = (S.overtime || []).filter(function (e) { return e.linkedEnd !== iso && e.linkedTour !== iso; });
+      pruneEmptyTour(iso);
+    }
+    afterSumEntryDelete(d, 'Tour deleted');
+  }
   function asgEntryDel(d, eid) {
     if (!eid) return;
     confirmDlg({
@@ -7209,14 +7275,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       body: '<p>Remove this assignment from the day. The tour and hours are unchanged.</p>',
       ok: 'Delete',
       danger: true,
-      onOk: function () {
-        var iso = E.toISO(d), prevT = S.tours[iso] || {};
-        var list = E.assignmentEntries(prevT).filter(function (e) { return e.id !== eid; });
-        S.tours[iso] = Object.assign({}, prevT, { entries: E.writeAssignmentEntries(prevT, list), updated: new Date().toISOString() });
-        save();
-        if (E.dayHasEntries(S, iso)) daySummary(d, 'Assignment deleted');
-        else closeSheet();
-      }
+      onOk: function () { commitAsgEntryDelete(d, eid); }
     });
   }
   function daySummary(d, savedMsg) {
@@ -7227,7 +7286,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var item = function (focus, icon, t1, t2, id) { return '<button type="button" class="item sumrow" data-act="dayEdit" data-d="' + d + '" data-focus="' + focus + '" id="' + id + '">' + icon + '<div class="main"><div class="t1">' + t1 + '</div>' + (t2 ? '<div class="t2">' + t2 + '</div>' : '') + '</div><div class="right sumgo">View / edit &rsaquo;</div></button>'; };
     var kind = dt.extra ? 'Overtime tour on RDO' : dt.ddWork ? 'Day for day &middot; working this RDO' : dt.ddOff ? 'Day for day &middot; off' : esc(opt.label);
     var sub = dt.working && !lv.type ? 'Tour ' + tourText(dt) + (ov.len && !dt.extra ? '</div><div class="t2"><b>Tour length changed for this day only</b>' : '') + (ov.short ? ' &middot; left early: ' + E.fmtHM(ov.short.minutes) + ' ' + esc(C.shortLeaveLabels[ov.short.type] || '') : '') : lv.type ? (en.leaveType && E.isRDO(d, sq.id, U()) ? 'On an RDO' : 'Leave day') : 'Day off';
-    rows.push(item('day', sw(dt.extra ? '#B45309' : opt.color), kind, sub, 'sumDay'));
+    var dayRow = item('day', sw(dt.extra ? '#B45309' : opt.color), kind, sub, 'sumDay');
+    if (dayHasLoggedTour(iso)) rows.push('<div class="swrow" data-swipe="sumTour" data-d="' + d + '" data-iso="' + iso + '" id="sumTourRow">' + dayRow + '</div>');
+    else rows.push(dayRow);
     if (lv.note) rows.push(item('note', sw('#475569', '&#9998;'), 'Note', esc(lv.note), 'sumNote'));
     if (a && a.type && !(E.assignmentType(a.type) || {}).paid) rows.push(item('asg', (function (t) { return sw(t.color, esc(t.short)); })(E.assignmentType(a.type) || { short: '?', color: '#64748b' }), esc(E.assignmentLabel(a)), esc(E.assignmentLocation(a) || ''), 'sumAsg'));
     if (E.hasPaidDetail(a)) { var pd = a.pd; rows.push(item('paid', sw('#047857', 'PD'), 'Paid Detail' + (pd.vendor ? ': ' + esc(pd.vendor) : ''), [pd.start ? esc(pd.start) + (pd.end ? '–' + esc(pd.end) : '') : '', pd.durationMin ? E.fmtHM(pd.durationMin) : '', pd.id ? 'ID ' + esc(pd.id) : ''].filter(Boolean).join(' &middot; '), 'sumPaid')); }
@@ -7246,7 +7307,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var tourN = 0;
     extras.forEach(function (x) {
       if (x.kind === 'tour') x.html = x.html.replace('id="sumEntry' + esc(x.id) + '"', 'id="sumEntry' + (tourN++) + '"');
-      rows.push(x.html);
+      var swipe = x.kind === 'tour' ? 'sumEntry' : 'sumAsg';
+      rows.push('<div class="swrow" data-swipe="' + swipe + '" data-d="' + d + '" data-eid="' + esc(x.id) + '" data-id="' + esc(x.id) + '">' + x.html + '</div>');
     });
     openSheet(fmt(d, 'long'),
       '<div id="daySum">' + (savedMsg ? '<div class="savedban" id="daySaved" role="status">&#10003; Saved &middot; ' + esc(savedMsg) + '</div>' : '') +
