@@ -14,7 +14,7 @@ so they stay stable when sections move. New sections get the next free letter; r
 | **1 Schedule** | 1a | Today (status line) |
 | | 1b | Next day off |
 | | 1c | Next payday |
-| | 1d | Calendar (month grid, legend, chart changes; 12 hour tour RDO colors Squad A red / Squad B blue) |
+| | 1d | Calendar (month grid, legend, chart changes; 12 hour tour RDO colors Squad A blue / Squad B red) |
 | | 1e | Upcoming assignments |
 | | 1f | Retirement countdown |
 | | 1g | Sync to Apple / Google Calendar button |
@@ -85,7 +85,7 @@ so they stay stable when sections move. New sections get the next free letter; r
 | | 10b | Effective date |
 | | 10c | Rank |
 | | 10d | Command |
-| | 10e | Chart |
+| | 10e | Chart (12 hour tour RDO shows a boxed Squad A / Squad B segmented choice) |
 | | 10f | Tour |
 | | 10g | Date promoted to rank (optional). Used to measure time in rank for chart time when the effective date is a transfer, not the promotion. |
 | | 10h | Investigative assignment (Yes/No), shown for detective ranks. Investigative detectives do not accrue chart time. |

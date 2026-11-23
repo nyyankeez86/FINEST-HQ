@@ -323,7 +323,9 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after{top:-4px;le
 .sqpick button{min-height:64px;border-radius:12px;border:3px solid transparent;font-weight:900;font-size:16px;cursor:pointer}
 .sqpick .steadybtn,.sqpick .t12btn{grid-column:1/-1;min-height:52px}
 .steadypanel{margin-top:10px;padding:10px;border:2px solid #0F766E;border-radius:12px;background:#f0fdfa}
-.t12panel{margin-top:10px;padding:10px;border:2px solid #9B1C1C;border-radius:12px;background:#fef2f2}
+.t12panel{margin-top:10px;padding:12px;border:1.5px solid var(--line,#e5e7eb);border-radius:14px;background:#fff}
+.t12panel > label{display:block;font-weight:700;font-size:13px;margin:0 0 8px;color:var(--navy,#0b1f3a)}
+.t12panel .t12seg{margin:0}
 .pdupanel{margin-top:10px;padding:10px;border:2px solid #4338CA;border-radius:12px;background:#eef2ff}
 .pdupanel .teams{display:grid;grid-template-columns:1fr;gap:6px}
 .pdupanel .teams button{min-height:48px;border-radius:10px;border:2px solid #c7d2fe;background:#fff;font-weight:800;font-size:15px;text-align:left;padding:6px 12px;cursor:pointer;display:flex;align-items:center;gap:10px}
@@ -860,8 +862,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       // Reproduces every extra-15 tour on the 2025 and 2026 charts. Per-month overrides live in state.extra15.
       extra15: { anchor: '2024-12-31', cycle: 84, on: 52, stagger: 28, minutes: 15 }
     },
-    // 12 hour tour RDO: fixed 6-day cycle with no gaps — Squad A off 3 days, then Squad B off 3 days.
-    // Anchor: Dec 31, 2026 and Jan 1–2, 2027 are Squad A off (red); Jan 3–5, 2027 are Squad B off (blue). Retroactive through 2026 and open-ended.
+    // 12 hour tour RDO: fixed 6-day cycle with no gaps — Squad B off 3 days (red), then Squad A off 3 days (blue).
+    // Anchor: Dec 31, 2026 and Jan 1–2, 2027 are Squad B off (red); Jan 3–5, 2027 are Squad A off (blue). Retroactive through 2026 and open-ended.
+    // Saved keys 12hr:a / 12hr:b keep their squad labels; only the off-day mapping and colors were corrected.
     // TODO: annual and paid hours and give-back for this chart are deferred.
     tour12: {
       name: '12 hour tour RDO',
@@ -871,8 +874,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       tourLen: 720,      // 12:00 scheduled length and OT base
       otAfterMin: 734,   // 12:14 threshold: at or under = no OT; over = all minutes beyond tourLen
       squads: [
-        { id: 'a', name: 'Squad A', short: 'A', color: '#D7261E', ink: '#FFFFFF', colorName: 'Red' },
-        { id: 'b', name: 'Squad B', short: 'B', color: '#1F4ED8', ink: '#FFFFFF', colorName: 'Blue' }
+        { id: 'a', name: 'Squad A', short: 'A', color: '#1F4ED8', ink: '#FFFFFF', colorName: 'Blue' },
+        { id: 'b', name: 'Squad B', short: 'B', color: '#D7261E', ink: '#FFFFFF', colorName: 'Red' }
       ]
     },
     // standard tours first (user's list), then the longer options that were already offered
@@ -1250,9 +1253,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function tour12Key(id) { return '12hr:' + String(id || '').toLowerCase(); }
   function tour12Squad(id) { var t = CONFIG.tour12.squads, k = String(id || '').toLowerCase(); for (var i = 0; i < t.length; i++) if (t[i].id === k) return t[i]; return null; }
   function tour12Offset(day) { var C12 = CONFIG.tour12; return mod(day - toDay(C12.anchor), C12.cycle); }
-  function tour12OffPhase(day) { return Math.floor(tour12Offset(day) / CONFIG.tour12.block); } // 0 = A off, 1 = B off
-  function tour12OffSquad(day) { var ph = tour12OffPhase(day), t = CONFIG.tour12.squads; return t[ph] || t[0]; }
-  function tour12IsOff(day, squadId) { var s = tour12Squad(squadId); return !!s && CONFIG.tour12.squads.indexOf(s) === tour12OffPhase(day); }
+  function tour12OffPhase(day) { return Math.floor(tour12Offset(day) / CONFIG.tour12.block); } // 0 = B off (red), 1 = A off (blue)
+  function tour12OffSquad(day) { return tour12Squad(tour12OffPhase(day) === 0 ? 'b' : 'a'); }
+  function tour12IsOff(day, squadId) { var s = tour12Squad(squadId), off = tour12OffSquad(day); return !!s && !!off && s.id === off.id; }
   function tour12SquadsOff(day) { return [tour12OffSquad(day)]; }
   function tour12SquadsWorking(day) { var off = tour12OffSquad(day); return CONFIG.tour12.squads.filter(function (s) { return s.id !== off.id; }); }
   // Regular-day OT: 12:14 is a threshold, not a deduction. At or under 12:14 → no OT. Over 12:14 → all minutes beyond the 12:00 base.
@@ -3886,8 +3889,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       PDU.teams.map(function (t) { var k = E.pduKey(t.id), rc = PDU.colors[Object.keys(t.map).filter(function (x) { return t.map[x] === 'rdo'; })[0]];
         return '<button type="button" class="' + (key === k ? 'on' : '') + '" data-act="chartPick" data-px="' + px + '" data-key="' + k + '"><span class="cdot" style="background:' + rc.color + '"></span>' + esc(t.name) +
           '<small>' + ['blue', 'yellow', 'green'].map(function (x) { return PDU.colors[x].name[0] + '=' + (t.map[x] === 'rdo' ? 'RDO' : t.map[x].toUpperCase()); }).join(' ') + '</small></button>'; }).join('') + '</div></div>' +
-      '<div id="' + px + 'T12" class="t12panel"' + (t12 ? '' : ' hidden') + '><div class="muted" style="font-size:13px;margin-bottom:6px">Pick your squad. Tours are 12 hours (typically 05:00–17:00 or 17:00–05:00); set any default start below. You work the days your squad is not on RDO. Squad A is off 3 days, then Squad B is off 3 days, with no gaps.</div><div class="teams">' +
-      C.tour12.squads.map(function (s) { var k = E.tour12Key(s.id); return '<button type="button" class="' + (key === k ? 'on' : '') + '" data-act="chartPick" data-px="' + px + '" data-key="' + k + '" style="background:' + s.color + ';color:' + s.ink + '">' + esc(s.name) + '<small>' + esc(s.colorName) + '</small></button>'; }).join('') + '</div></div>' +
+      '<div id="' + px + 'T12" class="t12panel"' + (t12 ? '' : ' hidden') + '><label>Squad</label><div class="seg t12seg">' +
+      C.tour12.squads.map(function (s) { var k = E.tour12Key(s.id); return '<button type="button" class="' + (key === k ? 'on' : '') + '" data-act="chartPick" data-px="' + px + '" data-key="' + k + '">' + esc(s.name) + '</button>'; }).join('') + '</div></div>' +
       '<div id="' + px + 'Steady" class="steadypanel"' + (steady ? '' : ' hidden') + '><div class="muted" style="font-size:13px;margin-bottom:6px">Pick your two weekly days off:</div><div class="picks" style="margin-top:0">' +
       q.map(function (a) { var k = E.steadyKey(a); return '<button type="button" class="pick' + (key === k ? ' on' : '') + '" data-act="chartPick" data-px="' + px + '" data-key="' + k + '">' + E.DOW3[a] + '/' + E.DOW3[(a + 1) % 7] + '</button>'; }).join('') + '</div>' +
       '<div class="field" style="margin:10px 0 0"><label for="' + px + 'SteadyOther">Other consecutive days</label><select id="' + px + 'SteadyOther" data-px="' + px + '"><option value="">Choose&hellip;</option>' +
@@ -3902,7 +3905,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     el.textContent = !ci ? 'Squad 1 RDOs are yellow, Squad 2 blue, Squad 3 red (rotating 15-day chart). Steady RDO = the same two days off every week (teal). PDU = detective squad teams. 12 hour tour RDO = Squad A and Squad B on a 6-day cycle.'
       : ci.type === 'pdu' ? ci.name + ': PM, PM, AM, AM, RDO, RDO. ' + shiftText('pm') + ', ' + shiftText('am') + '. RDOs on ' + ci.colorName + ' days.'
       : ci.type === 'steady' ? ci.name + ': ' + ci.short + ' off every week; all other days are workdays.'
-      : ci.type === '12hr' ? ci.name + ': 12-hour tours, 6-day cycle (Squad A off 3 days, then Squad B off 3 days). No chart time on this chart.'
+      : ci.type === '12hr' ? ci.name + ': 12-hour tours, 6-day cycle. No chart time on this chart.'
       : ci.name + ': rotating 15-day chart (5 on, 3 off, 5 on, 2 off).';
   }
   function syncLegacySquad() { S.profile.charts = E.sortCharts(S.profile.charts); S.profile.squad = E.chartAt(T, S.profile.charts); }
