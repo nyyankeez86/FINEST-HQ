@@ -89,6 +89,7 @@ so they stay stable when sections move. New sections get the next free letter; r
 | | 9l | Default calendar (Google or Apple, for one-off Add to calendar) |
 | | 9m | Subscribe to calendar (private feed URL) |
 | | 9n | Privacy & Security (never sell data; entries visible only to the account holder; device-only private fields; Delete my account and cloud data) |
+| | 9o | Default navigation app (Google Maps, Apple Maps, Waze, or Ask every time). Stored only on this device (`localStorage` key `patrolSchedule.defaultNav`), never written into the synced app state, and left out of backups. When no choice is saved, Apple Maps is used on iPhone and iPad (including iPadOS), and Google Maps on other devices. Navigate buttons open the default app; an Other control lists all three official URL schemes for that trip. Coordinates are used when known (map shields, fuel sites, search pin); otherwise the address. |
 | **10 History editor** | 10a | What changes (preview) |
 | | 10b | Effective date |
 | | 10c | Rank |

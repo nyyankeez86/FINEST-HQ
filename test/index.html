@@ -385,8 +385,19 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after{top:-4px;le
 .sitechip{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:2px;min-height:44px;padding:8px 12px;border-radius:12px;border:1px solid var(--line,#cbd5e1);background:var(--card,#fff);color:inherit;font:inherit;cursor:pointer}
 .sitechip b{font-size:14px}.sitechip span{font-size:12px;opacity:.75}
 .sitechip.on{background:#0E7490;color:#fff;border-color:#0E7490}
-.navbtns{display:flex;gap:6px;margin-top:8px}.navbtns .btn{flex:1;text-align:center;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 6px;font-size:13px}
+.navbtns{display:flex;gap:6px;margin-top:8px;position:relative}.navbtns .btn{flex:1;text-align:center;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 6px;font-size:13px}
 .navbtns.inrow{margin:0;padding:0 10px 10px}
+.navbtns.nav-split{gap:0;border:1px solid var(--line);border-radius:10px;overflow:visible;background:#fff}
+.navbtns.nav-split .nav-main{flex:1;border:0;border-radius:10px 0 0 10px;min-height:40px}
+.navbtns.nav-split .nav-more{flex:0 0 auto;min-width:44px;margin:0;border:0;border-left:1px solid var(--line);border-radius:0 10px 10px 0;padding:0 10px;font-size:12px;font-weight:700;background:#fff;color:var(--ink)}
+.navbtns.nav-split .nav-more[aria-expanded="true"]{background:#eef1f6}
+.nav-menu{position:absolute;right:0;top:calc(100% + 4px);z-index:40;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.16);min-width:168px;padding:4px;display:flex;flex-direction:column}
+.nav-menu[hidden]{display:none!important}
+.nav-menu a{display:flex;align-items:center;padding:0 12px;text-decoration:none;color:var(--ink);font-weight:700;font-size:14px;border-radius:8px;min-height:40px}
+.nav-menu a.is-default{background:#eef1f6}
+.navdefchips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}
+.navdefchips .chip{min-height:36px;margin:0;cursor:pointer;background:#fff}
+.navdefchips .chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
 .leavehome{margin:10px 0}
 .leavehome .leavehd{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;cursor:pointer;-webkit-user-select:none;user-select:none}
 .leavehome .leavehd h3{margin:0;flex:1}
@@ -4250,12 +4261,44 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       })
       .then(function () { if (res.errors.length && !res.nyc.length && !res.other.length) res.failed = true; return done(); });
   }
-  function navUrls(addr) {
-    var e = encodeURIComponent(String(addr || '').trim());
-    return { google: 'https://www.google.com/maps/dir/?api=1&destination=' + e + '&travelmode=driving', apple: 'https://maps.apple.com/?daddr=' + e + '&dirflg=d', waze: 'https://waze.com/ul?q=' + e + '&navigate=yes' };
+  function navPoint(dest, coords) {
+    var addr = '', lat, lon;
+    if (dest && typeof dest === 'object') {
+      addr = dest.address || dest.addr || dest.label || dest.q || '';
+      lat = dest.lat; lon = dest.lon != null ? dest.lon : dest.lng;
+    } else addr = dest;
+    if (coords && typeof coords === 'object') {
+      if (coords.lat != null) lat = coords.lat;
+      if (coords.lon != null || coords.lng != null) lon = coords.lon != null ? coords.lon : coords.lng;
+    }
+    lat = lat != null && isFinite(+lat) ? +lat : null;
+    lon = lon != null && isFinite(+lon) ? +lon : null;
+    return { address: String(addr || '').trim(), lat: lat, lon: lon };
+  }
+  function navUrls(dest, coords) {
+    var p = navPoint(dest, coords), hasLL = p.lat != null && p.lon != null;
+    var ll = hasLL ? (p.lat + ',' + p.lon) : '';
+    var e = encodeURIComponent(p.address);
+    var destQ = hasLL ? ll : e;
+    if (!destQ) return { google: '', apple: '', waze: '' };
+    return {
+      google: 'https://www.google.com/maps/dir/?api=1&destination=' + destQ + '&travelmode=driving',
+      apple: 'https://maps.apple.com/?daddr=' + destQ + '&dirflg=d',
+      waze: hasLL ? ('https://waze.com/ul?ll=' + ll + '&navigate=yes') : ('https://waze.com/ul?q=' + e + '&navigate=yes')
+    };
+  }
+  function routeUrls(from, to) {
+    var o = navPoint(from), d = navPoint(to);
+    var origin = (o.lat != null && o.lon != null) ? (o.lat + ',' + o.lon) : encodeURIComponent(o.address);
+    var dest = (d.lat != null && d.lon != null) ? (d.lat + ',' + d.lon) : encodeURIComponent(d.address);
+    return {
+      google: 'https://www.google.com/maps/dir/?api=1' + (origin ? '&origin=' + origin : '') + '&destination=' + dest + '&travelmode=driving',
+      apple: 'https://maps.apple.com/?' + (origin ? 'saddr=' + origin + '&' : '') + 'daddr=' + dest + '&dirflg=d',
+      waze: (d.lat != null && d.lon != null) ? ('https://waze.com/ul?ll=' + d.lat + ',' + d.lon + '&navigate=yes') : ('https://waze.com/ul?q=' + encodeURIComponent(d.address) + '&navigate=yes')
+    };
   }
   // Backup: the Maps key lives outside the app state and is only added when the user opts in.
-  function buildBackup(state, mapsKey, includeKey) { var b = copy(state || {}); delete b.mapsKey; if (includeKey && mapsKey) b.mapsKey = mapsKey; return b; }
+  function buildBackup(state, mapsKey, includeKey) { var b = copy(state || {}); delete b.mapsKey; delete b.defaultNav; if (b.settings) delete b.settings.defaultNav; if (includeKey && mapsKey) b.mapsKey = mapsKey; return b; }
   // ---- Arrival time (optional Google Maps key). All I/O is injected so it can be tested with a mocked Google API. ----
   function fmtClock(d) { var h = d.getHours(), m = d.getMinutes(); return ((h % 12) || 12) + ':' + pad2(m) + ' ' + (h < 12 ? 'AM' : 'PM'); }
   function fmtDur(sec) { var m = Math.max(1, Math.round(sec / 60)); return m < 60 ? m + ' min' : Math.floor(m / 60) + ' h' + (m % 60 ? ' ' + (m % 60) + ' min' : ''); }
@@ -4674,7 +4717,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     tour17Key: tour17Key, tour17Squad: tour17Squad, tour17Offset: tour17Offset, tour17WorkPhase: tour17WorkPhase, tour17WorkSquad: tour17WorkSquad, tour17IsOff: tour17IsOff, tour17SquadsOff: tour17SquadsOff, tour17SquadsWorking: tour17SquadsWorking, tour17OvertimeMin: tour17OvertimeMin,
     nextDayOff: nextDayOff, nextWorkday: nextWorkday, countRDOs: countRDOs, isTourChange: isTourChange, countTourChanges: countTourChanges, isPayday: isPayday, nextPayday: nextPayday,
     periodsForPayday: periodsForPayday, regularPaydayFor: regularPaydayFor, overtimePaydayFor: overtimePaydayFor, regularPeriodFor: regularPeriodFor, overtimePeriodFor: overtimePeriodFor, payPeriodsInYear: payPeriodsInYear, hoursBetween: hoursBetween, entryHours: entryHours,
-    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, fmtMDY: fmtMDY, defaultTourWindow: defaultTourWindow, tourSpanMinutes: tourSpanMinutes, suggestEndDate: suggestEndDate, workedVsScheduled: workedVsScheduled, cleanTourEntry: cleanTourEntry, tourEntries: tourEntries, isAssignmentEntry: isAssignmentEntry, cleanAssignmentEntry: cleanAssignmentEntry, assignmentEntries: assignmentEntries, mergeTourEntries: mergeTourEntries, writeAssignmentEntries: writeAssignmentEntries, assignmentTimeText: assignmentTimeText, assignmentReminderText: assignmentReminderText, paidDetailBrief: paidDetailBrief, dayAssignments: dayAssignments, assignmentEventWindow: assignmentEventWindow, dayTour: dayTour, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, assignmentNavAddress: assignmentNavAddress, upcomingItems: upcomingItems, commandById: commandById, isPduCommand: isPduCommand, searchCommands: searchCommands, phoneDigits: phoneDigits, fmtPhone: fmtPhone, telHref: telHref, cleanDirMine: cleanDirMine, cleanDirPhone: cleanDirPhone, cleanDirCustom: cleanDirCustom, emptyDirMine: emptyDirMine, dirKindMatch: dirKindMatch, searchDirectory: searchDirectory, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, stripBoroSuffix: stripBoroSuffix, splitPaidAddress: splitPaidAddress, joinPaidAddress: joinPaidAddress, mergePaidVendors: mergePaidVendors, rememberPaidVendor: rememberPaidVendor, paidVendorKey: paidVendorKey, parsePaidAmount: parsePaidAmount, paidDetailAmount: paidDetailAmount, paidDetailTaxDate: paidDetailTaxDate, daysBetweenISO: daysBetweenISO, paidDetailTiming: paidDetailTiming, paidDetailTimingCaptions: paidDetailTimingCaptions, paidVendorNames: paidVendorNames, cleanVendorGroups: cleanVendorGroups, vendorReportName: vendorReportName, addVendorToGroup: addVendorToGroup, removeVendorFromGroup: removeVendorFromGroup, renameVendorGroup: renameVendorGroup, ungroupVendor: ungroupVendor, suggestVendorGroups: suggestVendorGroups, paidDetailTaxReport: paidDetailTaxReport, buildPaidDetailXlsx: buildPaidDetailXlsx, buildPaidDetailCsv: buildPaidDetailCsv, parseXlsx: parseXlsx, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, addYearsISO: addYearsISO, retirementDateOf: retirementDateOf, retirementRemain: retirementRemain, retirementCountdown: retirementCountdown, endCompare: endCompare, syncEndOT: syncEndOT, syncWorkedOT: syncWorkedOT, syncEntryOT: syncEntryOT, leaveBalances: leaveBalances, fmtChart: fmtChart, chartTimeFromTour: chartTimeFromTour, isDetectiveRank: isDetectiveRank, isSergeantRank: isSergeantRank, isLieutenantRank: isLieutenantRank, isPoliceOfficerRank: isPoliceOfficerRank, chartKind: chartKind, rankStartDate: rankStartDate, yearsInRankAtLeast: yearsInRankAtLeast, chartTimeEligibility: chartTimeEligibility, chartTimeForDay: chartTimeForDay, chartTimeRange: chartTimeRange, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
+    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, fmtMDY: fmtMDY, defaultTourWindow: defaultTourWindow, tourSpanMinutes: tourSpanMinutes, suggestEndDate: suggestEndDate, workedVsScheduled: workedVsScheduled, cleanTourEntry: cleanTourEntry, tourEntries: tourEntries, isAssignmentEntry: isAssignmentEntry, cleanAssignmentEntry: cleanAssignmentEntry, assignmentEntries: assignmentEntries, mergeTourEntries: mergeTourEntries, writeAssignmentEntries: writeAssignmentEntries, assignmentTimeText: assignmentTimeText, assignmentReminderText: assignmentReminderText, paidDetailBrief: paidDetailBrief, dayAssignments: dayAssignments, assignmentEventWindow: assignmentEventWindow, dayTour: dayTour, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, assignmentNavAddress: assignmentNavAddress, upcomingItems: upcomingItems, commandById: commandById, isPduCommand: isPduCommand, searchCommands: searchCommands, phoneDigits: phoneDigits, fmtPhone: fmtPhone, telHref: telHref, cleanDirMine: cleanDirMine, cleanDirPhone: cleanDirPhone, cleanDirCustom: cleanDirCustom, emptyDirMine: emptyDirMine, dirKindMatch: dirKindMatch, searchDirectory: searchDirectory, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, routeUrls: routeUrls, navPoint: navPoint, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, stripBoroSuffix: stripBoroSuffix, splitPaidAddress: splitPaidAddress, joinPaidAddress: joinPaidAddress, mergePaidVendors: mergePaidVendors, rememberPaidVendor: rememberPaidVendor, paidVendorKey: paidVendorKey, parsePaidAmount: parsePaidAmount, paidDetailAmount: paidDetailAmount, paidDetailTaxDate: paidDetailTaxDate, daysBetweenISO: daysBetweenISO, paidDetailTiming: paidDetailTiming, paidDetailTimingCaptions: paidDetailTimingCaptions, paidVendorNames: paidVendorNames, cleanVendorGroups: cleanVendorGroups, vendorReportName: vendorReportName, addVendorToGroup: addVendorToGroup, removeVendorFromGroup: removeVendorFromGroup, renameVendorGroup: renameVendorGroup, ungroupVendor: ungroupVendor, suggestVendorGroups: suggestVendorGroups, paidDetailTaxReport: paidDetailTaxReport, buildPaidDetailXlsx: buildPaidDetailXlsx, buildPaidDetailCsv: buildPaidDetailCsv, parseXlsx: parseXlsx, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, addYearsISO: addYearsISO, retirementDateOf: retirementDateOf, retirementRemain: retirementRemain, retirementCountdown: retirementCountdown, endCompare: endCompare, syncEndOT: syncEndOT, syncWorkedOT: syncWorkedOT, syncEntryOT: syncEntryOT, leaveBalances: leaveBalances, fmtChart: fmtChart, chartTimeFromTour: chartTimeFromTour, isDetectiveRank: isDetectiveRank, isSergeantRank: isSergeantRank, isLieutenantRank: isLieutenantRank, isPoliceOfficerRank: isPoliceOfficerRank, chartKind: chartKind, rankStartDate: rankStartDate, yearsInRankAtLeast: yearsInRankAtLeast, chartTimeEligibility: chartTimeEligibility, chartTimeForDay: chartTimeForDay, chartTimeRange: chartTimeRange, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
     steadyKey: steadyKey, parseChart: parseChart, validChartKey: validChartKey, chartInfo: chartInfo, sortCharts: sortCharts, chartAt: chartAt, chartChanges: chartChanges, nextOff: nextOff, nextOn: nextOn, reviewOverrides: reviewOverrides, DOW3: DOW3,
     stripAddrLabels: stripAddrLabels, paidAddressSuggestions: paidAddressSuggestions,
     rankAbbr: rankAbbr, rankLabel: rankLabel, displayName: displayName, formatFullName: formatFullName, normMiddleInitial: normMiddleInitial, migrateProfile: migrateProfile, validateProfile: validateProfile,
@@ -5666,7 +5709,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div class="t2">' + esc(grp) + (c.boro ? ' · ' + esc(c.boro) : '') + '</div>' +
       (pub ? '<div class="dir-tels">' + pub + '</div>' : '') +
       dirMineRows(item.mine, c.id, false) +
-      (c.address ? '<div class="t2" style="margin-top:6px">' + esc(c.address) + '</div>' + navLinks(c.address) : '') +
+      (c.address ? '<div class="t2" style="margin-top:6px">' + esc(c.address) + '</div>' + navLinks(c) : '') +
       '<div class="dir-actions"><button type="button" class="btn sm" data-act="dirAddPhone" data-id="' + esc(c.id) + '">Add my number</button></div></div>';
   }
   function dirResultsHtml() {
@@ -5854,7 +5897,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var auto = site.noAuto ? '<p class="fuel-rmp">Not accessible by automobile. Left out of Nearest.</p>' : '';
     var body = '<div data-sec="4j"><p style="margin:0 0 6px">' + esc(site.address) + '</p>' +
       '<p style="margin:0 0 6px"><strong>Fuel:</strong> ' + esc(fuelTypeLabels(site)) + '</p>' +
-      fuelRmpHtml(site) + auto + navLinks(site.address) + fuelSourceHtml() + '</div>';
+      fuelRmpHtml(site) + auto + navLinks(site) + fuelSourceHtml() + '</div>';
     openSheet(site.name, body, 'Fuel site');
   }
   var SHIELD_SRC = "vendor/icons/shield.png";
@@ -5957,7 +6000,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (c.kind === "pct") { precinctSheet(E.pctNumFromId(c.id)); return; }
     var addr = c.address || "";
     var pub = c.phone ? dirPhoneLink(c.phone, E.fmtPhone(c.phone), false) : '<p class="muted">No official phone on file.</p>';
-    var body = '<div data-sec="4j">' + pub + (addr ? '<p style="margin:8px 0">' + esc(addr) + "</p>" + navLinks(addr) : "") +
+    var body = '<div data-sec="4j">' + pub + (addr ? '<p style="margin:8px 0">' + esc(addr) + "</p>" + navLinks(c) : "") +
       commandFuelHtml(c) +
       '<div class="dir-actions"><button type="button" class="btn primary sm" data-act="dirJump" data-id="' + esc(id) + '">View in Directory</button></div></div>';
     openSheet(c.name, body, ui.tab === 'directory' ? 'Directory' : 'Map');
@@ -6124,7 +6167,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var name = (c && c.name) || (n + ' Precinct');
     var addr = (c && c.address) || '';
     var pub = c && c.phone ? dirPhoneLink(c.phone, E.fmtPhone(c.phone), false) : '<p class="muted">No official phone on file.</p>';
-    var body = '<div data-sec="4j">' + pub + (addr ? '<p style="margin:8px 0">' + esc(addr) + '</p>' + navLinks(addr) : '') +
+    var body = '<div data-sec="4j">' + pub + (addr ? '<p style="margin:8px 0">' + esc(addr) + '</p>' + navLinks(c || addr) : '') +
       commandFuelHtml(c) +
       '<div class="dir-actions"><button type="button" class="btn primary sm" data-act="dirJump" data-id="' + esc(id) + '">View in Directory</button></div></div>';
     openSheet(name, body, ui.tab === 'directory' ? 'Directory' : 'Map');
@@ -6214,6 +6257,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     } else {
       lines.push('<div class="cov-row"><strong>Housing:</strong> N/A</div>');
     }
+    lines.push(navLinks({ address: label || '', lat: lat, lon: lon }));
     var card = document.getElementById('mapCoverCard');
     if (card) { card.innerHTML = lines.join(''); card.hidden = false; }
   }
@@ -7784,9 +7828,70 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function trLocOptions() { return E.trainingLocations(S.assignments).map(function (x) { return '<option value="' + esc(x.name) + '"' + (x.address ? ' label="' + esc(x.address) + '"' : '') + '>'; }).join(''); }
   function addrOptions(type) { return E.addressSuggestions(S.assignments, type).map(function (x) { return '<option value="' + esc(x.value) + '"' + (x.label ? ' label="' + esc(x.label) + '"' : '') + '>'; }).join(''); }
-  function navLinks(addr, cls) {
-    if (!addr) return ''; var u = E.navUrls(addr);
-    return '<div class="navbtns ' + (cls || '') + '"><a class="btn sm nav-g" href="' + esc(u.google) + '" target="_blank" rel="noopener">Google Maps</a><a class="btn sm nav-a" href="' + esc(u.apple) + '" target="_blank" rel="noopener">Apple Maps</a><a class="btn sm nav-w" href="' + esc(u.waze) + '" target="_blank" rel="noopener">Waze</a></div>';
+  var NAV_KEY = 'patrolSchedule.defaultNav'; // device-only; never written into S or synced
+  var NAV_LABELS = { google: 'Google Maps', apple: 'Apple Maps', waze: 'Waze' };
+  var NAV_CLS = { google: 'nav-g', apple: 'nav-a', waze: 'nav-w' };
+  var NAV_ORDER = ['google', 'apple', 'waze'];
+  function isAppleNavPlatform(ua, platform, maxTouch) {
+    ua = ua || (typeof navigator !== 'undefined' ? navigator.userAgent : '') || '';
+    platform = platform || (typeof navigator !== 'undefined' ? navigator.platform : '') || '';
+    maxTouch = maxTouch != null ? maxTouch : (typeof navigator !== 'undefined' ? navigator.maxTouchPoints : 0);
+    if (/iPad|iPhone|iPod/.test(ua)) return true;
+    if (platform === 'MacIntel' && maxTouch > 1) return true;
+    return false;
+  }
+  function platformNavDefault() { return isAppleNavPlatform() ? 'apple' : 'google'; }
+  function defaultNav() {
+    try {
+      var v = localStorage.getItem(NAV_KEY);
+      if (v === 'google' || v === 'apple' || v === 'waze' || v === 'ask') return v;
+    } catch (e) {}
+    return platformNavDefault();
+  }
+  function setDefaultNav(v) {
+    try {
+      if (v === 'google' || v === 'apple' || v === 'waze' || v === 'ask') localStorage.setItem(NAV_KEY, v);
+      else localStorage.removeItem(NAV_KEY);
+    } catch (e) {}
+  }
+  function navDest(input) {
+    if (!input) return null;
+    if (typeof input === 'string') return { address: String(input).trim() };
+    var o = { address: String(input.address || input.addr || input.label || '').trim(), lat: input.lat, lon: input.lon != null ? input.lon : input.lng };
+    if ((o.lat == null || o.lon == null) && input.id && typeof commandLL === 'function') {
+      var ll = commandLL(input);
+      if (ll) { o.lat = ll[0]; o.lon = ll[1]; }
+    }
+    return o;
+  }
+  function closeNavMenus() {
+    Array.prototype.forEach.call(document.querySelectorAll('.nav-menu'), function (m) { m.hidden = true; });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-act="navMore"]'), function (b) { b.setAttribute('aria-expanded', 'false'); });
+  }
+  function navLinksHtml(u, cls, routeId) {
+    if (!u || (!u.google && !u.apple && !u.waze)) return '';
+    var pref = defaultNav();
+    if (pref === 'ask') {
+      return '<div class="navbtns ' + (cls || '') + '">' + NAV_ORDER.map(function (k) {
+        return '<a class="btn sm ' + NAV_CLS[k] + '"' + (routeId && k === 'google' ? ' id="' + esc(routeId) + '"' : '') + ' href="' + esc(u[k]) + '" target="_blank" rel="noopener">' + NAV_LABELS[k] + '</a>';
+      }).join('') + '</div>';
+    }
+    var menu = NAV_ORDER.map(function (k) {
+      return '<a class="' + NAV_CLS[k] + (k === pref ? ' is-default' : '') + '" role="menuitem" href="' + esc(u[k]) + '" target="_blank" rel="noopener">' + NAV_LABELS[k] + '</a>';
+    }).join('');
+    return '<div class="navbtns nav-split ' + (cls || '') + '">' +
+      '<a class="btn primary sm nav-main ' + NAV_CLS[pref] + '" href="' + esc(u[pref]) + '" target="_blank" rel="noopener"' + (routeId ? ' id="' + esc(routeId) + '"' : '') + '>' + NAV_LABELS[pref] + '</a>' +
+      '<button type="button" class="btn sm nav-more" data-act="navMore" aria-expanded="false" aria-haspopup="menu" aria-label="Other navigation app">Other</button>' +
+      '<div class="nav-menu" hidden role="menu">' + menu + '</div></div>';
+  }
+  function navLinks(dest, cls) {
+    var d = navDest(dest);
+    if (!d || (!d.address && (d.lat == null || d.lon == null))) return '';
+    return navLinksHtml(E.navUrls(d), cls);
+  }
+  function routeLinks(from, to, cls) {
+    if (!from || !to) return '';
+    return navLinksHtml(E.routeUrls(from, to), cls || '', 'cmdRoute');
   }
   function addrBlock(a, sel, iso, st) {
     var t = E.assignmentType(sel), has = !!(t && t.address);
@@ -7818,8 +7923,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function navArea(addr, word) {
     if (!addr) return ''; var c = curCommand();
     return '<div class="navleg"><div class="lbl2">Navigate to ' + esc(word) + '</div>' + navLinks(addr, 'leg-dest') + '</div>' +
-      (c ? '<div class="navleg"><div class="lbl2">Navigate to Command (' + esc(E.commandShort(c)) + ')</div>' + navLinks(c.address, 'leg-cmd') +
-        '<a class="routelink" id="cmdRoute" href="' + esc(E.routeUrl(c.address, addr)) + '" target="_blank" rel="noopener">Route: Command &rarr; ' + esc(word) + ' (Google Maps)</a></div>' : '');
+      (c ? '<div class="navleg"><div class="lbl2">Navigate to Command (' + esc(E.commandShort(c)) + ')</div>' + navLinks(c, 'leg-cmd') +
+        '<div class="lbl2" style="margin-top:8px">Route: Command &rarr; ' + esc(word) + '</div>' + routeLinks(c, addr, 'leg-route') + '</div>' : '');
   }
   function refreshNav() {
     var v = (document.getElementById('asgAddr') || {}).value || '', n = document.getElementById('asgNav'); if (!n) return;
@@ -8960,6 +9065,19 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       settingsFold('syncHead', '9j', 'Calendar sync',
         '<div class="muted" style="font-size:13px;margin-bottom:8px">Export a file of your schedule to Apple or Google Calendar. This is a one-time snapshot; it does not stay in sync.</div><div id="syncWrap">' + syncPanel() + '</div>',
         !!ui.fold9j) +
+      '<h3 style="margin-top:20px" data-sec="9o">Default navigation app</h3>' +
+      '<div class="muted" style="font-size:13px;margin-bottom:8px">Used when you tap a navigate button. Stored only on this device, never synced to your account. You can still pick a different app for one trip.</div>' +
+      '<div class="navdefchips" id="stNavSeg" role="radiogroup" aria-label="Default navigation app">' +
+        '<button type="button" class="chip' + (defaultNav() === 'google' ? ' on' : '') + '" role="radio" aria-checked="' + (defaultNav() === 'google' ? 'true' : 'false') + '" data-act="navDefault" data-v="google">Google Maps</button>' +
+        '<button type="button" class="chip' + (defaultNav() === 'apple' ? ' on' : '') + '" role="radio" aria-checked="' + (defaultNav() === 'apple' ? 'true' : 'false') + '" data-act="navDefault" data-v="apple">Apple Maps</button>' +
+        '<button type="button" class="chip' + (defaultNav() === 'waze' ? ' on' : '') + '" role="radio" aria-checked="' + (defaultNav() === 'waze' ? 'true' : 'false') + '" data-act="navDefault" data-v="waze">Waze</button>' +
+        '<button type="button" class="chip' + (defaultNav() === 'ask' ? ' on' : '') + '" role="radio" aria-checked="' + (defaultNav() === 'ask' ? 'true' : 'false') + '" data-act="navDefault" data-v="ask">Ask every time</button></div>' +
+      (function () {
+        var saved = '';
+        try { saved = localStorage.getItem(NAV_KEY) || ''; } catch (e) {}
+        if (saved) return '<div class="hint">Current default: <b>' + esc(saved === 'ask' ? 'Ask every time' : (NAV_LABELS[saved] || saved)) + '</b>.</div>';
+        return '<div class="hint">No choice saved yet. Using <b>' + esc(NAV_LABELS[platformNavDefault()]) + '</b> on this device (Apple Maps on iPhone and iPad, Google Maps otherwise).</div>';
+      })() +
       '<h3 style="margin-top:20px" data-sec="9l">Default calendar</h3><div class="muted" style="font-size:13px;margin-bottom:8px">Used when you tap <b>Add to calendar</b> on a day. Change this any time. A one-off add cannot be taken back; subscribe (below) is the way to keep a calendar up to date.</div>' +
       '<div class="seg" id="stCalSeg">' +
         '<button type="button" class="' + ((s.defaultCalendar || 'google') === 'google' ? 'on' : '') + '" data-act="calDefault" data-v="google">Google</button>' +
@@ -10091,7 +10209,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       Promise.resolve(cloudClient().rpc('delete_my_data')).then(q).then(function () {
         return Promise.resolve(cloudClient().auth.signOut()).catch(function () {});
       }).then(function () {
-        localStorage.removeItem(KEY); setMapsKey(''); slipClear().catch(function () {});
+        localStorage.removeItem(KEY); setMapsKey(''); setDefaultNav(''); slipClear().catch(function () {});
         S = defaultState(); SM = { recs: {} }; saveSM(); ui.onbChart = null; closeAll();
         ui.lastUser = CS.username; CS = {}; saveCS(); render();
         toast('Your account and cloud data were deleted');
@@ -10103,10 +10221,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     reset: function () {
       if (CL.enabled && CS.uid) { // cloud: clear this device and sign out; the account keeps its copy
         if (!confirm('Remove all Patrol Schedule data from this device and sign out? Your account keeps its synced copy; tax, reference and shield numbers and the Maps key (device-only) are erased.')) return;
-        localStorage.removeItem(KEY); setMapsKey(''); slipClear().catch(function () {}); S = defaultState(); SM = { recs: {} }; saveSM(); ui.onbChart = null; closeAll();
+        localStorage.removeItem(KEY); setMapsKey(''); setDefaultNav(''); slipClear().catch(function () {}); S = defaultState(); SM = { recs: {} }; saveSM(); ui.onbChart = null; closeAll();
         return Promise.resolve(cloudClient().auth.signOut()).catch(function () {}).then(function () { ui.lastUser = CS.username; CS = {}; saveCS(); render(); toast('Removed from this device'); });
       }
-      if (!confirm('Erase ALL data on this device? This cannot be undone.')) return; localStorage.removeItem(KEY); setMapsKey(''); slipClear().catch(function () {}); S = defaultState(); ui.onbChart = null; closeAll(); render(); },
+      if (!confirm('Erase ALL data on this device? This cannot be undone.')) return; localStorage.removeItem(KEY); setMapsKey(''); setDefaultNav(''); slipClear().catch(function () {}); S = defaultState(); ui.onbChart = null; closeAll(); render(); },
     suggestOpen: function (t) { var sc = isBeta() && t && t.closest ? t.closest('[data-sec]') : null; suggestSheet(t && t.dataset && t.dataset.section, sc ? sc.getAttribute('data-sec') : isBeta() ? (sheetRoot.firstElementChild && NAV.cur ? SHEET_PAGES[(NAV.cur.key || '').split('|')[0]] : TAB_PAGES[ui.tab]) || '' : ''); },
     sugCapture: function () { sugCapture(); },
     sugClear: function () { if (ui.sugUrl && String(ui.sugUrl).indexOf('blob:') === 0) try { URL.revokeObjectURL(ui.sugUrl); } catch (e) {} setSugFile(null, ''); },
@@ -10203,6 +10321,22 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       S.settings.defaultCalendar = v; save();
       var seg = document.getElementById('stCalSeg');
       if (seg) Array.prototype.forEach.call(seg.querySelectorAll('[data-act="calDefault"]'), function (b) { b.classList.toggle('on', b === t); });
+    },
+    navDefault: function (t) {
+      var v = t.dataset.v; if (v !== 'google' && v !== 'apple' && v !== 'waze' && v !== 'ask') return;
+      setDefaultNav(v);
+      var seg = document.getElementById('stNavSeg');
+      if (seg) Array.prototype.forEach.call(seg.querySelectorAll('[data-act="navDefault"]'), function (b) {
+        var on = b === t; b.classList.toggle('on', on); b.setAttribute('aria-checked', on ? 'true' : 'false');
+      });
+      var hint = seg && seg.nextElementSibling;
+      if (hint && hint.classList.contains('hint')) hint.innerHTML = 'Current default: <b>' + esc(v === 'ask' ? 'Ask every time' : (NAV_LABELS[v] || v)) + '</b>.';
+    },
+    navMore: function (t) {
+      var wrap = t.closest && t.closest('.navbtns'), menu = wrap && wrap.querySelector('.nav-menu');
+      var open = menu && !menu.hidden;
+      closeNavMenus();
+      if (menu && !open) { menu.hidden = false; t.setAttribute('aria-expanded', 'true'); }
     },
     calToken: function (t) {
       if (t) { t.disabled = true; t.textContent = 'Getting URL…'; }
@@ -10364,6 +10498,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (SW.suppressClick) { var same = SW.suppressRow && ev.target.closest && ev.target.closest('.swrow') === SW.suppressRow; SW.suppressClick = false; SW.suppressRow = null; if (same) { ev.preventDefault(); ev.stopPropagation(); return; } }
     var box = document.getElementById('lvOpts');
     if (box && box.classList.contains('open') && !box.contains(ev.target)) closeDaySel();
+    if (!(ev.target.closest && ev.target.closest('[data-act="navMore"], .nav-menu'))) closeNavMenus();
     var t = ev.target.closest('[data-act]'); if (!t) return;
     var fn = A[t.dataset.act]; if (!fn) return;
     if (t.dataset.act !== 'sheetBg') ev.preventDefault();
