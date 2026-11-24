@@ -663,11 +663,10 @@ a.dir-tel.mine{color:#0f766e}
 .dir-map-opts #hospFilterWrap .chip.on{background:var(--navy,#0b1f3a);color:#fff;border-color:var(--navy,#0b1f3a)}
 .dir-map-opts #fuelFilterWrap .fuelchips{margin:0;gap:6px}
 
-.map-pct-pill{background:rgba(255,255,255,.9);color:#0b1f3a;font-weight:800;font-size:11px;line-height:1.2;padding:5px 9px;border-radius:999px;box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:pointer;user-select:none;letter-spacing:.01em;white-space:nowrap}
-.map-pct-pill[data-outside]{color:#64748b;font-weight:700;cursor:default}
 .nearest-item{padding:10px 0;border-bottom:1px solid var(--line)}
 .nearest-item .mi{font-weight:800;color:var(--navy)}
 .nearest-panel{position:absolute;left:8px;right:8px;bottom:8px;z-index:520;background:#fff;border-radius:14px;padding:8px 10px 10px;box-shadow:0 4px 16px rgba(0,0,0,.2);display:flex;flex-direction:column;gap:6px;overflow:hidden;}
+#nearestPanel[hidden],.nearest-panel[hidden]{display:none!important}
 .nearest-panel.map-mode{max-height:none}
 .nearest-panel.map-mode .fuelchips,.nearest-panel.map-mode #fuelFilterEmpty{display:none!important}
 .nearest-panel.list-mode{height:72%;max-height:72%}
@@ -7765,45 +7764,6 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (!clipped) return null;
     return poleOfGeom(clipped);
   }
-  function refreshMapPctPill() {
-    var el = document.getElementById('mapPctPill');
-    if (!el || !dirMap) return;
-    var c = dirMap.getCenter(), feat = E.firstContaining(loadPctBounds(), c.lng, c.lat);
-    var n = feat && feat.properties && feat.properties.pct;
-    if (n) {
-      el.hidden = false;
-      el.textContent = pctOrdinal(n) + ' Pct';
-      el.setAttribute('data-pct', n);
-      el.removeAttribute('data-outside');
-    } else {
-      el.hidden = false;
-      el.textContent = 'Outside NYC';
-      el.removeAttribute('data-pct');
-      el.setAttribute('data-outside', '1');
-    }
-  }
-  function addPctPillControl() {
-    if (!dirMap || typeof L === 'undefined' || !L.Control || dirMap._pctPill) return;
-    var Ctrl = L.Control.extend({
-      options: { position: 'topright' },
-      onAdd: function () {
-        var el = L.DomUtil.create('div', 'map-pct-pill');
-        el.id = 'mapPctPill';
-        el.setAttribute('role', 'status');
-        el.setAttribute('aria-live', 'polite');
-        L.DomEvent.disableClickPropagation(el);
-        L.DomEvent.on(el, 'click', L.DomEvent.stop);
-        L.DomEvent.on(el, 'click', function () {
-          var n = +el.getAttribute('data-pct');
-          if (n) { setPctFocus(n); precinctSheet(n); }
-        });
-        return el;
-      }
-    });
-    (new Ctrl()).addTo(dirMap);
-    dirMap._pctPill = true;
-    refreshMapPctPill();
-  }
   function refreshPctWatermarks() {
     if (!dirMap || !dirWmMarkers.length) return;
     var z = dirMap.getZoom(), spec = watermarkSpec(z);
@@ -7857,7 +7817,6 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         el.style.display = hidden ? 'none' : '';
       }
     });
-    refreshMapPctPill();
   }
   function syncFacilitiesUi() {
     var on = !!ui.dirFacilitiesOn;
@@ -8040,7 +7999,6 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     dirMap.on('dragstart', function () {
       if (dirLocateFollowing) { dirLocateFollowing = false; setLocateBtnOn(false); }
     });
-    addPctPillControl();
     bindLocateLifecycle();
     maybeResumeLocateWatch();
   }
@@ -8193,6 +8151,17 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     lines.push(navLinks({ address: label || '', lat: lat, lon: lon }));
     var card = document.getElementById('mapCoverCard');
     if (card) { card.innerHTML = lines.join(''); card.hidden = false; }
+    revealMapResultBox();
+  }
+  function revealMapResultBox() {
+    var card = document.getElementById('mapCoverCard');
+    var row = document.querySelector('#mapCoverCard [data-sec="4j"]') || card;
+    if (!card || card.hidden) return;
+    if (row && row.scrollIntoView) {
+      try { row.scrollIntoView({ block: 'nearest', inline: 'nearest' }); } catch (e) {
+        try { row.scrollIntoView(true); } catch (e2) {}
+      }
+    }
   }
   function geocodeMapQuery(text) {
     var url = 'https://geosearch.planninglabs.nyc/v2/search?size=1&text=' + encodeURIComponent(text);
@@ -13352,7 +13321,14 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     } else inp.value = val;
     acClose(inp); inp.dataset.acFill = '1';
     inp.dispatchEvent(new Event('input', { bubbles: true })); inp.dispatchEvent(new Event('change', { bubbles: true })); delete inp.dataset.acFill;
-    if (inp.dataset.ac === 'map') applyMapSearchResult(s);
+    if (inp.dataset.ac === 'map') {
+      applyMapSearchResult(s);
+      if (ui.tab === 'map') {
+        try { inp.blur(); } catch (e) {}
+        showSearchTabs();
+        revealMapResultBox();
+      }
+    }
   }
   function acMove(inp, step) {
     var d = acDrop(inp); if (!d || d.hidden || !AC.items.length) return false;
