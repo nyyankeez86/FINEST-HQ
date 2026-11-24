@@ -524,12 +524,6 @@ a.dir-tel.mine{color:#0f766e}
 .dir-empty{color:var(--muted);padding:16px 8px;text-align:center}
 
 
-.dirviewseg{display:flex;gap:6px;margin:0 0 10px}
-.dirviewseg .btn{flex:1}
-.dirviewseg .btn.on{background:#0f172a;color:#fff;border-color:#0f172a}
-.dirviewseg.compact{display:flex;gap:0;margin:0;flex:0 0 auto;align-self:center;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:#fff}
-.dirviewseg.compact .btn{flex:0 0 auto;min-height:32px;padding:0 9px;font-size:11px;font-weight:800;border:0;border-radius:0;box-shadow:none;margin:0;line-height:32px}
-.dirviewseg.compact .btn.on{background:#0f172a;color:#fff;border-color:transparent}
 #dirMapWrap{position:relative;z-index:0;margin:0 0 12px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#dbe3ee}
 #dirMap{height:min(62vh,520px);min-height:320px;z-index:0}
 #dirMap .leaflet-container{font:inherit;background:#dbe3ee}
@@ -544,7 +538,13 @@ a.dir-tel.mine{color:#0f766e}
 .dir-map-opts .map-toolbar{margin:0 0 6px}
 .dir-map-opts .muted,.dir-map-opts .fuel-src,.dir-map-opts .map-legend,.dir-map-opts .map-src{font-size:11px;line-height:1.35}
 .dir-map-card + #dirMapWrap,#dirMapWrap.dir-map-fill{margin:0 0 8px}
-.dir-map-fill #dirMap{height:calc(100dvh - var(--tabh) - 200px - env(safe-area-inset-bottom, 0px));min-height:48vh}
+.dir-map-fill #dirMap{height:calc(100dvh - var(--tabh) - 160px - env(safe-area-inset-bottom, 0px));min-height:48vh}
+#app.tab-map{height:100dvh;min-height:100dvh}
+#app.tab-map main#view{flex:1;min-height:0;padding:8px 10px calc(var(--tabh) + 8px + env(safe-area-inset-bottom, 0px));display:flex;flex-direction:column}
+#app.tab-map .sugbar{margin-bottom:6px;flex:0 0 auto}
+#app.tab-map .dir-map-card{flex:0 0 auto;margin-bottom:8px}
+#app.tab-map #dirMapWrap.dir-map-fill{flex:1;margin:0;min-height:48vh;display:flex;flex-direction:column}
+#app.tab-map .dir-map-fill #dirMap{flex:1;height:auto;min-height:48vh}
 .dir-locate-ctl a.dir-locate-btn{display:flex;align-items:center;justify-content:center;color:#0b1f3a;line-height:0;cursor:pointer}
 .dir-locate-ctl a.dir-locate-btn svg{display:block;width:18px;height:18px}
 .dir-locate-ctl a.dir-locate-btn.on{color:#1d4ed8;background:#eff6ff}
@@ -612,8 +612,8 @@ a.dir-tel.mine{color:#0f766e}
   <button data-act="tab" data-tab="schedule"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Schedule</button>
   <button data-act="tab" data-tab="overtime"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="tablbl">Overtime/Paid Detail</span></button>
   <button data-act="tab" data-tab="pay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/></svg>Pay</button>
-  <button data-act="tab" data-tab="directory"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3L3 6v15l6-3 6 3 6-3V3l-6 3-6-3z"/><path d="M9 3v15M15 6v15"/></svg><span class="tablbl">Map/Directory</span></button>
-  <button data-act="tab" data-tab="lookup"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Lookup</button>
+  <button data-act="tab" data-tab="map"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3L3 6v15l6-3 6 3 6-3V3l-6 3-6-3z"/><path d="M9 3v15M15 6v15"/></svg>Map</button>
+  <button data-act="tab" data-tab="directory"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>Directory</button>
 </div></nav>
 <div id="sheetRoot"></div>
 <div id="toast" role="status" aria-live="polite"></div>
@@ -4744,7 +4744,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
 
   var S = load();
   var T = E.today(), tp = E.parts(T);
-  var ui = { tab: 'schedule', calY: tp.y, calM: tp.m, lookup: T, otYear: tp.y, payYear: tp.y, leaveYear: tp.y, leaveOpen: false, pdY: tp.y, pdM: tp.m, onbSquad: null, x15Year: tp.y, otView: 'ot', otSel: false, otSelIds: {}, pdSel: false, pdSelIds: {}, otFilter: 'all', otCollapse: {}, calPeek: null, calPeekPicker: false, todayOpen: false, glanceOpen: false, dirQ: '', dirKind: '', dirView: 'dir', dirFuelOn: true };
+  var ui = { tab: 'schedule', calY: tp.y, calM: tp.m, lookup: T, otYear: tp.y, payYear: tp.y, leaveYear: tp.y, leaveOpen: false, pdY: tp.y, pdM: tp.m, onbSquad: null, x15Year: tp.y, otView: 'ot', otSel: false, otSelIds: {}, pdSel: false, pdSelIds: {}, otFilter: 'all', otCollapse: {}, calPeek: null, calPeekPicker: false, todayOpen: false, glanceOpen: false, dirQ: '', mapQ: '', dirKind: '', dirView: 'dir', dirFuelOn: true };
 
   function U() { return S.settings.unit; }
   var PDU = C.pdu;
@@ -4817,13 +4817,15 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var onb = !S.profile;
     document.getElementById('tabs').hidden = onb;
     var ha = document.getElementById('headActs'); if (ha) ha.hidden = onb;
-    if (onb) { stopRetireTick(); document.getElementById('hdrSub').textContent = 'Set up your schedule'; view.innerHTML = viewOnboarding(); chartHint('onb'); return; }
+    if (onb) { stopRetireTick(); var appOnb = document.getElementById('app'); if (appOnb) appOnb.classList.remove('tab-map'); document.getElementById('hdrSub').textContent = 'Set up your schedule'; view.innerHTML = viewOnboarding(); chartHint('onb'); return; }
     var sq = mySquad();
     document.getElementById('hdrSub').innerHTML = esc(E.displayName(S.profile)) + ' &middot; <button class="badge-sq" data-act="chartOpen" aria-label="My chart: ' + esc(sq.name) + '" style="background:' + sq.color + ';color:' + sq.ink + ';cursor:pointer;font:inherit;font-weight:700;font-size:12px">' + esc(sq.name) + ' &#9662;</button>';
     if (ui.tab === 'leave') { ui.tab = 'schedule'; ui.leaveOpen = true; }
+    if (ui.tab === 'lookup') { ui.tab = 'schedule'; }
     Array.prototype.forEach.call(document.querySelectorAll('nav.tabs button'), function (b) { b.classList.toggle('on', b.dataset.tab === ui.tab); b.setAttribute('aria-current', b.dataset.tab === ui.tab ? 'page' : 'false'); });
     if (dirMap) teardownDirMap();
-    view.innerHTML = ({ schedule: viewSchedule, overtime: viewOvertime, pay: viewPay, directory: viewDirectory, lookup: viewLookup })[ui.tab]();
+    var appEl = document.getElementById('app'); if (appEl) appEl.classList.toggle('tab-map', ui.tab === 'map');
+    view.innerHTML = ({ schedule: viewSchedule, overtime: viewOvertime, pay: viewPay, map: viewMap, directory: viewDirectory })[ui.tab]();
     if (CL.enabled && S.profile && !S.profile.taxNumber && !ui.privDismiss) view.insertAdjacentHTML('afterbegin', '<div class="privbanner" id="privBanner">&#128274; Add your tax and reference numbers in Settings. They\'re kept on this device only and never synced, so each new device asks once. <button class="btn sm" data-act="settings">Settings</button> <button class="linkbtn" data-act="privDismiss">Later</button></div>');
     if (ui.tab === 'pay' && ui.scrollCurrent) { ui.scrollCurrent = false; var c = document.getElementById('curPeriod'); if (c) c.scrollIntoView({ block: 'start' }); }
     if (!onb && ui.tab === 'schedule') startRetireTick(); else stopRetireTick();
@@ -4832,7 +4834,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       ui.scrollLeave = '';
       if (sl && sl.scrollIntoView) sl.scrollIntoView({ block: 'start' });
     }
-    if (ui.tab === 'directory' && ui.dirView === 'map') setupDirMap();
+    if (ui.tab === 'map') setupDirMap();
   }
 
   var PF = [['firstName', 'First', 'First name', 'given-name', 'text'], ['middleInitial', 'MI', 'M.I.', 'additional-name', 'mi'], ['lastName', 'Last', 'Last name', 'family-name', 'text'],
@@ -5651,7 +5653,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function dirCardHtml(item) {
     if (item.type === 'custom') {
       var e = item.entry, addr = e.address || '';
-      return '<div class="card dir-card custom" data-sec="4g" data-id="' + esc(e.id) + '"><div class="t1">' + esc(e.name) + '</div>' +
+      return '<div class="card dir-card custom" data-sec="5h" data-id="' + esc(e.id) + '"><div class="t1">' + esc(e.name) + '</div>' +
         '<div class="t2">My contact</div>' +
         '<div class="dir-tels">' + dirMineRows(e.phones, e.id, true) + '</div>' +
         (addr ? '<div class="t2" style="margin-top:6px">' + esc(addr) + '</div>' + navLinks(addr) : '') +
@@ -5660,7 +5662,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="btn sm danger" data-act="dirDelCustom" data-id="' + esc(e.id) + '">Delete contact</button></div></div>';
     }
     var c = item.command, grp = C.commandGroups[c.kind] || c.kind, pub = c.phone ? dirPhoneLink(c.phone, E.fmtPhone(c.phone), false) : '';
-    return '<div class="card dir-card" data-sec="4g" data-id="' + esc(c.id) + '"><div class="t1">' + esc(c.name) + '</div>' +
+    return '<div class="card dir-card" data-sec="5h" data-id="' + esc(c.id) + '"><div class="t1">' + esc(c.name) + '</div>' +
       '<div class="t2">' + esc(grp) + (c.boro ? ' · ' + esc(c.boro) : '') + '</div>' +
       (pub ? '<div class="dir-tels">' + pub + '</div>' : '') +
       dirMineRows(item.mine, c.id, false) +
@@ -5672,7 +5674,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var items = E.searchDirectory(q, { kind: chip, mine: mine, limit: 200 });
     if (!items.length) {
       var msg = q ? 'No matches for “' + esc(q) + '”.' : (chip === 'mine' ? 'No personal numbers or custom contacts yet.' : 'No commands in this category.');
-      return '<div class="dir-empty" data-sec="4g">' + msg + '</div>';
+      return '<div class="dir-empty" data-sec="5h">' + msg + '</div>';
     }
     var n = items.length, more = n === 200 ? ' (first 200)' : '';
     return '<div class="muted" style="font-size:12.5px;margin:4px 0 8px">' + n + ' result' + (n === 1 ? '' : 's') + more + '</div>' + items.map(dirCardHtml).join('');
@@ -5958,7 +5960,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var body = '<div data-sec="4j">' + pub + (addr ? '<p style="margin:8px 0">' + esc(addr) + "</p>" + navLinks(addr) : "") +
       commandFuelHtml(c) +
       '<div class="dir-actions"><button type="button" class="btn primary sm" data-act="dirJump" data-id="' + esc(id) + '">View in Directory</button></div></div>';
-    openSheet(c.name, body, "Map/Directory");
+    openSheet(c.name, body, ui.tab === 'directory' ? 'Directory' : 'Map');
   }
   var LOCATE_ICON = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="2.15" fill="currentColor"/><path d="M12 2.5 v3.2 M12 18.3 v3.2 M2.5 12 h3.2 M18.3 12 h3.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
   function locateBtnEl() { return document.getElementById('dirLocateBtn'); }
@@ -6113,6 +6115,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     dirMapSearch(true);
     loadMapCoverData();
     setTimeout(function () { if (dirMap) dirMap.invalidateSize(); }, 80);
+    setTimeout(function () { if (dirMap) dirMap.invalidateSize(); }, 300);
   }
   function precinctSheet(n) {
     n = +n;
@@ -6124,7 +6127,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var body = '<div data-sec="4j">' + pub + (addr ? '<p style="margin:8px 0">' + esc(addr) + '</p>' + navLinks(addr) : '') +
       commandFuelHtml(c) +
       '<div class="dir-actions"><button type="button" class="btn primary sm" data-act="dirJump" data-id="' + esc(id) + '">View in Directory</button></div></div>';
-    openSheet(name, body, 'Map/Directory');
+    openSheet(name, body, ui.tab === 'directory' ? 'Directory' : 'Map');
   }
   function parsePctQuery(q) {
     q = String(q || '').trim().toLowerCase();
@@ -6226,7 +6229,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function applyMapSearchResult(item) {
     if (!item) return;
     var label = item.value || item.label || item.name || '';
-    ui.dirQ = label;
+    ui.mapQ = label;
     var go = function (lat, lon, lab) { if (lat == null || lon == null) { toast('Could not find that address.'); return; } showMapCover(lat, lon, lab || label); };
     if (item.lat != null && item.lon != null) { go(item.lat, item.lon, label); return; }
     geocodeMapQuery(label || String(item || '')).then(function (hit) {
@@ -6236,7 +6239,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function submitMapSearch() {
     if (!dirMap) return;
-    var q = String(ui.dirQ || '').trim();
+    var q = String(ui.mapQ || '').trim();
     if (!q) { clearMapCover(); return; }
     if (parsePctQuery(q)) { dirMapSearch(); return; }
     var ql = q.toLowerCase(), hits = [];
@@ -6246,7 +6249,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function dirMapSearch(fromInit) {
     if (!dirMap) return;
-    var q = String(ui.dirQ || '').trim();
+    var q = String(ui.mapQ || '').trim();
     if (!q) return;
     var n = parsePctQuery(q);
     var geo = loadPctBounds();
@@ -6374,17 +6377,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     { id: 'det', label: 'Detective' }, { id: 'dv', label: 'Domestic Violence' }, { id: 'ftu', label: 'Field Training' },
     { id: 'spec', label: 'Specialty' }, { id: 'boro', label: 'Bureau' }, { id: 'mine', label: 'My contacts' }
   ];
-  function viewDirectory() {
-    var q = ui.dirQ || '', chip = ui.dirKind || '', mapOn = ui.dirView === 'map';
-    var toggle = '<div class="dirviewseg otviewseg" data-sec="4i" role="group" aria-label="Map or Directory">' +
-      '<button type="button" class="btn sm' + (mapOn ? ' on' : '') + '" data-act="dirView" data-v="map">Map</button>' +
-      '<button type="button" class="btn sm' + (!mapOn ? ' on' : '') + '" data-act="dirView" data-v="dir">Directory</button></div>';
-    var chips = '<div class="dirchips" data-sec="4f">' + DIR_CHIPS.map(function (x) {
-      return '<button type="button" class="chip' + (chip === x.id ? ' on' : '') + '" data-act="dirChip" data-kind="' + esc(x.id) + '">' + esc(x.label) + '</button>';
-    }).join('') + '</div>';
-    var dirTools = chips +
-      '<div class="dir-actions" style="margin:0 0 8px"><button type="button" class="btn primary sm" data-act="dirAddCustom">Add custom contact</button></div>' +
-      '<p class="muted" style="font-size:12.5px;margin:0 0 8px">Public numbers come from official NYPD pages. Numbers you add stay on your account only and are not shared.</p>';
+  function viewMap() {
+    var q = ui.mapQ || '';
     var mapOpts = '<div id="dirMapOpts" class="dir-map-opts" hidden>' +
       fuelChipBar() +
       '<div class="map-toolbar">' +
@@ -6392,24 +6386,32 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<button type="button" class="btn primary sm" data-act="dirNearest">Nearest fuel</button></div>' +
       '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p></div>' +
       '</div>';
-    var mapToggle = '<div class="dirviewseg compact" data-sec="4i" role="group" aria-label="Map or Directory">' +
-      '<button type="button" class="btn sm' + (mapOn ? ' on' : '') + '" data-act="dirView" data-v="map">Map</button>' +
-      '<button type="button" class="btn sm' + (!mapOn ? ' on' : '') + '" data-act="dirView" data-v="dir">Directory</button></div>';
-    var mapTools = '<div class="dir-map-chrome">' + mapToggle +
+    var mapTools = '<div class="dir-map-chrome">' +
       '<div class="dir-map-search"><input id="dirQ" class="dirq acIn" data-ac="map" type="text" value="' + esc(q) + '" placeholder="Search an address or precinct" aria-label="Search an address or precinct" autocomplete="off"></div>' +
       '<button type="button" class="btn sm" id="dirMapOptsBtn" data-act="dirMapOpts" aria-expanded="false" aria-controls="dirMapOpts">Options</button></div>' + mapOpts;
     var mapPane = '<div id="dirMapWrap" class="dir-map-fill" data-sec="4j"><div id="dirMap" role="application" aria-label="NYPD precincts, NYCHA developments, and fuel sites"></div>' +
       '<div id="mapCoverCard" class="map-cover" hidden></div></div>';
-    return suggestBar('Map/Directory') + '<div class="card' + (mapOn ? ' dir-map-card' : '') + '" data-sec="4e">' +
-      (mapOn ? mapTools : ('<h3>Map/Directory</h3>' + toggle +
-        '<input id="dirQ" class="dirq" type="search" value="' + esc(q) + '" placeholder="Name, number, category, or phone" aria-label="Search the directory or jump to a precinct" autocomplete="off">' +
-        dirTools)) + '</div>' +
-      (mapOn ? mapPane : '<div id="dirList">' + dirResultsHtml() + '</div>');
+    return suggestBar('Map') + '<div class="card dir-map-card" data-sec="4e">' + mapTools + '</div>' + mapPane;
   }
-  function dirPhoneSheet(opts) {
+  function viewDirectory() {
+    var q = ui.dirQ || '', chip = ui.dirKind || '';
+    var chips = '<div class="dirchips" data-sec="5g">' + DIR_CHIPS.map(function (x) {
+      return '<button type="button" class="chip' + (chip === x.id ? ' on' : '') + '" data-act="dirChip" data-kind="' + esc(x.id) + '">' + esc(x.label) + '</button>';
+    }).join('') + '</div>';
+    var dirTools = chips +
+      '<div class="dir-actions" style="margin:0 0 8px" data-sec="5i"><button type="button" class="btn primary sm" data-act="dirAddCustom">Add custom contact</button></div>' +
+      '<p class="muted" style="font-size:12.5px;margin:0 0 8px">Public numbers come from official NYPD pages. Numbers you add stay on your account only and are not shared.</p>';
+    return suggestBar('Directory') + '<div class="card" data-sec="5f"><h3>Directory</h3>' +
+      '<input id="dirQ" class="dirq" type="search" value="' + esc(q) + '" placeholder="Name, number, category, or phone" aria-label="Search the directory" autocomplete="off">' +
+      dirTools + '</div>' +
+      '<div id="dirList">' + dirResultsHtml() + '</div>';
+  }
+  // r71: Lookup (former page 5, sections 5a–5e) was removed from the tab bar. Zee will relocate it later.
+  // Keep this function and the lk* handlers dormant so the content is recoverable. It is not dispatched from render().
+    function dirPhoneSheet(opts) {
     opts = opts || {};
     var isCustom = !!opts.custom, existing = opts.phone || {}, title = existing.id ? 'Edit my number' : 'Add my number';
-    var body = '<form id="dirPhoneForm" data-id="' + esc(opts.id || '') + '" data-nid="' + esc(existing.id || '') + '"' + (isCustom ? ' data-custom="1"' : '') + '>' +
+    var body = '<form id="dirPhoneForm" data-sec="5i" data-id="' + esc(opts.id || '') + '" data-nid="' + esc(existing.id || '') + '"' + (isCustom ? ' data-custom="1"' : '') + '>' +
       '<label class="field">Label <span class="muted">(optional)</span><input id="dirPhoneLabel" value="' + esc(existing.label || '') + '" placeholder="Desk, Sgt cell…" maxlength="40"></label>' +
       '<label class="field">Number<input id="dirPhoneNum" type="tel" value="' + esc(existing.phone || '') + '" placeholder="917-555-0100" required></label>' +
       '<div id="dirPhoneErr" class="err" hidden></div>' +
@@ -6421,7 +6423,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     existing = existing || {};
     var title = existing.id ? 'Edit custom contact' : 'Add custom contact';
     var p0 = (existing.phones || [])[0] || {};
-    var body = '<form id="dirCustomForm" data-id="' + esc(existing.id || '') + '">' +
+    var body = '<form id="dirCustomForm" data-sec="5i" data-id="' + esc(existing.id || '') + '">' +
       '<label class="field">Name<input id="dirCustName" value="' + esc(existing.name || '') + '" placeholder="Name or unit" maxlength="64" required></label>' +
       '<label class="field">Number <span class="muted">(optional)</span><input id="dirCustPhone" type="tel" value="' + esc(p0.phone || '') + '" placeholder="917-555-0100"></label>' +
       '<label class="field">Label <span class="muted">(optional)</span><input id="dirCustLabel" value="' + esc(p0.label || '') + '" placeholder="Desk, Sgt cell…" maxlength="40"></label>' +
@@ -6433,6 +6435,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
 
   function viewLookup() {
+    // Dormant r71: former page 5 Lookup (5a–5e). Not on the tab bar. Remap ui.tab==='lookup' to schedule in render().
     var u = U(), d = ui.lookup, off = E.squadsOff(d, u), work = E.squadsWorking(d, u), sq = mySquad(ui.lookup);
     if (sq.type === '12hr') { off = E.tour12SquadsOff(d); work = E.tour12SquadsWorking(d); }
     if (sq.type === '17hr') { off = E.tour17SquadsOff(d); work = E.tour17SquadsWorking(d); }
@@ -6480,9 +6483,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   // page it came from (kept as it was, typed values included). Saving in a sub-page returns to a fresh copy of the page before it.
   // Only a top-level sheet closes to the main screen.
   var NAV = { stack: [], cur: null, pending: null };
-  // Beta section numbers: pages 1-5 are the bottom tabs; sheets have fixed numbers here (see SECTION-NUMBERS.md). Never computed from order.
+  // Beta section numbers: pages 1-5 are the bottom tabs (1 Schedule, 2 Overtime, 3 Pay, 4 Map, 5 Directory); sheets have fixed numbers here (see SECTION-NUMBERS.md). Never computed from order. Lookup (former page 5, 5a–5e) is vacated from the tab bar; those letters are not reused. Directory uses 5f–5i.
   var SHEET_PAGES = { day: '6', sum: '7', ot: '8', settings: '9', hist: '10', suggest: '11', inbox: '12', admin: '13', leaveNew: '14', sync: '15', x15: '16', x15ed: '17', chart: '18', pd: '19', pdTax: '20' };
-  var TAB_PAGES = { schedule: '1', overtime: '2', pay: '3', leave: '4', directory: '4', lookup: '5' };
+  var TAB_PAGES = { schedule: '1', overtime: '2', pay: '3', leave: '4', map: '4', directory: '5' };
   function navable(name, f, keyFn) {
     return function () {
       var a = arguments, prev = NAV.pending, me = { key: name + '|' + (keyFn ? keyFn.apply(null, a) : String(a[0] == null ? '' : a[0])) };
@@ -7328,7 +7331,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (btn && btn.dataset.section) return btn.dataset.section;
     var h = document.querySelector('#sheetRoot .sheet .shead h3');
     if (h && h.textContent) return h.textContent.trim().slice(0, 80);
-    return ({ schedule: 'Calendar', overtime: 'Overtime/Paid Detail', pay: 'Pay', leave: 'Leave', lookup: 'Lookup' })[ui.tab] || 'App';
+    return ({ schedule: 'Calendar', overtime: 'Overtime/Paid Detail', pay: 'Pay', leave: 'Leave', map: 'Map', directory: 'Directory', lookup: 'Lookup' })[ui.tab] || 'App';
   }
   function functionsUrl(name) { return String((CL.cfg && CL.cfg.SUPABASE_URL) || '').replace(/\/$/, '') + '/functions/v1/' + name; }
   function sugUid() { try { return (crypto.randomUUID && crypto.randomUUID()) || ''; } catch (e) { return ''; } }
@@ -10222,7 +10225,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       downloadText(E.toICS([e], { now: new Date(), calName: e.summary || 'Patrol Schedule' }), 'finest-hq-' + E.toISO(d) + '.ics', 'text/calendar;charset=utf-8');
       toast('Calendar file downloaded');
     },
-    dirView: function (t) { ui.dirView = t.dataset.v === 'map' ? 'map' : 'dir'; render(); },
+    dirView: function (t) { ui.tab = t.dataset.v === 'map' ? 'map' : 'directory'; render(); },
     dirFuelLayer: function (t) {
       ui.dirFuelOn = ui.dirFuelOn === false;
       var on = ui.dirFuelOn !== false;
@@ -10251,7 +10254,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     dirJump: function (t) {
       var id = t.dataset.id, c = E.commandById(id);
       closeAll();
-      ui.dirView = 'dir'; ui.dirKind = ''; ui.dirQ = (c && c.name) || id;
+      ui.tab = 'directory'; ui.dirView = 'dir'; ui.dirKind = ''; ui.dirQ = (c && c.name) || id;
       render();
       setTimeout(function () {
         var el = document.querySelector('.dir-card[data-id="' + id + '"]');
@@ -10468,7 +10471,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (ev.key === 'ArrowDown') { if (open) { acMove(inp, 1); ev.preventDefault(); } else if (inp.value.trim()) acQuery(inp); }
     else if (ev.key === 'ArrowUp') { if (acMove(inp, -1)) ev.preventDefault(); }
     else if (ev.key === 'Enter' && open && AC.idx >= 0) { ev.preventDefault(); ev.stopPropagation(); acPick(inp, AC.idx); }
-    else if (ev.key === 'Enter' && inp.dataset.ac === 'map') { ev.preventDefault(); ev.stopPropagation(); if (open && AC.items.length === 1) acPick(inp, 0); else { acClose(inp); ui.dirQ = inp.value; submitMapSearch(); } }
+    else if (ev.key === 'Enter' && inp.dataset.ac === 'map') { ev.preventDefault(); ev.stopPropagation(); if (open && AC.items.length === 1) acPick(inp, 0); else { acClose(inp); ui.mapQ = inp.value; submitMapSearch(); } }
     else if (ev.key === 'Escape' && open) { ev.preventDefault(); ev.stopPropagation(); acClose(inp); }
   }, true);
   // pointerdown + preventDefault keeps focus in the field, so blur doesn't close the list before the tap lands
@@ -10496,7 +10499,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (ev.target.getAttribute('inputmode') === 'numeric' && !ev.target.classList.contains('tourIn') && !ev.target.classList.contains('timeIn') && !ev.target.classList.contains('otSplitIn') && /\D/.test(ev.target.value)) ev.target.value = ev.target.value.replace(/\D/g, '');
     if (ev.target.maxLength > 0 && ev.target.getAttribute('inputmode') === 'numeric' && ev.target.value.length > ev.target.maxLength) ev.target.value = ev.target.value.slice(0, ev.target.maxLength); // paste can exceed maxlength
     if (ev.target.classList.contains('cmdq')) cmdResults(ev.target.dataset.px, ev.target.value);
-    if (ev.target.id === 'dirQ') { ui.dirQ = ev.target.value; if (ui.tab === 'directory' && ui.dirView === 'map') dirMapSearch(); else refreshDirList(); }
+    if (ev.target.id === 'dirQ') { if (ui.tab === 'map') { ui.mapQ = ev.target.value; dirMapSearch(); } else { ui.dirQ = ev.target.value; refreshDirList(); } }
     if (ev.target.classList.contains('otSplitIn')) {
       var sv = ev.target.value, del = /^delete/.test(ev.inputType || '');
       var sf = /^\d{1,2}:\d{2}$/.test(String(sv).trim()) ? String(sv).trim() : E.formatTimeInput(sv, del);
