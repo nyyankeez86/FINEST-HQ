@@ -243,7 +243,7 @@ h3{font-size:17px;margin:0 0 6px}
 .ratechip.trav{background:#0e7490;color:#fff}
 body.beta [data-sec]{position:relative}
 body.beta [data-sec]::after{content:attr(data-sec);position:absolute;top:2px;right:2px;z-index:5;font:800 9.5px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.02em;color:#7c3aed;background:rgba(245,243,255,.92);border:1px solid #ddd6fe;border-radius:5px;padding:2px 4px;pointer-events:none}
-body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after{top:-4px;left:0;right:auto;font-size:10.5px}
+body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after,body.beta #btnSuggest[data-sec]::after{top:-4px;left:0;right:auto;font-size:10.5px}
 .sheet .x{width:44px;height:44px;border-radius:10px;border:0;background:#eef1f6;font-size:22px;cursor:pointer}
 @keyframes up{from{transform:translateY(40px);opacity:.5}to{transform:none;opacity:1}}
 @keyframes fade{from{opacity:0}}
@@ -388,7 +388,7 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after{top:-4px;le
 .sitechip b{font-size:14px}.sitechip span{font-size:12px;opacity:.75}
 .sitechip.on{background:#0E7490;color:#fff;border-color:#0E7490}
 .navbtns{display:flex;gap:6px;margin-top:8px;position:relative}.navbtns .btn{flex:1;text-align:center;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 6px;font-size:13px}
-.navbtns.inrow{margin:0;padding:0 10px 10px}
+.navbtns.inrow{margin:0;padding:0 10px 10px}#upcomingAsg .asgwrap{border-bottom:1px solid var(--line,#e2e8f0)}#upcomingAsg .navbtns.inrow{margin:-2px 0 8px 42px;padding:0;max-width:calc(100% - 44px)}#upcomingAsg .navbtns.inrow.nav-split{border-radius:8px}#upcomingAsg .navbtns.inrow .nav-main,#upcomingAsg .navbtns.inrow .btn{min-height:28px;font-size:12px;padding:0 8px;border-radius:8px 0 0 8px}#upcomingAsg .navbtns.inrow .nav-more{min-height:28px;min-width:36px;font-size:11px;padding:0 8px;border-radius:0 8px 8px 0}
 .navbtns.nav-split{gap:0;border:1px solid var(--line);border-radius:10px;overflow:visible;background:#fff}
 .navbtns.nav-split .nav-main{flex:1;border:0;border-radius:10px 0 0 10px;min-height:40px}
 .navbtns.nav-split .nav-more{flex:0 0 auto;min-width:44px;margin:0;border:0;border-left:1px solid var(--line);border-radius:0 10px 10px 0;padding:0 10px;font-size:12px;font-weight:700;background:#fff;color:var(--ink)}
@@ -586,7 +586,7 @@ a.dir-tel.mine{color:#0f766e}
 .fuelchips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 10px}
 .fuelchips .chip{font-weight:800;padding:8px 14px;min-height:40px;font-size:14px;border-width:2px}
 .fuelchips .chip.on{background:#0b1f3a;color:#fff;border-color:#0b1f3a}
-.map-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 8px}
+.map-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 8px}.map-toolbar .btn.on,.map-toolbar .btn:active{background:var(--navy);color:#fff;border-color:var(--navy)}
 .map-legend{font-size:12px;color:var(--muted);line-height:1.45;padding:8px 10px;background:#f8fafc;border-top:1px solid var(--line)}
 .map-legend p{margin:0 0 6px}.map-legend p:last-child{margin:0}
 .fuel-mark{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:#fff;color:#111;border:2px solid #0b1f3a;box-shadow:0 1px 3px rgba(0,0,0,.4);position:relative;box-sizing:border-box}
@@ -4789,7 +4789,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
 
   var S = load();
   var T = E.today(), tp = E.parts(T);
-  var ui = { tab: 'schedule', calY: tp.y, calM: tp.m, lookup: T, otYear: tp.y, payYear: tp.y, leaveYear: tp.y, leaveOpen: false, pdY: tp.y, pdM: tp.m, onbSquad: null, x15Year: tp.y, otView: 'ot', otSel: false, otSelIds: {}, pdSel: false, pdSelIds: {}, otFilter: 'all', otCollapse: {}, calPeek: null, calPeekPicker: false, todayOpen: false, glanceOpen: false, dirQ: '', mapQ: '', dirKind: '', dirView: 'dir', dirFuelOn: true };
+  var ui = { tab: 'schedule', calY: tp.y, calM: tp.m, lookup: T, otYear: tp.y, payYear: tp.y, leaveYear: tp.y, leaveOpen: false, pdY: tp.y, pdM: tp.m, onbSquad: null, x15Year: tp.y, otView: 'ot', otSel: false, otSelIds: {}, pdSel: false, pdSelIds: {}, otFilter: 'all', otCollapse: {}, calPeek: null, calPeekPicker: false, todayOpen: false, glanceOpen: false, dirQ: '', mapQ: '', dirKind: '', dirView: 'dir', dirFuelOn: false };
 
   function U() { return S.settings.unit; }
   var PDU = C.pdu;
@@ -4880,6 +4880,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (sl && sl.scrollIntoView) sl.scrollIntoView({ block: 'start' });
     }
     if (ui.tab === 'map') setupDirMap();
+    syncBannerSuggest();
   }
 
   var PF = [['firstName', 'First', 'First name', 'given-name', 'text'], ['middleInitial', 'MI', 'M.I.', 'additional-name', 'mi'], ['lastName', 'Last', 'Last name', 'family-name', 'text'],
@@ -5554,7 +5555,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     function pdTotBlock(id, lbl, count, minutes, amount) {
       return '<div class="tot" id="' + id + '"><small>' + lbl + '</small><b>' + count + '</b><span>' + E.fmtHM(minutes) + '</span><em>' + money(amount) + '</em></div>';
     }
-    var html = '<div id="pdEarn"><div class="card pdcard pdsumcard" data-sec="2d" id="pdSummary"><div class="shead" style="margin-bottom:6px"><h3 style="margin:0">Paid Details</h3>' + suggestBtnHtml('Paid Detail') + '</div>';
+    var html = '<div id="pdEarn"><div class="card pdcard pdsumcard" data-sec="2d" id="pdSummary"><div class="shead" style="margin-bottom:6px"><h3 style="margin:0">Paid Details</h3></div>';
     html += '<div class="yearsel" id="pdMonthNav"><button class="navbtn" data-act="pdMonth" data-dir="-1" aria-label="Previous month">&lsaquo;</button><b id="pdMonthLbl">' + MONTHS[m - 1] + ' ' + y + '</b><button class="navbtn" data-act="pdMonth" data-dir="1" aria-label="Next month">&rsaquo;</button></div>';
     html += '<div class="tot-row" style="margin-bottom:8px">' + pdTotBlock('pdTot', 'Total', t.count, t.minutes, t.amount) +
       pdTotBlock('pdPaid', 'Paid', t.paidCount, t.paidMinutes, t.paidAmount) +
@@ -5620,7 +5621,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   // Paid Detail earnings: its own card, never mixed into the OT totals above.
   function paidDetailCard(y) {
     var t = E.paidDetailTotals(S.assignments, S.profile, y + '-01-01', y + '-12-31', E.toISO(T));
-    var h = '<div class="card pdcard" id="pdEarn" data-sec="2d"><div class="shead" style="margin-bottom:6px"><h3 style="margin:0">Paid Details ' + y + '</h3>' + suggestBtnHtml('Paid Detail') + '</div>';
+    var h = '<div class="card pdcard" id="pdEarn" data-sec="2d"><div class="shead" style="margin-bottom:6px"><h3 style="margin:0">Paid Details ' + y + '</h3></div>';
     var taxBtn = '<button type="button" class="btn block" data-act="pdTaxOpen" data-year="' + y + '" id="pdTaxBtn" style="margin-top:10px">Year-end tax report</button>' +
       '<div class="muted" style="font-size:12px;margin-top:6px">For taxes, earnings count in the year of the check date (or paid date if the check date is missing). Unpaid details stay pending and are left out of that year&rsquo;s totals.</div>';
     if (!t.count) return h + '<div class="empty">No paid details in ' + y + '. Use Add paid detail on a day to add one.</div>' + taxBtn + '</div>';
@@ -5788,11 +5789,34 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       b.classList.toggle('on', on);
       b.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
-    if (dirMap) { refreshFuelMarkers(); refreshCommandShields(); }
+    if (dirMap) { refreshFuelMarkers(); addCommandShields(); }
     var list = document.getElementById('nearestFuelList');
     if (list) fillNearestList(list);
     var empty = document.getElementById('fuelFilterEmpty');
     if (empty) empty.hidden = (S.settings.fuelFilter || []).length > 0;
+  }
+  function syncFuelFilterUi() {
+    var on = ui.dirFuelOn !== false;
+    var wrap = document.getElementById('fuelFilterWrap');
+    if (wrap) wrap.hidden = !on;
+    var btn = document.querySelector('#dirMapOpts [data-act="dirFuelLayer"]');
+    if (btn) { btn.classList.toggle('on', on); btn.setAttribute('aria-pressed', on ? 'true' : 'false'); }
+  }
+  function nearestSheetOpen() {
+    var h = document.querySelector('#sheetRoot .sheet .shead h3');
+    return !!(h && String(h.textContent || '').trim() === 'Nearest fuel');
+  }
+  function syncNearestBtn() {
+    var on = nearestSheetOpen();
+    var b = document.getElementById('dirNearestBtn');
+    if (b) { b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); }
+  }
+  function syncBannerSuggest() {
+    var b = document.getElementById('btnSuggest'); if (!b) return;
+    var names = { schedule: 'Calendar', overtime: 'Overtime', pay: 'Pay', leave: 'Leave', map: 'Map', directory: 'Directory', lookup: 'Lookup' };
+    var sec = TAB_PAGES[ui.tab] || '';
+    if (sec) b.setAttribute('data-sec', sec); else b.removeAttribute('data-sec');
+    b.setAttribute('data-section', names[ui.tab] || 'App');
   }
   var GAS_ICON = '<g fill="none" stroke="#111" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">' +
     '<path d="M24 74 V26 a8 8 0 0 1 8-8 h24 a8 8 0 0 1 8 8 V74"/>' +
@@ -5982,6 +6006,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (cmd.kind !== "pct" && cmd.kind !== "psa" && cmd.kind !== "td") return;
       var ll = commandLL(cmd, siteMap, geo);
       if (!ll) return;
+      if (ui.dirFuelOn !== false && !shieldFuelVisible(cmd)) return;
       var isMine = cmd.kind === "pct" && mine && E.pctNumFromId(cmd.id) === mine;
       var m = L.marker(ll, { icon: shieldIconFor(cmd, spec, isMine), title: cmd.name, riseOnHover: true, keyboard: true, zIndexOffset: isMine ? 220 : 80 });
       m.on("click", function (ev) { if (ev && ev.originalEvent) L.DomEvent.stop(ev.originalEvent); commandSheet(cmd.id); });
@@ -6432,10 +6457,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function viewMap() {
     var q = ui.mapQ || '';
     var mapOpts = '<div id="dirMapOpts" class="dir-map-opts" hidden>' +
-      fuelChipBar() +
+      '<div id="fuelFilterWrap"' + (ui.dirFuelOn === false ? ' hidden' : '') + '>' + fuelChipBar() + '</div>' +
       '<div class="map-toolbar">' +
       '<button type="button" class="btn sm' + (ui.dirFuelOn === false ? '' : ' on') + '" data-act="dirFuelLayer" aria-pressed="' + (ui.dirFuelOn === false ? 'false' : 'true') + '">Fuel sites</button>' +
-      '<button type="button" class="btn primary sm" data-act="dirNearest">Nearest fuel</button></div>' +
+      '<button type="button" class="btn sm" id="dirNearestBtn" data-act="dirNearest" aria-pressed="false">Nearest fuel</button></div>' +
       '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p></div>' +
       '</div>';
     var mapTools = '<div class="dir-map-chrome">' +
@@ -6528,7 +6553,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     return '<button type="button" class="btn sm suggestbtn" data-act="suggestOpen" data-section="' + esc(section) + '">Suggest</button>';
   }
   function suggestBar(section) {
-    return '<div class="sugbar" data-sec="' + (TAB_PAGES[ui.tab] || '') + '">' + suggestBtnHtml(section) + '</div>';
+    return ''; // r75: Suggest lives only on the top banner (#btnSuggest)
   }
   // ---------- Sheet navigation ----------
   // A sheet opened from another sheet is a sub-page: it gets a Back button, and Back / X / Escape / tapping outside return to the
@@ -6548,7 +6573,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     };
   }
   function openSheet(title, body, section) {
-    var sug = section === false ? '' : suggestBtnHtml(section || title), p = NAV.pending, open = !!sheetRoot.firstElementChild;
+    var sug = '', p = NAV.pending, open = !!sheetRoot.firstElementChild;
     if (!open) NAV.stack = [];
     else if (NAV.cur && p && NAV.cur.key !== p.key) {
       var top = NAV.stack[NAV.stack.length - 1];
@@ -6559,6 +6584,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var pg = SHEET_PAGES[(NAV.cur.key || '').split('|')[0]] || '';
     var back = NAV.stack.length ? '<button type="button" class="sback" data-act="navBack" id="sheetBack" aria-label="Back">&lsaquo; Back</button>' : '';
     sheetRoot.innerHTML = '<div class="sheet-bg" data-act="sheetBg"><div class="sheet' + (back ? ' sub' : '') + '" role="dialog" aria-modal="true" aria-label="' + esc(title) + '"><div class="sbar"><div class="grab"></div><div class="shead"' + (pg ? ' data-sec="' + pg + '"' : '') + '>' + back + '<h3>' + esc(title) + '</h3><div class="shead-acts">' + sug + '<button class="x" data-act="closeSheet" aria-label="' + (back ? 'Close and go back' : 'Close') + '">&times;</button></div></div></div>' + body + '</div></div>';
+    syncNearestBtn();
   }
   // Back / X / Escape: the previous page exactly as it was left (or close, at the top level).
   function navBack() {
@@ -6567,14 +6593,15 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     NAV.cur = prev; sheetRoot.innerHTML = '';
     if (prev.node) { sheetRoot.appendChild(prev.node); var sh = prev.node.querySelector('.sheet'); if (sh) sh.scrollTop = prev.scroll || 0; prev.node = null; }
     else if (prev.fn) { NAV.stack.push(prev); NAV.cur = { key: '' }; sheetRoot.innerHTML = '<div></div>'; prev.fn(); }
+    syncNearestBtn();
   }
   // After a save / delete in a sheet: a sub-page returns to a fresh copy of the page it came from; a top-level sheet closes.
   function closeSheet() {
     var prev = NAV.stack[NAV.stack.length - 1];
-    if (prev && prev.fn) { NAV.cur = { key: '' }; prev.node = null; sheetRoot.innerHTML = '<div></div>'; prev.fn(); return; }
+    if (prev && prev.fn) { NAV.cur = { key: '' }; prev.node = null; sheetRoot.innerHTML = '<div></div>'; prev.fn(); syncNearestBtn(); return; }
     closeAll();
   }
-  function closeAll() { NAV.stack = []; NAV.cur = null; sheetRoot.innerHTML = ''; }
+  function closeAll() { NAV.stack = []; NAV.cur = null; sheetRoot.innerHTML = ''; syncNearestBtn(); }
 
   function daySheet(d, sheetOpts) {
     sheetOpts = sheetOpts || {};
@@ -6972,7 +6999,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       sum += '<div class="pdpay" id="' + payId + '" role="status" aria-live="polite"></div><div class="pdnote" id="' + remId + '" role="note" hidden></div>';
       sum += pdTimingHtml(pd, iso, '');
     }
-    return '<div class="card pdsec" id="pdSec" data-sec="6e" data-iso="' + esc(iso) + '"><div class="shead"><h3 style="margin:0;font-size:15px">Paid detail</h3>' + suggestBtnHtml('Paid Detail') + '</div>' +
+    return '<div class="card pdsec" id="pdSec" data-sec="6e" data-iso="' + esc(iso) + '"><div class="shead"><h3 style="margin:0;font-size:15px">Paid detail</h3></div>' +
       '<button type="button" class="btn block pdadd" id="pdAddBtn" data-act="pdAdd" data-iso="' + esc(iso) + '"' + (show ? ' hidden' : '') + '>Add paid detail</button>' +
       (show ? sum + '<button type="button" class="btn sm" id="pdEditBtn" data-act="pdEdit" data-iso="' + esc(iso) + '">Edit paid detail</button>' : '') +
       '<div id="pdSlipHost" data-iso="' + iso + '" hidden>' + (slip || '') + '</div></div>';
@@ -9078,6 +9105,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<label class="chk ovchk"><input type="checkbox" id="stOverride"' + (p.rateOverride ? ' checked' : '') + '> Use my own hourly rate instead of the pay chart</label>' +
       '<div class="row" id="stOvWrap"' + (p.rateOverride || !E.payPlacement(profNow()).ok || !(E.payPlacement(profNow()).cashOT || E.payPlacement(profNow()).ceaOT) ? '' : ' hidden') + '><div class="field"><label for="stRate">Own hourly rate ($)</label><input id="stRate" type="number" inputmode="decimal" min="0" step="0.01" value="' + esc(p.rate) + '"></div>' +
       '<div class="field"><label for="stMult">OT multiplier</label><input id="stMult" type="number" inputmode="decimal" min="1" step="0.05" value="' + esc(s.multiplier) + '"><div class="hint">Only used with your own rate.</div></div></div>' +
+      '<h3 style="margin-top:20px" data-sec="9i">Schedule rules</h3><div class="muted" style="font-size:13px;margin-bottom:8px">' + esc(E.unit(U()).name) + ': ' + esc(E.unit(U()).pattern.description) + '. One squad is off each day.<br>PDU: ' + esc(PDU.description) + '. ' + shiftText('pm') + ', ' + shiftText('am') + '.</div>' +
       balancesHtml() +
       '<button class="btn primary block" data-act="stSave">Save settings</button>' +
       settingsFold('mapsHead', '9f', 'Google Maps API key (optional)',
@@ -10407,10 +10435,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     dirView: function (t) { ui.tab = t.dataset.v === 'map' ? 'map' : 'directory'; render(); },
     dirFuelLayer: function (t) {
       ui.dirFuelOn = ui.dirFuelOn === false;
-      var on = ui.dirFuelOn !== false;
-      if (t) { t.classList.toggle('on', on); t.setAttribute('aria-pressed', on ? 'true' : 'false'); }
+      syncFuelFilterUi();
       refreshFuelMarkers();
-      refreshCommandShields();
+      addCommandShields();
     },
     dirNearest: function () { nearestFuelSheet(); },
     dirMapOpts: function () {
