@@ -346,6 +346,16 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after,body.beta #
 .mcalblank{min-height:44px}
 .mcalacts{display:flex;gap:8px;margin-top:10px;justify-content:flex-end}
 .mcalwrap.mcal-noclear [data-act="mcalClear"]{display:none!important}
+.mcalday.locked{box-shadow:inset 0 0 0 2px #d97706;cursor:default}
+.mcalday.locked.on{background:var(--navy,#0b1f3a);color:#fff}
+.mcalchips,.mcalexchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}
+.mcalchips[hidden],.mcalexchips[hidden]{display:none!important}
+.dchip{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:999px;font:inherit;font-size:12px;font-weight:700;border:1px solid var(--line,#e2e8f0);background:#fff;color:var(--ink,#0f172a)}
+.dchip.locked{background:#0b1f3a;color:#fff;border-color:#0b1f3a}
+.dchip.locked .dchiplk{font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;opacity:.85;margin-left:2px}
+.mcalwarn{margin-top:8px;font-size:12.5px;color:#b45309;line-height:1.35}
+.pdmore,.otmore{margin-top:8px}
+.pd-id-needed{display:inline-block;padding:1px 7px;border-radius:999px;background:#fef3c7;color:#92400e;font-size:11px;font-weight:800;letter-spacing:.02em;vertical-align:middle}
 .pdconbox{margin:10px 0;padding:10px 12px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc}
 .pdconbox ul{margin:6px 0 0 18px;padding:0}
 .pdconalias{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 0}
@@ -395,6 +405,7 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after,body.beta #
 .tot em{font-style:normal;font-size:11px;color:var(--muted);display:block}
 .status-line{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0 12px;align-items:center}
 .status-line .daypos{font-size:12.5px;font-weight:700;color:var(--muted,#4b5a70);letter-spacing:.01em;white-space:nowrap;line-height:1.2;padding:3px 4px;margin:0}
+.sumdaypos{display:block;margin:0 0 10px;padding:0;font-size:13px;font-weight:700;color:var(--muted,#4b5a70);letter-spacing:.01em;line-height:1.3}
 .status-line .btn.sm.othersquads-btn{margin:2px 4px 2px 0;min-height:0;height:auto;padding:3px 9px;border-radius:999px;font-size:12.5px;font-weight:700;line-height:normal;gap:0;display:inline-block;font-family:inherit;box-sizing:border-box;vertical-align:baseline}
 .othersquads-box{display:flex;flex-wrap:wrap;gap:4px;flex:1 0 100%;margin-top:2px}
 .othersquads-box[hidden]{display:none !important}
@@ -404,7 +415,10 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after,body.beta #
 .sitechip b{font-size:14px}.sitechip span{font-size:12px;opacity:.75}
 .sitechip.on{background:#0E7490;color:#fff;border-color:#0E7490}
 .navbtns{display:flex;gap:6px;margin-top:8px;position:relative}.navbtns .btn{flex:1;text-align:center;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 6px;font-size:13px}
-.navbtns.inrow{margin:0;padding:0 10px 10px}#upcomingAsg .asgwrap{border-bottom:1px solid var(--line,#e2e8f0)}#upcomingAsg .navbtns.inrow{margin:-2px 0 8px 42px;padding:0;max-width:calc(100% - 44px)}#upcomingAsg .navbtns.inrow.nav-split{border-radius:8px}#upcomingAsg .navbtns.inrow .nav-main,#upcomingAsg .navbtns.inrow .btn{min-height:28px;font-size:12px;padding:0 8px;border-radius:8px 0 0 8px}#upcomingAsg .navbtns.inrow .nav-more{min-height:28px;min-width:36px;font-size:11px;padding:0 8px;border-radius:0 8px 8px 0}
+.navbtns.inrow{margin:0;padding:0 10px 10px}
+#sumList .sumnav{min-width:0;max-width:100%;box-sizing:border-box}
+#sumList .navbtns.inrow{margin:0;padding:0 2px 10px;width:100%;max-width:100%;min-width:0;box-sizing:border-box}
+#sumList .navbtns.inrow .btn,#sumList .navbtns.inrow .nav-main,#sumList .navbtns.inrow .nav-more{min-width:0;max-width:100%;box-sizing:border-box}#upcomingAsg .asgwrap{border-bottom:1px solid var(--line,#e2e8f0)}#upcomingAsg .navbtns.inrow{margin:-2px 0 8px 42px;padding:0;max-width:calc(100% - 44px)}#upcomingAsg .navbtns.inrow.nav-split{border-radius:8px}#upcomingAsg .navbtns.inrow .nav-main,#upcomingAsg .navbtns.inrow .btn{min-height:28px;font-size:12px;padding:0 8px;border-radius:8px 0 0 8px}#upcomingAsg .navbtns.inrow .nav-more{min-height:28px;min-width:36px;font-size:11px;padding:0 8px;border-radius:0 8px 8px 0}
 .navbtns.nav-split{gap:0;border:1px solid var(--line);border-radius:10px;overflow:visible;background:#fff}
 .navbtns.nav-split .nav-main{flex:1;border:0;border-radius:10px 0 0 10px;min-height:40px}
 .navbtns.nav-split .nav-more{flex:0 0 auto;min-width:44px;margin:0;border:0;border-left:1px solid var(--line);border-radius:0 10px 10px 0;padding:0 10px;font-size:12px;font-weight:700;background:#fff;color:var(--ink)}
@@ -474,7 +488,9 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after,body.beta #
 .field{position:relative}.acdrop{position:absolute;left:0;right:0;z-index:60;margin-top:2px;background:#fff;color:#0f172a;border:1px solid #cbd5e1;border-radius:10px;box-shadow:0 10px 24px rgba(15,23,42,.18);max-height:300px;overflow:auto;-webkit-overflow-scrolling:touch}.acdrop[hidden]{display:none}.acopt{padding:10px 12px;min-height:44px;border-bottom:1px solid #eef2f7;cursor:pointer;touch-action:manipulation}.acopt b{display:block;font-size:14px;font-weight:600}.acopt span{display:block;font-size:12px;color:#64748b;margin-top:2px}.acopt.on,.acopt:hover{background:#e0f2fe}.acnote{padding:8px 12px;font-size:12px;color:#64748b}.cmdua{margin-top:8px}.cmdua .btn{margin-top:6px}.cmdcard{min-width:0;max-width:100%;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border-radius:12px;background:#ecfeff;border:1px solid #a5f3fc}.cmdcard span{display:block;font-size:12.5px;opacity:.8}
 .sebox{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:10px 10px 4px;margin-bottom:10px}
 .roIn{background:#f1f5f9!important;color:#0f172a;font-weight:800}
-.dateIn{width:100%;min-width:0;max-width:100%;box-sizing:border-box}
+.dateIn,input[type="date"]{display:block;width:100%;min-width:0;max-width:100%;box-sizing:border-box;-webkit-appearance:none;appearance:none}
+input[type="date"]::-webkit-date-and-time-value,input[type="date"]::-webkit-datetime-edit{min-width:0;max-width:100%;width:100%}
+.field{min-width:0;max-width:100%}
 .sebox .hint{font-size:12.5px;line-height:1.35}.startpicks{margin:2px 0 6px}.startpicks .pick{min-height:36px;font-size:13px}
 .dateframe{position:relative;display:block;width:100%;margin:0 0 4px}
 .datecap-lbl{position:absolute;top:6px;left:12px;right:12px;z-index:1;pointer-events:none;font:600 11px/1.2 system-ui,-apple-system,sans-serif;color:var(--muted,#64748b);letter-spacing:.02em}
@@ -620,7 +636,22 @@ a.dir-tel.mine{color:#0f766e}
 .hosp-mark.level1{border-color:#991b1b}
 .dir-map-opts .hospchips{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0}
 #hospFilterWrap[hidden],#fuelFilterWrap[hidden]{display:none!important}
-.dir-map-opts #fuelFilterWrap.fuel-opts{display:flex;flex-wrap:wrap;align-items:center;gap:6px;flex:1 0 100%;width:100%;margin:0}
+.dir-map-opts .map-toolbar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;align-items:stretch;margin:0 0 6px}
+.dir-map-opts #fuelFilterWrap.fuel-opts{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;align-items:stretch;flex:unset;width:auto;margin:0}
+.dir-map-opts #fuelFilterWrap .fuelchips{display:contents;margin:0;gap:0}
+.dir-map-opts #hospFilterWrap.hospchips{display:grid;margin:0;align-items:stretch;min-width:0}
+.dir-map-opts .map-toolbar .btn,
+.dir-map-opts .map-toolbar .chip,
+.dir-map-opts #fuelFilterWrap .btn,
+.dir-map-opts #fuelFilterWrap .chip,
+.dir-map-opts #hospFilterWrap .btn,
+.dir-map-opts #hospFilterWrap .chip{width:100%;height:44px;min-height:44px;max-height:44px;min-width:0;margin:0;box-sizing:border-box;padding:4px 6px;font-size:11px;font-weight:700;line-height:1.15;white-space:normal;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;text-align:center;border-width:1px;border-radius:10px;background:#fff;color:var(--ink,#0f172a)}
+.dir-map-opts .map-toolbar .btn.on,
+.dir-map-opts .map-toolbar .chip.on,
+.dir-map-opts #fuelFilterWrap .btn.on,
+.dir-map-opts #fuelFilterWrap .chip.on,
+.dir-map-opts #hospFilterWrap .btn.on,
+.dir-map-opts #hospFilterWrap .chip.on{background:var(--navy,#0b1f3a);color:#fff;border-color:var(--navy,#0b1f3a)}
 .dir-map-opts #fuelFilterWrap .fuelchips{margin:0;gap:6px}
 
 .map-pct-pill{background:rgba(255,255,255,.9);color:#0b1f3a;font-weight:800;font-size:11px;line-height:1.2;padding:5px 9px;border-radius:999px;box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:pointer;user-select:none;letter-spacing:.01em;white-space:nowrap}
@@ -6059,7 +6090,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function hrs(v) { return E.fmtHM(Math.round((v || 0) * 60)); } // decimal hours -> H:MM
   function dec(v) { return (Math.round((v || 0) * 100) / 100) + ' h'; }
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
-  function toast(msg) { var t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove('show'); }, 2200); }
+  function toast(msg, ms) { var t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove('show'); }, ms || 2200); }
 
   function defaultState() {
     return { app: 'patrol-schedule', version: 1, profile: null,
@@ -6898,7 +6929,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
             var pon = !!(ui.pdSel && ui.pdSelIds && ui.pdSelIds[x.iso]);
             var pchk = ui.pdSel ? '<input type="checkbox" class="otchk" data-act="pdSelOne" data-iso="' + esc(x.iso) + '"' + (pon ? ' checked' : '') + ' aria-label="Select paid detail entry">' : '';
             var pact = ui.pdSel ? 'pdSelOne' : 'day';
-            html += '<div class="swrow' + (pon ? ' sw-sel' : '') + '" data-swipe="pd" data-iso="' + esc(x.iso) + '"><button class="item otitem" data-act="' + pact + '" data-d="' + E.toDay(x.iso) + '" data-iso="' + esc(x.iso) + '"' + (ui.pdSel ? ' aria-pressed="' + (pon ? 'true' : 'false') + '"' : '') + '>' + pchk + '<div class="main"><div class="t1">' + esc(x.pd.vendor || 'Paid Detail') + (x.pd.id ? ' · #' + esc(x.pd.id) : '') + '</div>' +
+            html += '<div class="swrow' + (pon ? ' sw-sel' : '') + '" data-swipe="pd" data-iso="' + esc(x.iso) + '"><button class="item otitem" data-act="' + pact + '" data-d="' + E.toDay(x.iso) + '" data-iso="' + esc(x.iso) + '"' + (ui.pdSel ? ' aria-pressed="' + (pon ? 'true' : 'false') + '"' : '') + '>' + pchk + '<div class="main"><div class="t1">' + esc(x.pd.vendor || 'Paid Detail') + (x.pd.id ? ' · #' + esc(x.pd.id) : ' · ' + pdIdNeededMark()) + '</div>' +
               '<div class="t2">' + fmt(E.toDay(x.work)) + (x.pd.start ? ' · ' + esc(hhmm(x.pd.start)) + (x.pd.end ? '–' + esc(hhmm(x.pd.end)) : '') : '') + '</div></div>' +
               '<div class="right">' + E.fmtHM(x.minutes) + '<small>' + (x.amount ? money(x.amount) : '') + '</small></div></button></div>';
           });
@@ -8466,15 +8497,15 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var mapOpts = '<div id="dirMapOpts" class="dir-map-opts" hidden>' +
       '<div class="map-toolbar">' +
       '<button type="button" class="btn sm' + (ui.dirFuelOn === false ? '' : ' on') + '" data-act="dirFuelLayer" aria-pressed="' + (ui.dirFuelOn === false ? 'false' : 'true') + '">Fuel sites</button>' +
+      '<button type="button" class="btn sm' + (ui.dirHospOn ? ' on' : '') + '" data-act="dirHospLayer" aria-pressed="' + (ui.dirHospOn ? 'true' : 'false') + '">Hospitals</button>' +
+      '<button type="button" class="btn sm' + (ui.dirFacilitiesOn ? ' on' : '') + '" data-act="dirFacilities" aria-pressed="' + (ui.dirFacilitiesOn ? 'true' : 'false') + '">Police facilities</button>' +
       '<div id="fuelFilterWrap" class="fuel-opts"' + (ui.dirFuelOn === false ? ' hidden' : '') + ' data-sec="4k" role="group" aria-label="Fuel filters">' +
         fuelChipBar() +
         '<button type="button" class="btn sm" id="dirNearestBtn" data-act="dirNearest" aria-pressed="false">Nearest fuel</button>' +
       '</div>' +
-      '<button type="button" class="btn sm' + (ui.dirHospOn ? ' on' : '') + '" data-act="dirHospLayer" aria-pressed="' + (ui.dirHospOn ? 'true' : 'false') + '">Hospitals</button>' +
       '<div id="hospFilterWrap" class="hospchips"' + (ui.dirHospOn ? '' : ' hidden') + ' data-sec="4n" role="group" aria-label="Hospital filter">' +
-        '<button type="button" class="chip' + (ui.dirHospLevel1 ? ' on' : '') + '" data-act="hospChip" data-filter="level1" aria-pressed="' + (ui.dirHospLevel1 ? 'true' : 'false') + '">Level 1 Trauma</button>' +
-      '</div>' +
-      '<button type="button" class="btn sm' + (ui.dirFacilitiesOn ? ' on' : '') + '" data-act="dirFacilities" aria-pressed="' + (ui.dirFacilitiesOn ? 'true' : 'false') + '">Police facilities</button></div>' +
+        '<button type="button" class="btn sm chip' + (ui.dirHospLevel1 ? ' on' : '') + '" data-act="hospChip" data-filter="level1" aria-pressed="' + (ui.dirHospLevel1 ? 'true' : 'false') + '">Level 1 Trauma</button>' +
+      '</div></div>' +
       '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p></div>' +
       '</div>';
     var mapTools = '<div class="dir-map-chrome">' +
@@ -8781,19 +8812,30 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     }
     pdAmtHint();
   }
-  var MC = { open: false, forId: '', y: 0, m: 0 };
+  var MC = { open: false, forId: '', y: 0, m: 0, multi: false, locked: '', selected: [], kind: '', onChange: null };
   function miniCalEnsure() {
-    var el = document.getElementById('miniCal'); if (el) return el;
+    var el = document.getElementById('miniCal'); if (el) { miniCalEnsureExtras(); return el; }
     el = document.createElement('div'); el.id = 'miniCalWrap'; el.className = 'mcalwrap'; el.hidden = true;
     el.innerHTML = '<div class="mcalback" data-act="mcalClose"></div><div class="mcal" id="miniCal" role="dialog" aria-label="Choose a date">' +
       '<div class="mcalhd"><button type="button" class="mcalnav" data-act="mcalPrev" aria-label="Previous month">&lsaquo;</button>' +
       '<b id="mcalTitle"></b><button type="button" class="mcalnav" data-act="mcalNext" aria-label="Next month">&rsaquo;</button></div>' +
       '<div class="mcaldow"><span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span></div>' +
       '<div class="mcalgrid" id="mcalGrid"></div>' +
+      '<div class="mcalchips" id="mcalChips" hidden></div>' +
+      '<div class="mcalwarn" id="mcalWarn" role="status" hidden></div>' +
       '<div class="mcalacts"><button type="button" class="btn sm" data-act="mcalClear">Clear</button><button type="button" class="btn sm" data-act="mcalToday">Today</button><button type="button" class="btn sm primary" data-act="mcalClose">Close</button></div>' +
       '</div>';
     document.body.appendChild(el);
     return el;
+  }
+  function miniCalEnsureExtras() {
+    if (document.getElementById('mcalChips')) return;
+    var grid = document.getElementById('mcalGrid'), acts = document.querySelector('#miniCal .mcalacts');
+    if (!grid || !grid.parentNode) return;
+    var chips = document.createElement('div'); chips.className = 'mcalchips'; chips.id = 'mcalChips'; chips.hidden = true;
+    var warn = document.createElement('div'); warn.className = 'mcalwarn'; warn.id = 'mcalWarn'; warn.setAttribute('role', 'status'); warn.hidden = true;
+    grid.parentNode.insertBefore(chips, acts || grid.nextSibling);
+    grid.parentNode.insertBefore(warn, acts || chips.nextSibling);
   }
   function mcalMonthTitle(y, m) {
     return ['January','February','March','April','May','June','July','August','September','October','November','December'][m] + ' ' + y;
@@ -8802,14 +8844,19 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var title = document.getElementById('mcalTitle'), grid = document.getElementById('mcalGrid'); if (!title || !grid) return;
     title.textContent = mcalMonthTitle(MC.y, MC.m);
     var first = new Date(MC.y, MC.m, 1), start = first.getDay(), last = new Date(MC.y, MC.m + 1, 0).getDate();
-    var todayIso = E.toISO(T), sel = MC.iso || '', html = '', i, d, iso, cls;
+    var todayIso = E.toISO(T), sel = MC.iso || '', html = '', i, d, iso, cls, locked = MC.locked || '', picked = MC.selected || [], multi = !!MC.multi;
     for (i = 0; i < start; i++) html += '<span class="mcalblank"></span>';
     for (d = 1; d <= last; d++) {
       iso = MC.y + '-' + (MC.m + 1 < 10 ? '0' : '') + (MC.m + 1) + '-' + (d < 10 ? '0' : '') + d;
-      cls = 'mcalday' + (iso === sel ? ' on' : '') + (iso === todayIso ? ' today' : '');
-      html += '<button type="button" class="' + cls + '" data-act="mcalPick" data-iso="' + iso + '">' + d + '</button>';
+      cls = 'mcalday' + (iso === todayIso ? ' today' : '');
+      if (multi) {
+        if (iso === locked) cls += ' on locked';
+        else if (picked.indexOf(iso) >= 0) cls += ' on';
+      } else if (iso === sel) cls += ' on';
+      html += '<button type="button" class="' + cls + '" data-act="mcalPick" data-iso="' + iso + '"' + (multi && iso === locked ? ' aria-disabled="true" title="Original date"' : '') + '>' + d + '</button>';
     }
     grid.innerHTML = html;
+    if (multi) miniCalRenderChips();
   }
   function miniCalContextDate(forId) {
     var btn = document.getElementById(forId);
@@ -8824,7 +8871,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function miniCalOpen(forId, iso) {
     miniCalEnsure();
-    MC.open = true; MC.forId = forId;
+    MC.open = true; MC.forId = forId; MC.multi = false; MC.locked = ''; MC.selected = []; MC.kind = ''; MC.onChange = null;
     var btn = document.getElementById(forId);
     var fromBtn = btn && E.isISODate(btn.dataset.iso) ? btn.dataset.iso : '';
     var cur = fromBtn || (E.isISODate(iso) ? iso : '') || miniCalContextDate(forId);
@@ -8833,14 +8880,229 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (!E.isISODate(MC.iso) && !(btn && btn.classList.contains('calcap'))) MC.iso = cur;
     MC.y = +cur.slice(0, 4); MC.m = +cur.slice(5, 7) - 1;
     MC.allowClear = !!(btn && btn.classList.contains('calcap'));
-    var clr = document.querySelector('#miniCalWrap [data-act="mcalClear"]');
-    if (clr) clr.hidden = !MC.allowClear;
     var wrap = document.getElementById('miniCalWrap');
-    wrap.classList.toggle('mcal-noclear', !MC.allowClear);
     wrap.hidden = false;
+    miniCalSyncChrome();
     miniCalRender();
   }
-  function miniCalClose() { var wrap = document.getElementById('miniCalWrap'); if (wrap) wrap.hidden = true; MC.open = false; MC.forId = ''; }
+  function miniCalClose() {
+    var wrap = document.getElementById('miniCalWrap'); if (wrap) wrap.hidden = true;
+    MC.open = false; MC.forId = ''; MC.multi = false; MC.locked = ''; MC.selected = []; MC.kind = ''; MC.onChange = null;
+  }
+  function shiftIso(iso, days) {
+    if (!E.isISODate(iso)) return iso || '';
+    return E.toISO(E.toDay(iso) + (days || 0));
+  }
+  function pdIdNeededMark() { return '<span class="pd-id-needed">ID needed</span>'; }
+  function moreDatesPrimary() {
+    var form = document.getElementById('pdForm');
+    if (form) return dateIso('pdStartDate') || form.dataset.iso || '';
+    form = document.getElementById('otForm');
+    if (form) return ((document.getElementById('otDate') || {}).value || '');
+    return '';
+  }
+  function moreDatesGet(form) {
+    form = form || document.getElementById('pdForm') || document.getElementById('otForm');
+    return String((form && form.dataset.extraDates) || '').split(',').filter(function (iso) { return E.isISODate(iso); });
+  }
+  function moreDatesSet(form, list, locked) {
+    form = form || document.getElementById('pdForm') || document.getElementById('otForm');
+    if (!form) return [];
+    var prim = locked || moreDatesPrimary(), uniq = [];
+    (list || []).forEach(function (iso) {
+      if (E.isISODate(iso) && iso !== prim && uniq.indexOf(iso) < 0) uniq.push(iso);
+    });
+    uniq.sort();
+    form.dataset.extraDates = uniq.join(',');
+    moreDatesPaint(form, prim, uniq);
+    return uniq;
+  }
+  function moreDatesPaint(form, prim, extras) {
+    if (!form) return;
+    var chips = form.querySelector('.mcalexchips') || document.getElementById(form.id === 'otForm' ? 'otMoreChips' : 'pdMoreChips');
+    var warn = form.querySelector('.pdmore .pdwarn, .otmore .pdwarn') || document.getElementById(form.id === 'otForm' ? 'otMoreWarn' : 'pdMoreWarn');
+    if (chips) {
+      chips.innerHTML = moreDateChipsHtml(extras || [], prim, 'moreDateOff');
+      chips.hidden = !((extras && extras.length) || prim);
+    }
+    if (warn) {
+      var notes = moreDatesConflictList(form.id === 'otForm' ? 'ot' : 'pd', extras || []);
+      warn.hidden = !notes.length;
+      warn.textContent = notes.join(' ');
+    }
+  }
+  function moreDateChipsHtml(dates, locked, act) {
+    var html = '';
+    if (E.isISODate(locked)) html += '<span class="dchip locked">' + esc(E.fmtMDY(locked)) + '<span class="dchiplk">orig</span></span>';
+    (dates || []).forEach(function (iso) {
+      html += '<button type="button" class="dchip" data-act="' + (act || 'moreDateOff') + '" data-iso="' + esc(iso) + '" aria-label="Remove ' + esc(E.fmtMDY(iso)) + '">' + esc(E.fmtMDY(iso)) + ' ×</button>';
+    });
+    return html;
+  }
+  function moreDatesOnPrimaryChange() {
+    var form = document.getElementById('pdForm') || document.getElementById('otForm');
+    if (!form) return;
+    moreDatesSet(form, moreDatesGet(form), moreDatesPrimary());
+    if (MC.open && MC.multi) {
+      MC.locked = moreDatesPrimary();
+      MC.selected = moreDatesGet(form).slice();
+      miniCalRender();
+      miniCalSyncChrome();
+    }
+  }
+  function pdSameVendorTime(a, b) {
+    if (!a || !b) return false;
+    var va = (typeof pdNormVendor === 'function' ? pdNormVendor(a.vendor) : String(a.vendor || '').toUpperCase());
+    var vb = (typeof pdNormVendor === 'function' ? pdNormVendor(b.vendor) : String(b.vendor || '').toUpperCase());
+    var sameVendor = (!va && !vb) || !!(va && va === vb);
+    return sameVendor && (a.start || '') === (b.start || '') && (a.end || '') === (b.end || '');
+  }
+  function moreDatesConflict(kind, iso, draft) {
+    if (!E.isISODate(iso)) return '';
+    if (kind === 'pd') {
+      var have = (S.assignments[iso] || {}).pd;
+      if (!E.hasPaidDetail({ pd: have })) return '';
+      var same = pdSameVendorTime(have, draft || (typeof readPaid === 'function' ? readPaid() : {}));
+      var when = (have.start || '') + (have.end ? '–' + have.end : '');
+      if (same) return E.fmtMDY(iso) + ' already has a paid detail at the same vendor/time' + (have.vendor ? ' (' + have.vendor + (when ? ', ' + when : '') + ')' : '') + '.';
+      return E.fmtMDY(iso) + ' already has a paid detail' + (have.vendor ? ' (' + have.vendor + ')' : '') + ' — saving will replace it.';
+    }
+    if (kind === 'ot') {
+      var x = draft || {};
+      var t2 = (x.workStart || x.start || '') + '-' + (x.workEnd || x.end || '');
+      if (!t2 || t2 === '-') {
+        var wr = (typeof otReadWorked === 'function') ? otReadWorked() : null;
+        if (wr) t2 = (wr.start || '') + '-' + (wr.end || '');
+      }
+      var hit = (S.overtime || []).some(function (o) {
+        if (o.date !== iso) return false;
+        var t1 = (o.workStart || o.start || '') + '-' + (o.workEnd || o.end || '');
+        return t1 && t1 === t2;
+      });
+      return hit ? (E.fmtMDY(iso) + ' already has an overtime entry at the same time.') : '';
+    }
+    return '';
+  }
+  function moreDatesConflictList(kind, extras, draft) {
+    return (extras || []).map(function (iso) { return moreDatesConflict(kind, iso, draft); }).filter(Boolean);
+  }
+  function miniCalSyncChrome() {
+    var wrap = document.getElementById('miniCalWrap'), dlg = document.getElementById('miniCal');
+    var clr = wrap && wrap.querySelector('[data-act="mcalClear"]');
+    var close = wrap && wrap.querySelector('.mcalacts [data-act="mcalClose"]');
+    if (!wrap) return;
+    wrap.classList.toggle('mcal-multi', !!MC.multi);
+    wrap.classList.toggle('mcal-noclear', MC.multi ? false : !MC.allowClear);
+    if (dlg) dlg.setAttribute('aria-label', MC.multi ? 'Choose dates' : 'Choose a date');
+    if (clr) { clr.hidden = MC.multi ? false : !MC.allowClear; clr.textContent = MC.multi ? 'Clear extra dates' : 'Clear'; }
+    if (close) close.textContent = MC.multi ? 'Done' : 'Close';
+    if (MC.multi) miniCalRenderChips();
+    else {
+      var chips = document.getElementById('mcalChips'), warn = document.getElementById('mcalWarn');
+      if (chips) { chips.hidden = true; chips.innerHTML = ''; }
+      if (warn) { warn.hidden = true; warn.textContent = ''; }
+    }
+  }
+  function miniCalRenderChips() {
+    var chips = document.getElementById('mcalChips'), warn = document.getElementById('mcalWarn');
+    if (chips) {
+      chips.innerHTML = moreDateChipsHtml(MC.selected || [], MC.locked, 'moreDateOff');
+      chips.hidden = !((MC.selected && MC.selected.length) || MC.locked);
+    }
+    if (warn) {
+      var notes = moreDatesConflictList(MC.kind, MC.selected || []);
+      warn.hidden = !notes.length;
+      warn.textContent = notes.join(' ');
+    }
+  }
+  function miniCalOpenMulti(opts) {
+    opts = opts || {};
+    var locked = opts.locked || moreDatesPrimary();
+    if (!E.isISODate(locked)) return toast('Pick a date first');
+    miniCalEnsure();
+    MC.open = true; MC.forId = ''; MC.multi = true; MC.kind = opts.kind || (document.getElementById('otForm') ? 'ot' : 'pd');
+    MC.locked = locked; MC.selected = (opts.selected || []).filter(function (iso) { return E.isISODate(iso) && iso !== locked; });
+    MC.onChange = opts.onChange || null; MC.allowClear = true;
+    MC.iso = locked; MC.y = +locked.slice(0, 4); MC.m = +locked.slice(5, 7) - 1;
+    var wrap = document.getElementById('miniCalWrap');
+    wrap.hidden = false;
+    miniCalSyncChrome();
+    miniCalRender();
+  }
+  function miniCalToggle(iso) {
+    if (!MC.multi || !E.isISODate(iso)) return;
+    if (iso === MC.locked) { toast('That is the original date'); return; }
+    var i = MC.selected.indexOf(iso);
+    if (i >= 0) MC.selected.splice(i, 1); else MC.selected.push(iso);
+    MC.selected.sort();
+    if (MC.onChange) MC.onChange(MC.selected.slice(), MC.locked);
+    var form = document.getElementById('pdForm') || document.getElementById('otForm');
+    if (form) moreDatesSet(form, MC.selected, MC.locked);
+    miniCalRender();
+    miniCalSyncChrome();
+  }
+  function writePaidToIso(iso, pd) {
+    var cur = Object.assign({}, S.assignments[iso] || {}, { pd: pd });
+    var asg = E.cleanAssignment(cur);
+    if (asg) S.assignments[iso] = Object.assign(asg, { updated: new Date().toISOString() });
+    else delete S.assignments[iso];
+    return !!asg;
+  }
+  function pdCopyForDate(pd, iso) {
+    var span = 0;
+    if (pd.date && pd.endDate && E.isISODate(pd.date) && E.isISODate(pd.endDate)) span = E.toDay(pd.endDate) - E.toDay(pd.date);
+    else if (pd.start && pd.end && pdOvernight(pd.start, pd.end)) span = 1;
+    return E.cleanPaidDetail(Object.assign({}, pd, { id: '', date: iso, endDate: span ? shiftIso(iso, span) : iso }));
+  }
+  function otSchedIsDerived(origIso) {
+    var typed = otReadSched(false);
+    if (!typed || !typed.start || !typed.end) return true;
+    var capS = document.getElementById('otSchedStartDate'), capE = document.getElementById('otSchedEndDate');
+    if ((capS && capS.dataset.user === '1') || (capE && capE.dataset.user === '1')) return false;
+    var def = otDefaultWin(origIso);
+    return !!(def && def.start && typed.start === def.start && typed.end === def.end);
+  }
+  function otFormEntryForDate(targetIso) {
+    var dateEl = document.getElementById('otDate');
+    if (!dateEl || !E.isISODate(targetIso)) return otFormEntry();
+    var orig = dateEl.value;
+    if (orig === targetIso) return otFormEntry();
+    var delta = E.toDay(targetIso) - E.toDay(orig);
+    var caps = ['otWorkedStartDate', 'otWorkedEndDate', 'otSchedStartDate', 'otSchedEndDate'];
+    var saved = { date: orig, derived: otSchedIsDerived(orig) };
+    caps.forEach(function (id) {
+      var el = document.getElementById(id);
+      saved[id] = el ? { iso: el.dataset.iso || '', user: el.dataset.user || '' } : null;
+    });
+    var sEl = document.getElementById('otSchedStart'), eEl = document.getElementById('otSchedEnd');
+    saved.schedStart = sEl ? sEl.value : '';
+    saved.schedEnd = eEl ? eEl.value : '';
+    dateEl.value = targetIso;
+    try {
+      caps.forEach(function (id) {
+        var prev = saved[id];
+        if (!prev || !E.isISODate(prev.iso)) setDateCap(id, targetIso, 'auto');
+        else setDateCap(id, shiftIso(prev.iso, delta), prev.user === '1' ? 'user' : 'auto');
+      });
+      if (saved.derived) {
+        if (sEl) sEl.value = '';
+        if (eEl) eEl.value = '';
+        setDateCap('otSchedStartDate', targetIso, 'auto');
+        setDateCap('otSchedEndDate', targetIso, 'auto');
+      }
+      if (typeof otSyncSlip === 'function') otSyncSlip();
+      return otFormEntry();
+    } finally {
+      dateEl.value = saved.date;
+      caps.forEach(function (id) {
+        var prev = saved[id];
+        if (!prev) return;
+        if (E.isISODate(prev.iso)) setDateCap(id, prev.iso, prev.user === '1' ? 'user' : 'auto');
+      });
+      if (sEl) sEl.value = saved.schedStart;
+      if (eEl) eEl.value = saved.schedEnd;
+    }
+  }
   function dateCapApply(id, iso) {
     if (!id || !E.isISODate(iso)) return;
     setDateCap(id, iso, 'user');
@@ -8851,7 +9113,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     }
     if (id === 'otWorkedStartDate') autoEndFromStart('otStart', 'otEnd', 'otWorkedStartDate', 'otWorkedEndDate');
     if (id === 'otSchedStartDate') autoEndFromStart('otSchedStart', 'otSchedEnd', 'otSchedStartDate', 'otSchedEndDate');
-    if (id === 'pdStartDate') pdSyncDates();
+    if (id === 'pdStartDate') { pdSyncDates(); moreDatesOnPrimaryChange(); }
     if (id === 'pdStartDate' || id === 'pdEndDate') { pdDateCheck(); pdRemind(); }
     if (typeof updateEnd === 'function') updateEnd(false);
     if (document.getElementById('otForm')) otPreview();
@@ -9047,7 +9309,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var dat = pd.date ? E.fmtMDY(pd.date) : '';
       sum = '<button type="button" class="pdsum" id="pdSum" data-act="pdEdit" data-iso="' + esc(iso) + '">' +
         (pd.vendor ? '<b>' + esc(pd.vendor) + '</b>' : '<b>Paid detail</b>') +
-        '<div class="pdsummeta">' + (pd.id ? '#' + esc(pd.id) + (dat || when ? ' · ' : '') : '') + esc(dat) + (dat && when ? ' · ' : '') + esc(when) + '</div>' +
+        '<div class="pdsummeta">' + (pd.id ? '#' + esc(pd.id) : pdIdNeededMark()) + (dat || when ? ' · ' : '') + esc(dat) + (dat && when ? ' · ' : '') + esc(when) + '</div>' +
         (pd.address ? '<div class="pdsumaddr">' + esc(pd.address) + '</div>' : '') + '</button>' +
         (pd.address ? navLinks(pd.address, 'inrow') : '');
       var payId = 'pdPay', remId = 'pdRemind';
@@ -9206,7 +9468,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div class="hint">Reads your &ldquo;Selected Paid Details&rdquo; screen on this phone and fills the fields below. The picture is not uploaded, saved or synced.</div><div class="pdstat" id="pdStat" role="status" aria-live="polite" hidden></div></div>' +
       f('pdId', 'Paid Detail ID', pd.id, ' inputmode="numeric" autocomplete="off" placeholder="e.g. 4320372"', '19a') +
       '<div class="field" data-sec="19b"><div class="datepair">' + dateFrame('pdStartDate', pd.date, 'Date from') + dateFrame('pdEndDate', pd.endDate || pd.date, 'Date to') + '</div>' +
-      '<div class="hint pdwarn" id="pdDateWarn" hidden></div></div>' +
+      '<div class="hint pdwarn" id="pdDateWarn" hidden></div>' +
+      '<div class="pdmore" id="pdMoreWrap"><button type="button" class="btn sm" data-act="pdMoreDates" id="pdMoreDatesBtn">Also add on other dates</button>' +
+      '<div class="mcalexchips" id="pdMoreChips" hidden></div><div class="hint pdwarn" id="pdMoreWarn" hidden></div></div></div>' +
       '<div class="field" data-sec="19c"><div class="row"><div class="field"><label for="pdStart">Start time</label><input id="pdStart" class="timeIn" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="HH:MM" value="' + esc(pd.start || '') + '"></div>' +
       '<div class="field"><label for="pdEnd">End time</label><input id="pdEnd" class="timeIn" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="HH:MM" value="' + esc(pd.end || '') + '"></div>' +
       '<div class="field otdur"><label for="pdDur">Hrs : Min</label><input id="pdDur" class="pddurout" inputmode="decimal" autocomplete="off" placeholder="auto" value="' + esc(pd.durationMin ? E.fmtHM(pd.durationMin) : '') + '"></div></div>' +
@@ -11183,7 +11447,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     openSheet(entry ? 'Edit overtime' : 'Log overtime',
       '<form id="otForm" onsubmit="return false" data-id="' + esc(e.id) + '" data-linked="' + esc(lkRef) + '" data-lkind="' + (lkEnd ? 'end' : lkEntry ? 'entry' : lk ? 'tour' : '') + '">' +
       (lk ? '<div class="ddpair" style="border-color:' + mySquad().color + '"><b>' + (lkEnd ? 'Tour ended late' : lkEntry ? 'Additional tour' : 'Extra tour on RDO') + '</b> &middot; ' + fmt(E.toDay(lkIso)) + '<div class="muted" style="font-size:12.5px">Times are linked to that day\'s tour. Saving here updates the day and this overtime entry.</div><button type="button" class="btn sm" data-act="day" data-d="' + E.toDay(lkIso) + '" style="margin-top:6px">Edit tour</button></div>' : '') +
-      '<div class="field" data-sec="8a"><label for="otDate">Date</label><input type="date" id="otDate" value="' + esc(e.date) + '" required' + ro + '></div>' +
+      '<div class="field" data-sec="8a"><label for="otDate">Date</label><input type="date" class="dateIn" id="otDate" value="' + esc(e.date) + '" required' + ro + '>' +
+      (lk ? '' : '<div class="otmore" id="otMoreWrap"><button type="button" class="btn sm" data-act="otMoreDates" id="otMoreDatesBtn">Add more dates</button><div class="mcalexchips" id="otMoreChips" hidden></div><div class="hint pdwarn" id="otMoreWarn" hidden></div></div>') +
+      '</div>' +
       '<div class="field" data-sec="8b"><label for="otType">Type</label><select id="otType">' + C.overtimeTypes.map(function (t) { return '<option value="' + t.id + '"' + (t.id === e.type ? ' selected' : '') + '>' + esc(t.label) + '</option>'; }).join('') + '</select></div>' +
       cmdPicker('ot', e.otCmd || null, { sec: '8c', label: 'Overtime location (command / precinct)', hint: 'Where the overtime was worked. Used to suggest travel time from your permanent command.' }) +
       '<div id="otMode" hidden data-mode="' + (times ? 'times' : 'hours') + '"></div>' +
@@ -11289,7 +11555,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var otMin = E.parseHM(((document.getElementById('otTotal') || {}).value || '')) || E.parseHM(((document.getElementById('otHours') || {}).value || '')) || 0;
     var start = '', end = '', startDate = '', endDate = '', vs = null, meta = (typeof otDayMeta === 'function') ? otDayMeta() : {};
     if (!hoursMode && wr.start && wr.end) {
-      if (meta.hideForRdo) { start = wr.start; end = wr.end; startDate = wr.startDate; endDate = wr.endDate; }
+      if (meta.hideForRdo) {
+        start = wr.start; end = wr.end; startDate = wr.startDate; endDate = wr.endDate;
+        otMin = (wr.start && wr.end) ? (E.tourSpanMinutes(wr.startDate, wr.start, wr.endDate || wr.startDate, wr.end) || 0) : 0;
+      }
       else {
         var base = otReadSched(true);
         if (base && base.start && base.end) vs = workedVS(wr, base);
@@ -11403,29 +11672,6 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     openSheet('Settings',
       accountPanel() + (CL.enabled ? privacySectionHtml({ title: true, deleteBtn: !!CS.uid, sec: '9n', top: '18px' }) : '') + '<h3 data-sec="9b" style="margin-top:' + (CL.enabled ? '18px' : '0') + '">Profile</h3>' + profileFields('st', p, 'row') + homeField('st', p) +
       '<h3 id="histHead" data-sec="9c">Rank &amp; assignment</h3><div id="histWrap">' + histPanel() + '</div>' +
-      '<h3 id="payHead" data-sec="9d" style="margin-top:18px">Pay</h3><div class="paycard" id="payCard">' + payCardHtml(profNow()) + '</div>' +
-      '<label class="chk ovchk"><input type="checkbox" id="stOverride"' + (p.rateOverride ? ' checked' : '') + '> Use my own hourly rate instead of the pay chart</label>' +
-      '<div class="row" id="stOvWrap"' + (p.rateOverride || !E.payPlacement(profNow()).ok || !(E.payPlacement(profNow()).cashOT || E.payPlacement(profNow()).ceaOT) ? '' : ' hidden') + '><div class="field"><label for="stRate">Own hourly rate ($)</label><input id="stRate" type="number" inputmode="decimal" min="0" step="0.01" value="' + esc(p.rate) + '"></div>' +
-      '<div class="field"><label for="stMult">OT multiplier</label><input id="stMult" type="number" inputmode="decimal" min="1" step="0.05" value="' + esc(s.multiplier) + '"><div class="hint">Only used with your own rate.</div></div></div>' +
-      '<h3 style="margin-top:20px" data-sec="9i">Schedule rules</h3><div class="muted" style="font-size:13px;margin-bottom:8px">' + esc(E.unit(U()).name) + ': ' + esc(E.unit(U()).pattern.description) + '. One squad is off each day.<br>PDU: ' + esc(PDU.description) + '. ' + shiftText('pm') + ', ' + shiftText('am') + '.</div>' +
-      balancesHtml() +
-      '<button class="btn primary block" data-act="stSave">Save settings</button>' +
-      settingsFold('mapsHead', '9f', 'Google Maps API key (optional)',
-        '<div class="muted" style="font-size:13px;margin-bottom:8px">Navigate buttons and address suggestions work without a key. Add your own key to get Google Places suggestions and arrival times with live traffic. The key needs the Maps JavaScript API, Places API and Distance Matrix API enabled; restrict it to this site in Google Cloud.</div>' +
-        '<div class="field"><label for="stMapsKey">Google Maps API key (optional)</label><input id="stMapsKey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Paste your key" value="' + esc(mapsKey()) + '"><div class="hint">Stored only in this browser (localStorage), never in the code, and never synced to your account.' + (mapsKey() ? ' A key is saved.' : ' No key saved.') + '</div></div>' +
-        '<label class="chk" style="display:flex;gap:8px;align-items:center;min-height:44px;font-size:14px"><input type="checkbox" id="stMapsInBk"' + (S.settings.mapsKeyInBackup ? ' checked' : '') + '> Include the key in backups</label>' +
-        '<div class="row"><button class="btn sm" data-act="mapsSave">Save key</button><button class="btn sm" data-act="mapsShow">Show</button>' + (mapsKey() ? '<button class="btn sm danger" data-act="mapsClear">Remove key</button>' : '') + '</div>',
-        !!ui.fold9f) +
-      '<h3 style="margin-top:20px" data-sec="9g">Backup</h3><div class="muted" style="font-size:13px;margin-bottom:8px">Your data is stored only on this device. Export a backup file regularly.' + (mapsKey() && !S.settings.mapsKeyInBackup ? ' Your Google Maps key is left out.' : '') + (Object.keys(S.slips).length ? ' <span id="bkSlips">The exported file includes your ' + Object.keys(S.slips).length + ' court/certification slip' + (Object.keys(S.slips).length === 1 ? '' : 's') + ' (about ' + E.fmtBytes(Math.round(Object.keys(S.slips).reduce(function (t, k) { return t + (S.slips[k].bytes || 0); }, 0) * 4 / 3)) + '); the copy/paste text below doesn\'t.</span>' : '') + '</div>' +
-      '<div class="row"><button class="btn" data-act="export">Export JSON</button><label class="btn" for="importFile" style="cursor:pointer">Import JSON</label></div>' +
-      '<input type="file" id="importFile" accept="application/json,.json" hidden>' +
-      '<details style="margin-top:10px"><summary style="min-height:40px;font-weight:700;cursor:pointer">Copy / paste backup text</summary>' +
-      '<div class="field"><textarea id="bkText" style="min-height:120px;font-size:12px;font-family:monospace">' + esc(backupText()) + '</textarea></div>' +
-      '<div class="row"><button class="btn sm" data-act="bkCopy">Copy</button><button class="btn sm" data-act="bkLoad">Restore from text</button></div></details>' +
-      '<div id="x15Sec"' + (E.isPduCommand((recAt(T) || {}).command || (S.profile && S.profile.command)) ? '' : ' hidden') + '><h3 style="margin-top:20px" id="x15Head" data-sec="9h">Extra 15 minutes (PDU)</h3><div class="muted" style="font-size:13px;margin-bottom:8px">Detective Duty Schedule (Misc. 2135-4A): PM 9:15 and AM 8:15 on the listed dates. See each year\'s ranges by month and team, and change any of them.</div><button class="btn block" data-act="x15Open">Extra 15 minutes (PDU) ranges&hellip;</button></div>' +
-      settingsFold('syncHead', '9j', 'Calendar sync',
-        '<div class="muted" style="font-size:13px;margin-bottom:8px">Export a file of your schedule to Apple or Google Calendar. This is a one-time snapshot; it does not stay in sync.</div><div id="syncWrap">' + syncPanel() + '</div>',
-        !!ui.fold9j) +
       '<h3 style="margin-top:20px" data-sec="9o">Default navigation app</h3>' +
       '<div class="muted" style="font-size:13px;margin-bottom:8px">Used when you tap a navigate button. Stored only on this device, never synced to your account. You can still pick a different app for one trip.</div>' +
       '<div class="navdefchips" id="stNavSeg" role="radiogroup" aria-label="Default navigation app">' +
@@ -11439,6 +11685,30 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         if (saved) return '<div class="hint">Current default: <b>' + esc(saved === 'ask' ? 'Ask every time' : (NAV_LABELS[saved] || saved)) + '</b>.</div>';
         return '<div class="hint">No choice saved yet. Using <b>' + esc(NAV_LABELS[platformNavDefault()]) + '</b> on this device (Apple Maps on iPhone and iPad, Google Maps otherwise).</div>';
       })() +
+      '<h3 id="payHead" data-sec="9d" style="margin-top:18px">Pay</h3><div class="paycard" id="payCard">' + payCardHtml(profNow()) + '</div>' +
+      '<label class="chk ovchk"><input type="checkbox" id="stOverride"' + (p.rateOverride ? ' checked' : '') + '> Use my own hourly rate instead of the pay chart</label>' +
+      '<div class="row" id="stOvWrap"' + (p.rateOverride || !E.payPlacement(profNow()).ok || !(E.payPlacement(profNow()).cashOT || E.payPlacement(profNow()).ceaOT) ? '' : ' hidden') + '><div class="field"><label for="stRate">Own hourly rate ($)</label><input id="stRate" type="number" inputmode="decimal" min="0" step="0.01" value="' + esc(p.rate) + '"></div>' +
+      '<div class="field"><label for="stMult">OT multiplier</label><input id="stMult" type="number" inputmode="decimal" min="1" step="0.05" value="' + esc(s.multiplier) + '"><div class="hint">Only used with your own rate.</div></div></div>' +
+      balancesHtml() +
+      '<button class="btn primary block" data-act="stSave">Save settings</button>' +
+      settingsFold('mapsHead', '9f', 'Google Maps API key (optional)',
+        '<div class="muted" style="font-size:13px;margin-bottom:8px">Navigate buttons and address suggestions work without a key. Add your own key to get Google Places suggestions and arrival times with live traffic. The key needs the Maps JavaScript API, Places API and Distance Matrix API enabled; restrict it to this site in Google Cloud.</div>' +
+        '<div class="field"><label for="stMapsKey">Google Maps API key (optional)</label><input id="stMapsKey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Paste your key" value="' + esc(mapsKey()) + '"><div class="hint">Stored only in this browser (localStorage), never in the code, and never synced to your account.' + (mapsKey() ? ' A key is saved.' : ' No key saved.') + '</div></div>' +
+        '<label class="chk" style="display:flex;gap:8px;align-items:center;min-height:44px;font-size:14px"><input type="checkbox" id="stMapsInBk"' + (S.settings.mapsKeyInBackup ? ' checked' : '') + '> Include the key in backups</label>' +
+        '<div class="row"><button class="btn sm" data-act="mapsSave">Save key</button><button class="btn sm" data-act="mapsShow">Show</button>' + (mapsKey() ? '<button class="btn sm danger" data-act="mapsClear">Remove key</button>' : '') + '</div>',
+        !!ui.fold9f) +
+      settingsFold('bkHead', '9g', 'Backup',
+        '<div class="muted" style="font-size:13px;margin-bottom:8px">Your data is stored only on this device. Export a backup file regularly.' + (mapsKey() && !S.settings.mapsKeyInBackup ? ' Your Google Maps key is left out.' : '') + (Object.keys(S.slips).length ? ' <span id="bkSlips">The exported file includes your ' + Object.keys(S.slips).length + ' court/certification slip' + (Object.keys(S.slips).length === 1 ? '' : 's') + ' (about ' + E.fmtBytes(Math.round(Object.keys(S.slips).reduce(function (t, k) { return t + (S.slips[k].bytes || 0); }, 0) * 4 / 3)) + '); the copy/paste text below doesn\'t.</span>' : '') + '</div>' +
+        '<div class="row"><button class="btn" data-act="export">Export JSON</button><label class="btn" for="importFile" style="cursor:pointer">Import JSON</label></div>' +
+        '<input type="file" id="importFile" accept="application/json,.json" hidden>' +
+        '<details style="margin-top:10px"><summary style="min-height:40px;font-weight:700;cursor:pointer">Copy / paste backup text</summary>' +
+        '<div class="field"><textarea id="bkText" style="min-height:120px;font-size:12px;font-family:monospace">' + esc(backupText()) + '</textarea></div>' +
+        '<div class="row"><button class="btn sm" data-act="bkCopy">Copy</button><button class="btn sm" data-act="bkLoad">Restore from text</button></div></details>',
+        !!ui.fold9g) +
+      '<div id="x15Sec"' + (E.isPduCommand((recAt(T) || {}).command || (S.profile && S.profile.command)) ? '' : ' hidden') + '><h3 style="margin-top:20px" id="x15Head" data-sec="9h">Extra 15 minutes (PDU)</h3><div class="muted" style="font-size:13px;margin-bottom:8px">Detective Duty Schedule (Misc. 2135-4A): PM 9:15 and AM 8:15 on the listed dates. See each year\'s ranges by month and team, and change any of them.</div><button class="btn block" data-act="x15Open">Extra 15 minutes (PDU) ranges&hellip;</button></div>' +
+      settingsFold('syncHead', '9j', 'Calendar sync',
+        '<div class="muted" style="font-size:13px;margin-bottom:8px">Export a file of your schedule to Apple or Google Calendar. This is a one-time snapshot; it does not stay in sync.</div><div id="syncWrap">' + syncPanel() + '</div>',
+        !!ui.fold9j) +
       '<h3 style="margin-top:20px" data-sec="9l">Default calendar</h3><div class="muted" style="font-size:13px;margin-bottom:8px">Used when you tap <b>Add to calendar</b> on a day. Change this any time. A one-off add cannot be taken back; subscribe (below) is the way to keep a calendar up to date.</div>' +
       '<div class="seg" id="stCalSeg">' +
         '<button type="button" class="' + ((s.defaultCalendar || 'google') === 'google' ? 'on' : '') + '" data-act="calDefault" data-v="google">Google</button>' +
@@ -11612,7 +11882,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     else rows.push(dayRow);
     if (lv.note) rows.push(item('note', sw('#475569', '&#9998;'), 'Note', esc(lv.note), 'sumNote'));
     if (a && a.type && !(E.assignmentType(a.type) || {}).paid) rows.push(sumNavWrap(item('asg', (function (t) { return sw(t.color, esc(t.short)); })(E.assignmentType(a.type) || { short: '?', color: '#64748b' }), esc(E.assignmentLabel(a)), esc(E.assignmentLocation(a) || ''), 'sumAsg'), E.assignmentNavAddress(a)));
-    if (E.hasPaidDetail(a)) { var pd = a.pd; rows.push(sumNavWrap(item('paid', sw('#047857', 'PD'), 'Paid Detail' + (pd.vendor ? ': ' + esc(pd.vendor) : ''), [pd.start ? esc(pd.start) + (pd.end ? '–' + esc(pd.end) : '') : '', pd.durationMin ? E.fmtHM(pd.durationMin) : '', pd.id ? 'ID ' + esc(pd.id) : ''].filter(Boolean).join(' &middot; '), 'sumPaid'), E.assignmentNavAddress({ pd: pd }))); }
+    if (E.hasPaidDetail(a)) { var pd = a.pd; rows.push(sumNavWrap(item('paid', sw('#047857', 'PD'), 'Paid Detail' + (pd.vendor ? ': ' + esc(pd.vendor) : ''), [pd.start ? esc(pd.start) + (pd.end ? '–' + esc(pd.end) : '') : '', pd.durationMin ? E.fmtHM(pd.durationMin) : '', pd.id ? 'ID ' + esc(pd.id) : pdIdNeededMark()].filter(Boolean).join(' &middot; '), 'sumPaid'), E.assignmentNavAddress({ pd: pd }))); }
     if (sm) rows.push(item('asg', sw('#334155', '&#128206;'), esc(slipKindOf(iso)), 'Saved on this device', 'sumSlip'));
     var extras = [];
     E.tourEntries(ov).forEach(function (ent) {
@@ -11632,8 +11902,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var row = '<div class="swrow" data-swipe="' + swipe + '" data-d="' + d + '" data-eid="' + esc(x.id) + '" data-id="' + esc(x.id) + '">' + x.html + '</div>';
       rows.push(x.navDest ? sumNavWrap(row, x.navDest) : row);
     });
+    var block = E.chartDayBlock(d, sq.id, U());
+    var posHtml = block ? '<div class="daypos sumdaypos" data-sec="6l" id="sumDayPos">' + esc(block.label) + '</div>' : '';
     openSheet(fmt(d, 'long'),
-      '<div id="daySum">' + (savedMsg ? '<div class="savedban" id="daySaved" role="status">&#10003; Saved &middot; ' + esc(savedMsg) + '</div>' : '') +
+      '<div id="daySum">' + posHtml + (savedMsg ? '<div class="savedban" id="daySaved" role="status">&#10003; Saved &middot; ' + esc(savedMsg) + '</div>' : '') +
       '<h3 style="margin-top:0">Saved for this day</h3><div class="list" id="sumList" data-sec="7a">' + rows.join('') + '</div>' +
       (ots.length ? '<h3 style="margin-top:14px">Overtime</h3><div class="list" id="sumOT" data-sec="7b">' + ots.map(otRow).join('') + '</div>' : '') +
       '<div class="muted" style="font-size:12.5px;margin:8px 0">Tap an entry to view or change it.</div>' +
@@ -11834,7 +12106,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     settingsFold: function (t) {
       var id = t.dataset.id, body = document.getElementById(id + 'Body'), chev = t.querySelector('.sfoldchev');
       var open = !(body && !body.hidden);
-      if (id === 'mapsHead') ui.fold9f = open; else if (id === 'syncHead') ui.fold9j = open;
+      if (id === 'mapsHead') ui.fold9f = open; else if (id === 'syncHead') ui.fold9j = open; else if (id === 'bkHead') ui.fold9g = open;
       if (body) body.hidden = !open;
       t.setAttribute('aria-expanded', open ? 'true' : 'false');
       if (chev) chev.innerHTML = open ? '&#9662;' : '&#9656;';
@@ -12267,18 +12539,21 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var iso = form.dataset.iso || dayIsoFromForm(); if (!iso) return toast('Pick a day first');
       var pd = E.cleanPaidDetail(readPaid());
       if (!E.hasPaidDetail({ pd: pd })) return toast('Enter the paid detail (ID, times, vendor or address)');
-      if (form.dataset.bindDate === '1' && E.hasPaidDetail(S.assignments[iso] || {}) && !confirm('Replace the paid detail already saved on ' + fmt(E.toDay(iso), 'mdy') + '?')) return;
-      var cur = Object.assign({}, S.assignments[iso] || {}, { pd: pd });
-      var asg = E.cleanAssignment(cur);
-      if (asg) S.assignments[iso] = Object.assign(asg, { updated: new Date().toISOString() });
-      else delete S.assignments[iso];
+      var extras = moreDatesGet(form).filter(function (d) { return d !== iso; });
+      if (form.dataset.bindDate === '1' && E.hasPaidDetail(S.assignments[iso] || {}) && !extras.length && !confirm('Replace the paid detail already saved on ' + fmt(E.toDay(iso), 'mdy') + '?')) return;
+      var notes = moreDatesConflictList('pd', extras, pd);
+      writePaidToIso(iso, pd);
+      extras.forEach(function (d) { writePaidToIso(d, pdCopyForDate(pd, d)); });
       S.settings = S.settings || {};
       S.settings.pdVendors = E.rememberPaidVendor(S.settings.pdVendors, pd, iso);
       save();
       navBack();
       pdRefreshDaySection();
       render();
-      toast('Paid detail saved');
+      var n = 1 + extras.length;
+      var msg = n > 1 ? ('Added ' + n + ' paid details') : 'Paid detail saved';
+      if (notes.length) msg += ' · ' + notes[0] + (notes.length > 1 ? ' +' + (notes.length - 1) + ' more' : '');
+      toast(msg, notes.length ? 4200 : 2200);
     },
     pdRemove: function () {
       var form = document.getElementById('pdForm');
@@ -12326,10 +12601,28 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     miniCal: function (t) { miniCalOpen(t.id, t.dataset.iso); },
     mcalPrev: function () { MC.m--; if (MC.m < 0) { MC.m = 11; MC.y--; } miniCalRender(); },
     mcalNext: function () { MC.m++; if (MC.m > 11) { MC.m = 0; MC.y++; } miniCalRender(); },
-    mcalPick: function (t) { miniCalSet(t.dataset.iso); },
-    mcalClear: function () { miniCalSet(''); },
-    mcalToday: function () { miniCalSet(E.toISO(T)); },
+    mcalPick: function (t) { if (MC.multi) miniCalToggle(t.dataset.iso); else miniCalSet(t.dataset.iso); },
+    mcalClear: function () {
+      if (MC.multi) { MC.selected = []; if (MC.onChange) MC.onChange([], MC.locked); var form = document.getElementById('pdForm') || document.getElementById('otForm'); if (form) moreDatesSet(form, [], MC.locked); miniCalRender(); miniCalSyncChrome(); return; }
+      miniCalSet('');
+    },
+    mcalToday: function () { if (MC.multi) miniCalToggle(E.toISO(T)); else miniCalSet(E.toISO(T)); },
     mcalClose: function () { miniCalClose(); },
+    pdMoreDates: function () {
+      var form = document.getElementById('pdForm'); if (!form) return;
+      miniCalOpenMulti({ kind: 'pd', locked: moreDatesPrimary(), selected: moreDatesGet(form), onChange: function (dates, locked) { moreDatesSet(form, dates, locked); } });
+    },
+    otMoreDates: function () {
+      var form = document.getElementById('otForm'); if (!form || form.dataset.linked) return;
+      miniCalOpenMulti({ kind: 'ot', locked: moreDatesPrimary(), selected: moreDatesGet(form), onChange: function (dates, locked) { moreDatesSet(form, dates, locked); } });
+    },
+    moreDateOff: function (t) {
+      var iso = t && t.dataset && t.dataset.iso;
+      if (!E.isISODate(iso)) return;
+      if (MC.open && MC.multi) { miniCalToggle(iso); return; }
+      var form = document.getElementById('pdForm') || document.getElementById('otForm');
+      if (form) moreDatesSet(form, moreDatesGet(form).filter(function (d) { return d !== iso; }));
+    },
     pdTaxOpen: function (t) { pdTaxSheet(t && t.dataset && t.dataset.year); },
     pdTaxCombineSug: function (t) {
       var page = document.getElementById('pdTaxPage'), list = (page && page._suggestions) || [], g = list[+t.dataset.i];
@@ -12418,6 +12711,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (!(h > 0)) return toast(hoursMode ? 'Enter the hours worked' : 'No overtime to log — time worked is within the scheduled tour.');
       var sp = otSplitCheck(h); if (sp) { var ce = document.getElementById('otCashH'); if (ce) ce.focus(); return toast(sp); }
       var tv = otTravCheck(); if (tv === false) return; var oc = otCmdRead(); if (oc === false) return;
+      var extras = (f.dataset.linked ? [] : moreDatesGet(f).filter(function (d) { return d !== date; }));
+      var notes = moreDatesConflictList('ot', extras, x);
       if (f.dataset.linked) {
         otApplyToLinked(x, date);
         var still = S.overtime.filter(function (o) { return o.id === f.dataset.id; })[0];
@@ -12430,14 +12725,32 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         save(); closeSheet(); render(); return toast('Overtime updated');
       }
       if (!f.dataset.id && S.overtime.some(function (o) { return o.linkedTour === date; }) && !confirm('This day already has an extra RDO tour in your overtime log. Add a separate entry anyway? Only do this for different hours so nothing is counted twice.')) return;
-      var e = { id: f.dataset.id || uid(), date: date, mode: x.mode, start: x.start || '', end: x.end || '', hours: h,
-        type: document.getElementById('otType').value, notes: document.getElementById('otNotes').value.trim(), comp: x.comp, cashHours: x.comp === 'split' ? x.cashHours : '', updated: new Date().toISOString() };
-      if (x.startDate) e.startDate = x.startDate; if (x.endDate) e.endDate = x.endDate;
-      otStampWindows(e, x);
-      if (tv) e.travel = tv; if (oc) e.otCmd = oc;
+      function stampOt(entry, xx, iso) {
+        var hh = xx.hours ? +xx.hours : E.entryHours(xx);
+        var o = { id: entry.id, date: iso, mode: xx.mode, start: xx.start || '', end: xx.end || '', hours: hh,
+          type: document.getElementById('otType').value, notes: document.getElementById('otNotes').value.trim(), comp: xx.comp, cashHours: xx.comp === 'split' ? xx.cashHours : '', updated: new Date().toISOString() };
+        if (xx.startDate) o.startDate = xx.startDate; if (xx.endDate) o.endDate = xx.endDate;
+        otStampWindows(o, xx);
+        if (tv) o.travel = tv; if (oc) o.otCmd = oc;
+        return o;
+      }
+      var e = stampOt({ id: f.dataset.id || uid() }, x, date);
       var i = -1; S.overtime.forEach(function (o, k) { if (o.id === e.id) i = k; });
       if (i >= 0) { if (otIsPaid(S.overtime[i])) { e.paid = true; e.paidDate = otPaidDate(S.overtime[i]); } S.overtime[i] = e; } else S.overtime.push(e);
-      save(); closeSheet(); render(); toast((i >= 0 ? 'Updated: ' : 'Logged: ') + hrs(h));
+      var added = 0, skipped = [];
+      extras.forEach(function (d) {
+        var xx = otFormEntryForDate(d);
+        var hh = xx.hours ? +xx.hours : E.entryHours(xx);
+        if (!(hh > 0)) { skipped.push(E.fmtMDY(d)); return; }
+        S.overtime.push(stampOt({ id: uid() }, xx, d));
+        added++;
+      });
+      if (skipped.length) notes.push('No overtime to log on ' + skipped.join(', ') + ' (within the scheduled tour).');
+      save(); closeSheet(); render();
+      var n = (i >= 0 ? 1 : 1) + added;
+      var msg = (added ? ('Added ' + n + ' overtime ' + (n === 1 ? 'entry' : 'entries')) : ((i >= 0 ? 'Updated: ' : 'Logged: ') + hrs(h)));
+      if (notes.length) msg += ' · ' + notes[0] + (notes.length > 1 ? ' +' + (notes.length - 1) + ' more' : '');
+      toast(msg, notes.length ? 4200 : 2200);
     },
     otDelete: function () {
       var f = document.getElementById('otForm'), id = f.dataset.id, e = overtimeById(id) || { linkedTour: f.dataset.linked, linkedEnd: f.dataset.lkind === 'end' ? f.dataset.linked : '' };
@@ -13101,7 +13414,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (ev.target.classList && ev.target.classList.contains('timeIn')) { var fv = E.finishTimeInput(ev.target.value); if (fv !== ev.target.value) { ev.target.value = fv; if (ev.target.id === 'dayStart' || ev.target.id === 'dayEnd') updateEnd(false); } if (/^ot(Start|End|TravAmt)$/.test(ev.target.id)) otPreview(); }
     if (/^st(Rank|Hire|Promo|Override)$/.test(ev.target.id)) refreshPay();
     if (ev.target.id === 'heEff' || ev.target.id === 'heRank') { histDiffLine(); if (ev.target.id === 'heRank') heInvSync(); }
-    if (ev.target.id === 'otDate') { otSyncDateFrames(); otPreview(); otTravResolve(); }
+    if (ev.target.id === 'otDate') { otSyncDateFrames(); otPreview(); otTravResolve(); moreDatesOnPrimaryChange(); }
     if (/^(ot|he|onb)Cmd(UAddr|Addr)$/.test(ev.target.id)) cmdChanged(ev.target.id.replace(/Cmd(UAddr|Addr)$/, ''));
     if (ev.target.id === 'pdDur') { var dm = E.parseHM(ev.target.value); if (dm) ev.target.value = E.fmtHM(E.roundPaidMin(dm)); pdRemind(); } // :59 rounds up
     if (ev.target.id === 'pdTaxYear') pdTaxSheet(ev.target.value);
