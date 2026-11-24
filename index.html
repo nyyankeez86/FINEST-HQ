@@ -94,7 +94,9 @@ nav.tabs button.on::before{content:"";position:absolute;margin-top:-58px;width:3
 .card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:0 1px 2px rgba(15,23,42,.08);border:1px solid #e1e6ee;margin-bottom:12px}
 .row{display:flex;gap:10px}.row[hidden]{display:none}.field.mi{flex:0 0 64px;min-width:64px;max-width:72px}.field.mi input{text-align:center;text-transform:uppercase}
 .row>*{flex:1;min-width:0}
-.namerow{display:flex;gap:10px;align-items:stretch}.namerow>*{flex:1;min-width:0}.namerow .field{display:flex;flex-direction:column;margin-bottom:12px}.namerow .field label{min-height:18px;line-height:18px;white-space:nowrap}.namerow .field input{height:48px;min-height:48px}
+.namerow{display:flex;gap:8px;align-items:stretch}.namerow>*{flex:1;min-width:0}.namerow .field{display:flex;flex-direction:column;margin-bottom:12px}.namerow .field label{min-height:18px;line-height:18px;white-space:nowrap}.namerow .field input,.namerow .field select{height:48px;min-height:48px;width:100%}
+.namerow .field.rankfld{flex:1.2;min-width:6.2em}
+.namerow .field.mi{flex:0 0 3.4em}
 .sfold{margin-top:20px}.sfoldbtn{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:44px;margin:0;padding:6px 0;border:0;background:transparent;font:inherit;font-size:17px;font-weight:800;color:inherit;text-align:left;cursor:pointer}.sfoldbtn .sfoldttl{flex:1;min-width:0}.sfoldchev{flex-shrink:0;font-size:16px;color:#4b5a70;width:24px;text-align:center}.sfoldbody{margin-top:6px}
 .stat .lbl{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700}
 .stat .big{font-size:24px;font-weight:800;margin-top:2px;line-height:1.15}
@@ -240,7 +242,7 @@ h3{font-size:17px;margin:0 0 6px}
 .ratechip.trav{background:#0e7490;color:#fff}
 body.beta [data-sec]{position:relative}
 body.beta [data-sec]::after{content:attr(data-sec);position:absolute;top:2px;right:2px;z-index:5;font:800 9.5px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.02em;color:#7c3aed;background:rgba(245,243,255,.92);border:1px solid #ddd6fe;border-radius:5px;padding:2px 4px;pointer-events:none}
-body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after{top:-4px;left:0;right:auto;font-size:10.5px}
+body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after,body.beta #btnSuggest[data-sec]::after{top:-4px;left:0;right:auto;font-size:10.5px}
 .sheet .x{width:44px;height:44px;border-radius:10px;border:0;background:#eef1f6;font-size:22px;cursor:pointer}
 @keyframes up{from{transform:translateY(40px);opacity:.5}to{transform:none;opacity:1}}
 @keyframes fade{from{opacity:0}}
@@ -317,17 +319,19 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after{top:-4px;le
 .mcalwrap{position:fixed;inset:0;z-index:400;display:flex;align-items:center;justify-content:center;padding:16px}
 .mcalwrap[hidden]{display:none!important}
 .mcalback{position:absolute;inset:0;background:rgba(15,23,42,.45)}
-.mcal{position:relative;z-index:1;width:min(340px,100%);background:#fff;border-radius:16px;padding:12px;box-shadow:0 16px 40px rgba(15,23,42,.25)}
+.mcal{position:relative;z-index:1;width:min(360px,100%);background:var(--card,#fff);color:var(--ink,#0f172a);border-radius:16px;padding:12px;box-shadow:0 16px 40px rgba(15,23,42,.25)}
 .mcalhd{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
-.mcalhd b{font-size:15px}
-.mcalnav{width:40px;height:40px;border:0;background:#f1f5f9;border-radius:10px;font-size:22px;line-height:1}
-.mcaldow{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:11px;font-weight:700;color:#64748b;margin-bottom:4px}
-.mcalgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
-.mcalday{min-height:40px;border:0;background:transparent;border-radius:10px;font:inherit;font-weight:600}
-.mcalday.on{background:#0f172a;color:#fff}
-.mcalday.today{box-shadow:inset 0 0 0 1.5px #0369a1}
-.mcalblank{min-height:40px}
+.mcalhd b{font-size:16px;color:var(--navy,#0b1f3a)}
+.mcalnav{width:44px;height:44px;border:0;background:var(--bg,#eef1f6);color:var(--ink,#0f172a);border-radius:10px;font-size:22px;line-height:1}
+.mcaldow{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:11px;font-weight:700;color:var(--muted,#4b5a70);margin-bottom:4px}
+.mcalgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.mcalday{min-height:44px;width:100%;border:0;background:transparent;color:var(--ink,#0f172a);border-radius:10px;font:inherit;font-weight:600}
+.mcalday.on{background:var(--navy,#0b1f3a);color:#fff}
+.mcalday.today{box-shadow:inset 0 0 0 1.5px var(--accent,#1d4ed8)}
+.mcalday.today.on{box-shadow:inset 0 0 0 1.5px #fff}
+.mcalblank{min-height:44px}
 .mcalacts{display:flex;gap:8px;margin-top:10px;justify-content:flex-end}
+.mcalwrap.mcal-noclear [data-act="mcalClear"]{display:none!important}
 .pdconbox{margin:10px 0;padding:10px 12px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc}
 .pdconbox ul{margin:6px 0 0 18px;padding:0}
 .pdconalias{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 0}
@@ -376,7 +380,8 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after{top:-4px;le
 .tot span{font-size:13px;font-weight:700;color:var(--pay)}
 .tot em{font-style:normal;font-size:11px;color:var(--muted);display:block}
 .status-line{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0 12px;align-items:center}
-.othersquads-btn{margin:0}
+.status-line .daypos{font-size:12.5px;font-weight:700;color:var(--muted,#4b5a70);letter-spacing:.01em;white-space:nowrap;line-height:1.2;padding:3px 4px;margin:0}
+.status-line .btn.sm.othersquads-btn{margin:2px 4px 2px 0;min-height:0;height:auto;padding:3px 9px;border-radius:999px;font-size:12.5px;font-weight:700;line-height:normal;gap:0;display:inline-block;font-family:inherit;box-sizing:border-box;vertical-align:baseline}
 .othersquads-box{display:flex;flex-wrap:wrap;gap:4px;flex:1 0 100%;margin-top:2px}
 .othersquads-box[hidden]{display:none !important}
 .lbl2{font-size:13px;font-weight:700;color:var(--muted,#64748b);margin:10px 0 6px}
@@ -384,8 +389,19 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after{top:-4px;le
 .sitechip{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:2px;min-height:44px;padding:8px 12px;border-radius:12px;border:1px solid var(--line,#cbd5e1);background:var(--card,#fff);color:inherit;font:inherit;cursor:pointer}
 .sitechip b{font-size:14px}.sitechip span{font-size:12px;opacity:.75}
 .sitechip.on{background:#0E7490;color:#fff;border-color:#0E7490}
-.navbtns{display:flex;gap:6px;margin-top:8px}.navbtns .btn{flex:1;text-align:center;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 6px;font-size:13px}
-.navbtns.inrow{margin:0;padding:0 10px 10px}
+.navbtns{display:flex;gap:6px;margin-top:8px;position:relative}.navbtns .btn{flex:1;text-align:center;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 6px;font-size:13px}
+.navbtns.inrow{margin:0;padding:0 10px 10px}#upcomingAsg .asgwrap{border-bottom:1px solid var(--line,#e2e8f0)}#upcomingAsg .navbtns.inrow{margin:-2px 0 8px 42px;padding:0;max-width:calc(100% - 44px)}#upcomingAsg .navbtns.inrow.nav-split{border-radius:8px}#upcomingAsg .navbtns.inrow .nav-main,#upcomingAsg .navbtns.inrow .btn{min-height:28px;font-size:12px;padding:0 8px;border-radius:8px 0 0 8px}#upcomingAsg .navbtns.inrow .nav-more{min-height:28px;min-width:36px;font-size:11px;padding:0 8px;border-radius:0 8px 8px 0}
+.navbtns.nav-split{gap:0;border:1px solid var(--line);border-radius:10px;overflow:visible;background:#fff}
+.navbtns.nav-split .nav-main{flex:1;border:0;border-radius:10px 0 0 10px;min-height:40px}
+.navbtns.nav-split .nav-more{flex:0 0 auto;min-width:44px;margin:0;border:0;border-left:1px solid var(--line);border-radius:0 10px 10px 0;padding:0 10px;font-size:12px;font-weight:700;background:#fff;color:var(--ink)}
+.navbtns.nav-split .nav-more[aria-expanded="true"]{background:#eef1f6}
+.nav-menu{position:absolute;right:0;top:calc(100% + 4px);z-index:40;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.16);min-width:168px;padding:4px;display:flex;flex-direction:column}
+.nav-menu[hidden]{display:none!important}
+.nav-menu a{display:flex;align-items:center;padding:0 12px;text-decoration:none;color:var(--ink);font-weight:700;font-size:14px;border-radius:8px;min-height:40px}
+.nav-menu a.is-default{background:#eef1f6}
+.navdefchips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}
+.navdefchips .chip{min-height:36px;margin:0;cursor:pointer;background:#fff}
+.navdefchips .chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
 .leavehome{margin:10px 0}
 .leavehome .leavehd{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;cursor:pointer;-webkit-user-select:none;user-select:none}
 .leavehome .leavehd h3{margin:0;flex:1}
@@ -400,7 +416,7 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after{top:-4px;le
 .pdsumcard .tot b{font-size:22px}
 .pdsumcard .tot span{color:#0f172a;font-weight:800;font-size:16px;display:block}
 .pdsumcard .tot em{color:var(--pay);font-weight:700;font-size:13px}
-.asgwrap{border-bottom:1px solid var(--line,#e2e8f0)}.asgwrap .item{border-bottom:0}
+.asgwrap{border-bottom:1px solid var(--line,#e2e8f0)}.asgwrap .item{border-bottom:0}#sumList .sumnav{border-bottom:0}#sumList>.sumnav:first-child .item,#sumList>.sumnav:first-child .swrow .item{border-top:0}
 .asgrow .addr{font-size:12px;opacity:.8}
 .etaout{margin-top:8px;padding:10px 12px;border-radius:12px;background:#ecfeff;border:1px solid #a5f3fc}
 .etaout.bad{background:#fff7ed;border-color:#fed7aa}.etabig{font-size:18px;font-weight:800}.etaleave{margin-top:6px;font-weight:700;color:#0E7490}.etamsg{font-size:14px}
@@ -523,12 +539,6 @@ a.dir-tel.mine{color:#0f766e}
 .dir-empty{color:var(--muted);padding:16px 8px;text-align:center}
 
 
-.dirviewseg{display:flex;gap:6px;margin:0 0 10px}
-.dirviewseg .btn{flex:1}
-.dirviewseg .btn.on{background:#0f172a;color:#fff;border-color:#0f172a}
-.dirviewseg.compact{display:flex;gap:0;margin:0;flex:0 0 auto;align-self:center;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:#fff}
-.dirviewseg.compact .btn{flex:0 0 auto;min-height:32px;padding:0 9px;font-size:11px;font-weight:800;border:0;border-radius:0;box-shadow:none;margin:0;line-height:32px}
-.dirviewseg.compact .btn.on{background:#0f172a;color:#fff;border-color:transparent}
 #dirMapWrap{position:relative;z-index:0;margin:0 0 12px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#dbe3ee}
 #dirMap{height:min(62vh,520px);min-height:320px;z-index:0}
 #dirMap .leaflet-container{font:inherit;background:#dbe3ee}
@@ -543,7 +553,13 @@ a.dir-tel.mine{color:#0f766e}
 .dir-map-opts .map-toolbar{margin:0 0 6px}
 .dir-map-opts .muted,.dir-map-opts .fuel-src,.dir-map-opts .map-legend,.dir-map-opts .map-src{font-size:11px;line-height:1.35}
 .dir-map-card + #dirMapWrap,#dirMapWrap.dir-map-fill{margin:0 0 8px}
-.dir-map-fill #dirMap{height:calc(100dvh - var(--tabh) - 200px - env(safe-area-inset-bottom, 0px));min-height:48vh}
+.dir-map-fill #dirMap{height:calc(100dvh - var(--tabh) - 160px - env(safe-area-inset-bottom, 0px));min-height:48vh}
+#app.tab-map{height:100dvh;min-height:100dvh}
+#app.tab-map main#view{flex:1;min-height:0;padding:8px 10px calc(var(--tabh) + 8px + env(safe-area-inset-bottom, 0px));display:flex;flex-direction:column}
+#app.tab-map .sugbar{margin-bottom:6px;flex:0 0 auto}
+#app.tab-map .dir-map-card{flex:0 0 auto;margin-bottom:8px}
+#app.tab-map #dirMapWrap.dir-map-fill{flex:1;margin:0;min-height:48vh;display:flex;flex-direction:column}
+#app.tab-map .dir-map-fill #dirMap{flex:1;height:auto;min-height:48vh}
 .dir-locate-ctl a.dir-locate-btn{display:flex;align-items:center;justify-content:center;color:#0b1f3a;line-height:0;cursor:pointer}
 .dir-locate-ctl a.dir-locate-btn svg{display:block;width:18px;height:18px}
 .dir-locate-ctl a.dir-locate-btn.on{color:#1d4ed8;background:#eff6ff}
@@ -572,7 +588,7 @@ a.dir-tel.mine{color:#0f766e}
 .fuelchips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 10px}
 .fuelchips .chip{font-weight:800;padding:8px 14px;min-height:40px;font-size:14px;border-width:2px}
 .fuelchips .chip.on{background:#0b1f3a;color:#fff;border-color:#0b1f3a}
-.map-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 8px}
+.map-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 8px}.map-toolbar .btn.on,.map-toolbar .btn:active{background:var(--navy);color:#fff;border-color:var(--navy)}
 .map-legend{font-size:12px;color:var(--muted);line-height:1.45;padding:8px 10px;background:#f8fafc;border-top:1px solid var(--line)}
 .map-legend p{margin:0 0 6px}.map-legend p:last-child{margin:0}
 .fuel-mark{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:#fff;color:#111;border:2px solid #0b1f3a;box-shadow:0 1px 3px rgba(0,0,0,.4);position:relative;box-sizing:border-box}
@@ -610,8 +626,8 @@ a.dir-tel.mine{color:#0f766e}
   <button data-act="tab" data-tab="schedule"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Schedule</button>
   <button data-act="tab" data-tab="overtime"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="tablbl">Overtime/Paid Detail</span></button>
   <button data-act="tab" data-tab="pay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/></svg>Pay</button>
-  <button data-act="tab" data-tab="directory"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3L3 6v15l6-3 6 3 6-3V3l-6 3-6-3z"/><path d="M9 3v15M15 6v15"/></svg><span class="tablbl">Map/Directory</span></button>
-  <button data-act="tab" data-tab="lookup"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Lookup</button>
+  <button data-act="tab" data-tab="map"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3L3 6v15l6-3 6 3 6-3V3l-6 3-6-3z"/><path d="M9 3v15M15 6v15"/></svg>Map</button>
+  <button data-act="tab" data-tab="directory"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>Directory</button>
 </div></nav>
 <div id="sheetRoot"></div>
 <div id="toast" role="status" aria-live="polite"></div>
@@ -1970,6 +1986,23 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var end = d; while (isRDO(end + 1, squadId, unitId)) end++;
     return { day: d, blockStart: start, blockEnd: end, length: end - start + 1 };
   }
+  // Chart position of a date in its current consecutive work (or RDO) run. Uses the
+  // member's chart only — leave, D/D swaps, dropped days, and RDO overtime do not
+  // change the count. A chart change starts a new block. Walks across cycle and
+  // month/year boundaries so wraparound runs (e.g. squad 5-on that crosses offset 0) stay intact.
+  function chartDayBlock(day, who, unitId) {
+    var key = chartAt(day, who);
+    if (!chartInfo(key, unitId)) return null;
+    var rdo = isRDO(day, who, unitId);
+    function same(d) { return chartAt(d, who) === key && isRDO(d, who, unitId) === rdo; }
+    var start = day, end = day, guard = 0, lim = 400;
+    while (same(start - 1) && guard++ < lim) start--;
+    guard = 0;
+    while (same(end + 1) && guard++ < lim) end++;
+    var pos = day - start + 1, len = end - start + 1;
+    return { rdo: rdo, pos: pos, len: len, start: start, end: end, startIso: toISO(start), endIso: toISO(end),
+      label: (rdo ? 'RDO ' : 'Day ') + pos + ' of ' + len };
+  }
   function nextWorkday(fromDay, squadId, unitId) { var d = fromDay; for (var i = 0; i < 60; i++, d++) if (!isRDO(d, squadId, unitId)) return d; return null; }
   function countRDOs(year, squadId, unitId) { var n = 0; for (var d = fromYMD(year, 1, 1), e = fromYMD(year, 12, 31); d <= e; d++) if (isRDO(d, squadId, unitId)) n++; return n; }
   function payInterval(o) { return (o && o.intervalDays) || CONFIG.payday.intervalDays; }
@@ -2102,7 +2135,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var inter = Math.max(0, Math.min(w1, s1) - Math.max(w0, s0));
     var earlyStart = Math.max(0, Math.min(w1, s0) - w0), lateEnd = Math.max(0, w1 - Math.max(w0, s1));
     var otMin = Math.max(0, wm - inter), shortMin = Math.max(0, sm - wm);
-    var T = CONFIG.otThresholdMin, r = { workedMin: wm, schedMin: sm, otMin: otMin, shortMin: shortMin, start: worked.start, end: worked.end, startDate: worked.startDate, endDate: worked.endDate, sched: sched.end, delta: lateEnd };
+    var T = CONFIG.otThresholdMin, r = { workedMin: wm, schedMin: sm, otMin: otMin, shortMin: shortMin, start: worked.start, end: worked.end, startDate: worked.startDate, endDate: worked.endDate, sched: sched.end, schedStart: sched.start, schedEnd: sched.end, schedStartDate: sched.startDate, schedEndDate: sched.endDate, delta: lateEnd };
     if (opts.tour12 || opts.tour17) {
       var cfgOT = opts.tour17 ? CONFIG.tour17 : CONFIG.tour12;
       var otFn = opts.tour17 ? tour17OvertimeMin : tour12OvertimeMin;
@@ -2349,6 +2382,12 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     return list;
   }
   // Worked-vs-scheduled OT on the primary tour (linkedEnd). Falls back to removing the linked row when there is no OT.
+  function stampOtWindows(e, vs) {
+    if (!e || !vs) return e;
+    if (vs.start) { e.workStart = vs.start; e.workEnd = vs.end || ''; e.workStartDate = vs.startDate || ''; e.workEndDate = vs.endDate || ''; }
+    if (vs.schedStart) { e.schedStart = vs.schedStart; e.schedEnd = vs.schedEnd || ''; e.schedStartDate = vs.schedStartDate || ''; e.schedEndDate = vs.schedEndDate || ''; }
+    return e;
+  }
   function syncWorkedOT(overtime, iso, vs, newId) {
     var list = (overtime || []).slice(), idx = -1;
     for (var i = 0; i < list.length; i++) if (list[i].linkedEnd === iso) { if (idx < 0) idx = i; else { list.splice(i, 1); i--; } }
@@ -2358,6 +2397,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       e.start = vs.otStart || vs.start; e.end = vs.otEnd || vs.end;
       e.hours = Math.round(vs.otMin / 60 * 10000) / 10000;
       e.countsFor = iso;
+      stampOtWindows(e, vs);
       if (idx >= 0) list[idx] = e; else list.push(e);
     } else if (idx >= 0) list.splice(idx, 1);
     return list;
@@ -2373,6 +2413,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       e.start = vs.otStart || vs.start; e.end = vs.otEnd || vs.end;
       e.hours = Math.round(vs.otMin / 60 * 10000) / 10000;
       e.countsFor = iso;
+      stampOtWindows(e, vs);
       if (idx >= 0) list[idx] = e; else list.push(e);
     } else if (idx >= 0) list.splice(idx, 1);
     return list;
@@ -2521,6 +2562,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var base = idx >= 0 ? list[idx] : { id: newId || ('x' + iso), type: 'extra', notes: 'Extra tour on RDO' }, e = copy(base);
       e.date = iso; e.linkedTour = iso; e.mode = tour.start ? 'times' : 'hours'; e.start = tour.start || ''; e.end = tour.start ? tour.end : '';
       e.hours = Math.round(tour.len / 60 * 10000) / 10000;
+      if (tour.start) { e.workStart = tour.start; e.workEnd = tour.end || ''; e.workStartDate = tour.startDate || iso; e.workEndDate = tour.endDate || ''; }
       if (idx >= 0) list[idx] = e; else list.push(e);
     } else if (idx >= 0) list.splice(idx, 1);
     return list;
@@ -4248,12 +4290,44 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       })
       .then(function () { if (res.errors.length && !res.nyc.length && !res.other.length) res.failed = true; return done(); });
   }
-  function navUrls(addr) {
-    var e = encodeURIComponent(String(addr || '').trim());
-    return { google: 'https://www.google.com/maps/dir/?api=1&destination=' + e + '&travelmode=driving', apple: 'https://maps.apple.com/?daddr=' + e + '&dirflg=d', waze: 'https://waze.com/ul?q=' + e + '&navigate=yes' };
+  function navPoint(dest, coords) {
+    var addr = '', lat, lon;
+    if (dest && typeof dest === 'object') {
+      addr = dest.address || dest.addr || dest.label || dest.q || '';
+      lat = dest.lat; lon = dest.lon != null ? dest.lon : dest.lng;
+    } else addr = dest;
+    if (coords && typeof coords === 'object') {
+      if (coords.lat != null) lat = coords.lat;
+      if (coords.lon != null || coords.lng != null) lon = coords.lon != null ? coords.lon : coords.lng;
+    }
+    lat = lat != null && isFinite(+lat) ? +lat : null;
+    lon = lon != null && isFinite(+lon) ? +lon : null;
+    return { address: String(addr || '').trim(), lat: lat, lon: lon };
+  }
+  function navUrls(dest, coords) {
+    var p = navPoint(dest, coords), hasLL = p.lat != null && p.lon != null;
+    var ll = hasLL ? (p.lat + ',' + p.lon) : '';
+    var e = encodeURIComponent(p.address);
+    var destQ = hasLL ? ll : e;
+    if (!destQ) return { google: '', apple: '', waze: '' };
+    return {
+      google: 'https://www.google.com/maps/dir/?api=1&destination=' + destQ + '&travelmode=driving',
+      apple: 'https://maps.apple.com/?daddr=' + destQ + '&dirflg=d',
+      waze: hasLL ? ('https://waze.com/ul?ll=' + ll + '&navigate=yes') : ('https://waze.com/ul?q=' + e + '&navigate=yes')
+    };
+  }
+  function routeUrls(from, to) {
+    var o = navPoint(from), d = navPoint(to);
+    var origin = (o.lat != null && o.lon != null) ? (o.lat + ',' + o.lon) : encodeURIComponent(o.address);
+    var dest = (d.lat != null && d.lon != null) ? (d.lat + ',' + d.lon) : encodeURIComponent(d.address);
+    return {
+      google: 'https://www.google.com/maps/dir/?api=1' + (origin ? '&origin=' + origin : '') + '&destination=' + dest + '&travelmode=driving',
+      apple: 'https://maps.apple.com/?' + (origin ? 'saddr=' + origin + '&' : '') + 'daddr=' + dest + '&dirflg=d',
+      waze: (d.lat != null && d.lon != null) ? ('https://waze.com/ul?ll=' + d.lat + ',' + d.lon + '&navigate=yes') : ('https://waze.com/ul?q=' + encodeURIComponent(d.address) + '&navigate=yes')
+    };
   }
   // Backup: the Maps key lives outside the app state and is only added when the user opts in.
-  function buildBackup(state, mapsKey, includeKey) { var b = copy(state || {}); delete b.mapsKey; if (includeKey && mapsKey) b.mapsKey = mapsKey; return b; }
+  function buildBackup(state, mapsKey, includeKey) { var b = copy(state || {}); delete b.mapsKey; delete b.defaultNav; if (b.settings) delete b.settings.defaultNav; if (includeKey && mapsKey) b.mapsKey = mapsKey; return b; }
   // ---- Arrival time (optional Google Maps key). All I/O is injected so it can be tested with a mocked Google API. ----
   function fmtClock(d) { var h = d.getHours(), m = d.getMinutes(); return ((h % 12) || 12) + ':' + pad2(m) + ' ' + (h < 12 ? 'AM' : 'PM'); }
   function fmtDur(sec) { var m = Math.max(1, Math.round(sec / 60)); return m < 60 ? m + ' min' : Math.floor(m / 60) + ' h' + (m % 60 ? ' ' + (m % 60) + ' min' : ''); }
@@ -4670,9 +4744,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     unit: unit, squad: squad, cycleOffset: cycleOffset, squadsOff: squadsOff, squadsWorking: squadsWorking, isRDO: isRDO,
     tour12Key: tour12Key, tour12Squad: tour12Squad, tour12Offset: tour12Offset, tour12OffPhase: tour12OffPhase, tour12OffSquad: tour12OffSquad, tour12IsOff: tour12IsOff, tour12SquadsOff: tour12SquadsOff, tour12SquadsWorking: tour12SquadsWorking, tour12OvertimeMin: tour12OvertimeMin,
     tour17Key: tour17Key, tour17Squad: tour17Squad, tour17Offset: tour17Offset, tour17WorkPhase: tour17WorkPhase, tour17WorkSquad: tour17WorkSquad, tour17IsOff: tour17IsOff, tour17SquadsOff: tour17SquadsOff, tour17SquadsWorking: tour17SquadsWorking, tour17OvertimeMin: tour17OvertimeMin,
-    nextDayOff: nextDayOff, nextWorkday: nextWorkday, countRDOs: countRDOs, isTourChange: isTourChange, countTourChanges: countTourChanges, isPayday: isPayday, nextPayday: nextPayday,
+    nextDayOff: nextDayOff, chartDayBlock: chartDayBlock, nextWorkday: nextWorkday, countRDOs: countRDOs, isTourChange: isTourChange, countTourChanges: countTourChanges, isPayday: isPayday, nextPayday: nextPayday,
     periodsForPayday: periodsForPayday, regularPaydayFor: regularPaydayFor, overtimePaydayFor: overtimePaydayFor, regularPeriodFor: regularPeriodFor, overtimePeriodFor: overtimePeriodFor, payPeriodsInYear: payPeriodsInYear, hoursBetween: hoursBetween, entryHours: entryHours,
-    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, fmtMDY: fmtMDY, defaultTourWindow: defaultTourWindow, tourSpanMinutes: tourSpanMinutes, suggestEndDate: suggestEndDate, workedVsScheduled: workedVsScheduled, cleanTourEntry: cleanTourEntry, tourEntries: tourEntries, isAssignmentEntry: isAssignmentEntry, cleanAssignmentEntry: cleanAssignmentEntry, assignmentEntries: assignmentEntries, mergeTourEntries: mergeTourEntries, writeAssignmentEntries: writeAssignmentEntries, assignmentTimeText: assignmentTimeText, assignmentReminderText: assignmentReminderText, paidDetailBrief: paidDetailBrief, dayAssignments: dayAssignments, assignmentEventWindow: assignmentEventWindow, dayTour: dayTour, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, assignmentNavAddress: assignmentNavAddress, upcomingItems: upcomingItems, commandById: commandById, isPduCommand: isPduCommand, searchCommands: searchCommands, phoneDigits: phoneDigits, fmtPhone: fmtPhone, telHref: telHref, cleanDirMine: cleanDirMine, cleanDirPhone: cleanDirPhone, cleanDirCustom: cleanDirCustom, emptyDirMine: emptyDirMine, dirKindMatch: dirKindMatch, searchDirectory: searchDirectory, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, stripBoroSuffix: stripBoroSuffix, splitPaidAddress: splitPaidAddress, joinPaidAddress: joinPaidAddress, mergePaidVendors: mergePaidVendors, rememberPaidVendor: rememberPaidVendor, paidVendorKey: paidVendorKey, parsePaidAmount: parsePaidAmount, paidDetailAmount: paidDetailAmount, paidDetailTaxDate: paidDetailTaxDate, daysBetweenISO: daysBetweenISO, paidDetailTiming: paidDetailTiming, paidDetailTimingCaptions: paidDetailTimingCaptions, paidVendorNames: paidVendorNames, cleanVendorGroups: cleanVendorGroups, vendorReportName: vendorReportName, addVendorToGroup: addVendorToGroup, removeVendorFromGroup: removeVendorFromGroup, renameVendorGroup: renameVendorGroup, ungroupVendor: ungroupVendor, suggestVendorGroups: suggestVendorGroups, paidDetailTaxReport: paidDetailTaxReport, buildPaidDetailXlsx: buildPaidDetailXlsx, buildPaidDetailCsv: buildPaidDetailCsv, parseXlsx: parseXlsx, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, addYearsISO: addYearsISO, retirementDateOf: retirementDateOf, retirementRemain: retirementRemain, retirementCountdown: retirementCountdown, endCompare: endCompare, syncEndOT: syncEndOT, syncWorkedOT: syncWorkedOT, syncEntryOT: syncEntryOT, leaveBalances: leaveBalances, fmtChart: fmtChart, chartTimeFromTour: chartTimeFromTour, isDetectiveRank: isDetectiveRank, isSergeantRank: isSergeantRank, isLieutenantRank: isLieutenantRank, isPoliceOfficerRank: isPoliceOfficerRank, chartKind: chartKind, rankStartDate: rankStartDate, yearsInRankAtLeast: yearsInRankAtLeast, chartTimeEligibility: chartTimeEligibility, chartTimeForDay: chartTimeForDay, chartTimeRange: chartTimeRange, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
+    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, fmtMDY: fmtMDY, defaultTourWindow: defaultTourWindow, tourSpanMinutes: tourSpanMinutes, suggestEndDate: suggestEndDate, workedVsScheduled: workedVsScheduled, cleanTourEntry: cleanTourEntry, tourEntries: tourEntries, isAssignmentEntry: isAssignmentEntry, cleanAssignmentEntry: cleanAssignmentEntry, assignmentEntries: assignmentEntries, mergeTourEntries: mergeTourEntries, writeAssignmentEntries: writeAssignmentEntries, assignmentTimeText: assignmentTimeText, assignmentReminderText: assignmentReminderText, paidDetailBrief: paidDetailBrief, dayAssignments: dayAssignments, assignmentEventWindow: assignmentEventWindow, dayTour: dayTour, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, assignmentNavAddress: assignmentNavAddress, upcomingItems: upcomingItems, commandById: commandById, isPduCommand: isPduCommand, searchCommands: searchCommands, phoneDigits: phoneDigits, fmtPhone: fmtPhone, telHref: telHref, cleanDirMine: cleanDirMine, cleanDirPhone: cleanDirPhone, cleanDirCustom: cleanDirCustom, emptyDirMine: emptyDirMine, dirKindMatch: dirKindMatch, searchDirectory: searchDirectory, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, routeUrls: routeUrls, navPoint: navPoint, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, stripBoroSuffix: stripBoroSuffix, splitPaidAddress: splitPaidAddress, joinPaidAddress: joinPaidAddress, mergePaidVendors: mergePaidVendors, rememberPaidVendor: rememberPaidVendor, paidVendorKey: paidVendorKey, parsePaidAmount: parsePaidAmount, paidDetailAmount: paidDetailAmount, paidDetailTaxDate: paidDetailTaxDate, daysBetweenISO: daysBetweenISO, paidDetailTiming: paidDetailTiming, paidDetailTimingCaptions: paidDetailTimingCaptions, paidVendorNames: paidVendorNames, cleanVendorGroups: cleanVendorGroups, vendorReportName: vendorReportName, addVendorToGroup: addVendorToGroup, removeVendorFromGroup: removeVendorFromGroup, renameVendorGroup: renameVendorGroup, ungroupVendor: ungroupVendor, suggestVendorGroups: suggestVendorGroups, paidDetailTaxReport: paidDetailTaxReport, buildPaidDetailXlsx: buildPaidDetailXlsx, buildPaidDetailCsv: buildPaidDetailCsv, parseXlsx: parseXlsx, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, addYearsISO: addYearsISO, retirementDateOf: retirementDateOf, retirementRemain: retirementRemain, retirementCountdown: retirementCountdown, endCompare: endCompare, syncEndOT: syncEndOT, syncWorkedOT: syncWorkedOT, syncEntryOT: syncEntryOT, leaveBalances: leaveBalances, fmtChart: fmtChart, chartTimeFromTour: chartTimeFromTour, isDetectiveRank: isDetectiveRank, isSergeantRank: isSergeantRank, isLieutenantRank: isLieutenantRank, isPoliceOfficerRank: isPoliceOfficerRank, chartKind: chartKind, rankStartDate: rankStartDate, yearsInRankAtLeast: yearsInRankAtLeast, chartTimeEligibility: chartTimeEligibility, chartTimeForDay: chartTimeForDay, chartTimeRange: chartTimeRange, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
     steadyKey: steadyKey, parseChart: parseChart, validChartKey: validChartKey, chartInfo: chartInfo, sortCharts: sortCharts, chartAt: chartAt, chartChanges: chartChanges, nextOff: nextOff, nextOn: nextOn, reviewOverrides: reviewOverrides, DOW3: DOW3,
     stripAddrLabels: stripAddrLabels, paidAddressSuggestions: paidAddressSuggestions,
     rankAbbr: rankAbbr, rankLabel: rankLabel, displayName: displayName, formatFullName: formatFullName, normMiddleInitial: normMiddleInitial, migrateProfile: migrateProfile, validateProfile: validateProfile,
@@ -4742,7 +4816,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
 
   var S = load();
   var T = E.today(), tp = E.parts(T);
-  var ui = { tab: 'schedule', calY: tp.y, calM: tp.m, lookup: T, otYear: tp.y, payYear: tp.y, leaveYear: tp.y, leaveOpen: false, pdY: tp.y, pdM: tp.m, onbSquad: null, x15Year: tp.y, otView: 'ot', otSel: false, otSelIds: {}, pdSel: false, pdSelIds: {}, otFilter: 'all', otCollapse: {}, calPeek: null, calPeekPicker: false, todayOpen: false, glanceOpen: false, dirQ: '', dirKind: '', dirView: 'dir', dirFuelOn: true };
+  var ui = { tab: 'schedule', calY: tp.y, calM: tp.m, lookup: T, otYear: tp.y, payYear: tp.y, leaveYear: tp.y, leaveOpen: false, pdY: tp.y, pdM: tp.m, onbSquad: null, x15Year: tp.y, otView: 'ot', otSel: false, otSelIds: {}, pdSel: false, pdSelIds: {}, otFilter: 'all', otCollapse: {}, calPeek: null, calPeekPicker: false, todayOpen: false, glanceOpen: false, dirQ: '', mapQ: '', dirKind: '', dirView: 'dir', dirFuelOn: false };
 
   function U() { return S.settings.unit; }
   var PDU = C.pdu;
@@ -4815,13 +4889,15 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var onb = !S.profile;
     document.getElementById('tabs').hidden = onb;
     var ha = document.getElementById('headActs'); if (ha) ha.hidden = onb;
-    if (onb) { stopRetireTick(); document.getElementById('hdrSub').textContent = 'Set up your schedule'; view.innerHTML = viewOnboarding(); chartHint('onb'); return; }
+    if (onb) { stopRetireTick(); var appOnb = document.getElementById('app'); if (appOnb) appOnb.classList.remove('tab-map'); document.getElementById('hdrSub').textContent = 'Set up your schedule'; view.innerHTML = viewOnboarding(); chartHint('onb'); return; }
     var sq = mySquad();
     document.getElementById('hdrSub').innerHTML = esc(E.displayName(S.profile)) + ' &middot; <button class="badge-sq" data-act="chartOpen" aria-label="My chart: ' + esc(sq.name) + '" style="background:' + sq.color + ';color:' + sq.ink + ';cursor:pointer;font:inherit;font-weight:700;font-size:12px">' + esc(sq.name) + ' &#9662;</button>';
     if (ui.tab === 'leave') { ui.tab = 'schedule'; ui.leaveOpen = true; }
+    if (ui.tab === 'lookup') { ui.tab = 'schedule'; }
     Array.prototype.forEach.call(document.querySelectorAll('nav.tabs button'), function (b) { b.classList.toggle('on', b.dataset.tab === ui.tab); b.setAttribute('aria-current', b.dataset.tab === ui.tab ? 'page' : 'false'); });
     if (dirMap) teardownDirMap();
-    view.innerHTML = ({ schedule: viewSchedule, overtime: viewOvertime, pay: viewPay, directory: viewDirectory, lookup: viewLookup })[ui.tab]();
+    var appEl = document.getElementById('app'); if (appEl) appEl.classList.toggle('tab-map', ui.tab === 'map');
+    view.innerHTML = ({ schedule: viewSchedule, overtime: viewOvertime, pay: viewPay, map: viewMap, directory: viewDirectory })[ui.tab]();
     if (CL.enabled && S.profile && !S.profile.taxNumber && !ui.privDismiss) view.insertAdjacentHTML('afterbegin', '<div class="privbanner" id="privBanner">&#128274; Add your tax and reference numbers in Settings. They\'re kept on this device only and never synced, so each new device asks once. <button class="btn sm" data-act="settings">Settings</button> <button class="linkbtn" data-act="privDismiss">Later</button></div>');
     if (ui.tab === 'pay' && ui.scrollCurrent) { ui.scrollCurrent = false; var c = document.getElementById('curPeriod'); if (c) c.scrollIntoView({ block: 'start' }); }
     if (!onb && ui.tab === 'schedule') startRetireTick(); else stopRetireTick();
@@ -4830,20 +4906,27 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       ui.scrollLeave = '';
       if (sl && sl.scrollIntoView) sl.scrollIntoView({ block: 'start' });
     }
-    if (ui.tab === 'directory' && ui.dirView === 'map') setupDirMap();
+    if (ui.tab === 'map') setupDirMap();
+    syncBannerSuggest();
   }
 
   var PF = [['firstName', 'First', 'First name', 'given-name', 'text'], ['middleInitial', 'MI', 'M.I.', 'additional-name', 'mi'], ['lastName', 'Last', 'Last name', 'family-name', 'text'],
     ['taxNumber', 'Tax', 'Tax number', 'off', 'numericTax'], ['refNumber', 'Ref', 'Reference number', 'off', 'numeric7'], ['shieldNumber', 'Shield', 'Shield number (optional)', 'off', 'numeric']];
-  function profileFields(px, p, noRank) {
+  function profileFields(px, p, rankMode) {
     p = p || {};
-    var h = noRank ? '<div class="namerow">' : '<div class="field"><label for="' + px + 'Rank">Rank <span class="req">*</span></label><select id="' + px + 'Rank" data-pf="rank"><option value="">Choose rank&hellip;</option>' +
-      C.ranks.map(function (r) { return '<option value="' + r.id + '"' + (p.rank === r.id ? ' selected' : '') + '>' + esc(r.label) + '</option>'; }).join('') + '</select><div class="err" id="' + px + 'Rank-err"></div></div>' +
-      '<div class="field" id="' + px + 'RankOtherWrap"' + (p.rank === 'other' ? '' : ' hidden') + '><label for="' + px + 'RankOther">Rank / title <span class="req">*</span></label><input id="' + px + 'RankOther" value="' + esc(p.rankOther || '') + '" placeholder="e.g. Assistant Chief"><div class="err" id="' + px + 'RankOther-err"></div></div>' +
-      '<div class="namerow">';
-    if (noRank) h = '<div class="namerow">';
+    // rankMode: 'row' = Rank dropdown in the name row (Settings 9b, linked to the hist rank in effect today);
+    // true / 'none' = omit rank (legacy); falsy = stacked Rank field above the name (onboarding).
+    var hideRank = rankMode === true || rankMode === 'none';
+    var inRow = rankMode === 'row';
+    var rankOpts = C.ranks.map(function (r) { return '<option value="' + r.id + '"' + (p.rank === r.id ? ' selected' : '') + '>' + esc(r.label) + '</option>'; }).join('');
+    var rankSelect = '<label for="' + px + 'Rank">Rank <span class="req">*</span></label><select id="' + px + 'Rank" data-pf="rank"><option value="">Choose rank&hellip;</option>' + rankOpts + '</select><div class="err" id="' + px + 'Rank-err"></div>';
+    var rankOther = '<div class="field" id="' + px + 'RankOtherWrap"' + (p.rank === 'other' ? '' : ' hidden') + '><label for="' + px + 'RankOther">Rank / title <span class="req">*</span></label><input id="' + px + 'RankOther" value="' + esc(p.rankOther || '') + '" placeholder="e.g. Assistant Chief"><div class="err" id="' + px + 'RankOther-err"></div></div>';
+    var h;
+    if (hideRank) h = '<div class="namerow">';
+    else if (inRow) h = '<div class="namerow"><div class="field rankfld">' + rankSelect + '</div>';
+    else h = '<div class="field">' + rankSelect + '</div>' + rankOther + '<div class="namerow">';
     PF.forEach(function (f, i) {
-      if (i === 3) h += '</div><div class="row">';
+      if (i === 3) h += '</div>' + (inRow ? rankOther + '<div class="hint" style="margin:-4px 0 10px">This is the rank in effect today (the same field as Rank &amp; assignment). To record a promotion with a start date, add an entry there.</div>' : '') + '<div class="row">';
       if (i === 5) h += '</div><div class="privnote" id="' + px + 'PrivNote">&#128274; Tax, reference and shield numbers stay on this device only' + (CL.enabled ? ' and are never synced to your account' : '') + '.</div>';
       var num = f[4].indexOf('numeric') === 0, mi = f[4] === 'mi';
       h += '<div class="field' + (mi ? ' mi' : '') + '"><label for="' + px + f[1] + '">' + f[2] + (f[0] === 'shieldNumber' || f[0] === 'middleInitial' ? '' : ' <span class="req">*</span>') + '</label><input id="' + px + f[1] + '" autocomplete="' + f[3] + '"' + (num ? ' inputmode="numeric" pattern="[0-9]*"' : '') + (mi ? ' maxlength="1" autocapitalize="characters" spellcheck="false" placeholder="A" aria-label="Middle initial, optional"' : '') + (f[4] === 'numeric7' ? ' maxlength="7" placeholder="7 digits"' : '') + (f[4] === 'numericTax' ? ' maxlength="' + C.taxNumberDigits + '" placeholder="' + C.taxNumberDigits + ' digits"' : '') + ' value="' + esc(f[0] === 'middleInitial' ? E.normMiddleInitial(p.middleInitial) : (p[f[0]] || '')) + '"' + (f[0] === 'shieldNumber' ? ' placeholder="If you have one"' : '') + '><div class="err" id="' + px + f[1] + '-err"></div></div>';
@@ -5499,7 +5582,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     function pdTotBlock(id, lbl, count, minutes, amount) {
       return '<div class="tot" id="' + id + '"><small>' + lbl + '</small><b>' + count + '</b><span>' + E.fmtHM(minutes) + '</span><em>' + money(amount) + '</em></div>';
     }
-    var html = '<div id="pdEarn"><div class="card pdcard pdsumcard" data-sec="2d" id="pdSummary"><div class="shead" style="margin-bottom:6px"><h3 style="margin:0">Paid Details</h3>' + suggestBtnHtml('Paid Detail') + '</div>';
+    var html = '<div id="pdEarn"><div class="card pdcard pdsumcard" data-sec="2d" id="pdSummary"><div class="shead" style="margin-bottom:6px"><h3 style="margin:0">Paid Details</h3></div>';
     html += '<div class="yearsel" id="pdMonthNav"><button class="navbtn" data-act="pdMonth" data-dir="-1" aria-label="Previous month">&lsaquo;</button><b id="pdMonthLbl">' + MONTHS[m - 1] + ' ' + y + '</b><button class="navbtn" data-act="pdMonth" data-dir="1" aria-label="Next month">&rsaquo;</button></div>';
     html += '<div class="tot-row" style="margin-bottom:8px">' + pdTotBlock('pdTot', 'Total', t.count, t.minutes, t.amount) +
       pdTotBlock('pdPaid', 'Paid', t.paidCount, t.paidMinutes, t.paidAmount) +
@@ -5565,7 +5648,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   // Paid Detail earnings: its own card, never mixed into the OT totals above.
   function paidDetailCard(y) {
     var t = E.paidDetailTotals(S.assignments, S.profile, y + '-01-01', y + '-12-31', E.toISO(T));
-    var h = '<div class="card pdcard" id="pdEarn" data-sec="2d"><div class="shead" style="margin-bottom:6px"><h3 style="margin:0">Paid Details ' + y + '</h3>' + suggestBtnHtml('Paid Detail') + '</div>';
+    var h = '<div class="card pdcard" id="pdEarn" data-sec="2d"><div class="shead" style="margin-bottom:6px"><h3 style="margin:0">Paid Details ' + y + '</h3></div>';
     var taxBtn = '<button type="button" class="btn block" data-act="pdTaxOpen" data-year="' + y + '" id="pdTaxBtn" style="margin-top:10px">Year-end tax report</button>' +
       '<div class="muted" style="font-size:12px;margin-top:6px">For taxes, earnings count in the year of the check date (or paid date if the check date is missing). Unpaid details stay pending and are left out of that year&rsquo;s totals.</div>';
     if (!t.count) return h + '<div class="empty">No paid details in ' + y + '. Use Add paid detail on a day to add one.</div>' + taxBtn + '</div>';
@@ -5649,7 +5732,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function dirCardHtml(item) {
     if (item.type === 'custom') {
       var e = item.entry, addr = e.address || '';
-      return '<div class="card dir-card custom" data-sec="4g" data-id="' + esc(e.id) + '"><div class="t1">' + esc(e.name) + '</div>' +
+      return '<div class="card dir-card custom" data-sec="5h" data-id="' + esc(e.id) + '"><div class="t1">' + esc(e.name) + '</div>' +
         '<div class="t2">My contact</div>' +
         '<div class="dir-tels">' + dirMineRows(e.phones, e.id, true) + '</div>' +
         (addr ? '<div class="t2" style="margin-top:6px">' + esc(addr) + '</div>' + navLinks(addr) : '') +
@@ -5658,11 +5741,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="btn sm danger" data-act="dirDelCustom" data-id="' + esc(e.id) + '">Delete contact</button></div></div>';
     }
     var c = item.command, grp = C.commandGroups[c.kind] || c.kind, pub = c.phone ? dirPhoneLink(c.phone, E.fmtPhone(c.phone), false) : '';
-    return '<div class="card dir-card" data-sec="4g" data-id="' + esc(c.id) + '"><div class="t1">' + esc(c.name) + '</div>' +
+    return '<div class="card dir-card" data-sec="5h" data-id="' + esc(c.id) + '"><div class="t1">' + esc(c.name) + '</div>' +
       '<div class="t2">' + esc(grp) + (c.boro ? ' · ' + esc(c.boro) : '') + '</div>' +
       (pub ? '<div class="dir-tels">' + pub + '</div>' : '') +
       dirMineRows(item.mine, c.id, false) +
-      (c.address ? '<div class="t2" style="margin-top:6px">' + esc(c.address) + '</div>' + navLinks(c.address) : '') +
+      (c.address ? '<div class="t2" style="margin-top:6px">' + esc(c.address) + '</div>' + navLinks(c) : '') +
       '<div class="dir-actions"><button type="button" class="btn sm" data-act="dirAddPhone" data-id="' + esc(c.id) + '">Add my number</button></div></div>';
   }
   function dirResultsHtml() {
@@ -5670,7 +5753,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var items = E.searchDirectory(q, { kind: chip, mine: mine, limit: 200 });
     if (!items.length) {
       var msg = q ? 'No matches for “' + esc(q) + '”.' : (chip === 'mine' ? 'No personal numbers or custom contacts yet.' : 'No commands in this category.');
-      return '<div class="dir-empty" data-sec="4g">' + msg + '</div>';
+      return '<div class="dir-empty" data-sec="5h">' + msg + '</div>';
     }
     var n = items.length, more = n === 200 ? ' (first 200)' : '';
     return '<div class="muted" style="font-size:12.5px;margin:4px 0 8px">' + n + ' result' + (n === 1 ? '' : 's') + more + '</div>' + items.map(dirCardHtml).join('');
@@ -5733,11 +5816,34 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       b.classList.toggle('on', on);
       b.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
-    if (dirMap) { refreshFuelMarkers(); refreshCommandShields(); }
+    if (dirMap) { refreshFuelMarkers(); addCommandShields(); }
     var list = document.getElementById('nearestFuelList');
     if (list) fillNearestList(list);
     var empty = document.getElementById('fuelFilterEmpty');
     if (empty) empty.hidden = (S.settings.fuelFilter || []).length > 0;
+  }
+  function syncFuelFilterUi() {
+    var on = ui.dirFuelOn !== false;
+    var wrap = document.getElementById('fuelFilterWrap');
+    if (wrap) wrap.hidden = !on;
+    var btn = document.querySelector('#dirMapOpts [data-act="dirFuelLayer"]');
+    if (btn) { btn.classList.toggle('on', on); btn.setAttribute('aria-pressed', on ? 'true' : 'false'); }
+  }
+  function nearestSheetOpen() {
+    var h = document.querySelector('#sheetRoot .sheet .shead h3');
+    return !!(h && String(h.textContent || '').trim() === 'Nearest fuel');
+  }
+  function syncNearestBtn() {
+    var on = nearestSheetOpen();
+    var b = document.getElementById('dirNearestBtn');
+    if (b) { b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); }
+  }
+  function syncBannerSuggest() {
+    var b = document.getElementById('btnSuggest'); if (!b) return;
+    var names = { schedule: 'Calendar', overtime: 'Overtime', pay: 'Pay', leave: 'Leave', map: 'Map', directory: 'Directory', lookup: 'Lookup' };
+    var sec = TAB_PAGES[ui.tab] || '';
+    if (sec) b.setAttribute('data-sec', sec); else b.removeAttribute('data-sec');
+    b.setAttribute('data-section', names[ui.tab] || 'App');
   }
   var GAS_ICON = '<g fill="none" stroke="#111" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">' +
     '<path d="M24 74 V26 a8 8 0 0 1 8-8 h24 a8 8 0 0 1 8 8 V74"/>' +
@@ -5850,7 +5956,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var auto = site.noAuto ? '<p class="fuel-rmp">Not accessible by automobile. Left out of Nearest.</p>' : '';
     var body = '<div data-sec="4j"><p style="margin:0 0 6px">' + esc(site.address) + '</p>' +
       '<p style="margin:0 0 6px"><strong>Fuel:</strong> ' + esc(fuelTypeLabels(site)) + '</p>' +
-      fuelRmpHtml(site) + auto + navLinks(site.address) + fuelSourceHtml() + '</div>';
+      fuelRmpHtml(site) + auto + navLinks(site) + fuelSourceHtml() + '</div>';
     openSheet(site.name, body, 'Fuel site');
   }
   var SHIELD_SRC = "vendor/icons/shield.png";
@@ -5927,6 +6033,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (cmd.kind !== "pct" && cmd.kind !== "psa" && cmd.kind !== "td") return;
       var ll = commandLL(cmd, siteMap, geo);
       if (!ll) return;
+      if (ui.dirFuelOn !== false && !shieldFuelVisible(cmd)) return;
       var isMine = cmd.kind === "pct" && mine && E.pctNumFromId(cmd.id) === mine;
       var m = L.marker(ll, { icon: shieldIconFor(cmd, spec, isMine), title: cmd.name, riseOnHover: true, keyboard: true, zIndexOffset: isMine ? 220 : 80 });
       m.on("click", function (ev) { if (ev && ev.originalEvent) L.DomEvent.stop(ev.originalEvent); commandSheet(cmd.id); });
@@ -5953,10 +6060,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (c.kind === "pct") { precinctSheet(E.pctNumFromId(c.id)); return; }
     var addr = c.address || "";
     var pub = c.phone ? dirPhoneLink(c.phone, E.fmtPhone(c.phone), false) : '<p class="muted">No official phone on file.</p>';
-    var body = '<div data-sec="4j">' + pub + (addr ? '<p style="margin:8px 0">' + esc(addr) + "</p>" + navLinks(addr) : "") +
+    var body = '<div data-sec="4j">' + pub + (addr ? '<p style="margin:8px 0">' + esc(addr) + "</p>" + navLinks(c) : "") +
       commandFuelHtml(c) +
       '<div class="dir-actions"><button type="button" class="btn primary sm" data-act="dirJump" data-id="' + esc(id) + '">View in Directory</button></div></div>';
-    openSheet(c.name, body, "Map/Directory");
+    openSheet(c.name, body, ui.tab === 'directory' ? 'Directory' : 'Map');
   }
   var LOCATE_ICON = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="2.15" fill="currentColor"/><path d="M12 2.5 v3.2 M12 18.3 v3.2 M2.5 12 h3.2 M18.3 12 h3.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
   function locateBtnEl() { return document.getElementById('dirLocateBtn'); }
@@ -6111,6 +6218,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     dirMapSearch(true);
     loadMapCoverData();
     setTimeout(function () { if (dirMap) dirMap.invalidateSize(); }, 80);
+    setTimeout(function () { if (dirMap) dirMap.invalidateSize(); }, 300);
   }
   function precinctSheet(n) {
     n = +n;
@@ -6119,10 +6227,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var name = (c && c.name) || (n + ' Precinct');
     var addr = (c && c.address) || '';
     var pub = c && c.phone ? dirPhoneLink(c.phone, E.fmtPhone(c.phone), false) : '<p class="muted">No official phone on file.</p>';
-    var body = '<div data-sec="4j">' + pub + (addr ? '<p style="margin:8px 0">' + esc(addr) + '</p>' + navLinks(addr) : '') +
+    var body = '<div data-sec="4j">' + pub + (addr ? '<p style="margin:8px 0">' + esc(addr) + '</p>' + navLinks(c || addr) : '') +
       commandFuelHtml(c) +
       '<div class="dir-actions"><button type="button" class="btn primary sm" data-act="dirJump" data-id="' + esc(id) + '">View in Directory</button></div></div>';
-    openSheet(name, body, 'Map/Directory');
+    openSheet(name, body, ui.tab === 'directory' ? 'Directory' : 'Map');
   }
   function parsePctQuery(q) {
     q = String(q || '').trim().toLowerCase();
@@ -6209,6 +6317,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     } else {
       lines.push('<div class="cov-row"><strong>Housing:</strong> N/A</div>');
     }
+    lines.push(navLinks({ address: label || '', lat: lat, lon: lon }));
     var card = document.getElementById('mapCoverCard');
     if (card) { card.innerHTML = lines.join(''); card.hidden = false; }
   }
@@ -6224,7 +6333,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function applyMapSearchResult(item) {
     if (!item) return;
     var label = item.value || item.label || item.name || '';
-    ui.dirQ = label;
+    ui.mapQ = label;
     var go = function (lat, lon, lab) { if (lat == null || lon == null) { toast('Could not find that address.'); return; } showMapCover(lat, lon, lab || label); };
     if (item.lat != null && item.lon != null) { go(item.lat, item.lon, label); return; }
     geocodeMapQuery(label || String(item || '')).then(function (hit) {
@@ -6234,7 +6343,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function submitMapSearch() {
     if (!dirMap) return;
-    var q = String(ui.dirQ || '').trim();
+    var q = String(ui.mapQ || '').trim();
     if (!q) { clearMapCover(); return; }
     if (parsePctQuery(q)) { dirMapSearch(); return; }
     var ql = q.toLowerCase(), hits = [];
@@ -6244,7 +6353,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function dirMapSearch(fromInit) {
     if (!dirMap) return;
-    var q = String(ui.dirQ || '').trim();
+    var q = String(ui.mapQ || '').trim();
     if (!q) return;
     var n = parsePctQuery(q);
     var geo = loadPctBounds();
@@ -6372,42 +6481,41 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     { id: 'det', label: 'Detective' }, { id: 'dv', label: 'Domestic Violence' }, { id: 'ftu', label: 'Field Training' },
     { id: 'spec', label: 'Specialty' }, { id: 'boro', label: 'Bureau' }, { id: 'mine', label: 'My contacts' }
   ];
-  function viewDirectory() {
-    var q = ui.dirQ || '', chip = ui.dirKind || '', mapOn = ui.dirView === 'map';
-    var toggle = '<div class="dirviewseg otviewseg" data-sec="4i" role="group" aria-label="Map or Directory">' +
-      '<button type="button" class="btn sm' + (mapOn ? ' on' : '') + '" data-act="dirView" data-v="map">Map</button>' +
-      '<button type="button" class="btn sm' + (!mapOn ? ' on' : '') + '" data-act="dirView" data-v="dir">Directory</button></div>';
-    var chips = '<div class="dirchips" data-sec="4f">' + DIR_CHIPS.map(function (x) {
-      return '<button type="button" class="chip' + (chip === x.id ? ' on' : '') + '" data-act="dirChip" data-kind="' + esc(x.id) + '">' + esc(x.label) + '</button>';
-    }).join('') + '</div>';
-    var dirTools = chips +
-      '<div class="dir-actions" style="margin:0 0 8px"><button type="button" class="btn primary sm" data-act="dirAddCustom">Add custom contact</button></div>' +
-      '<p class="muted" style="font-size:12.5px;margin:0 0 8px">Public numbers come from official NYPD pages. Numbers you add stay on your account only and are not shared.</p>';
+  function viewMap() {
+    var q = ui.mapQ || '';
     var mapOpts = '<div id="dirMapOpts" class="dir-map-opts" hidden>' +
-      fuelChipBar() +
+      '<div id="fuelFilterWrap"' + (ui.dirFuelOn === false ? ' hidden' : '') + '>' + fuelChipBar() + '</div>' +
       '<div class="map-toolbar">' +
       '<button type="button" class="btn sm' + (ui.dirFuelOn === false ? '' : ' on') + '" data-act="dirFuelLayer" aria-pressed="' + (ui.dirFuelOn === false ? 'false' : 'true') + '">Fuel sites</button>' +
-      '<button type="button" class="btn primary sm" data-act="dirNearest">Nearest fuel</button></div>' +
+      '<button type="button" class="btn sm" id="dirNearestBtn" data-act="dirNearest" aria-pressed="false">Nearest fuel</button></div>' +
       '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p></div>' +
       '</div>';
-    var mapToggle = '<div class="dirviewseg compact" data-sec="4i" role="group" aria-label="Map or Directory">' +
-      '<button type="button" class="btn sm' + (mapOn ? ' on' : '') + '" data-act="dirView" data-v="map">Map</button>' +
-      '<button type="button" class="btn sm' + (!mapOn ? ' on' : '') + '" data-act="dirView" data-v="dir">Directory</button></div>';
-    var mapTools = '<div class="dir-map-chrome">' + mapToggle +
+    var mapTools = '<div class="dir-map-chrome">' +
       '<div class="dir-map-search"><input id="dirQ" class="dirq acIn" data-ac="map" type="text" value="' + esc(q) + '" placeholder="Search an address or precinct" aria-label="Search an address or precinct" autocomplete="off"></div>' +
       '<button type="button" class="btn sm" id="dirMapOptsBtn" data-act="dirMapOpts" aria-expanded="false" aria-controls="dirMapOpts">Options</button></div>' + mapOpts;
     var mapPane = '<div id="dirMapWrap" class="dir-map-fill" data-sec="4j"><div id="dirMap" role="application" aria-label="NYPD precincts, NYCHA developments, and fuel sites"></div>' +
       '<div id="mapCoverCard" class="map-cover" hidden></div></div>';
-    return suggestBar('Map/Directory') + '<div class="card' + (mapOn ? ' dir-map-card' : '') + '" data-sec="4e">' +
-      (mapOn ? mapTools : ('<h3>Map/Directory</h3>' + toggle +
-        '<input id="dirQ" class="dirq" type="search" value="' + esc(q) + '" placeholder="Name, number, category, or phone" aria-label="Search the directory or jump to a precinct" autocomplete="off">' +
-        dirTools)) + '</div>' +
-      (mapOn ? mapPane : '<div id="dirList">' + dirResultsHtml() + '</div>');
+    return suggestBar('Map') + '<div class="card dir-map-card" data-sec="4e">' + mapTools + '</div>' + mapPane;
   }
-  function dirPhoneSheet(opts) {
+  function viewDirectory() {
+    var q = ui.dirQ || '', chip = ui.dirKind || '';
+    var chips = '<div class="dirchips" data-sec="5g">' + DIR_CHIPS.map(function (x) {
+      return '<button type="button" class="chip' + (chip === x.id ? ' on' : '') + '" data-act="dirChip" data-kind="' + esc(x.id) + '">' + esc(x.label) + '</button>';
+    }).join('') + '</div>';
+    var dirTools = chips +
+      '<div class="dir-actions" style="margin:0 0 8px" data-sec="5i"><button type="button" class="btn primary sm" data-act="dirAddCustom">Add custom contact</button></div>' +
+      '<p class="muted" style="font-size:12.5px;margin:0 0 8px">Public numbers come from official NYPD pages. Numbers you add stay on your account only and are not shared.</p>';
+    return suggestBar('Directory') + '<div class="card" data-sec="5f"><h3>Directory</h3>' +
+      '<input id="dirQ" class="dirq" type="search" value="' + esc(q) + '" placeholder="Name, number, category, or phone" aria-label="Search the directory" autocomplete="off">' +
+      dirTools + '</div>' +
+      '<div id="dirList">' + dirResultsHtml() + '</div>';
+  }
+  // r71: Lookup (former page 5, sections 5a–5e) was removed from the tab bar. Zee will relocate it later.
+  // Keep this function and the lk* handlers dormant so the content is recoverable. It is not dispatched from render().
+    function dirPhoneSheet(opts) {
     opts = opts || {};
     var isCustom = !!opts.custom, existing = opts.phone || {}, title = existing.id ? 'Edit my number' : 'Add my number';
-    var body = '<form id="dirPhoneForm" data-id="' + esc(opts.id || '') + '" data-nid="' + esc(existing.id || '') + '"' + (isCustom ? ' data-custom="1"' : '') + '>' +
+    var body = '<form id="dirPhoneForm" data-sec="5i" data-id="' + esc(opts.id || '') + '" data-nid="' + esc(existing.id || '') + '"' + (isCustom ? ' data-custom="1"' : '') + '>' +
       '<label class="field">Label <span class="muted">(optional)</span><input id="dirPhoneLabel" value="' + esc(existing.label || '') + '" placeholder="Desk, Sgt cell…" maxlength="40"></label>' +
       '<label class="field">Number<input id="dirPhoneNum" type="tel" value="' + esc(existing.phone || '') + '" placeholder="917-555-0100" required></label>' +
       '<div id="dirPhoneErr" class="err" hidden></div>' +
@@ -6419,7 +6527,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     existing = existing || {};
     var title = existing.id ? 'Edit custom contact' : 'Add custom contact';
     var p0 = (existing.phones || [])[0] || {};
-    var body = '<form id="dirCustomForm" data-id="' + esc(existing.id || '') + '">' +
+    var body = '<form id="dirCustomForm" data-sec="5i" data-id="' + esc(existing.id || '') + '">' +
       '<label class="field">Name<input id="dirCustName" value="' + esc(existing.name || '') + '" placeholder="Name or unit" maxlength="64" required></label>' +
       '<label class="field">Number <span class="muted">(optional)</span><input id="dirCustPhone" type="tel" value="' + esc(p0.phone || '') + '" placeholder="917-555-0100"></label>' +
       '<label class="field">Label <span class="muted">(optional)</span><input id="dirCustLabel" value="' + esc(p0.label || '') + '" placeholder="Desk, Sgt cell…" maxlength="40"></label>' +
@@ -6431,6 +6539,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
 
   function viewLookup() {
+    // Dormant r71: former page 5 Lookup (5a–5e). Not on the tab bar. Remap ui.tab==='lookup' to schedule in render().
     var u = U(), d = ui.lookup, off = E.squadsOff(d, u), work = E.squadsWorking(d, u), sq = mySquad(ui.lookup);
     if (sq.type === '12hr') { off = E.tour12SquadsOff(d); work = E.tour12SquadsWorking(d); }
     if (sq.type === '17hr') { off = E.tour17SquadsOff(d); work = E.tour17SquadsWorking(d); }
@@ -6471,16 +6580,16 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     return '<button type="button" class="btn sm suggestbtn" data-act="suggestOpen" data-section="' + esc(section) + '">Suggest</button>';
   }
   function suggestBar(section) {
-    return '<div class="sugbar" data-sec="' + (TAB_PAGES[ui.tab] || '') + '">' + suggestBtnHtml(section) + '</div>';
+    return ''; // r75: Suggest lives only on the top banner (#btnSuggest)
   }
   // ---------- Sheet navigation ----------
   // A sheet opened from another sheet is a sub-page: it gets a Back button, and Back / X / Escape / tapping outside return to the
   // page it came from (kept as it was, typed values included). Saving in a sub-page returns to a fresh copy of the page before it.
   // Only a top-level sheet closes to the main screen.
   var NAV = { stack: [], cur: null, pending: null };
-  // Beta section numbers: pages 1-5 are the bottom tabs; sheets have fixed numbers here (see SECTION-NUMBERS.md). Never computed from order.
+  // Beta section numbers: pages 1-5 are the bottom tabs (1 Schedule, 2 Overtime, 3 Pay, 4 Map, 5 Directory); sheets have fixed numbers here (see SECTION-NUMBERS.md). Never computed from order. Lookup (former page 5, 5a–5e) is vacated from the tab bar; those letters are not reused. Directory uses 5f–5i.
   var SHEET_PAGES = { day: '6', sum: '7', ot: '8', settings: '9', hist: '10', suggest: '11', inbox: '12', admin: '13', leaveNew: '14', sync: '15', x15: '16', x15ed: '17', chart: '18', pd: '19', pdTax: '20' };
-  var TAB_PAGES = { schedule: '1', overtime: '2', pay: '3', leave: '4', directory: '4', lookup: '5' };
+  var TAB_PAGES = { schedule: '1', overtime: '2', pay: '3', leave: '4', map: '4', directory: '5' };
   function navable(name, f, keyFn) {
     return function () {
       var a = arguments, prev = NAV.pending, me = { key: name + '|' + (keyFn ? keyFn.apply(null, a) : String(a[0] == null ? '' : a[0])) };
@@ -6491,7 +6600,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     };
   }
   function openSheet(title, body, section) {
-    var sug = section === false ? '' : suggestBtnHtml(section || title), p = NAV.pending, open = !!sheetRoot.firstElementChild;
+    var sug = '', p = NAV.pending, open = !!sheetRoot.firstElementChild;
     if (!open) NAV.stack = [];
     else if (NAV.cur && p && NAV.cur.key !== p.key) {
       var top = NAV.stack[NAV.stack.length - 1];
@@ -6502,6 +6611,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var pg = SHEET_PAGES[(NAV.cur.key || '').split('|')[0]] || '';
     var back = NAV.stack.length ? '<button type="button" class="sback" data-act="navBack" id="sheetBack" aria-label="Back">&lsaquo; Back</button>' : '';
     sheetRoot.innerHTML = '<div class="sheet-bg" data-act="sheetBg"><div class="sheet' + (back ? ' sub' : '') + '" role="dialog" aria-modal="true" aria-label="' + esc(title) + '"><div class="sbar"><div class="grab"></div><div class="shead"' + (pg ? ' data-sec="' + pg + '"' : '') + '>' + back + '<h3>' + esc(title) + '</h3><div class="shead-acts">' + sug + '<button class="x" data-act="closeSheet" aria-label="' + (back ? 'Close and go back' : 'Close') + '">&times;</button></div></div></div>' + body + '</div></div>';
+    syncNearestBtn();
   }
   // Back / X / Escape: the previous page exactly as it was left (or close, at the top level).
   function navBack() {
@@ -6510,14 +6620,15 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     NAV.cur = prev; sheetRoot.innerHTML = '';
     if (prev.node) { sheetRoot.appendChild(prev.node); var sh = prev.node.querySelector('.sheet'); if (sh) sh.scrollTop = prev.scroll || 0; prev.node = null; }
     else if (prev.fn) { NAV.stack.push(prev); NAV.cur = { key: '' }; sheetRoot.innerHTML = '<div></div>'; prev.fn(); }
+    syncNearestBtn();
   }
   // After a save / delete in a sheet: a sub-page returns to a fresh copy of the page it came from; a top-level sheet closes.
   function closeSheet() {
     var prev = NAV.stack[NAV.stack.length - 1];
-    if (prev && prev.fn) { NAV.cur = { key: '' }; prev.node = null; sheetRoot.innerHTML = '<div></div>'; prev.fn(); return; }
+    if (prev && prev.fn) { NAV.cur = { key: '' }; prev.node = null; sheetRoot.innerHTML = '<div></div>'; prev.fn(); syncNearestBtn(); return; }
     closeAll();
   }
-  function closeAll() { NAV.stack = []; NAV.cur = null; sheetRoot.innerHTML = ''; }
+  function closeAll() { NAV.stack = []; NAV.cur = null; sheetRoot.innerHTML = ''; syncNearestBtn(); }
 
   function daySheet(d, sheetOpts) {
     sheetOpts = sheetOpts || {};
@@ -6531,6 +6642,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       (dt.countsNext ? '<span class="chip nxchip" id="nxChip">' + esc(E.tourEndInfo(dt.start, dt.len, d).note) + '</span>' : '') +
       (dt.plus15 ? '<span class="chip" style="background:#B45309;color:#fff;border-color:transparent">+15 &middot; tour ' + E.fmtHM(dt.len) + '</span>' : '') +
       (function () { var c = E.chartChanges(myWho()).filter(function (x) { return x.day === d; })[0], ci = c && E.chartInfo(c.chart, u); return c ? '<span class="chip" style="background:#7c2d12;color:#fff;border-color:transparent">Chart change: ' + esc(ci ? ci.name : c.chart) + '</span>' : ''; })() +
+      (function () { var b = E.chartDayBlock(d, sq.id, u); return b ? '<span class="daypos" data-sec="6l">' + esc(b.label) + '</span>' : ''; })() +
       '<button type="button" class="btn sm othersquads-btn" data-act="otherSquads" data-sec="6j" aria-expanded="false" aria-controls="otherSquads">Other squads</button>' +
       '<div id="otherSquads" class="othersquads-box" hidden>' +
       '<span class="chip">Off (' + (sq.type === '17hr' ? '17-Hour Protection Teams' : sq.type === '12hr' ? '12 hour tour RDO' : 'patrol') + '): ' + off.map(function (s) { return s.name; }).join(', ') + '</span><span class="chip">Working: ' + work.map(function (s) { return s.short; }).join(' & ') + '</span>' +
@@ -6711,19 +6823,59 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     }
     grid.innerHTML = html;
   }
+  function miniCalContextDate(forId) {
+    var btn = document.getElementById(forId);
+    if (btn && E.isISODate(btn.dataset.iso)) return btn.dataset.iso;
+    var od = ((document.getElementById('otDate') || {}).value || '');
+    if (E.isISODate(od)) return od;
+    var se = document.getElementById('seBox');
+    if (se && se.dataset.d) { var seIso = E.toISO(+se.dataset.d); if (E.isISODate(seIso)) return seIso; }
+    var pd = (typeof dateIso === 'function' && dateIso('pdStartDate')) || '';
+    if (E.isISODate(pd)) return pd;
+    return E.toISO(T);
+  }
   function miniCalOpen(forId, iso) {
     miniCalEnsure();
     MC.open = true; MC.forId = forId;
-    iso = E.isISODate(iso) ? iso : E.toISO(T);
-    MC.iso = E.isISODate((document.getElementById(forId) || {}).dataset && document.getElementById(forId).dataset.iso) ? document.getElementById(forId).dataset.iso : '';
-    var cur = MC.iso || iso;
+    var btn = document.getElementById(forId);
+    var fromBtn = btn && E.isISODate(btn.dataset.iso) ? btn.dataset.iso : '';
+    var cur = fromBtn || (E.isISODate(iso) ? iso : '') || miniCalContextDate(forId);
+    if (btn && btn.classList.contains('datecap') && !fromBtn && E.isISODate(cur)) setDateCap(forId, cur, 'auto');
+    MC.iso = fromBtn || (btn && btn.classList.contains('calcap') ? '' : cur);
+    if (!E.isISODate(MC.iso) && !(btn && btn.classList.contains('calcap'))) MC.iso = cur;
     MC.y = +cur.slice(0, 4); MC.m = +cur.slice(5, 7) - 1;
-    var wrap = document.getElementById('miniCalWrap'); wrap.hidden = false;
+    MC.allowClear = !!(btn && btn.classList.contains('calcap'));
+    var clr = document.querySelector('#miniCalWrap [data-act="mcalClear"]');
+    if (clr) clr.hidden = !MC.allowClear;
+    var wrap = document.getElementById('miniCalWrap');
+    wrap.classList.toggle('mcal-noclear', !MC.allowClear);
+    wrap.hidden = false;
     miniCalRender();
   }
   function miniCalClose() { var wrap = document.getElementById('miniCalWrap'); if (wrap) wrap.hidden = true; MC.open = false; MC.forId = ''; }
+  function dateCapApply(id, iso) {
+    if (!id || !E.isISODate(iso)) return;
+    setDateCap(id, iso, 'user');
+    if (id === 'workedStartDate') autoEndFromStart('dayStart', 'dayEnd', 'workedStartDate', 'workedEndDate');
+    if (id === 'schedStartDate') {
+      var nd2 = E.suggestEndDate(iso, E.normTime(((document.getElementById('schedStart') || {}).value || '').trim()) || '', dateIso('schedEndDate'), E.normTime(((document.getElementById('schedEnd') || {}).value || '').trim()) || '');
+      if (nd2) setDateCap('schedEndDate', nd2, 'auto');
+    }
+    if (id === 'otWorkedStartDate') autoEndFromStart('otStart', 'otEnd', 'otWorkedStartDate', 'otWorkedEndDate');
+    if (id === 'otSchedStartDate') autoEndFromStart('otSchedStart', 'otSchedEnd', 'otSchedStartDate', 'otSchedEndDate');
+    if (id === 'pdStartDate') pdSyncDates();
+    if (id === 'pdStartDate' || id === 'pdEndDate') { pdDateCheck(); pdRemind(); }
+    if (typeof updateEnd === 'function') updateEnd(false);
+    if (document.getElementById('otForm')) otPreview();
+  }
   function miniCalSet(iso) {
     var id = MC.forId, btn = id && document.getElementById(id);
+    if (btn && btn.classList.contains('datecap')) {
+      if (!E.isISODate(iso)) return;
+      dateCapApply(id, iso);
+      miniCalClose();
+      return;
+    }
     if (btn) {
       btn.dataset.iso = iso || '';
       var val = btn.querySelector('.datecap-val');
@@ -6908,13 +7060,14 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       sum = '<button type="button" class="pdsum" id="pdSum" data-act="pdEdit" data-iso="' + esc(iso) + '">' +
         (pd.vendor ? '<b>' + esc(pd.vendor) + '</b>' : '<b>Paid detail</b>') +
         '<div class="pdsummeta">' + (pd.id ? '#' + esc(pd.id) + (dat || when ? ' · ' : '') : '') + esc(dat) + (dat && when ? ' · ' : '') + esc(when) + '</div>' +
-        (pd.address ? '<div class="pdsumaddr">' + esc(pd.address) + '</div>' : '') + '</button>';
+        (pd.address ? '<div class="pdsumaddr">' + esc(pd.address) + '</div>' : '') + '</button>' +
+        (pd.address ? navLinks(pd.address, 'inrow') : '');
       var payId = 'pdPay', remId = 'pdRemind';
       sum += pdSummaryPayment(pd, iso);
       sum += '<div class="pdpay" id="' + payId + '" role="status" aria-live="polite"></div><div class="pdnote" id="' + remId + '" role="note" hidden></div>';
       sum += pdTimingHtml(pd, iso, '');
     }
-    return '<div class="card pdsec" id="pdSec" data-sec="6e" data-iso="' + esc(iso) + '"><div class="shead"><h3 style="margin:0;font-size:15px">Paid detail</h3>' + suggestBtnHtml('Paid Detail') + '</div>' +
+    return '<div class="card pdsec" id="pdSec" data-sec="6e" data-iso="' + esc(iso) + '"><div class="shead"><h3 style="margin:0;font-size:15px">Paid detail</h3></div>' +
       '<button type="button" class="btn block pdadd" id="pdAddBtn" data-act="pdAdd" data-iso="' + esc(iso) + '"' + (show ? ' hidden' : '') + '>Add paid detail</button>' +
       (show ? sum + '<button type="button" class="btn sm" id="pdEditBtn" data-act="pdEdit" data-iso="' + esc(iso) + '">Edit paid detail</button>' : '') +
       '<div id="pdSlipHost" data-iso="' + iso + '" hidden>' + (slip || '') + '</div></div>';
@@ -6965,6 +7118,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (pd.date) setDateCap('pdStartDate', pd.date, 'auto');
     if (pd.endDate) setDateCap('pdEndDate', pd.endDate, 'auto');
     if (typeof pdTimingRefresh === 'function') pdTimingRefresh();
+    refreshPdNav();
   }
   var OCR_SRC = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
   function loadOCR() { if (window.__PATROL_OCR__) return Promise.resolve(window.__PATROL_OCR__); if (window.Tesseract) return Promise.resolve(window.Tesseract); return new Promise(function (res, rej) { var sc = document.createElement('script'); sc.src = OCR_SRC; sc.onload = function () { res(window.Tesseract); }; sc.onerror = function () { rej(new Error('load')); }; document.head.appendChild(sc); }); }
@@ -6978,7 +7132,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var sp = E.splitPaidAddress(x.address, x.address1, x.address2);
       set('pdAddr', sp.address1); set('pdAddr2', sp.address2);
       if (x.date) { setDateCap('pdStartDate', x.date, 'user'); n++; }
-      pdSyncDates(); pdDateCheck(); pdRemind();
+      pdSyncDates(); pdDateCheck(); pdRemind(); refreshPdNav();
       say(n ? 'Filled ' + n + ' fields from the screenshot. Check each one, then tap Save paid detail.' : 'Couldn\'t read the details. Type them in, or try a clearer screenshot.', !n);
     }).catch(function () { say('The screenshot reader needs an internet connection the first time. You can type the details instead.', true); });
   }
@@ -7014,6 +7168,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var sp = E.splitPaidAddress(e.address, e.address1, e.address2);
     set('pdVendor', e.vendor); set('pdAddr', sp.address1); set('pdAddr2', sp.address2);
     pdShowVendors(false);
+    refreshPdNav();
   }
   function pdRefreshDaySection() {
     var sec = document.getElementById('pdSec'); if (!sec) return;
@@ -7073,6 +7228,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div class="pdvpick" id="pdVendorPicker" hidden><div' + (vendors.length < 6 ? ' hidden' : '') + '><input id="pdVendorQ" type="search" autocomplete="off" placeholder="Search vendors"></div><div id="pdVendorList"></div></div></div>' +
       f('pdAddr', 'Address Line 1', pd.address1, ' class="acIn" data-ac="pd" autocomplete="off" autocapitalize="words" enterkeyhint="next" placeholder="Street address"', '19e') +
       f('pdAddr2', 'Address Line 2', pd.address2, ' class="acIn" data-ac="pd" autocomplete="off" autocapitalize="characters" enterkeyhint="done" placeholder="City, State, ZIP"', '19f') +
+      '<div id="pdNav">' + (pd.address ? navArea(pd.address, 'Paid Detail') : '') + '</div>' +
       pdPaymentFields(pd, iso) +
       '<div class="pdpay" id="pdPay" role="status" aria-live="polite"></div><div class="pdnote" id="pdRemind" role="note" hidden></div>' +
       '<div id="pdSlipHost" data-iso="' + iso + '">' + slipHtml(iso, 'paiddetail') + '</div>' +
@@ -7326,7 +7482,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (btn && btn.dataset.section) return btn.dataset.section;
     var h = document.querySelector('#sheetRoot .sheet .shead h3');
     if (h && h.textContent) return h.textContent.trim().slice(0, 80);
-    return ({ schedule: 'Calendar', overtime: 'Overtime/Paid Detail', pay: 'Pay', leave: 'Leave', lookup: 'Lookup' })[ui.tab] || 'App';
+    return ({ schedule: 'Calendar', overtime: 'Overtime/Paid Detail', pay: 'Pay', leave: 'Leave', map: 'Map', directory: 'Directory', lookup: 'Lookup' })[ui.tab] || 'App';
   }
   function functionsUrl(name) { return String((CL.cfg && CL.cfg.SUPABASE_URL) || '').replace(/\/$/, '') + '/functions/v1/' + name; }
   function sugUid() { try { return (crypto.randomUUID && crypto.randomUUID()) || ''; } catch (e) { return ''; } }
@@ -7779,9 +7935,70 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function trLocOptions() { return E.trainingLocations(S.assignments).map(function (x) { return '<option value="' + esc(x.name) + '"' + (x.address ? ' label="' + esc(x.address) + '"' : '') + '>'; }).join(''); }
   function addrOptions(type) { return E.addressSuggestions(S.assignments, type).map(function (x) { return '<option value="' + esc(x.value) + '"' + (x.label ? ' label="' + esc(x.label) + '"' : '') + '>'; }).join(''); }
-  function navLinks(addr, cls) {
-    if (!addr) return ''; var u = E.navUrls(addr);
-    return '<div class="navbtns ' + (cls || '') + '"><a class="btn sm nav-g" href="' + esc(u.google) + '" target="_blank" rel="noopener">Google Maps</a><a class="btn sm nav-a" href="' + esc(u.apple) + '" target="_blank" rel="noopener">Apple Maps</a><a class="btn sm nav-w" href="' + esc(u.waze) + '" target="_blank" rel="noopener">Waze</a></div>';
+  var NAV_KEY = 'patrolSchedule.defaultNav'; // device-only; never written into S or synced
+  var NAV_LABELS = { google: 'Google Maps', apple: 'Apple Maps', waze: 'Waze' };
+  var NAV_CLS = { google: 'nav-g', apple: 'nav-a', waze: 'nav-w' };
+  var NAV_ORDER = ['google', 'apple', 'waze'];
+  function isAppleNavPlatform(ua, platform, maxTouch) {
+    ua = ua || (typeof navigator !== 'undefined' ? navigator.userAgent : '') || '';
+    platform = platform || (typeof navigator !== 'undefined' ? navigator.platform : '') || '';
+    maxTouch = maxTouch != null ? maxTouch : (typeof navigator !== 'undefined' ? navigator.maxTouchPoints : 0);
+    if (/iPad|iPhone|iPod/.test(ua)) return true;
+    if (platform === 'MacIntel' && maxTouch > 1) return true;
+    return false;
+  }
+  function platformNavDefault() { return isAppleNavPlatform() ? 'apple' : 'google'; }
+  function defaultNav() {
+    try {
+      var v = localStorage.getItem(NAV_KEY);
+      if (v === 'google' || v === 'apple' || v === 'waze' || v === 'ask') return v;
+    } catch (e) {}
+    return platformNavDefault();
+  }
+  function setDefaultNav(v) {
+    try {
+      if (v === 'google' || v === 'apple' || v === 'waze' || v === 'ask') localStorage.setItem(NAV_KEY, v);
+      else localStorage.removeItem(NAV_KEY);
+    } catch (e) {}
+  }
+  function navDest(input) {
+    if (!input) return null;
+    if (typeof input === 'string') return { address: String(input).trim() };
+    var o = { address: String(input.address || input.addr || input.label || '').trim(), lat: input.lat, lon: input.lon != null ? input.lon : input.lng };
+    if ((o.lat == null || o.lon == null) && input.id && typeof commandLL === 'function') {
+      var ll = commandLL(input);
+      if (ll) { o.lat = ll[0]; o.lon = ll[1]; }
+    }
+    return o;
+  }
+  function closeNavMenus() {
+    Array.prototype.forEach.call(document.querySelectorAll('.nav-menu'), function (m) { m.hidden = true; });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-act="navMore"]'), function (b) { b.setAttribute('aria-expanded', 'false'); });
+  }
+  function navLinksHtml(u, cls, routeId) {
+    if (!u || (!u.google && !u.apple && !u.waze)) return '';
+    var pref = defaultNav();
+    if (pref === 'ask') {
+      return '<div class="navbtns ' + (cls || '') + '">' + NAV_ORDER.map(function (k) {
+        return '<a class="btn sm ' + NAV_CLS[k] + '"' + (routeId && k === 'google' ? ' id="' + esc(routeId) + '"' : '') + ' href="' + esc(u[k]) + '" target="_blank" rel="noopener">' + NAV_LABELS[k] + '</a>';
+      }).join('') + '</div>';
+    }
+    var menu = NAV_ORDER.map(function (k) {
+      return '<a class="' + NAV_CLS[k] + (k === pref ? ' is-default' : '') + '" role="menuitem" href="' + esc(u[k]) + '" target="_blank" rel="noopener">' + NAV_LABELS[k] + '</a>';
+    }).join('');
+    return '<div class="navbtns nav-split ' + (cls || '') + '">' +
+      '<a class="btn primary sm nav-main ' + NAV_CLS[pref] + '" href="' + esc(u[pref]) + '" target="_blank" rel="noopener"' + (routeId ? ' id="' + esc(routeId) + '"' : '') + '>' + NAV_LABELS[pref] + '</a>' +
+      '<button type="button" class="btn sm nav-more" data-act="navMore" aria-expanded="false" aria-haspopup="menu" aria-label="Other navigation app">Other</button>' +
+      '<div class="nav-menu" hidden role="menu">' + menu + '</div></div>';
+  }
+  function navLinks(dest, cls) {
+    var d = navDest(dest);
+    if (!d || (!d.address && (d.lat == null || d.lon == null))) return '';
+    return navLinksHtml(E.navUrls(d), cls);
+  }
+  function routeLinks(from, to, cls) {
+    if (!from || !to) return '';
+    return navLinksHtml(E.routeUrls(from, to), cls || '', 'cmdRoute');
   }
   function addrBlock(a, sel, iso, st) {
     var t = E.assignmentType(sel), has = !!(t && t.address);
@@ -7813,13 +8030,28 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function navArea(addr, word) {
     if (!addr) return ''; var c = curCommand();
     return '<div class="navleg"><div class="lbl2">Navigate to ' + esc(word) + '</div>' + navLinks(addr, 'leg-dest') + '</div>' +
-      (c ? '<div class="navleg"><div class="lbl2">Navigate to Command (' + esc(E.commandShort(c)) + ')</div>' + navLinks(c.address, 'leg-cmd') +
-        '<a class="routelink" id="cmdRoute" href="' + esc(E.routeUrl(c.address, addr)) + '" target="_blank" rel="noopener">Route: Command &rarr; ' + esc(word) + ' (Google Maps)</a></div>' : '');
+      (c ? '<div class="navleg"><div class="lbl2">Navigate to Command (' + esc(E.commandShort(c)) + ')</div>' + navLinks(c, 'leg-cmd') +
+        '<div class="lbl2" style="margin-top:8px">Route: Command &rarr; ' + esc(word) + '</div>' + routeLinks(c, addr, 'leg-route') + '</div>' : '');
+  }
+  function pdFormAddress() {
+    if (!document.getElementById('pdForm')) return '';
+    var pd = readPaid();
+    return String((pd && (pd.address || E.joinPaidAddress(pd.address1, pd.address2))) || '').trim();
+  }
+  function refreshPdNav() {
+    var n = document.getElementById('pdNav'); if (!n) return;
+    var addr = pdFormAddress();
+    n.innerHTML = addr ? navArea(addr, 'Paid Detail') : '';
   }
   function refreshNav() {
-    var v = (document.getElementById('asgAddr') || {}).value || '', n = document.getElementById('asgNav'); if (!n) return;
-    n.innerHTML = navArea(v.trim(), destWord()); document.getElementById('etaBtn').hidden = !v.trim(); var o = document.getElementById('etaOut'); o.hidden = true; o.innerHTML = '';
-    syncPicks();
+    var v = (document.getElementById('asgAddr') || {}).value || '', n = document.getElementById('asgNav');
+    if (n) {
+      n.innerHTML = navArea(v.trim(), destWord());
+      var eta = document.getElementById('etaBtn'); if (eta) eta.hidden = !v.trim();
+      var o = document.getElementById('etaOut'); if (o) { o.hidden = true; o.innerHTML = ''; }
+      syncPicks();
+    }
+    refreshPdNav();
   }
   // One place that decides every "selected" highlight in the assignment block (training sites, previous courts, boroughs, courts)
   function setOn(el, on) { el.classList.toggle('on', !!on); el.setAttribute('aria-pressed', on ? 'true' : 'false'); }
@@ -8080,7 +8312,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div class="hint">Only this entry changes. Your regular ' + E.fmtHM(regLen) + ' tour stays the same.</div></div>';
   }
     function dateCap(id, iso) {
-      return '<button type="button" class="datecap" id="' + id + '" data-act="dateWheel" data-iso="' + esc(iso || '') + '"' + (iso ? ' aria-label="Date ' + esc(E.fmtMDY(iso)) + '"' : '') + '>' + (iso ? esc(E.fmtMDY(iso)) : 'Date') + '</button>';
+      return '<button type="button" class="datecap" id="' + id + '" data-act="miniCal" data-iso="' + esc(iso || '') + '"' + (iso ? ' aria-label="Date ' + esc(E.fmtMDY(iso)) + '"' : ' aria-label="Pick a date"') + '>' + (iso ? esc(E.fmtMDY(iso)) : 'Date') + '</button>';
     }
     function dateFrame(id, iso, label) {
       return '<div class="dateframe">' + (label ? '<span class="datecap-lbl">' + esc(label) + '</span>' : '') + dateCap(id, iso) + '</div>';
@@ -8235,6 +8467,15 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     }
     pduKeep(); updateEnd(true);
   }
+  // Keep the existing "Edit overtime details" button node when the message is unchanged,
+  // so a tap that first blurs #dayStart/#dayEnd (and re-runs updateEnd) still lands on the button.
+  function setEndNote(html, cls) {
+    var note = document.getElementById('endNote'); if (!note) return;
+    if (cls != null) note.className = cls;
+    if ((note.dataset.html || '') === (html || '')) return;
+    note.innerHTML = html || '';
+    note.dataset.html = html || '';
+  }
   function updateEnd(flash) {
     var box = document.getElementById('seBox'), si = document.getElementById('dayStart'), out = document.getElementById('dayEnd'), pop = document.getElementById('endPop'); if (!box || !si || !out) return;
     var tb = document.getElementById('tourBox'), rawS = si.value.trim(), endRaw = out.value.trim();
@@ -8250,11 +8491,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       pop.hidden = true; pop.innerHTML = '';
       if (span) {
         var dl = document.getElementById('dayLen'); if (dl) dl.value = E.fmtHM(span.len);
-        if (noteR) { noteR.hidden = false; noteR.className = 'endnote ot'; noteR.innerHTML = '<b>Overtime: ' + esc(span.label) + '</b> (' + esc(span.start) + '&ndash;' + esc(span.end) + '). Saved as one overtime entry.' + otEditHtml(E.toISO(+box.dataset.d)); }
+        if (noteR) { noteR.hidden = false; setEndNote('<b>Overtime: ' + esc(span.label) + '</b> (' + esc(span.start) + '&ndash;' + esc(span.end) + '). Saved as one overtime entry.' + otEditHtml(E.toISO(+box.dataset.d)), 'endnote ot'); }
         syncSchedBoxVisibility();
         return;
       }
-      if (noteR) { noteR.hidden = true; noteR.innerHTML = ''; }
+      if (noteR) { noteR.hidden = true; setEndNote('', 'endnote'); }
       syncSchedBoxVisibility();
       return;
     }
@@ -8276,7 +8517,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var ei = document.getElementById('dayEnd'), note = document.getElementById('endNote'), sb = document.getElementById('shortBox'), er = document.getElementById('dayEnd-err'); if (!ei || !note || !sb) return null;
     var raw = ei.value.trim(), end = raw ? E.normTime(raw) : '', c = end && start && len ? E.endCompare(start, len, end) : null;
     if (er) er.textContent = raw && !end && raw.length >= 5 ? 'Use HH:MM, 24-hour (00:00–23:59)' : '';
-    note.className = 'endnote' + (c ? ' ' + c.kind : ''); sb.hidden = !(c && c.kind === 'early');
+    sb.hidden = !(c && c.kind === 'early');
     var mm = function (m) { return m < 60 ? m + ' min' : E.fmtHM(m); };
     var box = document.getElementById('seBox'), wr = readWorkedTimes(), sc = readSchedTimes(true);
     if (sc) {
@@ -8286,10 +8527,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     }
     var vs = (wr.start && wr.end && sc && sc.start && sc.end) ? workedVS(wr, sc) : null;
     if (vs) c = vs;
-    if (c && c.kind === 'late') note.innerHTML = '<b>Ended ' + mm(c.delta || (c.otMin || 0)) + ' late</b>' + (c.sched ? ' (scheduled ' + esc(c.sched) + ')' : '') + '. No overtime: OT starts at ' + C.otThresholdMin + ' minutes past the scheduled end.';
-    else if (c && c.kind === 'ot') note.innerHTML = '<b>Overtime: ' + E.fmtHM(c.otMin) + '</b>' + (c.sched ? ' (' + esc(c.sched) + '&ndash;' + esc(c.end) + ')' : '') + '. Saved to your Overtime log for this day.' + (box ? otEditHtml(E.toISO(+box.dataset.d)) : '');
-    else if (c && c.kind === 'early') { note.innerHTML = '<b>Ended ' + mm(c.shortMin) + ' early</b>' + (c.sched ? ' (scheduled ' + esc(c.sched) + ')' : '') + '.'; document.getElementById('shortQ').textContent = 'Charge ' + E.fmtHM(c.shortMin) + ' to which balance?'; }
-    else note.innerHTML = '';
+    var noteCls = 'endnote' + (c ? ' ' + c.kind : '');
+    if (c && c.kind === 'late') setEndNote('<b>Ended ' + mm(c.delta || (c.otMin || 0)) + ' late</b>' + (c.sched ? ' (scheduled ' + esc(c.sched) + ')' : '') + '. No overtime: OT starts at ' + C.otThresholdMin + ' minutes past the scheduled end.', noteCls);
+    else if (c && c.kind === 'ot') setEndNote('<b>Overtime: ' + E.fmtHM(c.otMin) + '</b>' + (c.sched ? ' (' + esc(c.sched) + '&ndash;' + esc(c.end) + ')' : '') + '. Saved to your Overtime log for this day.' + (box ? otEditHtml(E.toISO(+box.dataset.d)) : ''), noteCls);
+    else if (c && c.kind === 'early') { setEndNote('<b>Ended ' + mm(c.shortMin) + ' early</b>' + (c.sched ? ' (scheduled ' + esc(c.sched) + ')' : '') + '.', noteCls); document.getElementById('shortQ').textContent = 'Charge ' + E.fmtHM(c.shortMin) + ' to which balance?'; }
+    else setEndNote('', noteCls);
     note.hidden = !(c && c.kind !== 'on');
     syncSchedBoxVisibility();
     return c;
@@ -8442,7 +8684,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function swipeDown(ev) {
     if (ev.button && ev.button !== 0) return;
     if (ui.otSel || ui.pdSel) return;
-    if (ev.target.closest && ev.target.closest('input,select,textarea,.otchk')) return;
+    if (ev.target.closest && ev.target.closest('input,select,textarea,.otchk,.navbtns,a[href]')) return;
     var row = ev.target.closest && ev.target.closest('.swrow');
     if (!row || !row.dataset.swipe) return;
     SW.row = row; SW.id = ev.pointerId; SW.x0 = ev.clientX; SW.y0 = ev.clientY; SW.dx = 0; SW.axis = ''; SW.locked = false;
@@ -8485,6 +8727,16 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var d = E.toDay(iso), sq = mySquad(d), rdo = E.isRDO(d, sq.id, U());
     var st = ((S.tours[iso] || {}).status) || '';
     return { iso: iso, d: d, rdo: rdo, st: st, hideForRdo: !!(rdo && st !== 'dd' && st !== 'ddnew') };
+  }
+  function otSyncDateFrames() {
+    var iso = ((document.getElementById('otDate') || {}).value || '');
+    if (!E.isISODate(iso)) return;
+    ['otWorkedStartDate', 'otWorkedEndDate', 'otSchedStartDate', 'otSchedEndDate'].forEach(function (id) {
+      var b = document.getElementById(id); if (!b || b.dataset.user === '1') return;
+      setDateCap(id, iso, 'auto');
+    });
+    autoSuggestEnd('otWorkedStartDate', ((document.getElementById('otStart') || {}).value || ''), 'otWorkedEndDate', ((document.getElementById('otEnd') || {}).value || ''));
+    autoSuggestEnd('otSchedStartDate', ((document.getElementById('otSchedStart') || {}).value || ''), 'otSchedEndDate', ((document.getElementById('otSchedEnd') || {}).value || ''));
   }
   function otDefaultWin(iso) {
     iso = iso || ((document.getElementById('otDate') || {}).value || '');
@@ -8553,6 +8805,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (work.start && work.end && !work.endDate) work.endDate = E.suggestEndDate(work.startDate, work.start, '', work.end);
     if (e.schedStart) sched = { start: e.schedStart, end: e.schedEnd, startDate: e.schedStartDate || def.startDate, endDate: e.schedEndDate || def.endDate, custom: true };
     else if (linked && (src.schedStart || src.schedEnd)) sched = { start: src.schedStart, end: src.schedEnd, startDate: src.schedStartDate || def.startDate, endDate: src.schedEndDate || def.endDate, custom: true };
+    else if (linked && !e.linkedTour && def.start) sched = { start: def.start, end: def.end, startDate: def.startDate, endDate: def.endDate, custom: false };
     else sched = { start: '', end: '', startDate: def.startDate, endDate: def.endDate, custom: false };
     return { work: work, sched: sched, def: def, iso: iso };
   }
@@ -8712,7 +8965,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function otSheet(entry, dateISO) {
     var e = entry || { id: '', date: dateISO || E.toISO(T), mode: 'times', start: '', end: '', hours: '', type: C.overtimeTypes[0].id, notes: '' };
-    var times = e.mode !== 'hours', lkEnd = !e.linkedTour && !!e.linkedEnd, lkEntry = !!e.linkedEntry, lk = !!e.linkedTour || lkEnd || lkEntry, lkIso = e.linkedTour || e.linkedEnd || e.date, lkRef = e.linkedTour || e.linkedEnd || e.linkedEntry || '', ro = lk ? ' disabled' : '';
+    var hasTimes = !!(e.workStart || e.start), times = e.mode !== 'hours' || hasTimes, lkEnd = !e.linkedTour && !!e.linkedEnd, lkEntry = !!e.linkedEntry, lk = !!e.linkedTour || lkEnd || lkEntry, lkIso = e.linkedTour || e.linkedEnd || e.date, lkRef = e.linkedTour || e.linkedEnd || e.linkedEntry || '', ro = lk ? ' disabled' : '';
     var win = otResolveWindows(e);
     openSheet(entry ? 'Edit overtime' : 'Log overtime',
       '<form id="otForm" onsubmit="return false" data-id="' + esc(e.id) + '" data-linked="' + esc(lkRef) + '" data-lkind="' + (lkEnd ? 'end' : lkEntry ? 'entry' : lk ? 'tour' : '') + '">' +
@@ -8720,7 +8973,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div class="field" data-sec="8a"><label for="otDate">Date</label><input type="date" id="otDate" value="' + esc(e.date) + '" required' + ro + '></div>' +
       '<div class="field" data-sec="8b"><label for="otType">Type</label><select id="otType">' + C.overtimeTypes.map(function (t) { return '<option value="' + t.id + '"' + (t.id === e.type ? ' selected' : '') + '>' + esc(t.label) + '</option>'; }).join('') + '</select></div>' +
       cmdPicker('ot', e.otCmd || null, { sec: '8c', label: 'Overtime location (command / precinct)', hint: 'Where the overtime was worked. Used to suggest travel time from your permanent command.' }) +
-      '<div class="field otmode"><label>Enter as</label><div class="seg" id="otMode" data-mode="' + (times ? 'times' : 'hours') + '"><button type="button" data-act="otMode" data-m="times" class="' + (times ? 'on' : '') + '">Times</button><button type="button" data-act="otMode" data-m="hours" class="' + (times ? '' : 'on') + '">Total hours only</button></div></div>' +
+      '<div id="otMode" hidden data-mode="' + (times ? 'times' : 'hours') + '"></div>' +
       '<div id="otSlipTimes"' + (times ? '' : ' hidden') + '>' +
       otTimeBlockHtml('worked', 'Time actually worked', '8d', win.work.startDate, win.work.endDate, win.work.start, win.work.end) +
       otTimeBlockHtml('sched', 'Time scheduled to work', '8i', win.sched.startDate, win.sched.endDate, win.sched.start, win.sched.end) +
@@ -8880,8 +9133,12 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   // Settings pay summary (rank, chart, step, longevity, rates, next step change)
   function payFormProfile() {
-    var pf = readProfile('st'), r = document.getElementById('stRate'), o = document.getElementById('stOverride'); delete pf.rank; delete pf.rankOther; // rank comes from the entry in effect today
-    return Object.assign({}, E.profileAt(Object.assign({}, S.profile, pf), E.toISO(T)), { rate: r ? parseFloat(r.value) || 0 : S.profile.rate, rateOverride: o ? o.checked : S.profile.rateOverride });
+    var pf = readProfile('st'), r = document.getElementById('stRate'), o = document.getElementById('stOverride');
+    var linked = document.getElementById('stRank');
+    if (!linked) { delete pf.rank; delete pf.rankOther; }
+    var out = Object.assign({}, E.profileAt(Object.assign({}, S.profile, pf), E.toISO(T)), { rate: r ? parseFloat(r.value) || 0 : S.profile.rate, rateOverride: o ? o.checked : S.profile.rateOverride });
+    if (linked && pf.rank) { out.rank = pf.rank; out.rankOther = pf.rank === 'other' ? (pf.rankOther || '') : ''; }
+    return out;
   }
   function payCardHtml(p) {
     var pi = E.payInfo(p), pl = pi.placement, row = function (k, v, id) { return '<div class="payrow"' + (id ? ' id="' + id + '"' : '') + '><span>' + k + '</span><b>' + v + '</b></div>'; }, h = '';
@@ -8931,12 +9188,13 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function settingsSheet() {
     var p = S.profile, s = S.settings;
     openSheet('Settings',
-      accountPanel() + (CL.enabled ? privacySectionHtml({ title: true, deleteBtn: !!CS.uid, sec: '9n', top: '18px' }) : '') + '<h3 data-sec="9b" style="margin-top:' + (CL.enabled ? '18px' : '0') + '">Profile</h3>' + profileFields('st', p, true) + homeField('st', p) +
+      accountPanel() + (CL.enabled ? privacySectionHtml({ title: true, deleteBtn: !!CS.uid, sec: '9n', top: '18px' }) : '') + '<h3 data-sec="9b" style="margin-top:' + (CL.enabled ? '18px' : '0') + '">Profile</h3>' + profileFields('st', p, 'row') + homeField('st', p) +
       '<h3 id="histHead" data-sec="9c">Rank &amp; assignment</h3><div id="histWrap">' + histPanel() + '</div>' +
       '<h3 id="payHead" data-sec="9d" style="margin-top:18px">Pay</h3><div class="paycard" id="payCard">' + payCardHtml(profNow()) + '</div>' +
       '<label class="chk ovchk"><input type="checkbox" id="stOverride"' + (p.rateOverride ? ' checked' : '') + '> Use my own hourly rate instead of the pay chart</label>' +
       '<div class="row" id="stOvWrap"' + (p.rateOverride || !E.payPlacement(profNow()).ok || !(E.payPlacement(profNow()).cashOT || E.payPlacement(profNow()).ceaOT) ? '' : ' hidden') + '><div class="field"><label for="stRate">Own hourly rate ($)</label><input id="stRate" type="number" inputmode="decimal" min="0" step="0.01" value="' + esc(p.rate) + '"></div>' +
       '<div class="field"><label for="stMult">OT multiplier</label><input id="stMult" type="number" inputmode="decimal" min="1" step="0.05" value="' + esc(s.multiplier) + '"><div class="hint">Only used with your own rate.</div></div></div>' +
+      '<h3 style="margin-top:20px" data-sec="9i">Schedule rules</h3><div class="muted" style="font-size:13px;margin-bottom:8px">' + esc(E.unit(U()).name) + ': ' + esc(E.unit(U()).pattern.description) + '. One squad is off each day.<br>PDU: ' + esc(PDU.description) + '. ' + shiftText('pm') + ', ' + shiftText('am') + '.</div>' +
       balancesHtml() +
       '<button class="btn primary block" data-act="stSave">Save settings</button>' +
       settingsFold('mapsHead', '9f', 'Google Maps API key (optional)',
@@ -8955,6 +9213,19 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       settingsFold('syncHead', '9j', 'Calendar sync',
         '<div class="muted" style="font-size:13px;margin-bottom:8px">Export a file of your schedule to Apple or Google Calendar. This is a one-time snapshot; it does not stay in sync.</div><div id="syncWrap">' + syncPanel() + '</div>',
         !!ui.fold9j) +
+      '<h3 style="margin-top:20px" data-sec="9o">Default navigation app</h3>' +
+      '<div class="muted" style="font-size:13px;margin-bottom:8px">Used when you tap a navigate button. Stored only on this device, never synced to your account. You can still pick a different app for one trip.</div>' +
+      '<div class="navdefchips" id="stNavSeg" role="radiogroup" aria-label="Default navigation app">' +
+        '<button type="button" class="chip' + (defaultNav() === 'google' ? ' on' : '') + '" role="radio" aria-checked="' + (defaultNav() === 'google' ? 'true' : 'false') + '" data-act="navDefault" data-v="google">Google Maps</button>' +
+        '<button type="button" class="chip' + (defaultNav() === 'apple' ? ' on' : '') + '" role="radio" aria-checked="' + (defaultNav() === 'apple' ? 'true' : 'false') + '" data-act="navDefault" data-v="apple">Apple Maps</button>' +
+        '<button type="button" class="chip' + (defaultNav() === 'waze' ? ' on' : '') + '" role="radio" aria-checked="' + (defaultNav() === 'waze' ? 'true' : 'false') + '" data-act="navDefault" data-v="waze">Waze</button>' +
+        '<button type="button" class="chip' + (defaultNav() === 'ask' ? ' on' : '') + '" role="radio" aria-checked="' + (defaultNav() === 'ask' ? 'true' : 'false') + '" data-act="navDefault" data-v="ask">Ask every time</button></div>' +
+      (function () {
+        var saved = '';
+        try { saved = localStorage.getItem(NAV_KEY) || ''; } catch (e) {}
+        if (saved) return '<div class="hint">Current default: <b>' + esc(saved === 'ask' ? 'Ask every time' : (NAV_LABELS[saved] || saved)) + '</b>.</div>';
+        return '<div class="hint">No choice saved yet. Using <b>' + esc(NAV_LABELS[platformNavDefault()]) + '</b> on this device (Apple Maps on iPhone and iPad, Google Maps otherwise).</div>';
+      })() +
       '<h3 style="margin-top:20px" data-sec="9l">Default calendar</h3><div class="muted" style="font-size:13px;margin-bottom:8px">Used when you tap <b>Add to calendar</b> on a day. Change this any time. A one-off add cannot be taken back; subscribe (below) is the way to keep a calendar up to date.</div>' +
       '<div class="seg" id="stCalSeg">' +
         '<button type="button" class="' + ((s.defaultCalendar || 'google') === 'google' ? 'on' : '') + '" data-act="calDefault" data-v="google">Google</button>' +
@@ -9111,6 +9382,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       onOk: function () { commitAsgEntryDelete(d, eid); }
     });
   }
+  function sumNavWrap(rowHtml, dest) {
+    var n = navLinks(dest, 'inrow');
+    return n ? '<div class="asgwrap sumnav">' + rowHtml + n + '</div>' : rowHtml;
+  }
   function daySummary(d, savedMsg) {
     if (!E.dayHasEntries(S, E.toISO(d)) && !savedMsg) return daySheet(d);
     var iso = E.toISO(d), sq = mySquad(d), o = tourOpts(), dt = E.dayTour(d, sq.id, o), en = E.dayEntryOf(d, sq.id, o), opt = E.dayEntryOption(en.id) || { label: en.id, color: '#334155' };
@@ -9123,8 +9398,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (dayHasLoggedTour(iso)) rows.push('<div class="swrow" data-swipe="sumTour" data-d="' + d + '" data-iso="' + iso + '" id="sumTourRow">' + dayRow + '</div>');
     else rows.push(dayRow);
     if (lv.note) rows.push(item('note', sw('#475569', '&#9998;'), 'Note', esc(lv.note), 'sumNote'));
-    if (a && a.type && !(E.assignmentType(a.type) || {}).paid) rows.push(item('asg', (function (t) { return sw(t.color, esc(t.short)); })(E.assignmentType(a.type) || { short: '?', color: '#64748b' }), esc(E.assignmentLabel(a)), esc(E.assignmentLocation(a) || ''), 'sumAsg'));
-    if (E.hasPaidDetail(a)) { var pd = a.pd; rows.push(item('paid', sw('#047857', 'PD'), 'Paid Detail' + (pd.vendor ? ': ' + esc(pd.vendor) : ''), [pd.start ? esc(pd.start) + (pd.end ? '–' + esc(pd.end) : '') : '', pd.durationMin ? E.fmtHM(pd.durationMin) : '', pd.id ? 'ID ' + esc(pd.id) : ''].filter(Boolean).join(' &middot; '), 'sumPaid')); }
+    if (a && a.type && !(E.assignmentType(a.type) || {}).paid) rows.push(sumNavWrap(item('asg', (function (t) { return sw(t.color, esc(t.short)); })(E.assignmentType(a.type) || { short: '?', color: '#64748b' }), esc(E.assignmentLabel(a)), esc(E.assignmentLocation(a) || ''), 'sumAsg'), E.assignmentNavAddress(a)));
+    if (E.hasPaidDetail(a)) { var pd = a.pd; rows.push(sumNavWrap(item('paid', sw('#047857', 'PD'), 'Paid Detail' + (pd.vendor ? ': ' + esc(pd.vendor) : ''), [pd.start ? esc(pd.start) + (pd.end ? '–' + esc(pd.end) : '') : '', pd.durationMin ? E.fmtHM(pd.durationMin) : '', pd.id ? 'ID ' + esc(pd.id) : ''].filter(Boolean).join(' &middot; '), 'sumPaid'), E.assignmentNavAddress({ pd: pd }))); }
     if (sm) rows.push(item('asg', sw('#334155', '&#128206;'), esc(slipKindOf(iso)), 'Saved on this device', 'sumSlip'));
     var extras = [];
     E.tourEntries(ov).forEach(function (ent) {
@@ -9134,14 +9409,15 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     E.assignmentEntries(ov).forEach(function (ent) {
       var sort = E.timeToMin(ent.start); if (sort === null) sort = 9999;
       var tm = E.assignmentTimeText(ent);
-      extras.push({ sort: sort, id: ent.id, html: '<button type="button" class="item sumrow" data-act="asgEntryEdit" data-d="' + d + '" data-eid="' + esc(ent.id) + '" id="sumAsgEnt' + esc(ent.id) + '">' + sw((E.assignmentType(ent.type) || {}).color || '#1d4ed8', (E.assignmentType(ent.type) || {}).short || 'A') + '<div class="main"><div class="t1">' + esc(E.assignmentLabel(ent) || E.assignmentReminderText(ent) || 'Assignment') + '</div>' + (tm ? '<div class="t2">' + esc(tm) + '</div>' : '') + '</div><div class="right sumgo">View / edit &rsaquo;</div></button>' });
+      extras.push({ sort: sort, id: ent.id, navDest: E.assignmentNavAddress(ent), html: '<button type="button" class="item sumrow" data-act="asgEntryEdit" data-d="' + d + '" data-eid="' + esc(ent.id) + '" id="sumAsgEnt' + esc(ent.id) + '">' + sw((E.assignmentType(ent.type) || {}).color || '#1d4ed8', (E.assignmentType(ent.type) || {}).short || 'A') + '<div class="main"><div class="t1">' + esc(E.assignmentLabel(ent) || E.assignmentReminderText(ent) || 'Assignment') + '</div>' + (tm ? '<div class="t2">' + esc(tm) + '</div>' : '') + '</div><div class="right sumgo">View / edit &rsaquo;</div></button>' });
     });
     extras.sort(function (a, b) { return a.sort - b.sort || String(a.id || '').localeCompare(String(b.id || '')); });
     var tourN = 0;
     extras.forEach(function (x) {
       if (x.kind === 'tour') x.html = x.html.replace('id="sumEntry' + esc(x.id) + '"', 'id="sumEntry' + (tourN++) + '"');
       var swipe = x.kind === 'tour' ? 'sumEntry' : 'sumAsg';
-      rows.push('<div class="swrow" data-swipe="' + swipe + '" data-d="' + d + '" data-eid="' + esc(x.id) + '" data-id="' + esc(x.id) + '">' + x.html + '</div>');
+      var row = '<div class="swrow" data-swipe="' + swipe + '" data-d="' + d + '" data-eid="' + esc(x.id) + '" data-id="' + esc(x.id) + '">' + x.html + '</div>';
+      rows.push(x.navDest ? sumNavWrap(row, x.navDest) : row);
     });
     openSheet(fmt(d, 'long'),
       '<div id="daySum">' + (savedMsg ? '<div class="savedban" id="daySaved" role="status">&#10003; Saved &middot; ' + esc(savedMsg) + '</div>' : '') +
@@ -9333,15 +9609,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     return w;
   }
   function dateWheelOpen(btn) {
+    if (!btn) return;
     DW.forId = btn.id;
-    var iso = btn.dataset.iso || (document.getElementById('seBox') && E.toISO(+document.getElementById('seBox').dataset.d)) || E.toISO(T);
-    var p = E.parts(E.toDay(iso)), w = dwEnsure(), y0 = p.y - 6, years = [];
-    for (var y = y0; y <= p.y + 6; y++) years.push({ v: y, l: String(y) });
-    DW.years = years;
-    dwFill(document.getElementById('dwMonth'), dwMonths(), p.m);
-    dwFill(document.getElementById('dwYear'), years, p.y);
-    dwFill(document.getElementById('dwDay'), dwDays(p.y, p.m), p.d);
-    w.hidden = false;
+    miniCalOpen(btn.id, btn.dataset.iso);
   }
   function dateWheelClose() { var w = document.getElementById('dateWheel'); if (w) w.hidden = true; }
 
@@ -10027,8 +10297,17 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     lkSet: function (t) { ui.lookup = +t.dataset.d; render(); },
     stSave: function () {
       var pf = readProfile('st'), r = parseFloat(document.getElementById('stRate').value), m = parseFloat(document.getElementById('stMult').value);
-      pf.rank = S.profile.rank; pf.rankOther = S.profile.rankOther; // rank lives in Rank & assignment (by effective date)
-      if (!showProfileErrors('st', E.validateProfile(pf))) return toast('Please fix the highlighted fields');
+      if (document.getElementById('stRank')) {
+        // Linked to the Rank & assignment record in effect today — not a second rank field.
+        if (!showProfileErrors('st', E.validateProfile(pf))) return toast('Please fix the highlighted fields');
+        var rec = E.histAt(S.profile.assignHist, E.toISO(T));
+        if (rec) { rec.rank = pf.rank; rec.rankOther = pf.rank === 'other' ? (pf.rankOther || '') : ''; }
+        S.profile.rank = pf.rank; S.profile.rankOther = pf.rank === 'other' ? (pf.rankOther || '') : '';
+        E.syncHist(S.profile);
+      } else {
+        pf.rank = S.profile.rank; pf.rankOther = S.profile.rankOther;
+        if (!showProfileErrors('st', E.validateProfile(pf))) return toast('Please fix the highlighted fields');
+      }
       var ov = document.getElementById('stOverride').checked; if (!(r >= 0)) r = 0;
       if (ov && !(r > 0)) { document.getElementById('stOvWrap').hidden = false; document.getElementById('stRate').focus(); return toast('Enter your own hourly rate, or untick "Use my own hourly rate"'); }
       if (!(m >= 1)) return toast('Multiplier must be at least 1');
@@ -10086,7 +10365,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       Promise.resolve(cloudClient().rpc('delete_my_data')).then(q).then(function () {
         return Promise.resolve(cloudClient().auth.signOut()).catch(function () {});
       }).then(function () {
-        localStorage.removeItem(KEY); setMapsKey(''); slipClear().catch(function () {});
+        localStorage.removeItem(KEY); setMapsKey(''); setDefaultNav(''); slipClear().catch(function () {});
         S = defaultState(); SM = { recs: {} }; saveSM(); ui.onbChart = null; closeAll();
         ui.lastUser = CS.username; CS = {}; saveCS(); render();
         toast('Your account and cloud data were deleted');
@@ -10098,10 +10377,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     reset: function () {
       if (CL.enabled && CS.uid) { // cloud: clear this device and sign out; the account keeps its copy
         if (!confirm('Remove all Patrol Schedule data from this device and sign out? Your account keeps its synced copy; tax, reference and shield numbers and the Maps key (device-only) are erased.')) return;
-        localStorage.removeItem(KEY); setMapsKey(''); slipClear().catch(function () {}); S = defaultState(); SM = { recs: {} }; saveSM(); ui.onbChart = null; closeAll();
+        localStorage.removeItem(KEY); setMapsKey(''); setDefaultNav(''); slipClear().catch(function () {}); S = defaultState(); SM = { recs: {} }; saveSM(); ui.onbChart = null; closeAll();
         return Promise.resolve(cloudClient().auth.signOut()).catch(function () {}).then(function () { ui.lastUser = CS.username; CS = {}; saveCS(); render(); toast('Removed from this device'); });
       }
-      if (!confirm('Erase ALL data on this device? This cannot be undone.')) return; localStorage.removeItem(KEY); setMapsKey(''); slipClear().catch(function () {}); S = defaultState(); ui.onbChart = null; closeAll(); render(); },
+      if (!confirm('Erase ALL data on this device? This cannot be undone.')) return; localStorage.removeItem(KEY); setMapsKey(''); setDefaultNav(''); slipClear().catch(function () {}); S = defaultState(); ui.onbChart = null; closeAll(); render(); },
     suggestOpen: function (t) { var sc = isBeta() && t && t.closest ? t.closest('[data-sec]') : null; suggestSheet(t && t.dataset && t.dataset.section, sc ? sc.getAttribute('data-sec') : isBeta() ? (sheetRoot.firstElementChild && NAV.cur ? SHEET_PAGES[(NAV.cur.key || '').split('|')[0]] : TAB_PAGES[ui.tab]) || '' : ''); },
     sugCapture: function () { sugCapture(); },
     sugClear: function () { if (ui.sugUrl && String(ui.sugUrl).indexOf('blob:') === 0) try { URL.revokeObjectURL(ui.sugUrl); } catch (e) {} setSugFile(null, ''); },
@@ -10146,29 +10425,14 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var y = +dwRead(document.getElementById('dwYear')), m = +dwRead(document.getElementById('dwMonth')), d = +dwRead(document.getElementById('dwDay'));
       if (!(y && m && d)) return dateWheelClose();
       var last = new Date(y, m, 0).getDate(); if (d > last) d = last;
-      var iso = E.toISO(E.fromYMD(y, m, d));
-      setDateCap(DW.forId, iso, 'user');
-      if (DW.forId === 'workedStartDate') {
-        autoEndFromStart('dayStart', 'dayEnd', 'workedStartDate', 'workedEndDate');
-      }
-      if (DW.forId === 'schedStartDate') {
-        var nd2 = E.suggestEndDate(iso, E.normTime(((document.getElementById('schedStart') || {}).value || '').trim()) || '', dateIso('schedEndDate'), E.normTime(((document.getElementById('schedEnd') || {}).value || '').trim()) || '');
-        if (nd2) setDateCap('schedEndDate', nd2, 'auto');
-      }
-      if (DW.forId === 'otWorkedStartDate') {
-        autoEndFromStart('otStart', 'otEnd', 'otWorkedStartDate', 'otWorkedEndDate');
-      }
-      if (DW.forId === 'otSchedStartDate') {
-        autoEndFromStart('otSchedStart', 'otSchedEnd', 'otSchedStartDate', 'otSchedEndDate');
-      }
-      if (DW.forId === 'pdStartDate') pdSyncDates();
-      if (DW.forId === 'pdStartDate' || DW.forId === 'pdEndDate') { pdDateCheck(); pdRemind(); }
-      dateWheelClose(); updateEnd(false); if (document.getElementById('otForm')) otPreview();
+      dateCapApply(DW.forId, E.toISO(E.fromYMD(y, m, d)));
+      dateWheelClose();
     },
     otEditDetails: function (t) {
       var iso = t.dataset.iso, box = document.getElementById('tourBox'), wr = readWorkedTimes();
       wr.start = E.normTime(wr.start) || ''; wr.end = E.normTime(wr.end) || '';
       if (!wr.start || !wr.end) return toast('Enter start and end times first');
+      if (wr.start && wr.end && !wr.endDate) wr.endDate = E.suggestEndDate(wr.startDate || iso, wr.start, wr.endDate || '', wr.end);
       if (box && box.dataset.add === '1') {
         var eid = box.dataset.eid || uid(); box.dataset.eid = eid;
         var ent = E.cleanTourEntry({ id: eid, start: wr.start, end: wr.end, startDate: wr.startDate, endDate: wr.endDate }) || { id: eid, start: wr.start, end: wr.end, startDate: wr.startDate, endDate: wr.endDate };
@@ -10188,7 +10452,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         if (e2) otSheet(e2); else toast('No overtime to edit yet');
         return;
       }
-      var vs = workedVS(wr, readSchedTimes(true));
+      var sc = readSchedTimes(true);
+      var vs = workedVS(wr, sc);
+      var prevT = S.tours[iso] || {};
+      S.tours[iso] = Object.assign({}, prevT, { start: wr.start, end: wr.end, startDate: wr.startDate || iso, endDate: wr.endDate || '', timesSet: true, updated: new Date().toISOString() });
       S.overtime = E.syncWorkedOT(S.overtime, iso, vs, uid());
       var e3 = S.overtime.filter(function (o) { return o.linkedEnd === iso; })[0];
       if (e3) otSheet(e3); else toast('No overtime to edit yet');
@@ -10198,6 +10465,22 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       S.settings.defaultCalendar = v; save();
       var seg = document.getElementById('stCalSeg');
       if (seg) Array.prototype.forEach.call(seg.querySelectorAll('[data-act="calDefault"]'), function (b) { b.classList.toggle('on', b === t); });
+    },
+    navDefault: function (t) {
+      var v = t.dataset.v; if (v !== 'google' && v !== 'apple' && v !== 'waze' && v !== 'ask') return;
+      setDefaultNav(v);
+      var seg = document.getElementById('stNavSeg');
+      if (seg) Array.prototype.forEach.call(seg.querySelectorAll('[data-act="navDefault"]'), function (b) {
+        var on = b === t; b.classList.toggle('on', on); b.setAttribute('aria-checked', on ? 'true' : 'false');
+      });
+      var hint = seg && seg.nextElementSibling;
+      if (hint && hint.classList.contains('hint')) hint.innerHTML = 'Current default: <b>' + esc(v === 'ask' ? 'Ask every time' : (NAV_LABELS[v] || v)) + '</b>.';
+    },
+    navMore: function (t) {
+      var wrap = t.closest && t.closest('.navbtns'), menu = wrap && wrap.querySelector('.nav-menu');
+      var open = menu && !menu.hidden;
+      closeNavMenus();
+      if (menu && !open) { menu.hidden = false; t.setAttribute('aria-expanded', 'true'); }
     },
     calToken: function (t) {
       if (t) { t.disabled = true; t.textContent = 'Getting URL…'; }
@@ -10220,13 +10503,12 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       downloadText(E.toICS([e], { now: new Date(), calName: e.summary || 'Patrol Schedule' }), 'finest-hq-' + E.toISO(d) + '.ics', 'text/calendar;charset=utf-8');
       toast('Calendar file downloaded');
     },
-    dirView: function (t) { ui.dirView = t.dataset.v === 'map' ? 'map' : 'dir'; render(); },
+    dirView: function (t) { ui.tab = t.dataset.v === 'map' ? 'map' : 'directory'; render(); },
     dirFuelLayer: function (t) {
       ui.dirFuelOn = ui.dirFuelOn === false;
-      var on = ui.dirFuelOn !== false;
-      if (t) { t.classList.toggle('on', on); t.setAttribute('aria-pressed', on ? 'true' : 'false'); }
+      syncFuelFilterUi();
       refreshFuelMarkers();
-      refreshCommandShields();
+      addCommandShields();
     },
     dirNearest: function () { nearestFuelSheet(); },
     dirMapOpts: function () {
@@ -10249,7 +10531,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     dirJump: function (t) {
       var id = t.dataset.id, c = E.commandById(id);
       closeAll();
-      ui.dirView = 'dir'; ui.dirKind = ''; ui.dirQ = (c && c.name) || id;
+      ui.tab = 'directory'; ui.dirView = 'dir'; ui.dirKind = ''; ui.dirQ = (c && c.name) || id;
       render();
       setTimeout(function () {
         var el = document.querySelector('.dir-card[data-id="' + id + '"]');
@@ -10351,6 +10633,15 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     navBack: function () { navBack(); }
   };
 
+  var otEditArmed = 0;
+  document.addEventListener('pointerdown', function (ev) {
+    var t = ev.target && ev.target.closest && ev.target.closest('[data-act="otEditDetails"]');
+    if (!t) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+    otEditArmed = Date.now();
+    A.otEditDetails(t, ev);
+  }, true);
   document.addEventListener('pointerdown', swipeDown);
   document.addEventListener('pointermove', swipeMove, { passive: false });
   document.addEventListener('pointerup', swipeUp);
@@ -10359,7 +10650,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (SW.suppressClick) { var same = SW.suppressRow && ev.target.closest && ev.target.closest('.swrow') === SW.suppressRow; SW.suppressClick = false; SW.suppressRow = null; if (same) { ev.preventDefault(); ev.stopPropagation(); return; } }
     var box = document.getElementById('lvOpts');
     if (box && box.classList.contains('open') && !box.contains(ev.target)) closeDaySel();
+    if (!(ev.target.closest && ev.target.closest('[data-act="navMore"], .nav-menu'))) closeNavMenus();
     var t = ev.target.closest('[data-act]'); if (!t) return;
+    if (t.dataset.act === 'otEditDetails' && Date.now() - otEditArmed < 1000) { ev.preventDefault(); ev.stopPropagation(); return; }
     var fn = A[t.dataset.act]; if (!fn) return;
     if (t.dataset.act !== 'sheetBg') ev.preventDefault();
     fn(t, ev);
@@ -10466,7 +10759,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (ev.key === 'ArrowDown') { if (open) { acMove(inp, 1); ev.preventDefault(); } else if (inp.value.trim()) acQuery(inp); }
     else if (ev.key === 'ArrowUp') { if (acMove(inp, -1)) ev.preventDefault(); }
     else if (ev.key === 'Enter' && open && AC.idx >= 0) { ev.preventDefault(); ev.stopPropagation(); acPick(inp, AC.idx); }
-    else if (ev.key === 'Enter' && inp.dataset.ac === 'map') { ev.preventDefault(); ev.stopPropagation(); if (open && AC.items.length === 1) acPick(inp, 0); else { acClose(inp); ui.dirQ = inp.value; submitMapSearch(); } }
+    else if (ev.key === 'Enter' && inp.dataset.ac === 'map') { ev.preventDefault(); ev.stopPropagation(); if (open && AC.items.length === 1) acPick(inp, 0); else { acClose(inp); ui.mapQ = inp.value; submitMapSearch(); } }
     else if (ev.key === 'Escape' && open) { ev.preventDefault(); ev.stopPropagation(); acClose(inp); }
   }, true);
   // pointerdown + preventDefault keeps focus in the field, so blur doesn't close the list before the tap lands
@@ -10494,7 +10787,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (ev.target.getAttribute('inputmode') === 'numeric' && !ev.target.classList.contains('tourIn') && !ev.target.classList.contains('timeIn') && !ev.target.classList.contains('otSplitIn') && /\D/.test(ev.target.value)) ev.target.value = ev.target.value.replace(/\D/g, '');
     if (ev.target.maxLength > 0 && ev.target.getAttribute('inputmode') === 'numeric' && ev.target.value.length > ev.target.maxLength) ev.target.value = ev.target.value.slice(0, ev.target.maxLength); // paste can exceed maxlength
     if (ev.target.classList.contains('cmdq')) cmdResults(ev.target.dataset.px, ev.target.value);
-    if (ev.target.id === 'dirQ') { ui.dirQ = ev.target.value; if (ui.tab === 'directory' && ui.dirView === 'map') dirMapSearch(); else refreshDirList(); }
+    if (ev.target.id === 'dirQ') { if (ui.tab === 'map') { ui.mapQ = ev.target.value; dirMapSearch(); } else { ui.dirQ = ev.target.value; refreshDirList(); } }
     if (ev.target.classList.contains('otSplitIn')) {
       var sv = ev.target.value, del = /^delete/.test(ev.inputType || '');
       var sf = /^\d{1,2}:\d{2}$/.test(String(sv).trim()) ? String(sv).trim() : E.formatTimeInput(sv, del);
@@ -10523,6 +10816,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (/^st(Rank|Hire|Promo|Rate|Override)$/.test(ev.target.id)) refreshPay();
     if (/^(onb|st)(Hire|Promo)$/.test(ev.target.id)) { var spx = ev.target.id.replace(/(Hire|Promo)$/, ''), sl = document.getElementById(spx + 'SvcLine'); if (sl) sl.innerHTML = svcLine(readProfile(spx)); }
     if (ev.target.id === 'asgAddr') refreshNav();
+    if (ev.target.id === 'pdAddr' || ev.target.id === 'pdAddr2') refreshPdNav();
     if (ev.target.id === 'asgPlace') { ev.target.dataset.auto = ''; syncPicks(); }
     if (ev.target.id === 'asgTrLoc') { // choosing a known location (preset or used before) fills its address when the address is blank or another known one; never touches the training text
       var lk = ev.target.value.trim().toLowerCase(), ai = document.getElementById('asgAddr'), known = E.trainingLocations(S.assignments), hit = null;
@@ -10535,7 +10829,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (ev.target.classList && ev.target.classList.contains('timeIn')) { var fv = E.finishTimeInput(ev.target.value); if (fv !== ev.target.value) { ev.target.value = fv; if (ev.target.id === 'dayStart' || ev.target.id === 'dayEnd') updateEnd(false); } if (/^ot(Start|End|TravAmt)$/.test(ev.target.id)) otPreview(); }
     if (/^st(Rank|Hire|Promo|Override)$/.test(ev.target.id)) refreshPay();
     if (ev.target.id === 'heEff' || ev.target.id === 'heRank') { histDiffLine(); if (ev.target.id === 'heRank') heInvSync(); }
-    if (ev.target.id === 'otDate') { otPreview(); otTravResolve(); }
+    if (ev.target.id === 'otDate') { otSyncDateFrames(); otPreview(); otTravResolve(); }
     if (/^(ot|he|onb)Cmd(UAddr|Addr)$/.test(ev.target.id)) cmdChanged(ev.target.id.replace(/Cmd(UAddr|Addr)$/, ''));
     if (ev.target.id === 'pdDur') { var dm = E.parseHM(ev.target.value); if (dm) ev.target.value = E.fmtHM(E.roundPaidMin(dm)); pdRemind(); } // :59 rounds up
     if (ev.target.id === 'pdTaxYear') pdTaxSheet(ev.target.value);
