@@ -54,6 +54,8 @@ header.top .sub{font-size:13px;color:#c7d3e6;margin-top:2px}
 .msgrow.mine{background:#f8fafc}
 .msgrow .msgt2{font-size:12px;color:var(--muted);margin-bottom:2px}
 .msgcompose{margin-top:8px}
+.msgpresets{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}
+.msgpresets .chip{margin:0;min-height:32px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer;background:#fff;white-space:nowrap}
 .sugitem-head{display:flex;align-items:center;gap:6px}
 .pushhint{font-size:12.5px;color:var(--muted);margin:6px 0 10px}
 .chkline{display:flex;gap:10px;align-items:center;min-height:44px;font-weight:700}
@@ -7704,9 +7706,47 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<span>' + esc(who) + ' \u00b7 ' + esc(fmtInboxTime(m.created_at)) + '</span></div>' +
       esc(m.body || '') + '</div>';
   }
-  function msgComposeHtml(sid, to, prefix) {
+  var PRESET_REPLIES = [
+    { id: 'received', label: 'Received', body: 'Thank you for taking the time to share your suggestion. We\'ve received it and are currently reviewing it. We appreciate you helping make FINEST HQ better.' },
+    { id: 'adding', label: 'Adding it', body: 'Thank you for your suggestion. We liked it and are adding it to the app! We\'ll let you know as soon as it goes live.' },
+    { id: 'live', label: 'Now live', body: 'Thank you for your suggestion. It\'s now live in FINEST HQ! Refresh the app or page to see the change. We appreciate you helping make the app better for everyone.' },
+    { id: 'details', label: 'More details', body: 'Thank you for your suggestion. We\'d like to make sure we get this right. Could you share a few more details about what you have in mind, such as where in the app it would go and how you\'d use it?' },
+    { id: 'available', label: 'Already available', body: 'Thank you for your suggestion. Good news, this is already available in FINEST HQ. You can find it under [location]. Let us know if you have any trouble finding it.' },
+    { id: 'notplanned', label: 'Not planned', body: 'Thank you for taking the time to share your idea. After careful review, we aren\'t able to add this right now, but we\'ve saved it for future consideration. Please keep the suggestions coming.' },
+    { id: 'bugfixed', label: 'Bug fixed', body: 'Thank you for reporting this. We\'ve found and fixed the issue. Refresh the app or page to get the update, and let us know if you still see any problems.' }
+  ];
+  function firstNameForReply(profile, username) {
+    function token(s, requireCap) {
+      var first = String(s || '').trim().split(/\s+/)[0].replace(/[.,;:]+$/, '');
+      var re = requireCap ? /^[A-Z][A-Za-z'\-]{0,39}$/ : /^[A-Za-z][A-Za-z'\-]{0,39}$/;
+      return re.test(first) ? first : '';
+    }
+    return token(profile && profile.full_name, false) || token(username, true) || token(profile && profile.username, true) || '';
+  }
+  function presetReplyText(id, first) {
+    var i, p = null;
+    for (i = 0; i < PRESET_REPLIES.length; i++) if (PRESET_REPLIES[i].id === id) p = PRESET_REPLIES[i];
+    if (!p) return '';
+    return (first ? ('Hi ' + first + ',\n\n') : '') + p.body;
+  }
+  function msgPresetHtml(box, first) {
+    return '<div class="msgpresets" role="group" aria-label="Preset replies">' + PRESET_REPLIES.map(function (p) {
+      return '<button type="button" class="chip msgpreset" data-act="msgPreset" data-preset="' + esc(p.id) + '" data-box="' + esc(box) + '" data-first="' + esc(first || '') + '">' + esc(p.label) + '</button>';
+    }).join('') + '</div>';
+  }
+  function msgPreset(t) {
+    var box = document.getElementById(t.dataset.box);
+    if (!box) return;
+    var text = presetReplyText(t.dataset.preset, t.dataset.first || '');
+    box.value = text;
+    box.focus();
+    var marker = '[location]', i = text.indexOf(marker);
+    if (i >= 0 && box.setSelectionRange) box.setSelectionRange(i, i + marker.length);
+  }
+  function msgComposeHtml(sid, to, prefix, first) {
     var box = (prefix || 'msgBox') + '-' + String(sid || 'notice').replace(/[^A-Za-z0-9_-]/g, '') + '-' + String(to || '').replace(/[^A-Za-z0-9_-]/g, '');
-    return '<div class="msgcompose field"><label for="' + esc(box) + '">Reply</label>' +
+    var chips = (prefix || '').indexOf('adm') === 0 ? msgPresetHtml(box, first || '') : '';
+    return '<div class="msgcompose field"><label for="' + esc(box) + '">Reply</label>' + chips +
       '<textarea id="' + esc(box) + '" maxlength="4000" placeholder="Write a reply"></textarea>' +
       '<div class="row" style="margin-top:8px"><button type="button" class="btn sm primary" data-act="msgSend" data-sid="' + esc(sid || '') + '" data-to="' + esc(to) + '" data-box="' + esc(box) + '">Send reply</button></div></div>';
   }
@@ -7748,11 +7788,14 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (pten && !pten._bound) { pten._bound = true; pten.addEventListener('change', function () { setPushEnabled(!!pten.checked); }); }
     Promise.all([
       Promise.resolve(cloudClient().from('suggestions').select('id,user_id,username,section,message,screenshot_path,created_at,read_at').order('created_at', { ascending: false }).then(q)),
-      loadMessages()
+      loadMessages(),
+      Promise.resolve(cloudClient().from('profiles').select('id,username,full_name').then(q)).catch(function () { return []; })
     ]).then(function (both) {
       var el = document.getElementById('inboxList'); if (!el) return;
       ui.inboxRows = both[0] || [];
       var msgs = both[1] || [], by = groupMsgs(msgs);
+      var profBy = {};
+      (both[2] || []).forEach(function (p) { if (p && p.id) profBy[p.id] = p; });
       el.classList.remove('muted');
       inboxCount();
       var noticeKeys = Object.keys(by).filter(function (k) { return k.indexOf('_u:') === 0; });
@@ -7769,7 +7812,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
           '<div style="font-size:14px;margin-top:4px;white-space:pre-wrap;overflow-wrap:anywhere">' + esc(r.message || '') + '</div>' +
           (r.read_at ? '' : '<button type="button" class="btn sm" data-act="sugMark" data-id="' + esc(r.id) + '" style="margin-top:8px">Mark read</button>') +
           (thread.length ? '<div class="msgthread">' + thread.map(msgRowHtml).join('') + '</div>' : '') +
-          msgComposeHtml(r.id, r.user_id, 'adm') +
+          msgComposeHtml(r.id, r.user_id, 'adm', firstNameForReply(profBy[r.user_id], r.username)) +
           '</div></div>';
       }).join('');
       noticeKeys.forEach(function (k) {
@@ -7778,7 +7821,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         html += '<div class="item' + (unread ? ' sugunread' : '') + '"><div class="main"><div class="t1 sugitem-head">' +
           (unread ? msgNewIconHtml() : '') + '<span>Notice' + (last && last.sender_username && last.sender_id !== CS.uid ? ' \u00b7 ' + esc(last.sender_username) : '') + '</span></div>' +
           '<div class="msgthread">' + thread.map(msgRowHtml).join('') + '</div>' +
-          (other ? msgComposeHtml('', other, 'admN') : '') +
+          (other ? msgComposeHtml('', other, 'admN', firstNameForReply(profBy[other], (profBy[other] && profBy[other].username) || '')) : '') +
           '</div></div>';
       });
       html += '</div>';
@@ -10578,6 +10621,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     sugPopDismiss: function () { hideSugPop(); },
     sugMark: function (t) { sugMark(t.dataset.id); },
     msgSend: function (t) { msgSend(t); },
+    msgPreset: function (t) { msgPreset(t); },
     msgOpen: function (t) { userInboxSheet(t.dataset.key); },
     pushToggle: function (t) { setPushEnabled(!!t.checked); },
     dayAddEntry: function (t) {
