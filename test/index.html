@@ -104,6 +104,13 @@ nav.tabs button[data-tab="overtime"] .tablbl{font-size:10px;font-weight:700;lett
 .chartline{margin:6px 0 10px;padding:8px 10px;border-radius:10px;background:#f8fafc;border:1px solid #e2e8f0;font-size:13px;color:#334155}
 .otexp{color:#64748b!important;font-weight:600}
 nav.tabs button.on,nav.tabs button.on .tablbl{color:#0000FF}nav.tabs button.on svg{color:#0000FF;stroke:currentColor}
+nav.tabs{transition:transform .22s ease,opacity .22s ease}
+#app.tabs-search-off{--tabh:0px}
+#app.tabs-search-off~nav.tabs{transform:translateY(100%);opacity:0;pointer-events:none}
+#app.tabs-search-off~#toast{--tabh:0px}
+main#view{transition:padding-bottom .22s ease}
+@media (prefers-reduced-motion:reduce){nav.tabs,main#view{transition:none}}
+
 .card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:0 1px 2px rgba(15,23,42,.08);border:1px solid #e1e6ee;margin-bottom:12px}
 .row{display:flex;gap:10px}.row[hidden]{display:none}.field.mi{flex:0 0 64px;min-width:64px;max-width:72px}.field.mi input{text-align:center;text-transform:uppercase}
 .row>*{flex:1;min-width:0}
@@ -416,8 +423,12 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after,body.beta #
 .navbtns{display:flex;gap:6px;margin-top:8px;position:relative}.navbtns .btn{flex:1;text-align:center;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 6px;font-size:13px}
 .navbtns.inrow{margin:0;padding:0 10px 10px}
 #sumList .sumnav{min-width:0;max-width:100%;box-sizing:border-box}
-#sumList .navbtns.inrow{margin:0;padding:0 2px 10px;width:100%;max-width:100%;min-width:0;box-sizing:border-box}
-#sumList .navbtns.inrow .btn,#sumList .navbtns.inrow .nav-main,#sumList .navbtns.inrow .nav-more{min-width:0;max-width:100%;box-sizing:border-box}#upcomingAsg .asgwrap{border-bottom:1px solid var(--line,#e2e8f0)}#upcomingAsg .navbtns.inrow{margin:-2px 0 8px 42px;padding:0;max-width:calc(100% - 44px)}#upcomingAsg .navbtns.inrow.nav-split{border-radius:8px}#upcomingAsg .navbtns.inrow .nav-main,#upcomingAsg .navbtns.inrow .btn{min-height:28px;font-size:12px;padding:0 8px;border-radius:8px 0 0 8px}#upcomingAsg .navbtns.inrow .nav-more{min-height:28px;min-width:36px;font-size:11px;padding:0 8px;border-radius:0 8px 8px 0}
+#sumList .navbtns.inrow,#sumList .navbtns.nav-7a{margin:0 0 10px;padding:0;width:100%;max-width:100%;min-width:0;box-sizing:border-box}
+#sumList .navbtns.nav-split{gap:0;border:1px solid var(--line);border-radius:12px;overflow:visible;background:#fff;align-items:stretch;min-height:48px}
+#sumList .navbtns.nav-split .nav-main,#sumList .navbtns.nav-split .nav-more{min-width:0;max-width:none;box-sizing:border-box;margin:0;min-height:48px;height:auto;display:inline-flex;align-items:center;justify-content:center;text-align:center;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.15;font-weight:700;color:var(--ink);background:#fff;border:0;box-shadow:none}
+#sumList .navbtns.nav-split .nav-main{flex:0 0 65%;width:65%;padding:0 8px;border-radius:12px 0 0 12px;font-size:clamp(10px,3.3vw,14px);background:#fff;border-color:transparent;color:var(--ink)}
+#sumList .navbtns.nav-split .nav-more{flex:1 1 35%;width:35%;padding:0 6px;border-radius:0 12px 12px 0;border-left:1px solid var(--line);font-size:clamp(11px,3.3vw,14px);font-weight:700;background:#fff;color:var(--ink)}
+#sumList .navbtns.nav-split .nav-more[aria-expanded="true"]{background:#eef1f6}#upcomingAsg .asgwrap{border-bottom:1px solid var(--line,#e2e8f0)}#upcomingAsg .navbtns.inrow{margin:-2px 0 8px 42px;padding:0;max-width:calc(100% - 44px)}#upcomingAsg .navbtns.inrow.nav-split{border-radius:8px}#upcomingAsg .navbtns.inrow .nav-main,#upcomingAsg .navbtns.inrow .btn{min-height:28px;font-size:12px;padding:0 8px;border-radius:8px 0 0 8px}#upcomingAsg .navbtns.inrow .nav-more{min-height:28px;min-width:36px;font-size:11px;padding:0 8px;border-radius:0 8px 8px 0}
 .navbtns.nav-split{gap:0;border:1px solid var(--line);border-radius:10px;overflow:visible;background:#fff}
 .navbtns.nav-split .nav-main{flex:1;border:0;border-radius:10px 0 0 10px;min-height:40px}
 .navbtns.nav-split .nav-more{flex:0 0 auto;min-width:44px;margin:0;border:0;border-left:1px solid var(--line);border-radius:0 10px 10px 0;padding:0 10px;font-size:12px;font-weight:700;background:#fff;color:var(--ink)}
@@ -6201,6 +6212,23 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   // ---------- render ----------
   // Beta testers (profiles.beta, set by the admin) see section numbers (1a, 2b...) on every page; everyone else never does.
   function isBeta() { return !!(CL.enabled && CS && CS.uid && CS.status === 'approved' && CS.beta === true); }
+  function isDirSearchInput(el) {
+    return !!(el && el.id === 'dirQ' && (ui.tab === 'map' || ui.tab === 'directory'));
+  }
+  function setSearchTabsHidden(hide) {
+    var app = document.getElementById('app'), tabs = document.getElementById('tabs');
+    if (!app) return;
+    hide = !!hide;
+    if (app.classList.contains('tabs-search-off') === hide) return;
+    app.classList.toggle('tabs-search-off', hide);
+    if (tabs) tabs.setAttribute('aria-hidden', hide ? 'true' : 'false');
+    if (dirMap) {
+      setTimeout(function () { if (dirMap) dirMap.invalidateSize(); }, 50);
+      setTimeout(function () { if (dirMap) dirMap.invalidateSize(); }, 250);
+    }
+  }
+  function showSearchTabs() { setSearchTabsHidden(false); }
+  function hideSearchTabs() { setSearchTabsHidden(true); }
   function render() {
     document.body.classList.toggle('beta', isBeta());
     if (cloudGate()) { stopRetireTick(); return; }
@@ -6215,7 +6243,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (ui.tab === 'lookup') { ui.tab = 'schedule'; }
     Array.prototype.forEach.call(document.querySelectorAll('nav.tabs button'), function (b) { b.classList.toggle('on', b.dataset.tab === ui.tab); b.setAttribute('aria-current', b.dataset.tab === ui.tab ? 'page' : 'false'); });
     if (dirMap) teardownDirMap();
-    var appEl = document.getElementById('app'); if (appEl) appEl.classList.toggle('tab-map', ui.tab === 'map');
+    var appEl = document.getElementById('app'); if (appEl) { appEl.classList.toggle('tab-map', ui.tab === 'map'); appEl.classList.remove('tabs-search-off'); } var tabsEl = document.getElementById('tabs'); if (tabsEl) tabsEl.setAttribute('aria-hidden', 'false');
     view.innerHTML = ({ schedule: viewSchedule, overtime: viewOvertime, pay: viewPay, map: viewMap, directory: viewDirectory })[ui.tab]();
     if (CL.enabled && S.profile && !S.profile.taxNumber && !ui.privDismiss) view.insertAdjacentHTML('afterbegin', '<div class="privbanner" id="privBanner">&#128274; Add your tax and reference numbers in Settings. They\'re kept on this device only and never synced, so each new device asks once. <button class="btn sm" data-act="settings">Settings</button> <button class="linkbtn" data-act="privDismiss">Later</button></div>');
     if (ui.tab === 'pay' && ui.scrollCurrent) { ui.scrollCurrent = false; var c = document.getElementById('curPeriod'); if (c) c.scrollIntoView({ block: 'start' }); }
@@ -10454,16 +10482,19 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function navLinksHtml(u, cls, routeId) {
     if (!u || (!u.google && !u.apple && !u.waze)) return '';
     var pref = defaultNav();
-    if (pref === 'ask') {
+    var force7a = /(?:^|\s)nav-7a(?:\s|$)/.test(cls || '');
+    var app = (pref === 'ask') ? platformNavDefault() : pref;
+    if (pref === 'ask' && !force7a) {
       return '<div class="navbtns ' + (cls || '') + '">' + NAV_ORDER.map(function (k) {
         return '<a class="btn sm ' + NAV_CLS[k] + '"' + (routeId && k === 'google' ? ' id="' + esc(routeId) + '"' : '') + ' href="' + esc(u[k]) + '" target="_blank" rel="noopener">' + NAV_LABELS[k] + '</a>';
       }).join('') + '</div>';
     }
     var menu = NAV_ORDER.map(function (k) {
-      return '<a class="' + NAV_CLS[k] + (k === pref ? ' is-default' : '') + '" role="menuitem" href="' + esc(u[k]) + '" target="_blank" rel="noopener">' + NAV_LABELS[k] + '</a>';
+      return '<a class="' + NAV_CLS[k] + (k === app ? ' is-default' : '') + '" role="menuitem" href="' + esc(u[k]) + '" target="_blank" rel="noopener">' + NAV_LABELS[k] + '</a>';
     }).join('');
+    var leftLabel = force7a ? ('Navigate with ' + NAV_LABELS[app]) : NAV_LABELS[app];
     return '<div class="navbtns nav-split ' + (cls || '') + '">' +
-      '<a class="btn primary sm nav-main ' + NAV_CLS[pref] + '" href="' + esc(u[pref]) + '" target="_blank" rel="noopener"' + (routeId ? ' id="' + esc(routeId) + '"' : '') + '>' + NAV_LABELS[pref] + '</a>' +
+      '<a class="btn' + (force7a ? '' : ' primary') + ' sm nav-main ' + NAV_CLS[app] + '" href="' + esc(u[app]) + '" target="_blank" rel="noopener"' + (routeId ? ' id="' + esc(routeId) + '"' : '') + '>' + leftLabel + '</a>' +
       '<button type="button" class="btn sm nav-more" data-act="navMore" aria-expanded="false" aria-haspopup="menu" aria-label="Other navigation app">Other</button>' +
       '<div class="nav-menu" hidden role="menu">' + menu + '</div></div>';
   }
@@ -11865,7 +11896,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     });
   }
   function sumNavWrap(rowHtml, dest) {
-    var n = navLinks(dest, 'inrow');
+    var n = navLinks(dest, 'inrow nav-7a');
     return n ? '<div class="asgwrap sumnav">' + rowHtml + n + '</div>' : rowHtml;
   }
   function daySummary(d, savedMsg) {
@@ -13349,7 +13380,18 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   // pointerdown + preventDefault keeps focus in the field, so blur doesn't close the list before the tap lands
   document.addEventListener('pointerdown', function (ev) { var o = ev.target.closest && ev.target.closest('.acopt'); if (!o) return; ev.preventDefault(); var inp = document.getElementById(o.parentNode.id.replace(/-ac$/, '')); if (inp) acPick(inp, +o.dataset.i); });
   document.addEventListener('mousedown', function (ev) { if (ev.target.closest && ev.target.closest('.acdrop')) ev.preventDefault(); });
-  document.addEventListener('focusout', function (ev) { var inp = ev.target; if (inp.classList && inp.classList.contains('acIn')) setTimeout(function () { if (document.activeElement !== inp) acClose(inp); }, 150); });
+  document.addEventListener('focusin', function (ev) { if (isDirSearchInput(ev.target)) hideSearchTabs(); });
+  document.addEventListener('focusout', function (ev) {
+    var inp = ev.target;
+    if (inp.classList && inp.classList.contains('acIn')) setTimeout(function () { if (document.activeElement !== inp) acClose(inp); }, 150);
+    if (isDirSearchInput(inp)) setTimeout(function () {
+      var a = document.activeElement;
+      if (isDirSearchInput(a)) return;
+      var drop = document.getElementById('dirQ-ac');
+      if (drop && a && drop.contains(a)) return;
+      showSearchTabs();
+    }, 150);
+  });
   document.addEventListener('input', function (ev) {
     if (/^ot(Start|End|Hours|Date|CashH|SchedStart|SchedEnd|CashFrom|CashTo|TimeFrom|TimeTo|TimeDur|WorkedDur|Total)$/.test(ev.target.id)) otPreview();
     if (ev.target.id === 'pdStart' || ev.target.id === 'pdEnd') pdAutoDur();
@@ -13371,7 +13413,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (ev.target.getAttribute('inputmode') === 'numeric' && !ev.target.classList.contains('tourIn') && !ev.target.classList.contains('timeIn') && !ev.target.classList.contains('otSplitIn') && /\D/.test(ev.target.value)) ev.target.value = ev.target.value.replace(/\D/g, '');
     if (ev.target.maxLength > 0 && ev.target.getAttribute('inputmode') === 'numeric' && ev.target.value.length > ev.target.maxLength) ev.target.value = ev.target.value.slice(0, ev.target.maxLength); // paste can exceed maxlength
     if (ev.target.classList.contains('cmdq')) cmdResults(ev.target.dataset.px, ev.target.value);
-    if (ev.target.id === 'dirQ') { if (ui.tab === 'map') { ui.mapQ = ev.target.value; dirMapSearch(); } else { ui.dirQ = ev.target.value; refreshDirList(); } }
+    if (ev.target.id === 'dirQ') { if (ui.tab === 'map') { ui.mapQ = ev.target.value; dirMapSearch(); } else { ui.dirQ = ev.target.value; refreshDirList(); } if (ui.tab === 'map' || ui.tab === 'directory') hideSearchTabs(); }
     if (ev.target.classList.contains('otSplitIn')) {
       var sv = ev.target.value, del = /^delete/.test(ev.inputType || '');
       var sf = /^\d{1,2}:\d{2}$/.test(String(sv).trim()) ? String(sv).trim() : E.formatTimeInput(sv, del);
