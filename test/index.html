@@ -627,6 +627,36 @@ a.dir-tel.mine{color:#0f766e}
 .map-pct-pill[data-outside]{color:#64748b;font-weight:700;cursor:default}
 .nearest-item{padding:10px 0;border-bottom:1px solid var(--line)}
 .nearest-item .mi{font-weight:800;color:var(--navy)}
+.nearest-panel{position:absolute;left:8px;right:8px;bottom:8px;z-index:520;background:#fff;border-radius:14px;padding:8px 10px 10px;box-shadow:0 4px 16px rgba(0,0,0,.2);display:flex;flex-direction:column;gap:6px;overflow:hidden;}
+.nearest-panel.map-mode{max-height:none}
+.nearest-panel.map-mode .fuelchips,.nearest-panel.map-mode #fuelFilterEmpty{display:none!important}
+.nearest-panel.list-mode{height:72%;max-height:72%}
+.nearest-panel .fuelchips{gap:4px;margin:0}
+.nearest-panel .fuelchips .chip{font-size:11px;padding:4px 8px;min-height:28px;font-weight:700;border-width:1px}
+.nearest-panel .ni-nav{display:flex;align-items:center;gap:8px;grid-column:2 / -1;margin-top:2px}
+.nearest-panel .ni-nav .navbtns{margin:0;flex:1;min-width:0}
+.nearest-panel .ni-nav .navbtns .btn,.nearest-panel .ni-nav .nav-main{min-height:30px;font-size:12px}
+.nearest-panel .ni-nav .linkbtn{min-height:30px;padding:0 4px;white-space:nowrap}
+.nearest-head{display:flex;align-items:center;gap:8px}
+.nearest-head h3{margin:0;font-size:15px;flex:1;min-width:0}
+.nearest-seg.seg{flex:0 0 auto;width:132px;margin:0}
+.nearest-seg.seg button{min-height:30px;font-size:12px;padding:0 8px}
+.nearest-head .nearest-x{border:0;background:transparent;font-size:22px;line-height:1;padding:0 2px;cursor:pointer;color:#334155}
+.nearest-origin{font-size:12px;color:var(--muted);margin:0}
+.nearest-change{border:0;background:none;color:var(--navy);font-weight:700;font-size:12px;padding:0;cursor:pointer}
+#nearestFuelList{flex:1 1 0%;overflow:auto;-webkit-overflow-scrolling:touch;min-height:0}
+.nearest-panel .ni-nav .btn{min-height:32px;font-size:12px;padding:4px 10px}
+.nearest-panel .fuelchips{margin:2px 0}
+.nearest-item{display:grid;grid-template-columns:28px 1fr auto;gap:1px 8px;align-items:start;padding:6px 0;background:none;border:0;width:100%;text-align:left;cursor:pointer}
+.nearest-item .nr{display:flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#0b1f3a;color:#fff;font-weight:800;font-size:12px;margin-top:1px}
+.nearest-item.focus .nr{background:#1d4ed8}
+.nearest-item .ni-body{min-width:0;display:block;border:0;background:none;padding:0;text-align:left;cursor:pointer;font:inherit;color:inherit}
+.nearest-item .nr{border:0;cursor:pointer}
+.nearest-item .ni-name{font-weight:800;color:#0b1f3a}
+.nearest-item .ni-meta{font-size:12px;color:var(--muted);margin:2px 0}
+.nearest-item .ni-nav{grid-column:2 / -1}
+.nearest-pin{display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#0b1f3a;color:#fff;font-weight:800;font-size:13px;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4);pointer-events:auto}
+.nearest-pin.focus{background:#1d4ed8;box-shadow:0 0 0 3px rgba(29,78,216,.35),0 1px 4px rgba(0,0,0,.4)}
 .fuel-rmp{color:#9a3412;font-weight:700;margin:6px 0}
 .fuel-src{font-size:12px;color:var(--muted)}
 .leaflet-div-icon{background:transparent;border:0}
@@ -7021,7 +7051,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var el = document.getElementById('dirList');
     if (el) el.innerHTML = dirResultsHtml();
   }
-  var dirMap = null, dirFuelLayer = null, dirHospLayer = null, hospitalData = null, dirPctLayer = null, dirWmLayer = null, dirWmMarkers = [], fuelOrigin = null, dirSearchMarker = null, dirCoverLayer = null, nychaData = null, mtaStationData = null, mapDataLoad = null, dirShieldLayer = null, dirShieldMarkers = [], dirLocateWatch = null, dirLocateMarker = null, dirLocateCircle = null, dirLocateFollowing = false, dirLocateLast = null;
+  var dirMap = null, dirFuelLayer = null, dirHospLayer = null, hospitalData = null, dirPctLayer = null, dirWmLayer = null, dirWmMarkers = [], fuelOrigin = null, dirSearchMarker = null, dirCoverLayer = null, nychaData = null, mtaStationData = null, mapDataLoad = null, dirShieldLayer = null, dirShieldMarkers = [], dirLocateWatch = null, dirLocateMarker = null, dirLocateCircle = null, dirLocateFollowing = false, dirLocateLast = null, dirNearestLayer = null, nearestMode = false, nearestView = "map", nearestFocusId = null, nearestRows = [];
   var FUEL_CHIPS = [
     { id: 'unleaded', label: 'Unleaded' },
     { id: 'premium', label: 'Premium' },
@@ -7064,8 +7094,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function teardownDirMap() {
     stopLocateMe({ silent: true });
+    clearNearestMarkers();
+    if (ui.tab !== 'map') clearNearestMode();
     if (dirMap) { try { dirMap.remove(); } catch (e) {} }
-    dirMap = null; dirFuelLayer = null; dirPctLayer = null; dirWmLayer = null; dirWmMarkers = []; dirSearchMarker = null; dirCoverLayer = null; dirShieldLayer = null; dirShieldMarkers = []; dirEvLayer = null;
+    dirMap = null; dirFuelLayer = null; dirPctLayer = null; dirWmLayer = null; dirWmMarkers = []; dirSearchMarker = null; dirCoverLayer = null; dirShieldLayer = null; dirShieldMarkers = []; dirEvLayer = null; dirNearestLayer = null;
   }
   function applyFuelFilter(next) {
     S.settings.fuelFilter = E.cleanFuelFilter(next, true);
@@ -7076,10 +7108,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       b.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
     if (dirMap) { refreshFuelMarkers(); refreshHospitalMarkers(); addCommandShields(); }
-    var list = document.getElementById('nearestFuelList');
-    if (list) fillNearestList(list);
     var empty = document.getElementById('fuelFilterEmpty');
     if (empty) empty.hidden = (S.settings.fuelFilter || []).length > 0;
+    if (nearestMode) refreshNearestResults();
+    else fillNearestList(document.getElementById('nearestFuelList'));
   }
   function syncFuelFilterUi() {
     var on = ui.dirFuelOn !== false;
@@ -7089,13 +7121,20 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (btn) { btn.classList.toggle('on', on); btn.setAttribute('aria-pressed', on ? 'true' : 'false'); }
   }
   function nearestSheetOpen() {
+    if (nearestMode) return true;
     var h = document.querySelector('#sheetRoot .sheet .shead h3');
     return !!(h && String(h.textContent || '').trim() === 'Nearest fuel');
   }
   function syncNearestBtn() {
-    var on = nearestSheetOpen();
+    var on = !!nearestMode || nearestSheetOpen();
     var b = document.getElementById('dirNearestBtn');
     if (b) { b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); }
+  }
+  function closeMapOpts() {
+    var p = document.getElementById('dirMapOpts'), b = document.getElementById('dirMapOptsBtn');
+    if (p) p.hidden = true;
+    if (b) b.setAttribute('aria-expanded', 'false');
+    if (dirMap) setTimeout(function () { if (dirMap) dirMap.invalidateSize(); }, 80);
   }
   function syncBannerSuggest() {
     var b = document.getElementById('btnSuggest'); if (!b) return;
@@ -7991,6 +8030,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     refreshFuelMarkers(); refreshHospitalMarkers();
     refreshEvMarkers();
     addLocateControl();
+    if (nearestMode) { renderNearestPanel(); paintNearestMarkers(); }
     dirMapSearch(true);
     loadMapCoverData();
     setTimeout(function () { if (dirMap) dirMap.invalidateSize(); }, 80);
@@ -8151,6 +8191,54 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     });
     if (hits.length === 1 && hits[0].lat != null) dirMap.setView([hits[0].lat, hits[0].lon], 15);
   }
+  var NEAREST_N = 5;
+  function nearestDistanceLabel(miles) {
+    var mi = (+miles < 10) ? (+miles).toFixed(1) : String(Math.round(+miles));
+    return mi + ' mi (straight-line)';
+  }
+  function computeNearestRows() {
+    var types = fuelFilter();
+    if (!fuelOrigin || !types.length) return [];
+    return E.nearestFuel(fuelOrigin, { types: types, car: true }).slice(0, NEAREST_N);
+  }
+  function clearNearestMarkers() {
+    if (dirNearestLayer && dirMap) { try { dirMap.removeLayer(dirNearestLayer); } catch (e) {} }
+    dirNearestLayer = null;
+  }
+  function setNearestBaseLayers() {
+    var show = !nearestMode;
+    function setLayer(layer, on) {
+      if (!layer || !dirMap) return;
+      var has = dirMap.hasLayer(layer);
+      if (on && !has) layer.addTo(dirMap);
+      if (!on && has) dirMap.removeLayer(layer);
+    }
+    setLayer(dirFuelLayer, show);
+    setLayer(dirShieldLayer, show);
+  }
+  function clearNearestMode() {
+    nearestMode = false;
+    nearestView = 'map';
+    nearestFocusId = null;
+    nearestRows = [];
+    clearNearestMarkers();
+    setNearestBaseLayers();
+    if (dirMap) { refreshFuelMarkers(); addCommandShields(); }
+    var p = document.getElementById('nearestPanel');
+    if (p) { p.hidden = true; p.innerHTML = ''; p.className = 'nearest-panel'; }
+    syncNearestBtn();
+  }
+  function nearestOriginPickerHtml() {
+    return '<div id="nearestOriginPick">' +
+      '<div class="map-toolbar"><button type="button" class="btn primary sm" data-act="fuelUseGeo">Use my location</button></div>' +
+      '<p class="muted" style="font-size:12.5px">Your location is used only to sort these results. It is never saved or synced.</p>' +
+      '<div id="fuelGeoStatus" class="muted"></div>' +
+      '<label class="field">Or pick a precinct<select id="fuelOriginPct"><option value="">Precinct…</option>' + originPctOptions() + '</select></label>' +
+      '<button type="button" class="btn sm" data-act="fuelUsePct">Use this precinct</button>' +
+      '<label class="field">Or enter an address<input id="fuelOriginAddr" type="text" placeholder="Street address in New York City"></label>' +
+      '<button type="button" class="btn sm" data-act="fuelUseAddr">Use this address</button>' +
+      '</div>';
+  }
   function fillNearestList(el) {
     if (!el) return;
     var types = fuelFilter();
@@ -8162,36 +8250,140 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       el.innerHTML = '<p class="muted">Choose a starting point to list the closest sites.</p>';
       return;
     }
-    var rows = E.nearestFuel(fuelOrigin, { types: types, car: true });
+    var rows = nearestRows && nearestRows.length ? nearestRows : computeNearestRows();
     if (!rows.length) {
       el.innerHTML = '<p class="dir-empty">No fuel sites match the selected types near this starting point.</p>';
       return;
     }
-    el.innerHTML = rows.map(function (r) {
-      var s = r.site, mi = r.miles < 10 ? r.miles.toFixed(1) : r.miles.toFixed(0);
-      return '<div class="nearest-item" data-fuel-id="' + esc(s.id) + '"><button type="button" class="linkbtn" data-act="fuelOpen" data-id="' + esc(s.id) + '"><strong>' + esc(s.name) + '</strong></button>' +
-        ' <span class="mi">' + mi + ' mi</span>' +
-        '<div class="muted">' + esc(s.address) + '</div>' +
-        '<div>' + esc(fuelTypeLabels(s)) + '</div>' +
-        fuelRmpHtml(s) + '</div>';
+    el.innerHTML = rows.map(function (r, i) {
+      var s = r.site, n = i + 1, focus = nearestFocusId === s.id;
+      var rmp = fuelRmpHtml(s);
+      return '<div class="nearest-item' + (focus ? ' focus' : '') + '" data-fuel-id="' + esc(s.id) + '">' +
+        '<button type="button" class="nr" data-act="nearestFocus" data-id="' + esc(s.id) + '" aria-label="Show ' + esc(s.name) + ' on the map">' + n + '</button>' +
+        '<button type="button" class="ni-body" data-act="nearestFocus" data-id="' + esc(s.id) + '"><span class="ni-name">' + esc(s.name) + '</span>' +
+        (s.address ? '<div class="ni-meta">' + esc(s.address) + '</div>' : '') +
+        '<div class="ni-meta">' + esc(fuelTypeLabels(s)) + (rmp ? ' · ' + rmp.replace(/<[^>]+>/g, '') : '') + '</div></button>' +
+        '<span class="mi">' + esc(nearestDistanceLabel(r.miles)) + '</span>' +
+        '<div class="ni-nav">' + navLinks(s) +
+        ' <button type="button" class="linkbtn" data-act="fuelOpen" data-id="' + esc(s.id) + '">Details</button></div>' +
+        '</div>';
     }).join('') + fuelSourceHtml();
   }
-  function nearestFuelSheet() {
-    var body = '<div data-sec="4l">' + fuelChipBar() +
-      '<p class="muted" id="fuelFilterEmpty"' + ((fuelFilter() || []).length ? ' hidden' : '') + '>Select a fuel type to see sites.</p>' +
-      '<div class="map-toolbar"><button type="button" class="btn primary sm" data-act="fuelUseGeo">Use my location</button></div>' +
-      '<p class="muted" style="font-size:12.5px">Your location is used only to sort this list. It is never saved or synced.</p>' +
-      '<div id="fuelGeoStatus" class="muted"></div>' +
-      '<label class="field">Or pick a precinct<select id="fuelOriginPct"><option value="">Precinct…</option>' + originPctOptions() + '</select></label>' +
-      '<button type="button" class="btn sm" data-act="fuelUsePct">Use this precinct</button>' +
-      '<label class="field">Or enter an address<input id="fuelOriginAddr" type="text" placeholder="Street address in New York City"></label>' +
-      '<button type="button" class="btn sm" data-act="fuelUseAddr">Use this address</button>' +
-      '<div id="nearestFuelList"></div>' +
-      '<p class="fuel-src" style="margin-top:10px">Sites that offer only Diesel and/or Premium do not dispense into a regular RMP. Harbor A is not accessible by automobile and is left out of Nearest.</p>' +
-      fuelSourceHtml() + '</div>';
-    openSheet('Nearest fuel', body, 'Nearest fuel');
-    fillNearestList(document.getElementById('nearestFuelList'));
+  function paintNearestMarkers() {
+    clearNearestMarkers();
+    if (!dirMap || typeof L === 'undefined' || !nearestMode) return;
+    var rows = nearestRows || [];
+    if (!rows.length) return;
+    dirNearestLayer = L.layerGroup();
+    rows.forEach(function (r, i) {
+      var s = r.site, n = i + 1;
+      if (s.lat == null || s.lon == null) return;
+      var focus = nearestFocusId === s.id;
+      var icon = L.divIcon({
+        className: 'nearest-pin-icon',
+        html: '<span class="nearest-pin' + (focus ? ' focus' : '') + '" data-fuel-id="' + esc(s.id) + '" data-rank="' + n + '">' + n + '</span>',
+        iconSize: [26, 26],
+        iconAnchor: [13, 13]
+      });
+      var m = L.marker([s.lat, s.lon], { icon: icon, title: n + '. ' + s.name, zIndexOffset: 700 + (focus ? 50 : 0), keyboard: true });
+      m._fuelId = s.id;
+      m.on('click', function (ev) {
+        if (ev && ev.originalEvent) L.DomEvent.stop(ev.originalEvent);
+        focusNearestSite(s.id, { openSheet: true });
+      });
+      dirNearestLayer.addLayer(m);
+    });
+    dirNearestLayer.addTo(dirMap);
   }
+  function fitNearestBounds() {
+    if (!dirMap || typeof L === 'undefined' || !nearestRows.length) return;
+    var pts = nearestRows.filter(function (r) { return r.site && r.site.lat != null; }).map(function (r) { return [r.site.lat, r.site.lon]; });
+    if (fuelOrigin && fuelOrigin.lat != null) pts.push([fuelOrigin.lat, fuelOrigin.lon]);
+    if (dirLocateMarker) {
+      var ll = dirLocateMarker.getLatLng();
+      if (ll) pts.push([ll.lat, ll.lng]);
+    }
+    if (pts.length < 1) return;
+    var panel = document.getElementById('nearestPanel');
+    var ph = (panel && !panel.hidden) ? Math.min(panel.getBoundingClientRect().height, 220) : 80;
+    var b = L.latLngBounds(pts);
+    dirMap.fitBounds(b, { animate: false, maxZoom: 15, paddingTopLeft: [28, 28], paddingBottomRight: [28, ph + 20] });
+  }
+  function refreshNearestResults(opts) {
+    opts = opts || {};
+    nearestRows = computeNearestRows();
+    if (nearestFocusId && !nearestRows.some(function (r) { return r.site.id === nearestFocusId; })) nearestFocusId = null;
+    renderNearestPanel();
+    paintNearestMarkers();
+    setNearestBaseLayers();
+    if (opts.fit !== false && nearestView === 'map' && nearestRows.length) fitNearestBounds();
+  }
+  function renderNearestPanel() {
+    var p = document.getElementById('nearestPanel');
+    if (!p || !nearestMode) return;
+    var hasOrigin = !!(fuelOrigin && fuelOrigin.lat != null);
+    var showPick = !hasOrigin || p.dataset.pick === '1';
+    var typesOn = (fuelFilter() || []).length > 0;
+    var originText = hasOrigin
+      ? ('Starting from ' + (fuelOrigin.label || 'the selected point') + '.')
+      : 'Choose a starting point to see the closest sites.';
+    p.hidden = false;
+    p.className = 'nearest-panel ' + (nearestView === 'list' ? 'list-mode' : 'map-mode');
+    p.setAttribute('data-sec', '4l');
+    p.innerHTML = '<div class="nearest-head">' +
+      '<h3>Nearest fuel</h3>' +
+      '<div class="seg nearest-seg" role="tablist" aria-label="Nearest fuel view">' +
+        '<button type="button" data-act="nearestView" data-v="map" role="tab" class="' + (nearestView === 'map' ? 'on' : '') + '" aria-selected="' + (nearestView === 'map' ? 'true' : 'false') + '">Map</button>' +
+        '<button type="button" data-act="nearestView" data-v="list" role="tab" class="' + (nearestView === 'list' ? 'on' : '') + '" aria-selected="' + (nearestView === 'list' ? 'true' : 'false') + '">List</button>' +
+      '</div>' +
+      '<button type="button" class="nearest-x" data-act="nearestClose" aria-label="Close nearest fuel">&times;</button>' +
+      '</div>' +
+      fuelChipBar() +
+      '<p class="muted" id="fuelFilterEmpty"' + (typesOn ? ' hidden' : '') + '>Select a fuel type to see sites.</p>' +
+      '<p class="nearest-origin" id="nearestOriginLine">' + esc(originText) + '</p>' +
+      (hasOrigin ? '<button type="button" class="nearest-change" data-act="nearestChangeOrigin">' + (showPick ? 'Hide starting point options' : 'Change starting point') + '</button>' : '') +
+      (showPick ? nearestOriginPickerHtml() : '') +
+      '<div id="nearestFuelList"' + (nearestView === 'list' || !hasOrigin || !typesOn ? '' : ' hidden') + '></div>' +
+      (nearestView === 'list' ? '<p class="fuel-src" style="margin-top:4px">Harbor A is not accessible by automobile and is left out of Nearest. Distances are straight-line, not driving routes.</p>' : '');
+    fillNearestList(document.getElementById('nearestFuelList'));
+    var st = document.getElementById('fuelGeoStatus');
+    if (st && hasOrigin) st.textContent = originText;
+  }
+  function startNearestMode() {
+    nearestMode = true;
+    nearestView = 'map';
+    nearestFocusId = null;
+    closeMapOpts();
+    if (dirLocateFollowing) { dirLocateFollowing = false; setLocateBtnOn(false); }
+    if (typeof clearMapCover === 'function') { try { clearMapCover(); } catch (e) {} }
+    if (!fuelOrigin && (dirLocateMarker || dirLocateLast)) {
+      var ll = dirLocateMarker ? dirLocateMarker.getLatLng() : { lat: dirLocateLast.lat, lng: dirLocateLast.lon };
+      fuelOrigin = { lat: +ll.lat, lon: +ll.lng, label: 'your location' };
+    }
+    var p = document.getElementById('nearestPanel');
+    if (p) p.dataset.pick = fuelOrigin ? '' : '1';
+    refreshNearestResults({ fit: true });
+    syncNearestBtn();
+  }
+  function focusNearestSite(id, opts) {
+    opts = opts || {};
+    var row = null, i;
+    for (i = 0; i < (nearestRows || []).length; i++) if (nearestRows[i].site.id === id) { row = nearestRows[i]; break; }
+    if (!row) {
+      var site = fuelById(id);
+      if (site) { fuelSiteSheet(site); return; }
+      return;
+    }
+    nearestFocusId = id;
+    nearestView = 'map';
+    var p = document.getElementById('nearestPanel');
+    if (p) p.dataset.pick = '';
+    renderNearestPanel();
+    paintNearestMarkers();
+    if (dirMap && row.site.lat != null) dirMap.setView([row.site.lat, row.site.lon], Math.max(dirMap.getZoom(), 15), { animate: true });
+    if (opts.openSheet) fuelSiteSheet(row.site);
+  }
+  function nearestFuelSheet() { startNearestMode(); }
   function originPctOptions() {
     var cmds = (C.commands || []).filter(function (c) { return c.kind === 'pct'; });
     cmds.sort(function (a, b) { return (E.pctNumFromId(a.id) || 0) - (E.pctNumFromId(b.id) || 0); });
@@ -8201,9 +8393,13 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function setFuelOrigin(lat, lon, label) {
     fuelOrigin = { lat: +lat, lon: +lon, label: label || '' };
+    var p = document.getElementById('nearestPanel');
+    if (p) p.dataset.pick = '';
     var st = document.getElementById('fuelGeoStatus');
-    if (st) st.textContent = 'Starting from ' + (label || 'the selected point') + '.';
-    fillNearestList(document.getElementById('nearestFuelList'));
+    var line = 'Starting from ' + (label || 'the selected point') + '.';
+    if (st) st.textContent = line;
+    if (nearestMode) refreshNearestResults({ fit: true });
+    else fillNearestList(document.getElementById('nearestFuelList'));
   }
   function useFuelGeolocation() {
     var st = document.getElementById('fuelGeoStatus');
@@ -8285,7 +8481,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div class="dir-map-search"><input id="dirQ" class="dirq acIn" data-ac="map" type="text" value="' + esc(q) + '" placeholder="Search an address or precinct" aria-label="Search an address or precinct" autocomplete="off"></div>' +
       '<button type="button" class="btn sm" id="dirMapOptsBtn" data-act="dirMapOpts" aria-expanded="false" aria-controls="dirMapOpts">Options</button></div>' + mapOpts;
     var mapPane = '<div id="dirMapWrap" class="dir-map-fill" data-sec="4j"><div id="dirMap" role="application" aria-label="NYPD precincts, NYCHA developments, fuel sites, and hospitals"></div>' +
-      '<div id="mapCoverCard" class="map-cover" hidden></div></div>';
+      '<div id="mapCoverCard" class="map-cover" hidden></div>' +
+      '<div id="nearestPanel" class="nearest-panel" hidden data-sec="4l"></div></div>';
     return suggestBar('Map') + '<div class="card dir-map-card" data-sec="4e">' + mapTools + '</div>' + mapPane;
   }
   function viewDirectory() {
@@ -12526,7 +12723,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     dirView: function (t) { ui.tab = t.dataset.v === 'map' ? 'map' : 'directory'; render(); },
     dirFuelLayer: function (t) {
       ui.dirFuelOn = ui.dirFuelOn === false;
-      if (ui.dirFuelOn === false && nearestSheetOpen()) closeSheet();
+      if (ui.dirFuelOn === false) {
+        clearNearestMode();
+        if (nearestSheetOpen()) closeSheet();
+      }
       syncFuelFilterUi();
       syncNearestBtn();
       refreshFuelMarkers(); refreshHospitalMarkers();
@@ -12550,7 +12750,27 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       refreshHospitalMarkers();
       if (ui.dirHospOn) fitHospitalView();
     },
-    dirNearest: function () { nearestFuelSheet(); },
+    dirNearest: function () { if (nearestMode) clearNearestMode(); else startNearestMode(); },
+    nearestClose: function () { clearNearestMode(); },
+    nearestView: function (t) {
+      if (!nearestMode) return;
+      nearestView = t.dataset.v === 'list' ? 'list' : 'map';
+      var p = document.getElementById('nearestPanel');
+      if (p) p.dataset.pick = '';
+      renderNearestPanel();
+      if (nearestView === 'map') {
+        paintNearestMarkers();
+        fitNearestBounds();
+      }
+    },
+    nearestFocus: function (t) { focusNearestSite(t.dataset.id || t.dataset.fuelId); },
+    nearestChangeOrigin: function () {
+      var p = document.getElementById('nearestPanel');
+      if (!p) return;
+      p.dataset.pick = p.dataset.pick === '1' ? '' : '1';
+      renderNearestPanel();
+    },
+
     dirMapOpts: function () {
       var p = document.getElementById('dirMapOpts'), b = document.getElementById('dirMapOptsBtn');
       if (!p) return;
