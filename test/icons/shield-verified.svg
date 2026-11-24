@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 118" width="512" height="604">
+  <!-- One thick gold trim: solid gold shield with a uniformly inset blue shield. No inner line. -->
+  <path fill="#E6C42A" d="
+    M 50 1.6
+    C 62 6.4 77 8.3 89.5 8.9
+    C 95.8 9.3 98.4 13.4 98.4 21
+    C 98.4 38 96.2 58 96 70
+    C 95.7 88 81 106 50 116.4
+    C 19 106 4.3 88 4 70
+    C 3.8 58 1.6 38 1.6 21
+    C 1.6 13.4 4.2 9.3 10.5 8.9
+    C 23 8.3 38 6.4 50 1.6
+    Z"/>
+  <path fill="#0000F0" d="
+    M 50 11.2
+    C 59.8 14.8 72.2 16.2 82.2 16.6
+    C 87 16.9 88.8 19.8 88.8 25.4
+    C 88.8 40.5 87 58 86.8 68.4
+    C 86.6 83.2 75.2 98 50 106.6
+    C 24.8 98 13.4 83.2 13.2 68.4
+    C 13 58 11.2 40.5 11.2 25.4
+    C 11.2 19.8 13 16.9 17.8 16.6
+    C 27.8 16.2 40.2 14.8 50 11.2
+    Z"/>
+  <path d="M 31 61 L 44 77 L 71 44" fill="none" stroke="#FFFFFF" stroke-width="11.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
