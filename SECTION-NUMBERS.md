@@ -103,7 +103,7 @@ so they stay stable when sections move. New sections get the next free letter; r
 | | 11b | Your suggestion |
 | | 11c | Screenshot |
 | **12 Suggestions inbox (admin)** | 12a | Enable notifications checkbox (admins). Approved signed-in users may save and delete only their own push subscription. New-suggestion broadcasts still go only to admin devices. On iPhone, add the app to the Home Screen (iOS 16.4 or later) and open it from there; otherwise the toggle explains that requirement. Opened from the Inbox button in the top banner (admins) or Settings → Suggestions. |
-| | 12b | Suggestion list with reply history/thread and a Reply box on each suggestion. A mini precinct shield (built from icons/shield-128.png, gold trim preserved, interior filled #0000F0; icons/shield-new-48.png and @2x, not a redrawn shape) marks unread suggestions and unread replies. |
+| | 12b | Suggestion list with reply history/thread and a Reply box on each suggestion. Above each Reply box, seven admin-only preset chips (Received, Adding it, Now live, More details, Already available, Not planned, Bug fixed) fill the box with a professional reply (editable, not auto-sent). When a first name is available, the text starts with “Hi <first name>,”. The Already available preset leaves a [location] placeholder selected for the admin to edit. A mini precinct shield (built from icons/shield-128.png, gold trim preserved, interior filled #0000F0; icons/shield-new-48.png and @2x, not a redrawn shape) marks unread suggestions and unread replies. |
 | **13 Beta users (admin)** | 13a | User list (approve / revoke / Beta tags on-off) |
 | **14 Add leave / note / assignment** | 14a | Date |
 | **15 Calendar sync** | 15a | Sync options |
