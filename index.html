@@ -34,7 +34,7 @@ header.top .sub{font-size:13px;color:#c7d3e6;margin-top:2px}
 .hdrchip:active{background:rgba(255,255,255,.28)}
 .inboxbtn{position:relative}
 .inbadge{position:absolute;top:4px;right:4px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#dc2626;color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;line-height:1}
-#adminInboxBtn,#inboxOpenSheet{position:relative}
+#adminInboxBtn,#userInboxBtn,#inboxOpenSheet{position:relative}
 #inboxBadgeSheet{position:static;display:inline-grid;margin-left:6px;vertical-align:middle}
 .sugbar{display:flex;justify-content:flex-end;margin:0 0 10px}
 .suggestbtn{min-height:36px;padding:0 12px;font-size:13px;background:#fff;border-color:#9db4f0;color:var(--navy)}
@@ -49,6 +49,12 @@ header.top .sub{font-size:13px;color:#c7d3e6;margin-top:2px}
 .sugthumb{width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid var(--line);background:#eef1f6;flex-shrink:0}
 .sugunread{background:#f8fafc}
 .sugunread .t1{font-weight:800}
+.msgnew{display:inline-block;width:24px;height:28px;vertical-align:-6px;flex:0 0 24px;object-fit:contain;object-position:center}.inboxbtn .inbadge,#adminInboxBtn .inbadge,#userInboxBtn .inbadge{top:-2px;right:-2px;min-width:24px;width:24px;height:28px;padding:0;border-radius:0;background:transparent;color:transparent;font-size:0;line-height:0;overflow:visible}.inbadge .msgnew{width:24px;height:28px;flex:none;vertical-align:0;display:block}.msgthread{margin-top:8px;display:flex;flex-direction:column;gap:6px}
+.msgrow{font-size:13px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;white-space:pre-wrap;overflow-wrap:anywhere}
+.msgrow.mine{background:#f8fafc}
+.msgrow .msgt2{font-size:12px;color:var(--muted);margin-bottom:2px}
+.msgcompose{margin-top:8px}
+.sugitem-head{display:flex;align-items:center;gap:6px}
 .pushhint{font-size:12.5px;color:var(--muted);margin:6px 0 10px}
 .chkline{display:flex;gap:10px;align-items:center;min-height:44px;font-weight:700}
 main{flex:1;padding:14px 14px calc(var(--tabh) + 24px + env(safe-area-inset-bottom))}
@@ -611,9 +617,9 @@ a.dir-tel.mine{color:#0f766e}
     <div class="brand"><img class="hdrlogo" src="icons/icon-192.png" alt="FINEST HQ"><div><h1>FINEST HQ</h1><div class="sub" id="hdrSub"></div></div></div>
     <div class="headacts" id="headActs" hidden>
       <button type="button" class="hdrchip" id="btnSuggest" data-act="suggestOpen">Suggest</button>
-      <button type="button" class="iconbtn inboxbtn" id="btnInbox" data-act="inboxOpen" hidden aria-label="Suggestion inbox">
+      <button type="button" class="iconbtn inboxbtn" id="btnInbox" data-act="inboxOpen" hidden aria-label="Inbox">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"/><path d="m4 8 8 6 8-6"/></svg>
-        <span class="inbadge" id="inboxBadge" hidden></span>
+        <span class="inbadge" id="inboxBadge" hidden title="Unread"><img class="msgnew" src="icons/shield-new-48.png" srcset="icons/shield-new-48.png 1x, icons/shield-new-48@2x.png 2x" width="24" height="28" alt="" draggable="false"></span>
       </button>
       <button class="iconbtn" id="btnSettings" data-act="settings" aria-label="Settings">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -4817,6 +4823,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   var S = load();
   var T = E.today(), tp = E.parts(T);
   var ui = { tab: 'schedule', calY: tp.y, calM: tp.m, lookup: T, otYear: tp.y, payYear: tp.y, leaveYear: tp.y, leaveOpen: false, pdY: tp.y, pdM: tp.m, onbSquad: null, x15Year: tp.y, otView: 'ot', otSel: false, otSelIds: {}, pdSel: false, pdSelIds: {}, otFilter: 'all', otCollapse: {}, calPeek: null, calPeekPicker: false, todayOpen: false, glanceOpen: false, dirQ: '', mapQ: '', dirKind: '', dirView: 'dir', dirFuelOn: false };
+  function msgNewIconHtml() { return '<img class="msgnew" src="icons/shield-new-48.png" srcset="icons/shield-new-48.png 1x, icons/shield-new-48@2x.png 2x" width="24" height="28" alt="" draggable="false">'; }
 
   function U() { return S.settings.unit; }
   var PDU = C.pdu;
@@ -6588,7 +6595,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   // Only a top-level sheet closes to the main screen.
   var NAV = { stack: [], cur: null, pending: null };
   // Beta section numbers: pages 1-5 are the bottom tabs (1 Schedule, 2 Overtime, 3 Pay, 4 Map, 5 Directory); sheets have fixed numbers here (see SECTION-NUMBERS.md). Never computed from order. Lookup (former page 5, 5a–5e) is vacated from the tab bar; those letters are not reused. Directory uses 5f–5i.
-  var SHEET_PAGES = { day: '6', sum: '7', ot: '8', settings: '9', hist: '10', suggest: '11', inbox: '12', admin: '13', leaveNew: '14', sync: '15', x15: '16', x15ed: '17', chart: '18', pd: '19', pdTax: '20' };
+  var SHEET_PAGES = { day: '6', sum: '7', ot: '8', settings: '9', hist: '10', suggest: '11', inbox: '12', admin: '13', leaveNew: '14', sync: '15', x15: '16', x15ed: '17', chart: '18', pd: '19', pdTax: '20', messages: '21' };
   var TAB_PAGES = { schedule: '1', overtime: '2', pay: '3', leave: '4', map: '4', directory: '5' };
   function navable(name, f, keyFn) {
     return function () {
@@ -7361,14 +7368,14 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function afterAuth(uid) {
     return fetchProfile(uid).then(function (p) {
       setProfile(p, uid);
-      if (CS.status === 'approved') { if (!adoptDevice(uid)) return signOutLocal(); render(); if (CS.role === 'admin') inboxListen(); if (CS.role === 'admin' && /(?:\?|&)inbox=1(?:&|$)/.test(location.search || '')) setTimeout(function () { inboxSheet(); }, 200); if (SM.migrating) toast('Uploading the schedule saved on this device to your account\u2026'); return syncNow('signin'); }
+      if (CS.status === 'approved') { if (!adoptDevice(uid)) return signOutLocal(); render(); inboxListen(); if (/(?:\?|&)inbox=1(?:&|$)/.test(location.search || '')) setTimeout(function () { openInbox(); }, 200); if (SM.migrating) toast('Uploading the schedule saved on this device to your account\u2026'); return syncNow('signin'); }
       render();
     });
   }
   function signOutLocal() { CS = {}; saveCS(); render(); }
   // On start: show the cached state right away (works offline), then check the session and approval in the background.
   function cloudBoot() {
-    render(); if (cloudReady()) { slipReconcile(); if (CS.role === 'admin') inboxListen(); if (CS.role === 'admin' && /(?:\?|&)inbox=1(?:&|$)/.test(location.search || '')) setTimeout(function () { inboxSheet(); }, 200); }
+    render(); if (cloudReady()) { slipReconcile(); inboxListen(); if (/(?:\?|&)inbox=1(?:&|$)/.test(location.search || '')) setTimeout(function () { openInbox(); }, 200); }
     var c = cloudClient();
     Promise.resolve(c.auth.getSession()).then(function (r) {
       var sess = r && r.data && r.data.session;
@@ -7472,7 +7479,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function accountPanel() {
     if (!CL.enabled) return '';
     return '<h3 style="margin-top:0" id="acctHead" data-sec="9a">Account</h3><div class="acct"><div><b>' + esc(CS.username || '') + '</b>' + (CS.role === 'admin' ? ' <span class="betatag">admin</span>' : '') + '<div class="muted" id="syncLine" style="font-size:13px">' + esc(syncLine()) + '</div></div></div>' +
-      '<div class="row" style="margin-bottom:6px"><button class="btn sm" data-act="syncNowBtn">Sync now</button>' + (CS.role === 'admin' ? '<button class="btn sm" data-act="inboxOpen" id="adminInboxBtn">Suggestions<span class="inbadge" id="inboxBadgeSheet"' + (ui.inboxUnread ? '' : ' hidden') + '>' + (ui.inboxUnread > 9 ? '9+' : (ui.inboxUnread || '')) + '</span></button><button class="btn sm" data-act="adminOpen" id="adminBtn">Admin: beta users</button>' : '') + '<button class="btn sm" data-act="authSignOut">Sign out</button></div>';
+      '<div class="row" style="margin-bottom:6px"><button class="btn sm" data-act="syncNowBtn">Sync now</button>' + (CS.role === 'admin' ? '<button class="btn sm" data-act="inboxOpen" id="adminInboxBtn">Suggestions<span class="inbadge msgnew" id="inboxBadgeSheet"' + (ui.inboxUnread ? '' : ' hidden') + ' title="Unread">' + msgNewIconHtml() + '</span></button><button class="btn sm" data-act="adminOpen" id="adminBtn">Admin: beta users</button>' : (cloudReady() ? '<button class="btn sm" data-act="inboxOpen" id="userInboxBtn">Inbox<span class="inbadge msgnew" id="inboxBadgeSheet"' + (ui.inboxUnread ? '' : ' hidden') + ' title="Unread">' + msgNewIconHtml() + '</span></button>' : '')) + '<button class="btn sm" data-act="authSignOut">Sign out</button></div>';
   }
 
   // ---------- Beta suggestions (send to the admin) ----------
@@ -7590,36 +7597,69 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     });
     return go;
   }
+  function openInbox() {
+    if (!cloudReady()) return toast('Sign in with an approved account to open your inbox');
+    if (CS.role === 'admin') inboxSheet();
+    else userInboxSheet();
+  }
   function refreshInboxChrome() {
-    var n = ui.inboxUnread || 0, label = n > 9 ? '9+' : String(n);
+    var n = ui.inboxUnread || 0;
     ['inboxBadge', 'inboxBadgeSheet'].forEach(function (id) {
       var el = document.getElementById(id); if (!el) return;
-      el.textContent = n ? label : ''; el.hidden = !n;
+      if (!el.querySelector('img.msgnew')) el.innerHTML = msgNewIconHtml();
+      el.hidden = !n;
+      if (n) el.setAttribute('aria-label', n === 1 ? '1 unread' : n + ' unread');
+      else el.removeAttribute('aria-label');
     });
     var inbox = document.getElementById('btnInbox');
-    if (inbox) inbox.hidden = !(CS && CS.role === 'admin' && cloudReady());
+    if (inbox) inbox.hidden = !cloudReady();
   }
   function inboxListen() {
-    if (!cloudReady() || CS.role !== 'admin' || !cloudClient().channel) return;
-    if (CL.sugChan) return;
-    try {
-      CL.sugChan = cloudClient().channel('suggestions-inbox')
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'suggestions' }, function (payload) {
-          var rec = payload && payload.new; ui.inboxUnread = (ui.inboxUnread || 0) + 1; refreshInboxChrome();
-          if (document.getElementById('inboxList')) inboxSheet();
-          else if (rec) showSugPop(rec);
-        })
-        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'suggestions' }, function () { inboxCount(); if (document.getElementById('inboxList')) inboxSheet(); })
-        .subscribe();
-    } catch (e) {}
+    if (!cloudReady()) { inboxCount(); return; }
+    if (cloudClient().channel) {
+      if (!CL.msgChan) {
+        try {
+          CL.msgChan = cloudClient().channel('user-messages')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, function () {
+              inboxCount();
+              if (document.getElementById('inboxList')) inboxSheet();
+              else if (document.getElementById('msgList')) userInboxSheet(ui.msgOpenKey);
+            })
+            .subscribe();
+        } catch (e) {}
+      }
+      if (CS.role === 'admin' && !CL.sugChan) {
+        try {
+          CL.sugChan = cloudClient().channel('suggestions-inbox')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'suggestions' }, function (payload) {
+              var rec = payload && payload.new;
+              ui.inboxUnread = (ui.inboxUnread || 0) + 1; refreshInboxChrome();
+              inboxCount();
+              if (document.getElementById('inboxList')) inboxSheet();
+              else if (rec) showSugPop(rec);
+            })
+            .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'suggestions' }, function () { inboxCount(); if (document.getElementById('inboxList')) inboxSheet(); })
+            .subscribe();
+        } catch (e) {}
+      }
+    }
     inboxCount();
   }
   function inboxCount() {
-    if (!cloudReady() || CS.role !== 'admin') { ui.inboxUnread = 0; refreshInboxChrome(); return Promise.resolve(); }
-    return Promise.resolve(cloudClient().from('suggestions').select('id,read_at').then(q)).then(function (rows) {
-      ui.inboxUnread = (rows || []).filter(function (r) { return !r.read_at; }).length;
+    if (!cloudReady()) { ui.inboxUnread = 0; refreshInboxChrome(); return Promise.resolve(); }
+    var jobs = [];
+    jobs.push(Promise.resolve(cloudClient().from('messages').select('id,read_at,recipient_id').then(q)).then(function (rows) {
+      return (rows || []).filter(function (r) { return r.recipient_id === CS.uid && !r.read_at; }).length;
+    }).catch(function () { return 0; }));
+    if (CS.role === 'admin') {
+      jobs.push(Promise.resolve(cloudClient().from('suggestions').select('id,read_at').then(q)).then(function (rows) {
+        return (rows || []).filter(function (r) { return !r.read_at; }).length;
+      }).catch(function () { return 0; }));
+    }
+    return Promise.all(jobs).then(function (ns) {
+      ui.inboxUnread = ns.reduce(function (a, b) { return a + b; }, 0);
       refreshInboxChrome();
-    }).catch(function () {});
+    });
   }
   function showSugPop(rec) {
     var el = document.getElementById('sugPop'); if (!el) return;
@@ -7629,35 +7669,184 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function hideSugPop() { var el = document.getElementById('sugPop'); if (el) { el.hidden = true; el.innerHTML = ''; } }
   function fmtInboxTime(ts) { var d = new Date(ts); if (isNaN(d)) return ''; return d.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); }
+  function loadMessages() {
+    return Promise.resolve(cloudClient().from('messages').select('id,sender_id,sender_username,recipient_id,suggestion_id,body,created_at,read_at').order('created_at', { ascending: true }).then(q));
+  }
+  function msgThreadKey(m) {
+    if (m.suggestion_id) return m.suggestion_id;
+    return '_u:' + (m.sender_id === CS.uid ? m.recipient_id : m.sender_id);
+  }
+  function groupMsgs(msgs) {
+    var by = {};
+    (msgs || []).forEach(function (m) {
+      var k = msgThreadKey(m);
+      (by[k] = by[k] || []).push(m);
+    });
+    return by;
+  }
+  function msgOtherId(msgs) {
+    var i, m;
+    for (i = 0; i < (msgs || []).length; i++) {
+      m = msgs[i];
+      if (m.sender_id !== CS.uid) return m.sender_id;
+    }
+    for (i = 0; i < (msgs || []).length; i++) {
+      m = msgs[i];
+      if (m.recipient_id !== CS.uid) return m.recipient_id;
+    }
+    return '';
+  }
+  function msgRowHtml(m) {
+    var mine = m.sender_id === CS.uid, unread = !mine && !m.read_at;
+    var who = mine ? 'You' : (m.sender_username || (CS.role === 'admin' ? 'Member' : 'Admin'));
+    return '<div class="msgrow' + (mine ? ' mine' : '') + (unread ? ' sugunread' : '') + '" data-mid="' + esc(m.id) + '">' +
+      '<div class="msgt2 sugitem-head">' + (unread ? msgNewIconHtml() : '') +
+      '<span>' + esc(who) + ' \u00b7 ' + esc(fmtInboxTime(m.created_at)) + '</span></div>' +
+      esc(m.body || '') + '</div>';
+  }
+  function msgComposeHtml(sid, to, prefix) {
+    var box = (prefix || 'msgBox') + '-' + String(sid || 'notice').replace(/[^A-Za-z0-9_-]/g, '') + '-' + String(to || '').replace(/[^A-Za-z0-9_-]/g, '');
+    return '<div class="msgcompose field"><label for="' + esc(box) + '">Reply</label>' +
+      '<textarea id="' + esc(box) + '" maxlength="4000" placeholder="Write a reply"></textarea>' +
+      '<div class="row" style="margin-top:8px"><button type="button" class="btn sm primary" data-act="msgSend" data-sid="' + esc(sid || '') + '" data-to="' + esc(to) + '" data-box="' + esc(box) + '">Send reply</button></div></div>';
+  }
+  function msgMarkRead(ids) {
+    ids = (ids || []).filter(Boolean);
+    if (!ids.length) return Promise.resolve();
+    return Promise.all(ids.map(function (id) {
+      return Promise.resolve(cloudClient().from('messages').update({ read_at: new Date().toISOString() }).eq('id', id).then(q));
+    })).then(function () { return inboxCount(); }).catch(function () {});
+  }
+  function msgSend(t) {
+    if (!cloudReady()) return toast('Sign in with an approved account to reply');
+    var box = document.getElementById(t.dataset.box);
+    var body = (box && box.value || '').trim().slice(0, 4000);
+    if (!body) return toast('Write a reply first');
+    var sid = t.dataset.sid || null; if (sid === '') sid = null;
+    var to = t.dataset.to;
+    if (!to) return toast('No recipient');
+    t.disabled = true;
+    return Promise.resolve(cloudClient().from('messages').insert({ recipient_id: to, suggestion_id: sid, body: body }).then(q)).then(function () {
+      toast('Reply sent');
+      if (CS.role === 'admin') inboxSheet();
+      else userInboxSheet(sid || ui.msgOpenKey);
+    }).catch(function (e) {
+      t.disabled = false;
+      toast('Couldn\'t send: ' + errText(e));
+    });
+  }
   function inboxSheet() {
     inboxListen();
     hideSugPop();
     openSheet('Suggestions',
-      '<label class="chkline"><input type="checkbox" id="pushToggle"> Enable notifications</label>' +
+      '<label class="chkline" data-sec="12a"><input type="checkbox" id="pushToggle"> Enable notifications</label>' +
       '<div class="pushhint">When the app is closed, new suggestions can pop up as a notification. On iPhone this needs iOS 16.4 or later, and FINEST HQ must be added to your Home Screen.</div>' +
-      '<div id="inboxList" class="muted">Loading…</div>',
+      '<div id="inboxList" class="muted" data-sec="12b">Loading\u2026</div>',
       false);
     pushToggleState();
     var pten = document.getElementById('pushToggle');
     if (pten && !pten._bound) { pten._bound = true; pten.addEventListener('change', function () { setPushEnabled(!!pten.checked); }); }
-    Promise.resolve(cloudClient().from('suggestions').select('id,user_id,username,section,message,screenshot_path,created_at,read_at').order('created_at', { ascending: false }).then(q)).then(function (rows) {
+    Promise.all([
+      Promise.resolve(cloudClient().from('suggestions').select('id,user_id,username,section,message,screenshot_path,created_at,read_at').order('created_at', { ascending: false }).then(q)),
+      loadMessages()
+    ]).then(function (both) {
       var el = document.getElementById('inboxList'); if (!el) return;
-      ui.inboxRows = rows || [];
-      ui.inboxUnread = ui.inboxRows.filter(function (r) { return !r.read_at; }).length; refreshInboxChrome();
+      ui.inboxRows = both[0] || [];
+      var msgs = both[1] || [], by = groupMsgs(msgs);
       el.classList.remove('muted');
-      if (!ui.inboxRows.length) { el.innerHTML = '<div class="empty">No suggestions yet.</div>'; return; }
-      el.innerHTML = '<div class="list suglist">' + ui.inboxRows.map(function (r) {
+      inboxCount();
+      var noticeKeys = Object.keys(by).filter(function (k) { return k.indexOf('_u:') === 0; });
+      if (!ui.inboxRows.length && !noticeKeys.length) { el.innerHTML = '<div class="empty">No suggestions yet.</div>'; return; }
+      var html = '<div class="list suglist">';
+      html += ui.inboxRows.map(function (r) {
+        var thread = by[r.id] || [];
+        var unreadMsgs = thread.filter(function (m) { return m.recipient_id === CS.uid && !m.read_at; });
         return '<div class="item' + (r.read_at ? '' : ' sugunread') + '" data-id="' + esc(r.id) + '">' +
           (r.screenshot_path ? '<img class="sugthumb" data-path="' + esc(r.screenshot_path) + '" alt="">' : '<div class="sugthumb" aria-hidden="true"></div>') +
-          '<div class="main"><div class="t1">' + esc(r.section || '') + ' · ' + esc(r.username || '') + '</div>' +
-          '<div class="t2">' + esc(fmtInboxTime(r.created_at)) + (r.read_at ? '' : ' · unread') + '</div>' +
+          '<div class="main"><div class="t1 sugitem-head">' + ((r.read_at && !unreadMsgs.length) ? '' : msgNewIconHtml()) +
+          '<span>' + esc(r.section || '') + ' \u00b7 ' + esc(r.username || '') + '</span></div>' +
+          '<div class="t2">' + esc(fmtInboxTime(r.created_at)) + (r.read_at ? '' : ' \u00b7 unread') + '</div>' +
           '<div style="font-size:14px;margin-top:4px;white-space:pre-wrap;overflow-wrap:anywhere">' + esc(r.message || '') + '</div>' +
           (r.read_at ? '' : '<button type="button" class="btn sm" data-act="sugMark" data-id="' + esc(r.id) + '" style="margin-top:8px">Mark read</button>') +
+          (thread.length ? '<div class="msgthread">' + thread.map(msgRowHtml).join('') + '</div>' : '') +
+          msgComposeHtml(r.id, r.user_id, 'adm') +
           '</div></div>';
-      }).join('') + '</div>';
+      }).join('');
+      noticeKeys.forEach(function (k) {
+        var thread = by[k] || [], last = thread[thread.length - 1], other = msgOtherId(thread);
+        var unread = thread.some(function (m) { return m.recipient_id === CS.uid && !m.read_at; });
+        html += '<div class="item' + (unread ? ' sugunread' : '') + '"><div class="main"><div class="t1 sugitem-head">' +
+          (unread ? msgNewIconHtml() : '') + '<span>Notice' + (last && last.sender_username && last.sender_id !== CS.uid ? ' \u00b7 ' + esc(last.sender_username) : '') + '</span></div>' +
+          '<div class="msgthread">' + thread.map(msgRowHtml).join('') + '</div>' +
+          (other ? msgComposeHtml('', other, 'admN') : '') +
+          '</div></div>';
+      });
+      html += '</div>';
+      el.innerHTML = html;
       ui.inboxRows.forEach(function (r) { if (r.screenshot_path) inboxThumb(r.screenshot_path); });
+      var mark = msgs.filter(function (m) { return m.recipient_id === CS.uid && !m.read_at; }).map(function (m) { return m.id; });
+      if (mark.length) msgMarkRead(mark);
     }).catch(function (e) { var el = document.getElementById('inboxList'); if (el) el.textContent = 'Couldn\'t load suggestions: ' + errText(e); });
   }
+  function userInboxSheet(openKey) {
+    ui.msgOpenKey = openKey || null;
+    inboxListen();
+    hideSugPop();
+    openSheet(openKey ? 'Message' : 'Inbox',
+      '<div id="msgList" class="muted">' + (openKey ? '' : '') + 'Loading\u2026</div>',
+      false);
+    Promise.all([
+      loadMessages(),
+      Promise.resolve(cloudClient().from('suggestions').select('id,section,message,username,created_at').order('created_at', { ascending: false }).then(q)).catch(function () { return []; })
+    ]).then(function (both) {
+      var el = document.getElementById('msgList'); if (!el) return;
+      var msgs = both[0] || [], sugs = both[1] || [], sugBy = {};
+      sugs.forEach(function (s) { sugBy[s.id] = s; });
+      var by = groupMsgs(msgs);
+      el.classList.remove('muted');
+      if (openKey) {
+        var thread = by[openKey] || [];
+        var sug = openKey.indexOf('_u:') === 0 ? null : sugBy[openKey];
+        var other = msgOtherId(thread);
+        var sid = (sug && sug.id) || (openKey.indexOf('_u:') === 0 ? '' : openKey);
+        var title = sug ? (sug.section || 'Suggestion') : 'Notice';
+        var html = '<div data-sec="21b">';
+        if (sug) {
+          html += '<div class="item" style="display:block;padding:0 0 10px"><div class="t1">' + esc(sug.section || '') + '</div>' +
+            '<div class="t2">' + esc(fmtInboxTime(sug.created_at)) + '</div>' +
+            '<div style="font-size:14px;margin-top:4px;white-space:pre-wrap;overflow-wrap:anywhere">' + esc(sug.message || '') + '</div></div>';
+        } else {
+          html += '<div class="t1" style="margin-bottom:8px">' + esc(title) + '</div>';
+        }
+        if (!thread.length) html += '<div class="empty">No messages in this thread yet.</div>';
+        else html += '<div class="msgthread">' + thread.map(msgRowHtml).join('') + '</div>';
+        if (other) html += msgComposeHtml(sid, other, 'usr');
+        html += '</div>';
+        el.innerHTML = html;
+        var mark = thread.filter(function (m) { return m.recipient_id === CS.uid && !m.read_at; }).map(function (m) { return m.id; });
+        if (mark.length) msgMarkRead(mark);
+        return;
+      }
+      var keys = Object.keys(by).sort(function (a, b) {
+        var la = by[a][by[a].length - 1], lb = by[b][by[b].length - 1];
+        return (lb.created_at || '') < (la.created_at || '') ? -1 : 1;
+      });
+      if (!keys.length) { el.innerHTML = '<div class="empty" data-sec="21a">No messages yet.</div>'; return; }
+      el.innerHTML = '<div class="list suglist" data-sec="21a">' + keys.map(function (k) {
+        var thread = by[k], last = thread[thread.length - 1], sug = sugBy[k];
+        var unread = thread.some(function (m) { return m.recipient_id === CS.uid && !m.read_at; });
+        var title = sug ? (sug.section || 'Suggestion') : 'Notice';
+        var who = last.sender_id === CS.uid ? 'You' : (last.sender_username || 'Admin');
+        return '<button type="button" class="item' + (unread ? ' sugunread' : '') + '" data-act="msgOpen" data-key="' + esc(k) + '" style="width:100%;text-align:left;border:0;background:inherit;font:inherit;color:inherit">' +
+          '<div class="main"><div class="t1 sugitem-head">' + (unread ? msgNewIconHtml() : '') +
+          '<span>' + esc(title) + '</span></div>' +
+          '<div class="t2">' + esc(who) + ' \u00b7 ' + esc(fmtInboxTime(last.created_at)) + '</div>' +
+          '<div style="font-size:14px;margin-top:4px;white-space:pre-wrap;overflow-wrap:anywhere">' + esc((last.body || '').slice(0, 180)) + '</div>' +
+          '</div></button>';
+      }).join('') + '</div>';
+    }).catch(function (e) { var el = document.getElementById('msgList'); if (el) el.textContent = 'Couldn\'t load inbox: ' + errText(e); });
+  }
+
   function inboxThumb(path) {
     Promise.resolve(cloudClient().storage.from('suggestions').createSignedUrl(path, 120)).then(function (res) {
       var url = res && res.data && res.data.signedUrl; if (!url) return;
@@ -10385,9 +10574,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     sugCapture: function () { sugCapture(); },
     sugClear: function () { if (ui.sugUrl && String(ui.sugUrl).indexOf('blob:') === 0) try { URL.revokeObjectURL(ui.sugUrl); } catch (e) {} setSugFile(null, ''); },
     sugSend: function () { sugSend(); },
-    inboxOpen: function () { inboxSheet(); },
+    inboxOpen: function () { openInbox(); },
     sugPopDismiss: function () { hideSugPop(); },
     sugMark: function (t) { sugMark(t.dataset.id); },
+    msgSend: function (t) { msgSend(t); },
+    msgOpen: function (t) { userInboxSheet(t.dataset.key); },
     pushToggle: function (t) { setPushEnabled(!!t.checked); },
     dayAddEntry: function (t) {
       var d = +t.dataset.d, iso = E.toISO(d), tr = S.tours[iso] || {};
@@ -10866,14 +11057,14 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   histEditor = navable('hist', histEditor, function (r) { return r ? r.id : 'new'; });
   chartEditor = navable('chart', chartEditor, function (e) { return e ? e.id : 'new'; });
   suggestSheet = navable('suggest', suggestSheet, function () { return ''; });
-  inboxSheet = navable('inbox', inboxSheet, function () { return ''; }); adminSheet = navable('admin', adminSheet, function () { return ''; });
+  inboxSheet = navable('inbox', inboxSheet, function () { return ''; }); userInboxSheet = navable('messages', userInboxSheet, function (k) { return k || ''; }); adminSheet = navable('admin', adminSheet, function () { return ''; });
   x15Sheet = navable('x15', x15Sheet); x15Editor = navable('x15ed', x15Editor, function (y, m, t) { return [y, m, t].join('-'); });
   A.leaveNew = navable('leaveNew', A.leaveNew, function (t) { return t && t.dataset ? t.dataset.kind || '' : ''; }); A.syncOpen = navable('sync', A.syncOpen, function () { return ''; });
   if (CL.enabled) cloudBoot(); else { render(); slipReconcile(); }
   setTimeout(function () { try { if (S.profile) resolveHistPcts(); } catch (e) {} }, 1500);
   if ('serviceWorker' in navigator && document.querySelector('link[rel="manifest"]') && /^(https:|http:\/\/(localhost|127\.0\.0\.1))/.test(location.href)) {
     navigator.serviceWorker.register('sw.js').catch(function () {});
-    navigator.serviceWorker.addEventListener('message', function (ev) { if (ev.data && ev.data.type === 'open-inbox' && CS && CS.role === 'admin') inboxSheet(); });
+    navigator.serviceWorker.addEventListener('message', function (ev) { if (ev.data && ev.data.type === 'open-inbox' && cloudReady()) openInbox(); });
   }
 })();
 </script>
