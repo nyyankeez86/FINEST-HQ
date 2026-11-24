@@ -379,7 +379,7 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after,body.beta #
 .tot span{font-size:13px;font-weight:700;color:var(--pay)}
 .tot em{font-style:normal;font-size:11px;color:var(--muted);display:block}
 .status-line{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0 12px;align-items:center}
-.othersquads-btn{margin:0}
+.status-line .btn.sm.othersquads-btn{margin:2px 4px 2px 0;min-height:0;height:auto;padding:3px 9px;border-radius:999px;font-size:12.5px;font-weight:700;line-height:normal;gap:0;display:inline-block;font-family:inherit;box-sizing:border-box;vertical-align:baseline}
 .othersquads-box{display:flex;flex-wrap:wrap;gap:4px;flex:1 0 100%;margin-top:2px}
 .othersquads-box[hidden]{display:none !important}
 .lbl2{font-size:13px;font-weight:700;color:var(--muted,#64748b);margin:10px 0 6px}
@@ -2117,7 +2117,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var inter = Math.max(0, Math.min(w1, s1) - Math.max(w0, s0));
     var earlyStart = Math.max(0, Math.min(w1, s0) - w0), lateEnd = Math.max(0, w1 - Math.max(w0, s1));
     var otMin = Math.max(0, wm - inter), shortMin = Math.max(0, sm - wm);
-    var T = CONFIG.otThresholdMin, r = { workedMin: wm, schedMin: sm, otMin: otMin, shortMin: shortMin, start: worked.start, end: worked.end, startDate: worked.startDate, endDate: worked.endDate, sched: sched.end, delta: lateEnd };
+    var T = CONFIG.otThresholdMin, r = { workedMin: wm, schedMin: sm, otMin: otMin, shortMin: shortMin, start: worked.start, end: worked.end, startDate: worked.startDate, endDate: worked.endDate, sched: sched.end, schedStart: sched.start, schedEnd: sched.end, schedStartDate: sched.startDate, schedEndDate: sched.endDate, delta: lateEnd };
     if (opts.tour12 || opts.tour17) {
       var cfgOT = opts.tour17 ? CONFIG.tour17 : CONFIG.tour12;
       var otFn = opts.tour17 ? tour17OvertimeMin : tour12OvertimeMin;
@@ -2364,6 +2364,12 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     return list;
   }
   // Worked-vs-scheduled OT on the primary tour (linkedEnd). Falls back to removing the linked row when there is no OT.
+  function stampOtWindows(e, vs) {
+    if (!e || !vs) return e;
+    if (vs.start) { e.workStart = vs.start; e.workEnd = vs.end || ''; e.workStartDate = vs.startDate || ''; e.workEndDate = vs.endDate || ''; }
+    if (vs.schedStart) { e.schedStart = vs.schedStart; e.schedEnd = vs.schedEnd || ''; e.schedStartDate = vs.schedStartDate || ''; e.schedEndDate = vs.schedEndDate || ''; }
+    return e;
+  }
   function syncWorkedOT(overtime, iso, vs, newId) {
     var list = (overtime || []).slice(), idx = -1;
     for (var i = 0; i < list.length; i++) if (list[i].linkedEnd === iso) { if (idx < 0) idx = i; else { list.splice(i, 1); i--; } }
@@ -2373,6 +2379,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       e.start = vs.otStart || vs.start; e.end = vs.otEnd || vs.end;
       e.hours = Math.round(vs.otMin / 60 * 10000) / 10000;
       e.countsFor = iso;
+      stampOtWindows(e, vs);
       if (idx >= 0) list[idx] = e; else list.push(e);
     } else if (idx >= 0) list.splice(idx, 1);
     return list;
@@ -2388,6 +2395,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       e.start = vs.otStart || vs.start; e.end = vs.otEnd || vs.end;
       e.hours = Math.round(vs.otMin / 60 * 10000) / 10000;
       e.countsFor = iso;
+      stampOtWindows(e, vs);
       if (idx >= 0) list[idx] = e; else list.push(e);
     } else if (idx >= 0) list.splice(idx, 1);
     return list;
@@ -2536,6 +2544,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var base = idx >= 0 ? list[idx] : { id: newId || ('x' + iso), type: 'extra', notes: 'Extra tour on RDO' }, e = copy(base);
       e.date = iso; e.linkedTour = iso; e.mode = tour.start ? 'times' : 'hours'; e.start = tour.start || ''; e.end = tour.start ? tour.end : '';
       e.hours = Math.round(tour.len / 60 * 10000) / 10000;
+      if (tour.start) { e.workStart = tour.start; e.workEnd = tour.end || ''; e.workStartDate = tour.startDate || iso; e.workEndDate = tour.endDate || ''; }
       if (idx >= 0) list[idx] = e; else list.push(e);
     } else if (idx >= 0) list.splice(idx, 1);
     return list;
@@ -8399,6 +8408,15 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     }
     pduKeep(); updateEnd(true);
   }
+  // Keep the existing "Edit overtime details" button node when the message is unchanged,
+  // so a tap that first blurs #dayStart/#dayEnd (and re-runs updateEnd) still lands on the button.
+  function setEndNote(html, cls) {
+    var note = document.getElementById('endNote'); if (!note) return;
+    if (cls != null) note.className = cls;
+    if ((note.dataset.html || '') === (html || '')) return;
+    note.innerHTML = html || '';
+    note.dataset.html = html || '';
+  }
   function updateEnd(flash) {
     var box = document.getElementById('seBox'), si = document.getElementById('dayStart'), out = document.getElementById('dayEnd'), pop = document.getElementById('endPop'); if (!box || !si || !out) return;
     var tb = document.getElementById('tourBox'), rawS = si.value.trim(), endRaw = out.value.trim();
@@ -8414,11 +8432,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       pop.hidden = true; pop.innerHTML = '';
       if (span) {
         var dl = document.getElementById('dayLen'); if (dl) dl.value = E.fmtHM(span.len);
-        if (noteR) { noteR.hidden = false; noteR.className = 'endnote ot'; noteR.innerHTML = '<b>Overtime: ' + esc(span.label) + '</b> (' + esc(span.start) + '&ndash;' + esc(span.end) + '). Saved as one overtime entry.' + otEditHtml(E.toISO(+box.dataset.d)); }
+        if (noteR) { noteR.hidden = false; setEndNote('<b>Overtime: ' + esc(span.label) + '</b> (' + esc(span.start) + '&ndash;' + esc(span.end) + '). Saved as one overtime entry.' + otEditHtml(E.toISO(+box.dataset.d)), 'endnote ot'); }
         syncSchedBoxVisibility();
         return;
       }
-      if (noteR) { noteR.hidden = true; noteR.innerHTML = ''; }
+      if (noteR) { noteR.hidden = true; setEndNote('', 'endnote'); }
       syncSchedBoxVisibility();
       return;
     }
@@ -8440,7 +8458,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var ei = document.getElementById('dayEnd'), note = document.getElementById('endNote'), sb = document.getElementById('shortBox'), er = document.getElementById('dayEnd-err'); if (!ei || !note || !sb) return null;
     var raw = ei.value.trim(), end = raw ? E.normTime(raw) : '', c = end && start && len ? E.endCompare(start, len, end) : null;
     if (er) er.textContent = raw && !end && raw.length >= 5 ? 'Use HH:MM, 24-hour (00:00–23:59)' : '';
-    note.className = 'endnote' + (c ? ' ' + c.kind : ''); sb.hidden = !(c && c.kind === 'early');
+    sb.hidden = !(c && c.kind === 'early');
     var mm = function (m) { return m < 60 ? m + ' min' : E.fmtHM(m); };
     var box = document.getElementById('seBox'), wr = readWorkedTimes(), sc = readSchedTimes(true);
     if (sc) {
@@ -8450,10 +8468,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     }
     var vs = (wr.start && wr.end && sc && sc.start && sc.end) ? workedVS(wr, sc) : null;
     if (vs) c = vs;
-    if (c && c.kind === 'late') note.innerHTML = '<b>Ended ' + mm(c.delta || (c.otMin || 0)) + ' late</b>' + (c.sched ? ' (scheduled ' + esc(c.sched) + ')' : '') + '. No overtime: OT starts at ' + C.otThresholdMin + ' minutes past the scheduled end.';
-    else if (c && c.kind === 'ot') note.innerHTML = '<b>Overtime: ' + E.fmtHM(c.otMin) + '</b>' + (c.sched ? ' (' + esc(c.sched) + '&ndash;' + esc(c.end) + ')' : '') + '. Saved to your Overtime log for this day.' + (box ? otEditHtml(E.toISO(+box.dataset.d)) : '');
-    else if (c && c.kind === 'early') { note.innerHTML = '<b>Ended ' + mm(c.shortMin) + ' early</b>' + (c.sched ? ' (scheduled ' + esc(c.sched) + ')' : '') + '.'; document.getElementById('shortQ').textContent = 'Charge ' + E.fmtHM(c.shortMin) + ' to which balance?'; }
-    else note.innerHTML = '';
+    var noteCls = 'endnote' + (c ? ' ' + c.kind : '');
+    if (c && c.kind === 'late') setEndNote('<b>Ended ' + mm(c.delta || (c.otMin || 0)) + ' late</b>' + (c.sched ? ' (scheduled ' + esc(c.sched) + ')' : '') + '. No overtime: OT starts at ' + C.otThresholdMin + ' minutes past the scheduled end.', noteCls);
+    else if (c && c.kind === 'ot') setEndNote('<b>Overtime: ' + E.fmtHM(c.otMin) + '</b>' + (c.sched ? ' (' + esc(c.sched) + '&ndash;' + esc(c.end) + ')' : '') + '. Saved to your Overtime log for this day.' + (box ? otEditHtml(E.toISO(+box.dataset.d)) : ''), noteCls);
+    else if (c && c.kind === 'early') { setEndNote('<b>Ended ' + mm(c.shortMin) + ' early</b>' + (c.sched ? ' (scheduled ' + esc(c.sched) + ')' : '') + '.', noteCls); document.getElementById('shortQ').textContent = 'Charge ' + E.fmtHM(c.shortMin) + ' to which balance?'; }
+    else setEndNote('', noteCls);
     note.hidden = !(c && c.kind !== 'on');
     syncSchedBoxVisibility();
     return c;
@@ -8650,6 +8669,16 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var st = ((S.tours[iso] || {}).status) || '';
     return { iso: iso, d: d, rdo: rdo, st: st, hideForRdo: !!(rdo && st !== 'dd' && st !== 'ddnew') };
   }
+  function otSyncDateFrames() {
+    var iso = ((document.getElementById('otDate') || {}).value || '');
+    if (!E.isISODate(iso)) return;
+    ['otWorkedStartDate', 'otWorkedEndDate', 'otSchedStartDate', 'otSchedEndDate'].forEach(function (id) {
+      var b = document.getElementById(id); if (!b || b.dataset.user === '1') return;
+      setDateCap(id, iso, 'auto');
+    });
+    autoSuggestEnd('otWorkedStartDate', ((document.getElementById('otStart') || {}).value || ''), 'otWorkedEndDate', ((document.getElementById('otEnd') || {}).value || ''));
+    autoSuggestEnd('otSchedStartDate', ((document.getElementById('otSchedStart') || {}).value || ''), 'otSchedEndDate', ((document.getElementById('otSchedEnd') || {}).value || ''));
+  }
   function otDefaultWin(iso) {
     iso = iso || ((document.getElementById('otDate') || {}).value || '');
     if (!E.isISODate(iso)) return { startDate: iso || '', endDate: iso || '', start: '', end: '' };
@@ -8717,6 +8746,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (work.start && work.end && !work.endDate) work.endDate = E.suggestEndDate(work.startDate, work.start, '', work.end);
     if (e.schedStart) sched = { start: e.schedStart, end: e.schedEnd, startDate: e.schedStartDate || def.startDate, endDate: e.schedEndDate || def.endDate, custom: true };
     else if (linked && (src.schedStart || src.schedEnd)) sched = { start: src.schedStart, end: src.schedEnd, startDate: src.schedStartDate || def.startDate, endDate: src.schedEndDate || def.endDate, custom: true };
+    else if (linked && !e.linkedTour && def.start) sched = { start: def.start, end: def.end, startDate: def.startDate, endDate: def.endDate, custom: false };
     else sched = { start: '', end: '', startDate: def.startDate, endDate: def.endDate, custom: false };
     return { work: work, sched: sched, def: def, iso: iso };
   }
@@ -8876,7 +8906,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function otSheet(entry, dateISO) {
     var e = entry || { id: '', date: dateISO || E.toISO(T), mode: 'times', start: '', end: '', hours: '', type: C.overtimeTypes[0].id, notes: '' };
-    var times = e.mode !== 'hours', lkEnd = !e.linkedTour && !!e.linkedEnd, lkEntry = !!e.linkedEntry, lk = !!e.linkedTour || lkEnd || lkEntry, lkIso = e.linkedTour || e.linkedEnd || e.date, lkRef = e.linkedTour || e.linkedEnd || e.linkedEntry || '', ro = lk ? ' disabled' : '';
+    var hasTimes = !!(e.workStart || e.start), times = e.mode !== 'hours' || hasTimes, lkEnd = !e.linkedTour && !!e.linkedEnd, lkEntry = !!e.linkedEntry, lk = !!e.linkedTour || lkEnd || lkEntry, lkIso = e.linkedTour || e.linkedEnd || e.date, lkRef = e.linkedTour || e.linkedEnd || e.linkedEntry || '', ro = lk ? ' disabled' : '';
     var win = otResolveWindows(e);
     openSheet(entry ? 'Edit overtime' : 'Log overtime',
       '<form id="otForm" onsubmit="return false" data-id="' + esc(e.id) + '" data-linked="' + esc(lkRef) + '" data-lkind="' + (lkEnd ? 'end' : lkEntry ? 'entry' : lk ? 'tour' : '') + '">' +
@@ -8884,7 +8914,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div class="field" data-sec="8a"><label for="otDate">Date</label><input type="date" id="otDate" value="' + esc(e.date) + '" required' + ro + '></div>' +
       '<div class="field" data-sec="8b"><label for="otType">Type</label><select id="otType">' + C.overtimeTypes.map(function (t) { return '<option value="' + t.id + '"' + (t.id === e.type ? ' selected' : '') + '>' + esc(t.label) + '</option>'; }).join('') + '</select></div>' +
       cmdPicker('ot', e.otCmd || null, { sec: '8c', label: 'Overtime location (command / precinct)', hint: 'Where the overtime was worked. Used to suggest travel time from your permanent command.' }) +
-      '<div class="field otmode"><label>Enter as</label><div class="seg" id="otMode" data-mode="' + (times ? 'times' : 'hours') + '"><button type="button" data-act="otMode" data-m="times" class="' + (times ? 'on' : '') + '">Times</button><button type="button" data-act="otMode" data-m="hours" class="' + (times ? '' : 'on') + '">Total hours only</button></div></div>' +
+      '<div id="otMode" hidden data-mode="' + (times ? 'times' : 'hours') + '"></div>' +
       '<div id="otSlipTimes"' + (times ? '' : ' hidden') + '>' +
       otTimeBlockHtml('worked', 'Time actually worked', '8d', win.work.startDate, win.work.endDate, win.work.start, win.work.end) +
       otTimeBlockHtml('sched', 'Time scheduled to work', '8i', win.sched.startDate, win.sched.endDate, win.sched.start, win.sched.end) +
@@ -10365,6 +10395,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var iso = t.dataset.iso, box = document.getElementById('tourBox'), wr = readWorkedTimes();
       wr.start = E.normTime(wr.start) || ''; wr.end = E.normTime(wr.end) || '';
       if (!wr.start || !wr.end) return toast('Enter start and end times first');
+      if (wr.start && wr.end && !wr.endDate) wr.endDate = E.suggestEndDate(wr.startDate || iso, wr.start, wr.endDate || '', wr.end);
       if (box && box.dataset.add === '1') {
         var eid = box.dataset.eid || uid(); box.dataset.eid = eid;
         var ent = E.cleanTourEntry({ id: eid, start: wr.start, end: wr.end, startDate: wr.startDate, endDate: wr.endDate }) || { id: eid, start: wr.start, end: wr.end, startDate: wr.startDate, endDate: wr.endDate };
@@ -10384,7 +10415,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         if (e2) otSheet(e2); else toast('No overtime to edit yet');
         return;
       }
-      var vs = workedVS(wr, readSchedTimes(true));
+      var sc = readSchedTimes(true);
+      var vs = workedVS(wr, sc);
+      var prevT = S.tours[iso] || {};
+      S.tours[iso] = Object.assign({}, prevT, { start: wr.start, end: wr.end, startDate: wr.startDate || iso, endDate: wr.endDate || '', timesSet: true, updated: new Date().toISOString() });
       S.overtime = E.syncWorkedOT(S.overtime, iso, vs, uid());
       var e3 = S.overtime.filter(function (o) { return o.linkedEnd === iso; })[0];
       if (e3) otSheet(e3); else toast('No overtime to edit yet');
@@ -10562,6 +10596,15 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     navBack: function () { navBack(); }
   };
 
+  var otEditArmed = 0;
+  document.addEventListener('pointerdown', function (ev) {
+    var t = ev.target && ev.target.closest && ev.target.closest('[data-act="otEditDetails"]');
+    if (!t) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+    otEditArmed = Date.now();
+    A.otEditDetails(t, ev);
+  }, true);
   document.addEventListener('pointerdown', swipeDown);
   document.addEventListener('pointermove', swipeMove, { passive: false });
   document.addEventListener('pointerup', swipeUp);
@@ -10572,6 +10615,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (box && box.classList.contains('open') && !box.contains(ev.target)) closeDaySel();
     if (!(ev.target.closest && ev.target.closest('[data-act="navMore"], .nav-menu'))) closeNavMenus();
     var t = ev.target.closest('[data-act]'); if (!t) return;
+    if (t.dataset.act === 'otEditDetails' && Date.now() - otEditArmed < 1000) { ev.preventDefault(); ev.stopPropagation(); return; }
     var fn = A[t.dataset.act]; if (!fn) return;
     if (t.dataset.act !== 'sheetBg') ev.preventDefault();
     fn(t, ev);
@@ -10748,7 +10792,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (ev.target.classList && ev.target.classList.contains('timeIn')) { var fv = E.finishTimeInput(ev.target.value); if (fv !== ev.target.value) { ev.target.value = fv; if (ev.target.id === 'dayStart' || ev.target.id === 'dayEnd') updateEnd(false); } if (/^ot(Start|End|TravAmt)$/.test(ev.target.id)) otPreview(); }
     if (/^st(Rank|Hire|Promo|Override)$/.test(ev.target.id)) refreshPay();
     if (ev.target.id === 'heEff' || ev.target.id === 'heRank') { histDiffLine(); if (ev.target.id === 'heRank') heInvSync(); }
-    if (ev.target.id === 'otDate') { otPreview(); otTravResolve(); }
+    if (ev.target.id === 'otDate') { otSyncDateFrames(); otPreview(); otTravResolve(); }
     if (/^(ot|he|onb)Cmd(UAddr|Addr)$/.test(ev.target.id)) cmdChanged(ev.target.id.replace(/Cmd(UAddr|Addr)$/, ''));
     if (ev.target.id === 'pdDur') { var dm = E.parseHM(ev.target.value); if (dm) ev.target.value = E.fmtHM(E.roundPaidMin(dm)); pdRemind(); } // :59 rounds up
     if (ev.target.id === 'pdTaxYear') pdTaxSheet(ev.target.value);
