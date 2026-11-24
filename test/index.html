@@ -230,6 +230,15 @@ h3{font-size:17px;margin:0 0 6px}
 .pblock .grid3{margin-top:8px}
 .period.current{border-left-color:var(--accent);background:#fff;box-shadow:none}
 .nowtag{background:var(--accent);color:#fff;font-size:11px;font-weight:800;padding:2px 7px;border-radius:999px;vertical-align:middle;margin-left:6px}
+.period .pay-sum{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;width:100%;max-width:100%;box-sizing:border-box;margin:0;padding:0;border:0;background:none;font:inherit;color:inherit;text-align:left;cursor:pointer}
+.period .pay-sum:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
+.period .pay-sum .chev{flex:0 0 auto;color:#64748b;font-size:14px;line-height:1.6;width:1em}
+.period .pay-sum-main{flex:1;min-width:0}
+.period .pay-sum-main .head{margin:0}
+.period .pay-sum-dates{margin-top:3px;font-size:12.5px;font-weight:600;color:var(--muted);display:flex;flex-direction:column;gap:1px;overflow-wrap:anywhere}
+.period .pay-sum-earn{flex:0 0 auto;text-align:right;font-weight:800;font-size:13px;line-height:1.3;color:var(--ink)}
+.period .pay-sum-earn .otpay{display:block;color:var(--pay)}
+.period .pay-detail[hidden]{display:none!important}
 .yearsel{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:10px}
 .yearsel b{font-size:19px;min-width:60px;text-align:center}
 .lv-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -6132,7 +6141,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
 
   var S = load();
   var T = E.today(), tp = E.parts(T);
-  var ui = { tab: 'schedule', calY: tp.y, calM: tp.m, lookup: T, otYear: tp.y, payYear: tp.y, leaveYear: tp.y, leaveOpen: false, pdY: tp.y, pdM: tp.m, onbSquad: null, x15Year: tp.y, otView: 'ot', otSel: false, otSelIds: {}, pdSel: false, pdSelIds: {}, otFilter: 'all', otCollapse: {}, calPeek: null, calPeekPicker: false, todayOpen: false, glanceOpen: false, dirQ: '', mapQ: '', dirKind: '', dirView: 'dir', dirFuelOn: false, dirHospOn: false, dirHospLevel1: false, dirFacilitiesOn: false, mapFocusPct: null };
+  var ui = { tab: 'schedule', calY: tp.y, calM: tp.m, lookup: T, otYear: tp.y, payYear: tp.y, leaveYear: tp.y, leaveOpen: false, pdY: tp.y, pdM: tp.m, onbSquad: null, x15Year: tp.y, otView: 'ot', otSel: false, otSelIds: {}, pdSel: false, pdSelIds: {}, otFilter: 'all', otCollapse: {}, payOpen: {}, calPeek: null, calPeekPicker: false, todayOpen: false, glanceOpen: false, dirQ: '', mapQ: '', dirKind: '', dirView: 'dir', dirFuelOn: false, dirHospOn: false, dirHospLevel1: false, dirFacilitiesOn: false, mapFocusPct: null };
   function msgNewIconHtml() { return '<span class="msgunread-dot" aria-hidden="true"></span>'; }
   var MSG_VERIFIED_TIP = 'Official message from a FINEST HQ admin';
   function msgVerifiedHtml() {
@@ -7014,6 +7023,23 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div class="right">' + hrs(h) + '<small>' + (function (r) { return payText({ pay: r.pay, comp: r.compMinutes || 0 }); })(entryPay(e)) + '</small></div></button>';
   }
 
+  function payPeriodOpen(payday, isCurrent) {
+    var map = ui.payOpen || {}, k = String(payday);
+    if (Object.prototype.hasOwnProperty.call(map, k)) return !!map[k];
+    return !!isCurrent;
+  }
+  function paySetOpen(payday, open) {
+    ui.payOpen = ui.payOpen || {};
+    ui.payOpen[String(payday)] = !!open;
+  }
+  function payApplyOpen(card, open) {
+    if (!card) return;
+    var btn = card.querySelector('[data-act="payToggle"]'), det = card.querySelector('.pay-detail'), ch = btn && btn.querySelector('.chev');
+    if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (ch) ch.textContent = open ? '▾' : '▸';
+    if (det) det.hidden = !open;
+    if (card.dataset.payday) paySetOpen(card.dataset.payday, open);
+  }
   function viewPay() {
     var po = payOpts(), sq = mySquad(), y = ui.payYear, periods = E.payPeriodsInYear(y, po);
     var curReg = E.regularPaydayFor(T, po), curOT = E.overtimePaydayFor(T, po), th = 0, tpay = 0, ttr = 0, ttrp = 0;
@@ -7022,15 +7048,22 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var w = E.periodHours(p.regular.start, p.regular.end, sq.id, tourOpts()), diff = w.minutes - regTarget(), s = sumOT(otInRange(p.overtime.start, p.overtime.end)), ctP = E.chartTimeRange(E.toISO(p.regular.start), E.toISO(p.regular.end), S.profile, tourOpts());
       th += s.hours; tpay += s.pay; ttr += s.travel.minutes; ttrp += s.travel.pay;
       var isReg = p.payday === curReg, isOT = p.payday === curOT, past = p.payday < T;
-      return '<div class="card period' + (isReg || isOT ? ' current' : '') + '" data-sec="3b"' + (isReg ? ' id="curPeriod"' : '') + '>' +
-        '<div class="head"><div><b>Payday ' + fmt(p.payday, 'mdy') + '</b>' + (p.payday >= T && p.payday - T < 14 ? '<span class="nowtag">NEXT</span>' : past ? ' <span class="muted" style="font-size:12px">paid</span>' : '') + '</div></div>' +
+      var isCurrent = isReg || isOT, open = payPeriodOpen(p.payday, isCurrent), detId = 'payDet-' + p.payday;
+      var tag = p.payday >= T && p.payday - T < 14 ? '<span class="nowtag">NEXT</span>' : past ? ' <span class="muted" style="font-size:12px">paid</span>' : '';
+      return '<div class="card period' + (isCurrent ? ' current' : '') + '" data-sec="3b" data-payday="' + p.payday + '"' + (isReg ? ' id="curPeriod"' : '') + '>' +
+        '<button type="button" class="pay-sum" data-act="payToggle" data-payday="' + p.payday + '" aria-expanded="' + (open ? 'true' : 'false') + '" aria-controls="' + detId + '">' +
+        chev(!open) +
+        '<div class="pay-sum-main"><div class="head"><div><b>Payday ' + fmt(p.payday, 'mdy') + '</b>' + tag + '</div></div>' +
+        '<div class="pay-sum-dates"><span>Reg ' + fmt(p.regular.start, 'md') + ' – ' + fmt(p.regular.end, 'md') + '</span><span>OT ' + fmt(p.overtime.start, 'md') + ' – ' + fmt(p.overtime.end, 'md') + '</span></div></div>' +
+        '<div class="pay-sum-earn"><span>Reg ' + E.fmtHM(w.minutes) + '</span><span class="otpay">OT ' + money(s.pay) + '</span></div></button>' +
+        '<div class="pay-detail" id="' + detId + '"' + (open ? '' : ' hidden') + '>' +
         '<div class="pblock' + (isReg ? ' on' : '') + '"><div class="ph"><span>Regular period' + (isReg ? ' <em>CURRENT</em>' : '') + '</span><span>' + fmt(p.regular.start, 'md') + ' – ' + fmt(p.regular.end, 'md') + '</span></div>' +
         '<div class="grid3"><div><small>Days worked</small><b>' + w.worked + '</b><span class="muted" style="font-size:11.5px">of ' + w.scheduled + ' sched' + (w.leave ? ', ' + w.leave + ' leave' : '') + '</span></div>' +
         '<div><small>Reg. hours</small><b>' + E.fmtHM(w.minutes) + '</b><span class="muted" style="font-size:11.5px">of ' + E.fmtHM(regTarget()) + '</span></div>' +
         '<div><small>vs target</small><b style="color:' + (diff < 0 ? 'var(--danger)' : diff > 0 ? 'var(--pay)' : 'inherit') + '">' + (diff > 0 ? '+' : '') + E.fmtHM(diff) + '</b><span class="muted" style="font-size:11.5px">' + ([w.ddWorkDays || w.ddOffDays ? 'D/D +' + w.ddWorkDays + '/−' + w.ddOffDays : '', w.extraDays ? w.extraDays + ' extra OT tour' + (w.extraDays > 1 ? 's' : '') : '', w.leave ? w.leave + ' leave' : ''].filter(Boolean).join(', ') || '&nbsp;') + '</span></div></div>' +
         '<div class="muted" style="font-size:12px;margin-top:6px">Straight time is 8:00 per day. Chart time: <b>' + (ctP.pendingDays && !ctP.minutes ? 'pending' : E.fmtChart(ctP.minutes)) + '</b>' + (ctP.pendingDays ? ' · ' + ctP.pendingDays + ' day' + (ctP.pendingDays === 1 ? '' : 's') + ' pending (rotating Sgt. formula later)' : '') + '</div></div>' +
         '<div class="pblock' + (isOT ? ' on' : '') + '"><div class="ph"><span>Overtime period' + (isOT ? ' <em>CURRENT</em>' : '') + '</span><span>' + fmt(p.overtime.start, 'md') + ' – ' + fmt(p.overtime.end, 'md') + '</span></div>' +
-        '<div class="grid3"><div><small>OT entries</small><b>' + otInRange(p.overtime.start, p.overtime.end).length + '</b></div><div><small>OT hours</small><b>' + hrs(s.hours) + '</b></div><div><small>Est. OT pay</small><b style="color:var(--pay)">' + money(s.pay) + '</b></div></div>' + (s.travel.minutes ? '<div class="muted travper" style="font-size:12px;margin-top:4px">Travel time: ' + E.fmtHM(s.travel.minutes) + (s.travel.pay ? ' &middot; ' + money(s.travel.pay) + ' cash' : '') + (s.travel.comp ? ' &middot; ' + E.fmtHM(s.travel.comp) + ' comp' : '') + ' (included above)</div>' : '') + '</div></div>';
+        '<div class="grid3"><div><small>OT entries</small><b>' + otInRange(p.overtime.start, p.overtime.end).length + '</b></div><div><small>OT hours</small><b>' + hrs(s.hours) + '</b></div><div><small>Est. OT pay</small><b style="color:var(--pay)">' + money(s.pay) + '</b></div></div>' + (s.travel.minutes ? '<div class="muted travper" style="font-size:12px;margin-top:4px">Travel time: ' + E.fmtHM(s.travel.minutes) + (s.travel.pay ? ' &middot; ' + money(s.travel.pay) + ' cash' : '') + (s.travel.comp ? ' &middot; ' + E.fmtHM(s.travel.comp) + ' comp' : '') + ' (included above)</div>' : '') + '</div></div></div>';
     }).join('');
     th = Math.round(th * 100) / 100;
     return suggestBar('Pay') + '<div class="card" data-sec="3a"><div class="yearsel"><button class="navbtn" data-act="payYear" data-dir="-1" aria-label="Previous year">&lsaquo;</button><b>' + y + '</b><button class="navbtn" data-act="payYear" data-dir="1" aria-label="Next year">&rsaquo;</button></div>' +
@@ -12802,7 +12835,16 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     otYear: function (t) { ui.otYear += +t.dataset.dir; render(); },
     payYear: function (t) { ui.payYear += +t.dataset.dir; render(); },
     legendToggle: function () { S.settings.legendOpen = !S.settings.legendOpen; save(true); var lg = document.getElementById('calLegend'), b = document.querySelector('[data-act="legendToggle"]'); if (lg) lg.hidden = !S.settings.legendOpen; if (b) { b.classList.toggle('on', !!S.settings.legendOpen); b.setAttribute('aria-expanded', S.settings.legendOpen ? 'true' : 'false'); } },
-    payJump: function () { var c = document.getElementById('curPeriod'); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
+    payToggle: function (t) {
+      var card = t.closest ? t.closest('.period') : t.parentNode;
+      var open = t.getAttribute('aria-expanded') === 'true';
+      payApplyOpen(card, !open);
+    },
+    payJump: function () {
+      Array.prototype.forEach.call(document.querySelectorAll('.period.current'), function (c) { payApplyOpen(c, true); });
+      var c = document.getElementById('curPeriod'); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    },
+
     leaveYear: function (t) { ui.leaveYear += +t.dataset.dir; render(); },
     leaveBalToggle: function () { ui.leaveOpen = !ui.leaveOpen; render(); },
     leaveBalOpen: function (t) {
