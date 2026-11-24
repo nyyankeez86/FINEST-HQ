@@ -95,7 +95,9 @@ nav.tabs button.on::before{content:"";position:absolute;margin-top:-58px;width:3
 .card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:0 1px 2px rgba(15,23,42,.08);border:1px solid #e1e6ee;margin-bottom:12px}
 .row{display:flex;gap:10px}.row[hidden]{display:none}.field.mi{flex:0 0 64px;min-width:64px;max-width:72px}.field.mi input{text-align:center;text-transform:uppercase}
 .row>*{flex:1;min-width:0}
-.namerow{display:flex;gap:10px;align-items:stretch}.namerow>*{flex:1;min-width:0}.namerow .field{display:flex;flex-direction:column;margin-bottom:12px}.namerow .field label{min-height:18px;line-height:18px;white-space:nowrap}.namerow .field input{height:48px;min-height:48px}
+.namerow{display:flex;gap:8px;align-items:stretch}.namerow>*{flex:1;min-width:0}.namerow .field{display:flex;flex-direction:column;margin-bottom:12px}.namerow .field label{min-height:18px;line-height:18px;white-space:nowrap}.namerow .field input,.namerow .field select{height:48px;min-height:48px;width:100%}
+.namerow .field.rankfld{flex:1.2;min-width:6.2em}
+.namerow .field.mi{flex:0 0 3.4em}
 .sfold{margin-top:20px}.sfoldbtn{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:44px;margin:0;padding:6px 0;border:0;background:transparent;font:inherit;font-size:17px;font-weight:800;color:inherit;text-align:left;cursor:pointer}.sfoldbtn .sfoldttl{flex:1;min-width:0}.sfoldchev{flex-shrink:0;font-size:16px;color:#4b5a70;width:24px;text-align:center}.sfoldbody{margin-top:6px}
 .stat .lbl{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700}
 .stat .big{font-size:24px;font-weight:800;margin-top:2px;line-height:1.15}
@@ -4882,15 +4884,21 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
 
   var PF = [['firstName', 'First', 'First name', 'given-name', 'text'], ['middleInitial', 'MI', 'M.I.', 'additional-name', 'mi'], ['lastName', 'Last', 'Last name', 'family-name', 'text'],
     ['taxNumber', 'Tax', 'Tax number', 'off', 'numericTax'], ['refNumber', 'Ref', 'Reference number', 'off', 'numeric7'], ['shieldNumber', 'Shield', 'Shield number (optional)', 'off', 'numeric']];
-  function profileFields(px, p, noRank) {
+  function profileFields(px, p, rankMode) {
     p = p || {};
-    var h = noRank ? '<div class="namerow">' : '<div class="field"><label for="' + px + 'Rank">Rank <span class="req">*</span></label><select id="' + px + 'Rank" data-pf="rank"><option value="">Choose rank&hellip;</option>' +
-      C.ranks.map(function (r) { return '<option value="' + r.id + '"' + (p.rank === r.id ? ' selected' : '') + '>' + esc(r.label) + '</option>'; }).join('') + '</select><div class="err" id="' + px + 'Rank-err"></div></div>' +
-      '<div class="field" id="' + px + 'RankOtherWrap"' + (p.rank === 'other' ? '' : ' hidden') + '><label for="' + px + 'RankOther">Rank / title <span class="req">*</span></label><input id="' + px + 'RankOther" value="' + esc(p.rankOther || '') + '" placeholder="e.g. Assistant Chief"><div class="err" id="' + px + 'RankOther-err"></div></div>' +
-      '<div class="namerow">';
-    if (noRank) h = '<div class="namerow">';
+    // rankMode: 'row' = Rank dropdown in the name row (Settings 9b, linked to the hist rank in effect today);
+    // true / 'none' = omit rank (legacy); falsy = stacked Rank field above the name (onboarding).
+    var hideRank = rankMode === true || rankMode === 'none';
+    var inRow = rankMode === 'row';
+    var rankOpts = C.ranks.map(function (r) { return '<option value="' + r.id + '"' + (p.rank === r.id ? ' selected' : '') + '>' + esc(r.label) + '</option>'; }).join('');
+    var rankSelect = '<label for="' + px + 'Rank">Rank <span class="req">*</span></label><select id="' + px + 'Rank" data-pf="rank"><option value="">Choose rank&hellip;</option>' + rankOpts + '</select><div class="err" id="' + px + 'Rank-err"></div>';
+    var rankOther = '<div class="field" id="' + px + 'RankOtherWrap"' + (p.rank === 'other' ? '' : ' hidden') + '><label for="' + px + 'RankOther">Rank / title <span class="req">*</span></label><input id="' + px + 'RankOther" value="' + esc(p.rankOther || '') + '" placeholder="e.g. Assistant Chief"><div class="err" id="' + px + 'RankOther-err"></div></div>';
+    var h;
+    if (hideRank) h = '<div class="namerow">';
+    else if (inRow) h = '<div class="namerow"><div class="field rankfld">' + rankSelect + '</div>';
+    else h = '<div class="field">' + rankSelect + '</div>' + rankOther + '<div class="namerow">';
     PF.forEach(function (f, i) {
-      if (i === 3) h += '</div><div class="row">';
+      if (i === 3) h += '</div>' + (inRow ? rankOther + '<div class="hint" style="margin:-4px 0 10px">This is the rank in effect today (the same field as Rank &amp; assignment). To record a promotion with a start date, add an entry there.</div>' : '') + '<div class="row">';
       if (i === 5) h += '</div><div class="privnote" id="' + px + 'PrivNote">&#128274; Tax, reference and shield numbers stay on this device only' + (CL.enabled ? ' and are never synced to your account' : '') + '.</div>';
       var num = f[4].indexOf('numeric') === 0, mi = f[4] === 'mi';
       h += '<div class="field' + (mi ? ' mi' : '') + '"><label for="' + px + f[1] + '">' + f[2] + (f[0] === 'shieldNumber' || f[0] === 'middleInitial' ? '' : ' <span class="req">*</span>') + '</label><input id="' + px + f[1] + '" autocomplete="' + f[3] + '"' + (num ? ' inputmode="numeric" pattern="[0-9]*"' : '') + (mi ? ' maxlength="1" autocapitalize="characters" spellcheck="false" placeholder="A" aria-label="Middle initial, optional"' : '') + (f[4] === 'numeric7' ? ' maxlength="7" placeholder="7 digits"' : '') + (f[4] === 'numericTax' ? ' maxlength="' + C.taxNumberDigits + '" placeholder="' + C.taxNumberDigits + ' digits"' : '') + ' value="' + esc(f[0] === 'middleInitial' ? E.normMiddleInitial(p.middleInitial) : (p[f[0]] || '')) + '"' + (f[0] === 'shieldNumber' ? ' placeholder="If you have one"' : '') + '><div class="err" id="' + px + f[1] + '-err"></div></div>';
@@ -8990,8 +8998,12 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   // Settings pay summary (rank, chart, step, longevity, rates, next step change)
   function payFormProfile() {
-    var pf = readProfile('st'), r = document.getElementById('stRate'), o = document.getElementById('stOverride'); delete pf.rank; delete pf.rankOther; // rank comes from the entry in effect today
-    return Object.assign({}, E.profileAt(Object.assign({}, S.profile, pf), E.toISO(T)), { rate: r ? parseFloat(r.value) || 0 : S.profile.rate, rateOverride: o ? o.checked : S.profile.rateOverride });
+    var pf = readProfile('st'), r = document.getElementById('stRate'), o = document.getElementById('stOverride');
+    var linked = document.getElementById('stRank');
+    if (!linked) { delete pf.rank; delete pf.rankOther; }
+    var out = Object.assign({}, E.profileAt(Object.assign({}, S.profile, pf), E.toISO(T)), { rate: r ? parseFloat(r.value) || 0 : S.profile.rate, rateOverride: o ? o.checked : S.profile.rateOverride });
+    if (linked && pf.rank) { out.rank = pf.rank; out.rankOther = pf.rank === 'other' ? (pf.rankOther || '') : ''; }
+    return out;
   }
   function payCardHtml(p) {
     var pi = E.payInfo(p), pl = pi.placement, row = function (k, v, id) { return '<div class="payrow"' + (id ? ' id="' + id + '"' : '') + '><span>' + k + '</span><b>' + v + '</b></div>'; }, h = '';
@@ -9041,7 +9053,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function settingsSheet() {
     var p = S.profile, s = S.settings;
     openSheet('Settings',
-      accountPanel() + (CL.enabled ? privacySectionHtml({ title: true, deleteBtn: !!CS.uid, sec: '9n', top: '18px' }) : '') + '<h3 data-sec="9b" style="margin-top:' + (CL.enabled ? '18px' : '0') + '">Profile</h3>' + profileFields('st', p, true) + homeField('st', p) +
+      accountPanel() + (CL.enabled ? privacySectionHtml({ title: true, deleteBtn: !!CS.uid, sec: '9n', top: '18px' }) : '') + '<h3 data-sec="9b" style="margin-top:' + (CL.enabled ? '18px' : '0') + '">Profile</h3>' + profileFields('st', p, 'row') + homeField('st', p) +
       '<h3 id="histHead" data-sec="9c">Rank &amp; assignment</h3><div id="histWrap">' + histPanel() + '</div>' +
       '<h3 id="payHead" data-sec="9d" style="margin-top:18px">Pay</h3><div class="paycard" id="payCard">' + payCardHtml(profNow()) + '</div>' +
       '<label class="chk ovchk"><input type="checkbox" id="stOverride"' + (p.rateOverride ? ' checked' : '') + '> Use my own hourly rate instead of the pay chart</label>' +
@@ -10150,8 +10162,17 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     lkSet: function (t) { ui.lookup = +t.dataset.d; render(); },
     stSave: function () {
       var pf = readProfile('st'), r = parseFloat(document.getElementById('stRate').value), m = parseFloat(document.getElementById('stMult').value);
-      pf.rank = S.profile.rank; pf.rankOther = S.profile.rankOther; // rank lives in Rank & assignment (by effective date)
-      if (!showProfileErrors('st', E.validateProfile(pf))) return toast('Please fix the highlighted fields');
+      if (document.getElementById('stRank')) {
+        // Linked to the Rank & assignment record in effect today — not a second rank field.
+        if (!showProfileErrors('st', E.validateProfile(pf))) return toast('Please fix the highlighted fields');
+        var rec = E.histAt(S.profile.assignHist, E.toISO(T));
+        if (rec) { rec.rank = pf.rank; rec.rankOther = pf.rank === 'other' ? (pf.rankOther || '') : ''; }
+        S.profile.rank = pf.rank; S.profile.rankOther = pf.rank === 'other' ? (pf.rankOther || '') : '';
+        E.syncHist(S.profile);
+      } else {
+        pf.rank = S.profile.rank; pf.rankOther = S.profile.rankOther;
+        if (!showProfileErrors('st', E.validateProfile(pf))) return toast('Please fix the highlighted fields');
+      }
       var ov = document.getElementById('stOverride').checked; if (!(r >= 0)) r = 0;
       if (ov && !(r > 0)) { document.getElementById('stOvWrap').hidden = false; document.getElementById('stRate').focus(); return toast('Enter your own hourly rate, or untick "Use my own hourly rate"'); }
       if (!(m >= 1)) return toast('Multiplier must be at least 1');

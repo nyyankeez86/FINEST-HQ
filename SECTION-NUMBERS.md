@@ -76,7 +76,7 @@ so they stay stable when sections move. New sections get the next free letter; r
 | | 8j | Total overtime performed (read-only, auto-calculated) |
 | | 8k | Compensation option (Cash and Time rows; only when Paid as is Split). Hrs:Min uses the same time-typing rule as the rest of the app. |
 | **9 Settings** | 9a | Account |
-| | 9b | Profile (first name, M.I. (optional, no asterisk), last name, ID numbers; name boxes aligned on one row) |
+| | 9b | Profile (rank dropdown with caption “Rank” sits in the same row as the name; first name, M.I. (optional, no asterisk), last name; ID numbers). The rank dropdown is the same field as Rank & assignment (9c): it shows and saves the rank in effect today from `C.ranks` (Assistant Chief through P.O.). Promotions with a start date are still entered in 9c. |
 | | 9c | Rank & assignment history (chart picker includes 12 hour tour RDO with Squad A / Squad B) The chart picker also includes 17-Hour Protection Teams with Squad A / Squad B / Squad C. |
 | | 9d | Pay |
 | | 9e | Leave balances |
