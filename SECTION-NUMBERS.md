@@ -102,7 +102,8 @@ so they stay stable when sections move. New sections get the next free letter; r
 | **11 Send a suggestion** | 11a | Section |
 | | 11b | Your suggestion |
 | | 11c | Screenshot |
-| **12 Suggestions inbox (admin)** | — | header tag only. The Enable notifications checkbox is in this sheet (admins). Approved signed-in users may save and delete only their own push subscription. New-suggestion broadcasts still go only to admin devices. On iPhone, add the app to the Home Screen (iOS 16.4 or later) and open it from there; otherwise the toggle explains that requirement. |
+| **12 Suggestions inbox (admin)** | 12a | Enable notifications checkbox (admins). Approved signed-in users may save and delete only their own push subscription. New-suggestion broadcasts still go only to admin devices. On iPhone, add the app to the Home Screen (iOS 16.4 or later) and open it from there; otherwise the toggle explains that requirement. Opened from the Inbox button in the top banner (admins) or Settings → Suggestions. |
+| | 12b | Suggestion list with reply history/thread and a Reply box on each suggestion. A solid-blue (#0000F0) mini shield (exact silhouette of icons/shield-128.png, CSS-masked, not a redrawn shape) marks unread suggestions and unread replies. |
 | **13 Beta users (admin)** | 13a | User list (approve / revoke / Beta tags on-off) |
 | **14 Add leave / note / assignment** | 14a | Date |
 | **15 Calendar sync** | 15a | Sync options |
@@ -122,3 +123,5 @@ so they stay stable when sections move. New sections get the next free letter; r
 | | 20b | Vendor consolidation: suggested groups of likely-same vendors (name similarity / prefix matches such as UBS, Mount Sinai, MSG, Boston Properties, Vornado, NYU, Tishman Speyer), confirm or keep separate, manual combine, rename a group, and remove a vendor that was grouped by mistake. Mapping is stored in synced settings. The report uses the combined name, with locations listed under each. |
 | | 20c | Report preview: per-vendor totals (gross by check date), count of details, hours, and a detailed line list (date worked, ID, vendor, location/address, hours, amount, check date, paid date), plus pending / unpaid. |
 | | 20d | Export: real .xlsx (Summary + Details sheets, built on the device) and CSV fallback; Email to myself via the device share sheet (navigator.share with the file), falling back to download + mailto. Nothing is uploaded. |
+| **21 Inbox** | 21a | Per-user inbox (signed-in approved accounts). Opened from the Inbox button in the top banner, next to Suggest, and from Settings → Inbox. Lists message threads newest first (replies to the member’s suggestions; also ready for later general notices). A solid-blue (#0000F0) mini shield (same shield-128.png silhouette) marks unread threads, and the same marker is the badge on the Inbox button when anything is unread. Opening a thread marks its messages read. |
+| | 21b | Opened thread: original suggestion (when there is one), the reply history, and a box to reply back. |
