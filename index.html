@@ -49,7 +49,12 @@ header.top .sub{font-size:13px;color:#c7d3e6;margin-top:2px}
 .sugthumb{width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid var(--line);background:#eef1f6;flex-shrink:0}
 .sugunread{background:#f8fafc}
 .sugunread .t1{font-weight:800}
-.msgnew{display:inline-block;width:24px;height:28px;vertical-align:-6px;flex:0 0 24px;object-fit:contain;object-position:center}.inboxbtn .inbadge,#adminInboxBtn .inbadge,#userInboxBtn .inbadge{top:-2px;right:-2px;min-width:24px;width:24px;height:28px;padding:0;border-radius:0;background:transparent;color:transparent;font-size:0;line-height:0;overflow:visible}.inbadge .msgnew{width:24px;height:28px;flex:none;vertical-align:0;display:block}.msgthread{margin-top:8px;display:flex;flex-direction:column;gap:6px}
+.msgnew{display:inline-block;width:24px;height:28px;vertical-align:-6px;flex:0 0 24px;object-fit:contain;object-position:center}.inboxbtn .inbadge,#adminInboxBtn .inbadge,#userInboxBtn .inbadge{top:6px;right:6px;min-width:8px;width:8px;height:8px;padding:0;border-radius:999px;background:#dc2626;color:transparent;font-size:0;line-height:0;overflow:visible}
+#inboxBadgeSheet.inbadge{top:auto;right:auto;margin-left:6px;width:8px;height:8px;min-width:8px;padding:0}
+.msgunread-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#dc2626;flex:0 0 7px;margin-right:4px;vertical-align:1px}
+.msgverified-wrap{display:inline-flex;align-items:center;margin:0 1px 0 4px;padding:0;border:0;background:none;line-height:0;cursor:pointer;vertical-align:-2px}
+.msgverified{display:inline-block;height:14px;width:calc(14px * 100 / 118);aspect-ratio:100/118;object-fit:contain;object-position:center;vertical-align:-2px;pointer-events:none}
+.msgthread{margin-top:8px;display:flex;flex-direction:column;gap:6px}
 .msgrow{font-size:13px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;white-space:pre-wrap;overflow-wrap:anywhere}
 .msgrow.mine{background:#f8fafc}
 .msgrow .msgt2{font-size:12px;color:var(--muted);margin-bottom:2px}
@@ -62,9 +67,10 @@ header.top .sub{font-size:13px;color:#c7d3e6;margin-top:2px}
 main{flex:1;padding:14px 14px calc(var(--tabh) + 24px + env(safe-area-inset-bottom))}
 nav.tabs[hidden],#headActs[hidden],#btnSettings[hidden],#btnInbox[hidden],#inboxBadge[hidden],#inboxBadgeSheet[hidden],#sugPop[hidden],#sugPreview[hidden]{display:none!important}nav.tabs{position:fixed;bottom:0;left:0;right:0;z-index:20;background:#fff;border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom)}
 nav.tabs .wrap{display:flex;width:100%;max-width:560px}
-nav.tabs button{flex:1;height:var(--tabh);border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:12px;font-weight:600;color:#5b6678;cursor:pointer}
-nav.tabs button[data-tab="overtime"]{font-size:10px;line-height:1.12;gap:1px;letter-spacing:-.02em;padding:0 1px}
-nav.tabs button[data-tab="overtime"] .tablbl{display:block;text-align:center;max-width:5.2em;font-weight:700}
+nav.tabs button{flex:1;height:var(--tabh);border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:1px;font-size:12px;font-weight:600;color:#5b6678;cursor:pointer;padding:5px 2px 2px;position:relative}
+nav.tabs button svg{width:22px;height:22px;flex:0 0 22px;display:block}
+nav.tabs .tablbl{display:flex;align-items:flex-start;justify-content:center;min-height:2.3em;line-height:1.15;text-align:center;font-weight:600;max-width:100%}
+nav.tabs button[data-tab="overtime"] .tablbl{font-size:10px;font-weight:700;letter-spacing:-.02em;line-height:1.15}
 .otviewseg{display:flex;gap:6px;margin:0 0 10px}
 .otviewseg .btn{flex:1}
 .otviewseg .btn.on{background:#0f172a;color:#fff;border-color:#0f172a}
@@ -96,7 +102,6 @@ nav.tabs button[data-tab="overtime"] .tablbl{display:block;text-align:center;max
 .otchk{width:18px;height:18px;margin:2px 0 0;flex-shrink:0}
 .chartline{margin:6px 0 10px;padding:8px 10px;border-radius:10px;background:#f8fafc;border:1px solid #e2e8f0;font-size:13px;color:#334155}
 .otexp{color:#64748b!important;font-weight:600}
-nav.tabs button svg{width:24px;height:24px}
 nav.tabs button.on{color:var(--navy)}
 nav.tabs button.on::before{content:"";position:absolute;margin-top:-58px;width:36px;height:3px;border-radius:3px;background:var(--navy)}
 .card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:0 1px 2px rgba(15,23,42,.08);border:1px solid #e1e6ee;margin-bottom:12px}
@@ -621,7 +626,7 @@ a.dir-tel.mine{color:#0f766e}
       <button type="button" class="hdrchip" id="btnSuggest" data-act="suggestOpen">Suggest</button>
       <button type="button" class="iconbtn inboxbtn" id="btnInbox" data-act="inboxOpen" hidden aria-label="Inbox">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"/><path d="m4 8 8 6 8-6"/></svg>
-        <span class="inbadge" id="inboxBadge" hidden title="Unread"><img class="msgnew" src="icons/shield-new-48.png" srcset="icons/shield-new-48.png 1x, icons/shield-new-48@2x.png 2x" width="24" height="28" alt="" draggable="false"></span>
+        <span class="inbadge" id="inboxBadge" hidden title="Unread"></span>
       </button>
       <button class="iconbtn" id="btnSettings" data-act="settings" aria-label="Settings">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -631,11 +636,11 @@ a.dir-tel.mine{color:#0f766e}
   <main id="view"></main>
 </div>
 <nav class="tabs" id="tabs" hidden><div class="wrap">
-  <button data-act="tab" data-tab="schedule"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Schedule</button>
-  <button data-act="tab" data-tab="overtime"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="tablbl">Overtime/Paid Detail</span></button>
-  <button data-act="tab" data-tab="pay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/></svg>Pay</button>
-  <button data-act="tab" data-tab="map"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3L3 6v15l6-3 6 3 6-3V3l-6 3-6-3z"/><path d="M9 3v15M15 6v15"/></svg>Map</button>
-  <button data-act="tab" data-tab="directory"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>Directory</button>
+  <button data-act="tab" data-tab="schedule"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span class="tablbl">Schedule</span></button>
+  <button data-act="tab" data-tab="overtime"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="tablbl">Overtime &amp;<br>Paid Detail</span></button>
+  <button data-act="tab" data-tab="pay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/></svg><span class="tablbl">Pay</span></button>
+  <button data-act="tab" data-tab="map"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3L3 6v15l6-3 6 3 6-3V3l-6 3-6-3z"/><path d="M9 3v15M15 6v15"/></svg><span class="tablbl">Map</span></button>
+  <button data-act="tab" data-tab="directory"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg><span class="tablbl">Directory</span></button>
 </div></nav>
 <div id="sheetRoot"></div>
 <div id="toast" role="status" aria-live="polite"></div>
@@ -3677,7 +3682,19 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   var CLOUD_PRIVATE = { profile: ['taxNumber', 'refNumber', 'shieldNumber', 'homeAddress'], settings: ['mapsKey', 'mapsKeyInBackup'] };
   var USERNAME_RE = /^[a-z0-9][a-z0-9._-]{2,23}$/;
   function normUsername(u) { return String(u || '').trim().toLowerCase(); }
-  function usernameError(u) { var v = normUsername(u); if (!v) return 'Enter a username'; if (v.length < 3) return 'At least 3 characters'; if (v.length > 24) return 'At most 24 characters'; return USERNAME_RE.test(v) ? '' : 'Letters, numbers, dot, dash or underscore; start with a letter or number'; }
+  function usernameIsReserved(u) {
+    var v = normUsername(u);
+    return /^adm[il1!]n/.test(v) || /^(root|moderator|support|finesthq|finest[._-]hq)([0-9._-].*)?$/.test(v);
+  }
+  function usernameError(u) {
+    var v = normUsername(u);
+    if (!v) return 'Enter a username';
+    if (v.length < 3) return 'At least 3 characters';
+    if (v.length > 24) return 'At most 24 characters';
+    if (!USERNAME_RE.test(v)) return 'Letters, numbers, dot, dash or underscore; start with a letter or number';
+    if (usernameIsReserved(v)) return 'That username is reserved. Pick another one.';
+    return '';
+  }
   function passwordError(p) { p = String(p || ''); return p.length < 8 ? 'At least 8 characters' : p.length > 72 ? 'At most 72 characters' : ''; }
   // Supabase Auth needs an email: the username becomes <username>@<domain>, where the domain can never receive mail (.invalid, RFC 2606).
   function usernameEmail(u, domain) { return normUsername(u) + '@' + String(domain || 'users.patrol-schedule.invalid').toLowerCase(); }
@@ -4754,7 +4771,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     tour17Key: tour17Key, tour17Squad: tour17Squad, tour17Offset: tour17Offset, tour17WorkPhase: tour17WorkPhase, tour17WorkSquad: tour17WorkSquad, tour17IsOff: tour17IsOff, tour17SquadsOff: tour17SquadsOff, tour17SquadsWorking: tour17SquadsWorking, tour17OvertimeMin: tour17OvertimeMin,
     nextDayOff: nextDayOff, chartDayBlock: chartDayBlock, nextWorkday: nextWorkday, countRDOs: countRDOs, isTourChange: isTourChange, countTourChanges: countTourChanges, isPayday: isPayday, nextPayday: nextPayday,
     periodsForPayday: periodsForPayday, regularPaydayFor: regularPaydayFor, overtimePaydayFor: overtimePaydayFor, regularPeriodFor: regularPeriodFor, overtimePeriodFor: overtimePeriodFor, payPeriodsInYear: payPeriodsInYear, hoursBetween: hoursBetween, entryHours: entryHours,
-    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, fmtMDY: fmtMDY, defaultTourWindow: defaultTourWindow, tourSpanMinutes: tourSpanMinutes, suggestEndDate: suggestEndDate, workedVsScheduled: workedVsScheduled, cleanTourEntry: cleanTourEntry, tourEntries: tourEntries, isAssignmentEntry: isAssignmentEntry, cleanAssignmentEntry: cleanAssignmentEntry, assignmentEntries: assignmentEntries, mergeTourEntries: mergeTourEntries, writeAssignmentEntries: writeAssignmentEntries, assignmentTimeText: assignmentTimeText, assignmentReminderText: assignmentReminderText, paidDetailBrief: paidDetailBrief, dayAssignments: dayAssignments, assignmentEventWindow: assignmentEventWindow, dayTour: dayTour, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, assignmentNavAddress: assignmentNavAddress, upcomingItems: upcomingItems, commandById: commandById, isPduCommand: isPduCommand, searchCommands: searchCommands, phoneDigits: phoneDigits, fmtPhone: fmtPhone, telHref: telHref, cleanDirMine: cleanDirMine, cleanDirPhone: cleanDirPhone, cleanDirCustom: cleanDirCustom, emptyDirMine: emptyDirMine, dirKindMatch: dirKindMatch, searchDirectory: searchDirectory, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, routeUrls: routeUrls, navPoint: navPoint, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, stripBoroSuffix: stripBoroSuffix, splitPaidAddress: splitPaidAddress, joinPaidAddress: joinPaidAddress, mergePaidVendors: mergePaidVendors, rememberPaidVendor: rememberPaidVendor, paidVendorKey: paidVendorKey, parsePaidAmount: parsePaidAmount, paidDetailAmount: paidDetailAmount, paidDetailTaxDate: paidDetailTaxDate, daysBetweenISO: daysBetweenISO, paidDetailTiming: paidDetailTiming, paidDetailTimingCaptions: paidDetailTimingCaptions, paidVendorNames: paidVendorNames, cleanVendorGroups: cleanVendorGroups, vendorReportName: vendorReportName, addVendorToGroup: addVendorToGroup, removeVendorFromGroup: removeVendorFromGroup, renameVendorGroup: renameVendorGroup, ungroupVendor: ungroupVendor, suggestVendorGroups: suggestVendorGroups, paidDetailTaxReport: paidDetailTaxReport, buildPaidDetailXlsx: buildPaidDetailXlsx, buildPaidDetailCsv: buildPaidDetailCsv, parseXlsx: parseXlsx, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, addYearsISO: addYearsISO, retirementDateOf: retirementDateOf, retirementRemain: retirementRemain, retirementCountdown: retirementCountdown, endCompare: endCompare, syncEndOT: syncEndOT, syncWorkedOT: syncWorkedOT, syncEntryOT: syncEntryOT, leaveBalances: leaveBalances, fmtChart: fmtChart, chartTimeFromTour: chartTimeFromTour, isDetectiveRank: isDetectiveRank, isSergeantRank: isSergeantRank, isLieutenantRank: isLieutenantRank, isPoliceOfficerRank: isPoliceOfficerRank, chartKind: chartKind, rankStartDate: rankStartDate, yearsInRankAtLeast: yearsInRankAtLeast, chartTimeEligibility: chartTimeEligibility, chartTimeForDay: chartTimeForDay, chartTimeRange: chartTimeRange, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
+    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, fmtMDY: fmtMDY, defaultTourWindow: defaultTourWindow, tourSpanMinutes: tourSpanMinutes, suggestEndDate: suggestEndDate, workedVsScheduled: workedVsScheduled, cleanTourEntry: cleanTourEntry, tourEntries: tourEntries, isAssignmentEntry: isAssignmentEntry, cleanAssignmentEntry: cleanAssignmentEntry, assignmentEntries: assignmentEntries, mergeTourEntries: mergeTourEntries, writeAssignmentEntries: writeAssignmentEntries, assignmentTimeText: assignmentTimeText, assignmentReminderText: assignmentReminderText, paidDetailBrief: paidDetailBrief, dayAssignments: dayAssignments, assignmentEventWindow: assignmentEventWindow, dayTour: dayTour, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameIsReserved: usernameIsReserved, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, assignmentNavAddress: assignmentNavAddress, upcomingItems: upcomingItems, commandById: commandById, isPduCommand: isPduCommand, searchCommands: searchCommands, phoneDigits: phoneDigits, fmtPhone: fmtPhone, telHref: telHref, cleanDirMine: cleanDirMine, cleanDirPhone: cleanDirPhone, cleanDirCustom: cleanDirCustom, emptyDirMine: emptyDirMine, dirKindMatch: dirKindMatch, searchDirectory: searchDirectory, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, routeUrls: routeUrls, navPoint: navPoint, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, stripBoroSuffix: stripBoroSuffix, splitPaidAddress: splitPaidAddress, joinPaidAddress: joinPaidAddress, mergePaidVendors: mergePaidVendors, rememberPaidVendor: rememberPaidVendor, paidVendorKey: paidVendorKey, parsePaidAmount: parsePaidAmount, paidDetailAmount: paidDetailAmount, paidDetailTaxDate: paidDetailTaxDate, daysBetweenISO: daysBetweenISO, paidDetailTiming: paidDetailTiming, paidDetailTimingCaptions: paidDetailTimingCaptions, paidVendorNames: paidVendorNames, cleanVendorGroups: cleanVendorGroups, vendorReportName: vendorReportName, addVendorToGroup: addVendorToGroup, removeVendorFromGroup: removeVendorFromGroup, renameVendorGroup: renameVendorGroup, ungroupVendor: ungroupVendor, suggestVendorGroups: suggestVendorGroups, paidDetailTaxReport: paidDetailTaxReport, buildPaidDetailXlsx: buildPaidDetailXlsx, buildPaidDetailCsv: buildPaidDetailCsv, parseXlsx: parseXlsx, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, addYearsISO: addYearsISO, retirementDateOf: retirementDateOf, retirementRemain: retirementRemain, retirementCountdown: retirementCountdown, endCompare: endCompare, syncEndOT: syncEndOT, syncWorkedOT: syncWorkedOT, syncEntryOT: syncEntryOT, leaveBalances: leaveBalances, fmtChart: fmtChart, chartTimeFromTour: chartTimeFromTour, isDetectiveRank: isDetectiveRank, isSergeantRank: isSergeantRank, isLieutenantRank: isLieutenantRank, isPoliceOfficerRank: isPoliceOfficerRank, chartKind: chartKind, rankStartDate: rankStartDate, yearsInRankAtLeast: yearsInRankAtLeast, chartTimeEligibility: chartTimeEligibility, chartTimeForDay: chartTimeForDay, chartTimeRange: chartTimeRange, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
     steadyKey: steadyKey, parseChart: parseChart, validChartKey: validChartKey, chartInfo: chartInfo, sortCharts: sortCharts, chartAt: chartAt, chartChanges: chartChanges, nextOff: nextOff, nextOn: nextOn, reviewOverrides: reviewOverrides, DOW3: DOW3,
     stripAddrLabels: stripAddrLabels, paidAddressSuggestions: paidAddressSuggestions,
     rankAbbr: rankAbbr, rankLabel: rankLabel, displayName: displayName, formatFullName: formatFullName, normMiddleInitial: normMiddleInitial, migrateProfile: migrateProfile, validateProfile: validateProfile,
@@ -4825,7 +4842,19 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   var S = load();
   var T = E.today(), tp = E.parts(T);
   var ui = { tab: 'schedule', calY: tp.y, calM: tp.m, lookup: T, otYear: tp.y, payYear: tp.y, leaveYear: tp.y, leaveOpen: false, pdY: tp.y, pdM: tp.m, onbSquad: null, x15Year: tp.y, otView: 'ot', otSel: false, otSelIds: {}, pdSel: false, pdSelIds: {}, otFilter: 'all', otCollapse: {}, calPeek: null, calPeekPicker: false, todayOpen: false, glanceOpen: false, dirQ: '', mapQ: '', dirKind: '', dirView: 'dir', dirFuelOn: false };
-  function msgNewIconHtml() { return '<img class="msgnew" src="icons/shield-new-48.png" srcset="icons/shield-new-48.png 1x, icons/shield-new-48@2x.png 2x" width="24" height="28" alt="" draggable="false">'; }
+  function msgNewIconHtml() { return '<span class="msgunread-dot" aria-hidden="true"></span>'; }
+  var MSG_VERIFIED_TIP = 'Official message from a FINEST HQ admin';
+  function msgVerifiedHtml() {
+    return '<span class="msgverified-wrap" data-act="msgVerifiedTip" title="' + esc(MSG_VERIFIED_TIP) + '" role="img" aria-label="' + esc(MSG_VERIFIED_TIP) + '">' +
+      '<img class="msgverified" src="icons/shield-verified.svg" width="12" height="14" alt="" draggable="false"></span>';
+  }
+  var verifiedTipAt = 0;
+  function msgVerifiedTip(t, ev) {
+    if (ev && ev.stopPropagation) ev.stopPropagation();
+    if (Date.now() - verifiedTipAt < 600) return;
+    verifiedTipAt = Date.now();
+    toast(MSG_VERIFIED_TIP);
+  }
 
   function U() { return S.settings.unit; }
   var PDU = C.pdu;
@@ -7303,6 +7332,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function authMsg(e) {
     var m = errText(e);
     if (/invalid login credentials/i.test(m)) return 'Wrong username or password';
+    if (/reserved/i.test(m)) return 'That username is reserved. Pick another one.';
     if (/already registered|already exists|duplicate key|database error saving new user|unique/i.test(m)) return 'That username is taken. Pick another one.';
     if (/email.*(invalid|not authorized)/i.test(m)) return 'The sign-up service rejected the account address. The admin needs to check the setup (see SETUP.md, step 3).';
     if (/email not confirmed/i.test(m)) return 'The admin needs to turn off "Confirm email" in Supabase (see SETUP.md).';
@@ -7335,7 +7365,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function viewRequest() {
     return '<div class="card authcard" id="authRequest"><div class="authlogo"><img src="icons/icon-192.png" alt="FINEST HQ"></div><h2>Request beta access</h2><p class="muted">Pick a username and password. The admin approves each request; you can sign in once you\'re approved.</p>' + authTabs('request') + offlineNote() +
       '<form id="rqForm" onsubmit="return false" autocomplete="on">' +
-      '<div class="field"><label for="rqUser">Username <span class="req">*</span></label><input id="rqUser" name="username" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="24" placeholder="e.g. jsmith"><div class="hint">3&ndash;24 letters, numbers, dot, dash or underscore. Not your email.</div><div class="err" id="rqUser-err"></div></div>' +
+      '<div class="field"><label for="rqUser">Username <span class="req">*</span></label><input id="rqUser" name="username" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="24" placeholder="e.g. jsmith"><div class="hint">3&ndash;24 letters, numbers, dot, dash or underscore. Not your email. Names like admin are reserved.</div><div class="err" id="rqUser-err"></div></div>' +
       '<div class="field"><label for="rqPass">Password <span class="req">*</span></label><input id="rqPass" type="password" autocomplete="new-password" maxlength="72" placeholder="At least 8 characters"><div class="err" id="rqPass-err"></div></div>' +
       '<div class="field"><label for="rqPass2">Confirm password <span class="req">*</span></label><input id="rqPass2" type="password" autocomplete="new-password" maxlength="72"><div class="err" id="rqPass2-err"></div></div>' +
       '<div class="field"><label for="rqName">Name (optional)</label><input id="rqName" autocomplete="name" maxlength="80" placeholder="So the admin knows who you are"></div>' +
@@ -7481,7 +7511,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function accountPanel() {
     if (!CL.enabled) return '';
     return '<h3 style="margin-top:0" id="acctHead" data-sec="9a">Account</h3><div class="acct"><div><b>' + esc(CS.username || '') + '</b>' + (CS.role === 'admin' ? ' <span class="betatag">admin</span>' : '') + '<div class="muted" id="syncLine" style="font-size:13px">' + esc(syncLine()) + '</div></div></div>' +
-      '<div class="row" style="margin-bottom:6px"><button class="btn sm" data-act="syncNowBtn">Sync now</button>' + (CS.role === 'admin' ? '<button class="btn sm" data-act="inboxOpen" id="adminInboxBtn">Suggestions<span class="inbadge msgnew" id="inboxBadgeSheet"' + (ui.inboxUnread ? '' : ' hidden') + ' title="Unread">' + msgNewIconHtml() + '</span></button><button class="btn sm" data-act="adminOpen" id="adminBtn">Admin: beta users</button>' : (cloudReady() ? '<button class="btn sm" data-act="inboxOpen" id="userInboxBtn">Inbox<span class="inbadge msgnew" id="inboxBadgeSheet"' + (ui.inboxUnread ? '' : ' hidden') + ' title="Unread">' + msgNewIconHtml() + '</span></button>' : '')) + '<button class="btn sm" data-act="authSignOut">Sign out</button></div>';
+      '<div class="row" style="margin-bottom:6px"><button class="btn sm" data-act="syncNowBtn">Sync now</button>' + (CS.role === 'admin' ? '<button class="btn sm" data-act="inboxOpen" id="adminInboxBtn">Suggestions<span class="inbadge msgnew" id="inboxBadgeSheet"' + (ui.inboxUnread ? '' : ' hidden') + ' title="Unread"></span></button><button class="btn sm" data-act="adminOpen" id="adminBtn">Admin: beta users</button>' : (cloudReady() ? '<button class="btn sm" data-act="inboxOpen" id="userInboxBtn">Inbox<span class="inbadge msgnew" id="inboxBadgeSheet"' + (ui.inboxUnread ? '' : ' hidden') + ' title="Unread"></span></button>' : '')) + '<button class="btn sm" data-act="authSignOut">Sign out</button></div>';
   }
 
   // ---------- Beta suggestions (send to the admin) ----------
@@ -7608,7 +7638,6 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var n = ui.inboxUnread || 0;
     ['inboxBadge', 'inboxBadgeSheet'].forEach(function (id) {
       var el = document.getElementById(id); if (!el) return;
-      if (!el.querySelector('img.msgnew')) el.innerHTML = msgNewIconHtml();
       el.hidden = !n;
       if (n) el.setAttribute('aria-label', n === 1 ? '1 unread' : n + ' unread');
       else el.removeAttribute('aria-label');
@@ -7672,7 +7701,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function hideSugPop() { var el = document.getElementById('sugPop'); if (el) { el.hidden = true; el.innerHTML = ''; } }
   function fmtInboxTime(ts) { var d = new Date(ts); if (isNaN(d)) return ''; return d.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); }
   function loadMessages() {
-    return Promise.resolve(cloudClient().from('messages').select('id,sender_id,sender_username,recipient_id,suggestion_id,body,created_at,read_at').order('created_at', { ascending: true }).then(q));
+    return Promise.resolve(cloudClient().from('messages').select('id,sender_id,sender_username,sender_is_admin,recipient_id,suggestion_id,body,created_at,read_at').order('created_at', { ascending: true }).then(q));
   }
   function msgThreadKey(m) {
     if (m.suggestion_id) return m.suggestion_id;
@@ -7701,9 +7730,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function msgRowHtml(m) {
     var mine = m.sender_id === CS.uid, unread = !mine && !m.read_at;
     var who = mine ? 'You' : (m.sender_username || (CS.role === 'admin' ? 'Member' : 'Admin'));
+    var official = m.sender_is_admin === true;
     return '<div class="msgrow' + (mine ? ' mine' : '') + (unread ? ' sugunread' : '') + '" data-mid="' + esc(m.id) + '">' +
       '<div class="msgt2 sugitem-head">' + (unread ? msgNewIconHtml() : '') +
-      '<span>' + esc(who) + ' \u00b7 ' + esc(fmtInboxTime(m.created_at)) + '</span></div>' +
+      '<span>' + esc(who) + (official ? msgVerifiedHtml() : '') + ' \u00b7 ' + esc(fmtInboxTime(m.created_at)) + '</span></div>' +
       esc(m.body || '') + '</div>';
   }
   var PRESET_REPLIES = [
@@ -7880,10 +7910,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         var unread = thread.some(function (m) { return m.recipient_id === CS.uid && !m.read_at; });
         var title = sug ? (sug.section || 'Suggestion') : 'Notice';
         var who = last.sender_id === CS.uid ? 'You' : (last.sender_username || 'Admin');
+        var official = last.sender_is_admin === true;
         return '<button type="button" class="item' + (unread ? ' sugunread' : '') + '" data-act="msgOpen" data-key="' + esc(k) + '" style="width:100%;text-align:left;border:0;background:inherit;font:inherit;color:inherit">' +
           '<div class="main"><div class="t1 sugitem-head">' + (unread ? msgNewIconHtml() : '') +
           '<span>' + esc(title) + '</span></div>' +
-          '<div class="t2">' + esc(who) + ' \u00b7 ' + esc(fmtInboxTime(last.created_at)) + '</div>' +
+          '<div class="t2">' + esc(who) + (official ? msgVerifiedHtml() : '') + ' \u00b7 ' + esc(fmtInboxTime(last.created_at)) + '</div>' +
           '<div style="font-size:14px;margin-top:4px;white-space:pre-wrap;overflow-wrap:anywhere">' + esc((last.body || '').slice(0, 180)) + '</div>' +
           '</div></button>';
       }).join('') + '</div>';
@@ -10623,6 +10654,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     msgSend: function (t) { msgSend(t); },
     msgPreset: function (t) { msgPreset(t); },
     msgOpen: function (t) { userInboxSheet(t.dataset.key); },
+    msgVerifiedTip: function (t, ev) { msgVerifiedTip(t, ev); },
     pushToggle: function (t) { setPushEnabled(!!t.checked); },
     dayAddEntry: function (t) {
       var d = +t.dataset.d, iso = E.toISO(d), tr = S.tours[iso] || {};
@@ -10892,6 +10924,18 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (t.dataset.act !== 'sheetBg') ev.preventDefault();
     fn(t, ev);
   });
+  (function () {
+    var hold = 0;
+    document.addEventListener('pointerdown', function (e) {
+      var el = e.target.closest && e.target.closest('[data-act="msgVerifiedTip"]');
+      if (!el) return;
+      clearTimeout(hold);
+      hold = setTimeout(function () { hold = 0; msgVerifiedTip(el, e); }, 450);
+    }, true);
+    function cancelHold() { if (hold) { clearTimeout(hold); hold = 0; } }
+    document.addEventListener('pointerup', cancelHold, true);
+    document.addEventListener('pointercancel', cancelHold, true);
+  })();
   // ---- Address autocomplete dropdown (all address fields: class acIn, data-ac = asg | pd | cmd | home) --------------------
   var AC = { t: null, ctrl: null, inp: null, items: [], idx: -1, seq: 0 };
   function acLocal(inp) {
