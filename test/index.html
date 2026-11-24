@@ -414,7 +414,7 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after{top:-4px;le
 .pdsumcard .tot b{font-size:22px}
 .pdsumcard .tot span{color:#0f172a;font-weight:800;font-size:16px;display:block}
 .pdsumcard .tot em{color:var(--pay);font-weight:700;font-size:13px}
-.asgwrap{border-bottom:1px solid var(--line,#e2e8f0)}.asgwrap .item{border-bottom:0}
+.asgwrap{border-bottom:1px solid var(--line,#e2e8f0)}.asgwrap .item{border-bottom:0}#sumList .sumnav{border-bottom:0}#sumList>.sumnav:first-child .item,#sumList>.sumnav:first-child .swrow .item{border-top:0}
 .asgrow .addr{font-size:12px;opacity:.8}
 .etaout{margin-top:8px;padding:10px 12px;border-radius:12px;background:#ecfeff;border:1px solid #a5f3fc}
 .etaout.bad{background:#fff7ed;border-color:#fed7aa}.etabig{font-size:18px;font-weight:800}.etaleave{margin-top:6px;font-weight:700;color:#0E7490}.etamsg{font-size:14px}
@@ -6965,7 +6965,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       sum = '<button type="button" class="pdsum" id="pdSum" data-act="pdEdit" data-iso="' + esc(iso) + '">' +
         (pd.vendor ? '<b>' + esc(pd.vendor) + '</b>' : '<b>Paid detail</b>') +
         '<div class="pdsummeta">' + (pd.id ? '#' + esc(pd.id) + (dat || when ? ' · ' : '') : '') + esc(dat) + (dat && when ? ' · ' : '') + esc(when) + '</div>' +
-        (pd.address ? '<div class="pdsumaddr">' + esc(pd.address) + '</div>' : '') + '</button>';
+        (pd.address ? '<div class="pdsumaddr">' + esc(pd.address) + '</div>' : '') + '</button>' +
+        (pd.address ? navLinks(pd.address, 'inrow') : '');
       var payId = 'pdPay', remId = 'pdRemind';
       sum += pdSummaryPayment(pd, iso);
       sum += '<div class="pdpay" id="' + payId + '" role="status" aria-live="polite"></div><div class="pdnote" id="' + remId + '" role="note" hidden></div>';
@@ -7022,6 +7023,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (pd.date) setDateCap('pdStartDate', pd.date, 'auto');
     if (pd.endDate) setDateCap('pdEndDate', pd.endDate, 'auto');
     if (typeof pdTimingRefresh === 'function') pdTimingRefresh();
+    refreshPdNav();
   }
   var OCR_SRC = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
   function loadOCR() { if (window.__PATROL_OCR__) return Promise.resolve(window.__PATROL_OCR__); if (window.Tesseract) return Promise.resolve(window.Tesseract); return new Promise(function (res, rej) { var sc = document.createElement('script'); sc.src = OCR_SRC; sc.onload = function () { res(window.Tesseract); }; sc.onerror = function () { rej(new Error('load')); }; document.head.appendChild(sc); }); }
@@ -7035,7 +7037,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var sp = E.splitPaidAddress(x.address, x.address1, x.address2);
       set('pdAddr', sp.address1); set('pdAddr2', sp.address2);
       if (x.date) { setDateCap('pdStartDate', x.date, 'user'); n++; }
-      pdSyncDates(); pdDateCheck(); pdRemind();
+      pdSyncDates(); pdDateCheck(); pdRemind(); refreshPdNav();
       say(n ? 'Filled ' + n + ' fields from the screenshot. Check each one, then tap Save paid detail.' : 'Couldn\'t read the details. Type them in, or try a clearer screenshot.', !n);
     }).catch(function () { say('The screenshot reader needs an internet connection the first time. You can type the details instead.', true); });
   }
@@ -7071,6 +7073,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var sp = E.splitPaidAddress(e.address, e.address1, e.address2);
     set('pdVendor', e.vendor); set('pdAddr', sp.address1); set('pdAddr2', sp.address2);
     pdShowVendors(false);
+    refreshPdNav();
   }
   function pdRefreshDaySection() {
     var sec = document.getElementById('pdSec'); if (!sec) return;
@@ -7130,6 +7133,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div class="pdvpick" id="pdVendorPicker" hidden><div' + (vendors.length < 6 ? ' hidden' : '') + '><input id="pdVendorQ" type="search" autocomplete="off" placeholder="Search vendors"></div><div id="pdVendorList"></div></div></div>' +
       f('pdAddr', 'Address Line 1', pd.address1, ' class="acIn" data-ac="pd" autocomplete="off" autocapitalize="words" enterkeyhint="next" placeholder="Street address"', '19e') +
       f('pdAddr2', 'Address Line 2', pd.address2, ' class="acIn" data-ac="pd" autocomplete="off" autocapitalize="characters" enterkeyhint="done" placeholder="City, State, ZIP"', '19f') +
+      '<div id="pdNav">' + (pd.address ? navArea(pd.address, 'Paid Detail') : '') + '</div>' +
       pdPaymentFields(pd, iso) +
       '<div class="pdpay" id="pdPay" role="status" aria-live="polite"></div><div class="pdnote" id="pdRemind" role="note" hidden></div>' +
       '<div id="pdSlipHost" data-iso="' + iso + '">' + slipHtml(iso, 'paiddetail') + '</div>' +
@@ -7934,10 +7938,25 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       (c ? '<div class="navleg"><div class="lbl2">Navigate to Command (' + esc(E.commandShort(c)) + ')</div>' + navLinks(c, 'leg-cmd') +
         '<div class="lbl2" style="margin-top:8px">Route: Command &rarr; ' + esc(word) + '</div>' + routeLinks(c, addr, 'leg-route') + '</div>' : '');
   }
+  function pdFormAddress() {
+    if (!document.getElementById('pdForm')) return '';
+    var pd = readPaid();
+    return String((pd && (pd.address || E.joinPaidAddress(pd.address1, pd.address2))) || '').trim();
+  }
+  function refreshPdNav() {
+    var n = document.getElementById('pdNav'); if (!n) return;
+    var addr = pdFormAddress();
+    n.innerHTML = addr ? navArea(addr, 'Paid Detail') : '';
+  }
   function refreshNav() {
-    var v = (document.getElementById('asgAddr') || {}).value || '', n = document.getElementById('asgNav'); if (!n) return;
-    n.innerHTML = navArea(v.trim(), destWord()); document.getElementById('etaBtn').hidden = !v.trim(); var o = document.getElementById('etaOut'); o.hidden = true; o.innerHTML = '';
-    syncPicks();
+    var v = (document.getElementById('asgAddr') || {}).value || '', n = document.getElementById('asgNav');
+    if (n) {
+      n.innerHTML = navArea(v.trim(), destWord());
+      var eta = document.getElementById('etaBtn'); if (eta) eta.hidden = !v.trim();
+      var o = document.getElementById('etaOut'); if (o) { o.hidden = true; o.innerHTML = ''; }
+      syncPicks();
+    }
+    refreshPdNav();
   }
   // One place that decides every "selected" highlight in the assignment block (training sites, previous courts, boroughs, courts)
   function setOn(el, on) { el.classList.toggle('on', !!on); el.setAttribute('aria-pressed', on ? 'true' : 'false'); }
@@ -8560,7 +8579,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function swipeDown(ev) {
     if (ev.button && ev.button !== 0) return;
     if (ui.otSel || ui.pdSel) return;
-    if (ev.target.closest && ev.target.closest('input,select,textarea,.otchk')) return;
+    if (ev.target.closest && ev.target.closest('input,select,textarea,.otchk,.navbtns,a[href]')) return;
     var row = ev.target.closest && ev.target.closest('.swrow');
     if (!row || !row.dataset.swipe) return;
     SW.row = row; SW.id = ev.pointerId; SW.x0 = ev.clientX; SW.y0 = ev.clientY; SW.dx = 0; SW.axis = ''; SW.locked = false;
@@ -9246,6 +9265,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       onOk: function () { commitAsgEntryDelete(d, eid); }
     });
   }
+  function sumNavWrap(rowHtml, dest) {
+    var n = navLinks(dest, 'inrow');
+    return n ? '<div class="asgwrap sumnav">' + rowHtml + n + '</div>' : rowHtml;
+  }
   function daySummary(d, savedMsg) {
     if (!E.dayHasEntries(S, E.toISO(d)) && !savedMsg) return daySheet(d);
     var iso = E.toISO(d), sq = mySquad(d), o = tourOpts(), dt = E.dayTour(d, sq.id, o), en = E.dayEntryOf(d, sq.id, o), opt = E.dayEntryOption(en.id) || { label: en.id, color: '#334155' };
@@ -9258,8 +9281,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (dayHasLoggedTour(iso)) rows.push('<div class="swrow" data-swipe="sumTour" data-d="' + d + '" data-iso="' + iso + '" id="sumTourRow">' + dayRow + '</div>');
     else rows.push(dayRow);
     if (lv.note) rows.push(item('note', sw('#475569', '&#9998;'), 'Note', esc(lv.note), 'sumNote'));
-    if (a && a.type && !(E.assignmentType(a.type) || {}).paid) rows.push(item('asg', (function (t) { return sw(t.color, esc(t.short)); })(E.assignmentType(a.type) || { short: '?', color: '#64748b' }), esc(E.assignmentLabel(a)), esc(E.assignmentLocation(a) || ''), 'sumAsg'));
-    if (E.hasPaidDetail(a)) { var pd = a.pd; rows.push(item('paid', sw('#047857', 'PD'), 'Paid Detail' + (pd.vendor ? ': ' + esc(pd.vendor) : ''), [pd.start ? esc(pd.start) + (pd.end ? '–' + esc(pd.end) : '') : '', pd.durationMin ? E.fmtHM(pd.durationMin) : '', pd.id ? 'ID ' + esc(pd.id) : ''].filter(Boolean).join(' &middot; '), 'sumPaid')); }
+    if (a && a.type && !(E.assignmentType(a.type) || {}).paid) rows.push(sumNavWrap(item('asg', (function (t) { return sw(t.color, esc(t.short)); })(E.assignmentType(a.type) || { short: '?', color: '#64748b' }), esc(E.assignmentLabel(a)), esc(E.assignmentLocation(a) || ''), 'sumAsg'), E.assignmentNavAddress(a)));
+    if (E.hasPaidDetail(a)) { var pd = a.pd; rows.push(sumNavWrap(item('paid', sw('#047857', 'PD'), 'Paid Detail' + (pd.vendor ? ': ' + esc(pd.vendor) : ''), [pd.start ? esc(pd.start) + (pd.end ? '–' + esc(pd.end) : '') : '', pd.durationMin ? E.fmtHM(pd.durationMin) : '', pd.id ? 'ID ' + esc(pd.id) : ''].filter(Boolean).join(' &middot; '), 'sumPaid'), E.assignmentNavAddress({ pd: pd }))); }
     if (sm) rows.push(item('asg', sw('#334155', '&#128206;'), esc(slipKindOf(iso)), 'Saved on this device', 'sumSlip'));
     var extras = [];
     E.tourEntries(ov).forEach(function (ent) {
@@ -9269,14 +9292,15 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     E.assignmentEntries(ov).forEach(function (ent) {
       var sort = E.timeToMin(ent.start); if (sort === null) sort = 9999;
       var tm = E.assignmentTimeText(ent);
-      extras.push({ sort: sort, id: ent.id, html: '<button type="button" class="item sumrow" data-act="asgEntryEdit" data-d="' + d + '" data-eid="' + esc(ent.id) + '" id="sumAsgEnt' + esc(ent.id) + '">' + sw((E.assignmentType(ent.type) || {}).color || '#1d4ed8', (E.assignmentType(ent.type) || {}).short || 'A') + '<div class="main"><div class="t1">' + esc(E.assignmentLabel(ent) || E.assignmentReminderText(ent) || 'Assignment') + '</div>' + (tm ? '<div class="t2">' + esc(tm) + '</div>' : '') + '</div><div class="right sumgo">View / edit &rsaquo;</div></button>' });
+      extras.push({ sort: sort, id: ent.id, navDest: E.assignmentNavAddress(ent), html: '<button type="button" class="item sumrow" data-act="asgEntryEdit" data-d="' + d + '" data-eid="' + esc(ent.id) + '" id="sumAsgEnt' + esc(ent.id) + '">' + sw((E.assignmentType(ent.type) || {}).color || '#1d4ed8', (E.assignmentType(ent.type) || {}).short || 'A') + '<div class="main"><div class="t1">' + esc(E.assignmentLabel(ent) || E.assignmentReminderText(ent) || 'Assignment') + '</div>' + (tm ? '<div class="t2">' + esc(tm) + '</div>' : '') + '</div><div class="right sumgo">View / edit &rsaquo;</div></button>' });
     });
     extras.sort(function (a, b) { return a.sort - b.sort || String(a.id || '').localeCompare(String(b.id || '')); });
     var tourN = 0;
     extras.forEach(function (x) {
       if (x.kind === 'tour') x.html = x.html.replace('id="sumEntry' + esc(x.id) + '"', 'id="sumEntry' + (tourN++) + '"');
       var swipe = x.kind === 'tour' ? 'sumEntry' : 'sumAsg';
-      rows.push('<div class="swrow" data-swipe="' + swipe + '" data-d="' + d + '" data-eid="' + esc(x.id) + '" data-id="' + esc(x.id) + '">' + x.html + '</div>');
+      var row = '<div class="swrow" data-swipe="' + swipe + '" data-d="' + d + '" data-eid="' + esc(x.id) + '" data-id="' + esc(x.id) + '">' + x.html + '</div>';
+      rows.push(x.navDest ? sumNavWrap(row, x.navDest) : row);
     });
     openSheet(fmt(d, 'long'),
       '<div id="daySum">' + (savedMsg ? '<div class="savedban" id="daySaved" role="status">&#10003; Saved &middot; ' + esc(savedMsg) + '</div>' : '') +
@@ -10684,6 +10708,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (/^st(Rank|Hire|Promo|Rate|Override)$/.test(ev.target.id)) refreshPay();
     if (/^(onb|st)(Hire|Promo)$/.test(ev.target.id)) { var spx = ev.target.id.replace(/(Hire|Promo)$/, ''), sl = document.getElementById(spx + 'SvcLine'); if (sl) sl.innerHTML = svcLine(readProfile(spx)); }
     if (ev.target.id === 'asgAddr') refreshNav();
+    if (ev.target.id === 'pdAddr' || ev.target.id === 'pdAddr2') refreshPdNav();
     if (ev.target.id === 'asgPlace') { ev.target.dataset.auto = ''; syncPicks(); }
     if (ev.target.id === 'asgTrLoc') { // choosing a known location (preset or used before) fills its address when the address is blank or another known one; never touches the training text
       var lk = ev.target.value.trim().toLowerCase(), ai = document.getElementById('asgAddr'), known = E.trainingLocations(S.assignments), hit = null;
