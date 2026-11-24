@@ -618,7 +618,13 @@ a.dir-tel.mine{color:#0f766e}
 .hosp-mark{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:#fff;border:2px solid #b91c1c;box-shadow:0 1px 3px rgba(0,0,0,.4);box-sizing:border-box}
 .hosp-mark svg{display:block;width:18px;height:18px;pointer-events:none}
 .hosp-mark.level1{border-color:#991b1b}
-.dir-map-opts .hospchips{gap:6px;margin:6px 0 8px}
+.dir-map-opts .hospchips{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0}
+#hospFilterWrap[hidden],#fuelFilterWrap[hidden]{display:none!important}
+.dir-map-opts #fuelFilterWrap.fuel-opts{display:flex;flex-wrap:wrap;align-items:center;gap:6px;flex:1 0 100%;width:100%;margin:0}
+.dir-map-opts #fuelFilterWrap .fuelchips{margin:0;gap:6px}
+
+.map-pct-pill{background:rgba(255,255,255,.9);color:#0b1f3a;font-weight:800;font-size:11px;line-height:1.2;padding:5px 9px;border-radius:999px;box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:pointer;user-select:none;letter-spacing:.01em;white-space:nowrap}
+.map-pct-pill[data-outside]{color:#64748b;font-weight:700;cursor:default}
 .nearest-item{padding:10px 0;border-bottom:1px solid var(--line)}
 .nearest-item .mi{font-weight:800;color:var(--navy)}
 .fuel-rmp{color:#9a3412;font-weight:700;margin:6px 0}
@@ -7015,7 +7021,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var el = document.getElementById('dirList');
     if (el) el.innerHTML = dirResultsHtml();
   }
-  var dirMap = null, dirFuelLayer = null, dirHospLayer = null, hospitalData = null, dirPctLayer = null, dirWmLayer = null, dirWmMarkers = [], fuelOrigin = null, dirSearchMarker = null, dirCoverLayer = null, nychaData = null, mtaStationData = null, mapDataLoad = null, dirShieldLayer = null, dirShieldMarkers = [], dirLocateWatch = null, dirLocateMarker = null, dirLocateCircle = null, dirLocateFollowing = false;
+  var dirMap = null, dirFuelLayer = null, dirHospLayer = null, hospitalData = null, dirPctLayer = null, dirWmLayer = null, dirWmMarkers = [], fuelOrigin = null, dirSearchMarker = null, dirCoverLayer = null, nychaData = null, mtaStationData = null, mapDataLoad = null, dirShieldLayer = null, dirShieldMarkers = [], dirLocateWatch = null, dirLocateMarker = null, dirLocateCircle = null, dirLocateFollowing = false, dirLocateLast = null;
   var FUEL_CHIPS = [
     { id: 'unleaded', label: 'Unleaded' },
     { id: 'premium', label: 'Premium' },
@@ -7461,12 +7467,253 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     }
     refreshPctWatermarks();
   }
+  function ringClosed(ring) {
+    if (!ring || ring.length < 3) return [];
+    var out = ring.slice(), a = out[0], b = out[out.length - 1];
+    if (a[0] !== b[0] || a[1] !== b[1]) out.push([a[0], a[1]]);
+    return out;
+  }
+  function clipRingToBox(ring, box) {
+    function clip(pts, inside, intersect) {
+      var res = [], i, a, b, ain, bin;
+      if (!pts.length) return res;
+      a = pts[pts.length - 1];
+      ain = inside(a);
+      for (i = 0; i < pts.length; i++) {
+        b = pts[i]; bin = inside(b);
+        if (bin) {
+          if (!ain) res.push(intersect(a, b));
+          res.push([b[0], b[1]]);
+        } else if (ain) res.push(intersect(a, b));
+        a = b; ain = bin;
+      }
+      return res;
+    }
+    var pts = ringClosed(ring);
+    if (pts.length) pts = pts.slice(0, -1);
+    var w = box.w, e = box.e, s = box.s, n = box.n;
+    pts = clip(pts, function (p) { return p[0] >= w; }, function (a, b) {
+      var t = (w - a[0]) / ((b[0] - a[0]) || 1e-20);
+      return [w, a[1] + t * (b[1] - a[1])];
+    });
+    pts = clip(pts, function (p) { return p[0] <= e; }, function (a, b) {
+      var t = (e - a[0]) / ((b[0] - a[0]) || 1e-20);
+      return [e, a[1] + t * (b[1] - a[1])];
+    });
+    pts = clip(pts, function (p) { return p[1] >= s; }, function (a, b) {
+      var t = (s - a[1]) / ((b[1] - a[1]) || 1e-20);
+      return [a[0] + t * (b[0] - a[0]), s];
+    });
+    pts = clip(pts, function (p) { return p[1] <= n; }, function (a, b) {
+      var t = (n - a[1]) / ((b[1] - a[1]) || 1e-20);
+      return [a[0] + t * (b[0] - a[0]), n];
+    });
+    return ringClosed(pts);
+  }
+  function clipGeomToBox(geom, box) {
+    if (!geom) return null;
+    var polys = geom.type === 'Polygon' ? [geom.coordinates] : (geom.coordinates || []);
+    var out = [];
+    polys.forEach(function (rings) {
+      if (!rings || !rings.length) return;
+      var outer = clipRingToBox(rings[0], box);
+      if (outer.length < 4) return;
+      var clipped = [outer], i, hole;
+      for (i = 1; i < rings.length; i++) {
+        hole = clipRingToBox(rings[i], box);
+        if (hole.length >= 4) clipped.push(hole);
+      }
+      out.push(clipped);
+    });
+    if (!out.length) return null;
+    return out.length === 1 ? { type: 'Polygon', coordinates: out[0] } : { type: 'MultiPolygon', coordinates: out };
+  }
+  function ringArea(ring) {
+    var a = 0, i;
+    for (i = 0; i < ring.length - 1; i++) a += ring[i][0] * ring[i + 1][1] - ring[i + 1][0] * ring[i][1];
+    return a / 2;
+  }
+  function pointInClosedRing(x, y, ring) {
+    var inside = false, n = ring.length, i, j, xi, yi, xj, yj;
+    j = n - 1;
+    for (i = 0; i < n; i++) {
+      xi = ring[i][0]; yi = ring[i][1]; xj = ring[j][0]; yj = ring[j][1];
+      if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / ((yj - yi) || 1e-20) + xi)) inside = !inside;
+      j = i;
+    }
+    return inside;
+  }
+  function distToSeg(x, y, ax, ay, bx, by) {
+    var dx = bx - ax, dy = by - ay, t;
+    if (!dx && !dy) return Math.hypot(x - ax, y - ay);
+    t = ((x - ax) * dx + (y - ay) * dy) / (dx * dx + dy * dy);
+    t = t < 0 ? 0 : t > 1 ? 1 : t;
+    return Math.hypot(x - (ax + t * dx), y - (ay + t * dy));
+  }
+  function distToPolygon(x, y, polygon) {
+    var outer = polygon[0], d, i, r, hole;
+    if (!pointInClosedRing(x, y, outer)) {
+      d = Infinity;
+      for (i = 0; i < outer.length - 1; i++) d = Math.min(d, distToSeg(x, y, outer[i][0], outer[i][1], outer[i + 1][0], outer[i + 1][1]));
+      return -d;
+    }
+    for (i = 1; i < polygon.length; i++) {
+      hole = polygon[i];
+      if (pointInClosedRing(x, y, hole)) {
+        d = Infinity;
+        for (r = 0; r < hole.length - 1; r++) d = Math.min(d, distToSeg(x, y, hole[r][0], hole[r][1], hole[r + 1][0], hole[r + 1][1]));
+        return -d;
+      }
+    }
+    d = Infinity;
+    for (i = 0; i < polygon.length; i++) {
+      r = polygon[i];
+      for (hole = 0; hole < r.length - 1; hole++) d = Math.min(d, distToSeg(x, y, r[hole][0], r[hole][1], r[hole + 1][0], r[hole + 1][1]));
+    }
+    return d;
+  }
+  function polylabel(polygon, precision) {
+    precision = precision || 2e-5;
+    var minx = Infinity, miny = Infinity, maxx = -Infinity, maxy = -Infinity, i, p, width, height, cellSize, h;
+    var ring = polygon[0] || [];
+    for (i = 0; i < ring.length; i++) {
+      p = ring[i];
+      if (p[0] < minx) minx = p[0]; if (p[0] > maxx) maxx = p[0];
+      if (p[1] < miny) miny = p[1]; if (p[1] > maxy) maxy = p[1];
+    }
+    width = maxx - minx; height = maxy - miny;
+    cellSize = Math.min(width, height);
+    h = cellSize / 2;
+    if (!cellSize) return [(minx + maxx) / 2, (miny + maxy) / 2];
+    function Cell(x, y, hh) {
+      this.x = x; this.y = y; this.h = hh;
+      this.d = distToPolygon(x, y, polygon);
+      this.max = this.d + hh * Math.SQRT2;
+    }
+    var cells = [], x, y, best, bboxC, heap = [], seq = 0;
+    function pushCell(c) { heap.push(c); var i = heap.length - 1, par, tmp; while (i > 0) { par = (i - 1) >> 1; if (heap[par].max >= heap[i].max) break; tmp = heap[par]; heap[par] = heap[i]; heap[i] = tmp; i = par; } }
+    function popCell() {
+      var top = heap[0], last = heap.pop(), i = 0, l, r, sw, tmp;
+      if (!heap.length) return top;
+      heap[0] = last;
+      while (1) {
+        l = i * 2 + 1; r = l + 1; sw = i;
+        if (l < heap.length && heap[l].max > heap[sw].max) sw = l;
+        if (r < heap.length && heap[r].max > heap[sw].max) sw = r;
+        if (sw === i) break;
+        tmp = heap[i]; heap[i] = heap[sw]; heap[sw] = tmp; i = sw;
+      }
+      return top;
+    }
+    for (x = minx; x < maxx; x += cellSize) {
+      for (y = miny; y < maxy; y += cellSize) pushCell(new Cell(x + h, y + h, h));
+    }
+    var a = ringArea(ring), cx = (minx + maxx) / 2, cy = (miny + maxy) / 2, sx = 0, sy = 0, cr;
+    if (a) {
+      for (i = 0; i < ring.length - 1; i++) {
+        cr = ring[i][0] * ring[i + 1][1] - ring[i + 1][0] * ring[i][1];
+        sx += (ring[i][0] + ring[i + 1][0]) * cr;
+        sy += (ring[i][1] + ring[i + 1][1]) * cr;
+      }
+      cx = sx / (6 * a); cy = sy / (6 * a);
+    }
+    best = new Cell(cx, cy, 0);
+    bboxC = new Cell((minx + maxx) / 2, (miny + maxy) / 2, 0);
+    if (bboxC.d > best.d) best = bboxC;
+    while (heap.length) {
+      p = popCell();
+      if (p.d > best.d) best = p;
+      if (p.max - best.d <= precision) continue;
+      h = p.h / 2;
+      pushCell(new Cell(p.x - h, p.y - h, h));
+      pushCell(new Cell(p.x + h, p.y - h, h));
+      pushCell(new Cell(p.x - h, p.y + h, h));
+      pushCell(new Cell(p.x + h, p.y + h, h));
+      if (++seq > 4000) break;
+    }
+    return [best.x, best.y];
+  }
+  function largestPolyOfGeom(geom) {
+    if (!geom) return null;
+    if (geom.type === 'Polygon') return geom.coordinates;
+    var best = null, bestA = -1, i, poly, a;
+    for (i = 0; i < (geom.coordinates || []).length; i++) {
+      poly = geom.coordinates[i];
+      a = Math.abs(ringArea(poly[0] || []));
+      if (a > bestA) { best = poly; bestA = a; }
+    }
+    return best;
+  }
+  function poleOfGeom(geom) {
+    var poly = largestPolyOfGeom(geom);
+    if (!poly) return null;
+    var p = polylabel(poly, 3e-5);
+    if (!p) return null;
+    return [p[1], p[0]];
+  }
+  function paddedViewBox(px) {
+    var size = dirMap.getSize(), sw = dirMap.containerPointToLatLng(L.point(px, size.y - px)), ne = dirMap.containerPointToLatLng(L.point(size.x - px, px));
+    return { w: Math.min(sw.lng, ne.lng), e: Math.max(sw.lng, ne.lng), s: Math.min(sw.lat, ne.lat), n: Math.max(sw.lat, ne.lat) };
+  }
+  function llInBox(ll, box) {
+    return ll && ll[1] >= box.w && ll[1] <= box.e && ll[0] >= box.s && ll[0] <= box.n;
+  }
+  function visibleWatermarkLL(feat, z) {
+    var pole = pctPole(feat);
+    if (!pole || !feat.geometry) return null;
+    var pad = Math.max(18, (watermarkSpec(z).font || 12) + 8);
+    var box = paddedViewBox(pad);
+    if (llInBox(pole, box)) return pole;
+    if (z < 13) return pole;
+    var clipped = clipGeomToBox(feat.geometry, box);
+    if (!clipped) clipped = clipGeomToBox(feat.geometry, paddedViewBox(2));
+    if (!clipped) return null;
+    return poleOfGeom(clipped);
+  }
+  function refreshMapPctPill() {
+    var el = document.getElementById('mapPctPill');
+    if (!el || !dirMap) return;
+    var c = dirMap.getCenter(), feat = E.firstContaining(loadPctBounds(), c.lng, c.lat);
+    var n = feat && feat.properties && feat.properties.pct;
+    if (n) {
+      el.hidden = false;
+      el.textContent = pctOrdinal(n) + ' Pct';
+      el.setAttribute('data-pct', n);
+      el.removeAttribute('data-outside');
+    } else {
+      el.hidden = false;
+      el.textContent = 'Outside NYC';
+      el.removeAttribute('data-pct');
+      el.setAttribute('data-outside', '1');
+    }
+  }
+  function addPctPillControl() {
+    if (!dirMap || typeof L === 'undefined' || !L.Control || dirMap._pctPill) return;
+    var Ctrl = L.Control.extend({
+      options: { position: 'topright' },
+      onAdd: function () {
+        var el = L.DomUtil.create('div', 'map-pct-pill');
+        el.id = 'mapPctPill';
+        el.setAttribute('role', 'status');
+        el.setAttribute('aria-live', 'polite');
+        L.DomEvent.disableClickPropagation(el);
+        L.DomEvent.on(el, 'click', L.DomEvent.stop);
+        L.DomEvent.on(el, 'click', function () {
+          var n = +el.getAttribute('data-pct');
+          if (n) { setPctFocus(n); precinctSheet(n); }
+        });
+        return el;
+      }
+    });
+    (new Ctrl()).addTo(dirMap);
+    dirMap._pctPill = true;
+    refreshMapPctPill();
+  }
   function refreshPctWatermarks() {
     if (!dirMap || !dirWmMarkers.length) return;
     var z = dirMap.getZoom(), spec = watermarkSpec(z);
     var mine = userPctNum(), focus = ui.mapFocusPct;
     var placed = [];
-    // Priority: focused, user's precinct, then larger area.
     var markers = dirWmMarkers.slice().sort(function (a, b) {
       var pa = a._pct, pb = b._pct;
       if (pa === focus && pb !== focus) return -1;
@@ -7478,25 +7725,28 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     });
     markers.forEach(function (m) {
       var n = m._pct, isMine = n === mine, isFocus = n === focus;
+      var ll = visibleWatermarkLL(m._feat, z);
+      var off = !ll;
+      if (ll) m.setLatLng(ll);
       var mode = spec.mode, text = watermarkText(n, mode), font = spec.font + (isMine || isFocus ? 1 : 0);
-      var pt = dirMap.latLngToContainerPoint(m.getLatLng());
+      var pt = ll ? dirMap.latLngToContainerPoint(ll) : { x: -9999, y: -9999 };
       var boxW = function (s, f) { return Math.max(8, String(s).length * f * 0.62); };
       var boxH = function (f) { return f * 1.15; };
       var tryBox = function (s, f) {
         var w = boxW(s, f), h = boxH(f);
         return { x: pt.x - w / 2, y: pt.y - h / 2, w: w, h: h };
       };
-      var hidden = false;
+      var hidden = !!off;
       var box = tryBox(text, font);
       var overlaps = function (b) {
         return placed.some(function (p) {
           return !(b.x + b.w + spec.pad < p.x || p.x + p.w + spec.pad < b.x || b.y + b.h + spec.pad < p.y || p.y + p.h + spec.pad < b.y);
         });
       };
-      if (overlaps(box) && mode !== 'num') {
+      if (!hidden && overlaps(box) && mode !== 'num') {
         mode = 'num'; text = watermarkText(n, mode); box = tryBox(text, font);
       }
-      if (overlaps(box) && !isMine && !isFocus) hidden = true;
+      if (!hidden && overlaps(box) && !isMine && !isFocus) hidden = true;
       if (!hidden) placed.push(box);
       m.setIcon(watermarkIcon(n, text, font, isMine, isFocus));
       var el = m.getElement();
@@ -7504,7 +7754,6 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         var span = el.querySelector('.pct-wm');
         if (span) {
           span.classList.toggle('hide', hidden);
-          // Center the 0×0 icon on the pole.
           span.style.position = 'absolute';
           span.style.left = '0';
           span.style.top = '0';
@@ -7513,6 +7762,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         el.style.display = hidden ? 'none' : '';
       }
     });
+    refreshMapPctPill();
   }
   function syncFacilitiesUi() {
     var on = !!ui.dirFacilitiesOn;
@@ -7537,20 +7787,60 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (!b) return;
     b.classList.toggle('on', !!on);
     b.setAttribute('aria-pressed', on ? 'true' : 'false');
-    b.title = on ? 'Stop showing my location' : 'Show my location';
+    b.title = on ? 'Stop following my location' : (dirLocateMarker ? 'Center on my location' : 'Show my location');
     b.setAttribute('aria-label', b.title);
   }
-  function stopLocateMe(opts) {
-    opts = opts || {};
+  function pauseLocateWatch() {
     if (dirLocateWatch != null && navigator.geolocation && navigator.geolocation.clearWatch) {
       try { navigator.geolocation.clearWatch(dirLocateWatch); } catch (e) {}
     }
     dirLocateWatch = null;
+  }
+  function startLocateWatch() {
+    if (dirLocateWatch != null) return true;
+    if (!navigator.geolocation || !navigator.geolocation.watchPosition) return false;
+    // In-memory only: the fix is never written to settings, localStorage, or synced.
+    dirLocateWatch = navigator.geolocation.watchPosition(onLocateFix, onLocateError, {
+      enableHighAccuracy: true, timeout: 12000, maximumAge: 5000
+    });
+    return true;
+  }
+  function queryGeoPerm() {
+    try {
+      if (!navigator.permissions || !navigator.permissions.query) return Promise.resolve(null);
+      return navigator.permissions.query({ name: 'geolocation' }).then(function (s) {
+        return s && s.state;
+      }).catch(function () { return null; });
+    } catch (e) { return Promise.resolve(null); }
+  }
+  function mapLocateActive() {
+    return !!(dirMap && ui.tab === 'map' && !document.hidden);
+  }
+  function maybeResumeLocateWatch() {
+    if (!mapLocateActive()) { pauseLocateWatch(); return; }
+    queryGeoPerm().then(function (state) {
+      if (!mapLocateActive()) return;
+      // Only auto-start when permission is already granted — never prompt on load.
+      if (state === 'granted') startLocateWatch();
+    });
+  }
+  function bindLocateLifecycle() {
+    if (bindLocateLifecycle._bound) return;
+    bindLocateLifecycle._bound = true;
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) pauseLocateWatch();
+      else maybeResumeLocateWatch();
+    });
+  }
+  function stopLocateMe(opts) {
+    opts = opts || {};
+    pauseLocateWatch();
     dirLocateFollowing = false;
     if (dirLocateMarker && dirMap) { try { dirMap.removeLayer(dirLocateMarker); } catch (e) {} }
     if (dirLocateCircle && dirMap) { try { dirMap.removeLayer(dirLocateCircle); } catch (e) {} }
     dirLocateMarker = null;
     dirLocateCircle = null;
+    dirLocateLast = null;
     setLocateBtnOn(false);
   }
   function paintLocateFix(lat, lon, accuracy) {
@@ -7580,6 +7870,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (!isFinite(lat) || !isFinite(lon)) return;
     // In-memory only: never written to settings, localStorage, or synced.
     var first = !dirLocateMarker;
+    dirLocateLast = { lat: lat, lon: lon, accuracy: pos.coords.accuracy };
     paintLocateFix(lat, lon, pos.coords.accuracy);
     if (dirLocateFollowing) {
       var z = dirMap.getZoom();
@@ -7590,28 +7881,45 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function onLocateError(err) {
     var code = err && err.code;
     // Keep the last fix on a transient timeout/unavailable; only a denial (or
-    // failure before the first fix) turns the control off.
+    // failure before the first fix) hides the dot.
     if (dirLocateMarker && code !== 1) return;
-    stopLocateMe();
+    var userAsked = !!dirLocateFollowing;
+    pauseLocateWatch();
+    dirLocateFollowing = false;
+    if (dirLocateMarker && dirMap) { try { dirMap.removeLayer(dirLocateMarker); } catch (e) {} }
+    if (dirLocateCircle && dirMap) { try { dirMap.removeLayer(dirLocateCircle); } catch (e) {} }
+    dirLocateMarker = null;
+    dirLocateCircle = null;
+    setLocateBtnOn(false);
+    if (!userAsked) return;
     if (code === 1) toast('Location permission was denied.');
     else if (code === 2) toast("Location isn't available right now.");
     else if (code === 3) toast("Couldn't find your location.");
     else toast("Couldn't find your location.");
   }
   function startLocateMe() {
-    if (!navigator.geolocation || !navigator.geolocation.watchPosition) {
+    if (!startLocateWatch()) {
+      dirLocateFollowing = false;
+      setLocateBtnOn(false);
       toast("This device can't share a location.");
+      return;
+    }
+  }
+  function toggleLocateMe() {
+    if (dirLocateFollowing) {
+      dirLocateFollowing = false;
+      setLocateBtnOn(false);
       return;
     }
     dirLocateFollowing = true;
     setLocateBtnOn(true);
-    dirLocateWatch = navigator.geolocation.watchPosition(onLocateFix, onLocateError, {
-      enableHighAccuracy: true, timeout: 12000, maximumAge: 0
-    });
-  }
-  function toggleLocateMe() {
-    if (dirLocateWatch != null || dirLocateMarker) stopLocateMe();
-    else startLocateMe();
+    startLocateMe();
+    if (dirLocateFollowing && dirLocateMarker && dirMap) {
+      var ll = dirLocateMarker.getLatLng();
+      var z = dirMap.getZoom();
+      if (z < 15) dirMap.setView(ll, 15, { animate: true });
+      else dirMap.panTo(ll, { animate: true, duration: 0.45 });
+    }
   }
   function addLocateControl() {
     if (!dirMap || typeof L === 'undefined' || !L.Control) return;
@@ -7634,7 +7942,12 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       }
     });
     (new Ctrl()).addTo(dirMap);
-    dirMap.on('dragstart', function () { if (dirLocateFollowing) dirLocateFollowing = false; });
+    dirMap.on('dragstart', function () {
+      if (dirLocateFollowing) { dirLocateFollowing = false; setLocateBtnOn(false); }
+    });
+    addPctPillControl();
+    bindLocateLifecycle();
+    maybeResumeLocateWatch();
   }
   function setupDirMap() {
     var el = document.getElementById('dirMap');
@@ -7894,6 +8207,13 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function useFuelGeolocation() {
     var st = document.getElementById('fuelGeoStatus');
+    // Prefer the live in-memory map fix when the blue dot is already on.
+    // Never read from storage; this value is only held in memory.
+    if (dirLocateMarker || dirLocateLast) {
+      var ll = dirLocateMarker ? dirLocateMarker.getLatLng() : { lat: dirLocateLast.lat, lng: dirLocateLast.lon };
+      setFuelOrigin(ll.lat, ll.lng, 'your location');
+      return;
+    }
     if (!navigator.geolocation) {
       if (st) st.textContent = 'This device cannot share a location. Pick a precinct or enter an address.';
       return;
@@ -7903,7 +8223,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       setFuelOrigin(pos.coords.latitude, pos.coords.longitude, 'your location');
     }, function () {
       if (st) st.textContent = 'Location is off or was denied. Pick a precinct or enter an address as the starting point.';
-    }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 });
+    }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 5000 });
   }
   function useFuelPrecinct() {
     var sel = document.getElementById('fuelOriginPct');
@@ -7948,15 +8268,17 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function viewMap() {
     var q = ui.mapQ || '';
     var mapOpts = '<div id="dirMapOpts" class="dir-map-opts" hidden>' +
-      '<div id="fuelFilterWrap"' + (ui.dirFuelOn === false ? ' hidden' : '') + '>' + fuelChipBar() + '</div>' +
       '<div class="map-toolbar">' +
       '<button type="button" class="btn sm' + (ui.dirFuelOn === false ? '' : ' on') + '" data-act="dirFuelLayer" aria-pressed="' + (ui.dirFuelOn === false ? 'false' : 'true') + '">Fuel sites</button>' +
-      '<button type="button" class="btn sm" id="dirNearestBtn" data-act="dirNearest" aria-pressed="false">Nearest fuel</button>' +
+      '<div id="fuelFilterWrap" class="fuel-opts"' + (ui.dirFuelOn === false ? ' hidden' : '') + ' data-sec="4k" role="group" aria-label="Fuel filters">' +
+        fuelChipBar() +
+        '<button type="button" class="btn sm" id="dirNearestBtn" data-act="dirNearest" aria-pressed="false">Nearest fuel</button>' +
+      '</div>' +
       '<button type="button" class="btn sm' + (ui.dirHospOn ? ' on' : '') + '" data-act="dirHospLayer" aria-pressed="' + (ui.dirHospOn ? 'true' : 'false') + '">Hospitals</button>' +
-      '<button type="button" class="btn sm' + (ui.dirFacilitiesOn ? ' on' : '') + '" data-act="dirFacilities" aria-pressed="' + (ui.dirFacilitiesOn ? 'true' : 'false') + '">Police facilities</button></div>' +
-      '<div id="hospFilterWrap" class="hospchips fuelchips"' + (ui.dirHospOn ? '' : ' hidden') + ' data-sec="4n" role="group" aria-label="Hospital filter">' +
+      '<div id="hospFilterWrap" class="hospchips"' + (ui.dirHospOn ? '' : ' hidden') + ' data-sec="4n" role="group" aria-label="Hospital filter">' +
         '<button type="button" class="chip' + (ui.dirHospLevel1 ? ' on' : '') + '" data-act="hospChip" data-filter="level1" aria-pressed="' + (ui.dirHospLevel1 ? 'true' : 'false') + '">Level 1 Trauma</button>' +
       '</div>' +
+      '<button type="button" class="btn sm' + (ui.dirFacilitiesOn ? ' on' : '') + '" data-act="dirFacilities" aria-pressed="' + (ui.dirFacilitiesOn ? 'true' : 'false') + '">Police facilities</button></div>' +
       '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p></div>' +
       '</div>';
     var mapTools = '<div class="dir-map-chrome">' +
@@ -12204,12 +12526,15 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     dirView: function (t) { ui.tab = t.dataset.v === 'map' ? 'map' : 'directory'; render(); },
     dirFuelLayer: function (t) {
       ui.dirFuelOn = ui.dirFuelOn === false;
+      if (ui.dirFuelOn === false && nearestSheetOpen()) closeSheet();
       syncFuelFilterUi();
+      syncNearestBtn();
       refreshFuelMarkers(); refreshHospitalMarkers();
       addCommandShields();
     },
     dirHospLayer: function () {
       ui.dirHospOn = !ui.dirHospOn;
+      if (!ui.dirHospOn) ui.dirHospLevel1 = false;
       syncHospFilterUi();
       refreshHospitalMarkers();
       if (ui.dirHospOn) fitHospitalView();
