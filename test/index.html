@@ -320,17 +320,19 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after,body.beta #
 .mcalwrap{position:fixed;inset:0;z-index:400;display:flex;align-items:center;justify-content:center;padding:16px}
 .mcalwrap[hidden]{display:none!important}
 .mcalback{position:absolute;inset:0;background:rgba(15,23,42,.45)}
-.mcal{position:relative;z-index:1;width:min(340px,100%);background:#fff;border-radius:16px;padding:12px;box-shadow:0 16px 40px rgba(15,23,42,.25)}
+.mcal{position:relative;z-index:1;width:min(360px,100%);background:var(--card,#fff);color:var(--ink,#0f172a);border-radius:16px;padding:12px;box-shadow:0 16px 40px rgba(15,23,42,.25)}
 .mcalhd{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
-.mcalhd b{font-size:15px}
-.mcalnav{width:40px;height:40px;border:0;background:#f1f5f9;border-radius:10px;font-size:22px;line-height:1}
-.mcaldow{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:11px;font-weight:700;color:#64748b;margin-bottom:4px}
-.mcalgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
-.mcalday{min-height:40px;border:0;background:transparent;border-radius:10px;font:inherit;font-weight:600}
-.mcalday.on{background:#0f172a;color:#fff}
-.mcalday.today{box-shadow:inset 0 0 0 1.5px #0369a1}
-.mcalblank{min-height:40px}
+.mcalhd b{font-size:16px;color:var(--navy,#0b1f3a)}
+.mcalnav{width:44px;height:44px;border:0;background:var(--bg,#eef1f6);color:var(--ink,#0f172a);border-radius:10px;font-size:22px;line-height:1}
+.mcaldow{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:11px;font-weight:700;color:var(--muted,#4b5a70);margin-bottom:4px}
+.mcalgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.mcalday{min-height:44px;width:100%;border:0;background:transparent;color:var(--ink,#0f172a);border-radius:10px;font:inherit;font-weight:600}
+.mcalday.on{background:var(--navy,#0b1f3a);color:#fff}
+.mcalday.today{box-shadow:inset 0 0 0 1.5px var(--accent,#1d4ed8)}
+.mcalday.today.on{box-shadow:inset 0 0 0 1.5px #fff}
+.mcalblank{min-height:44px}
 .mcalacts{display:flex;gap:8px;margin-top:10px;justify-content:flex-end}
+.mcalwrap.mcal-noclear [data-act="mcalClear"]{display:none!important}
 .pdconbox{margin:10px 0;padding:10px 12px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc}
 .pdconbox ul{margin:6px 0 0 18px;padding:0}
 .pdconalias{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 0}
@@ -6804,19 +6806,59 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     }
     grid.innerHTML = html;
   }
+  function miniCalContextDate(forId) {
+    var btn = document.getElementById(forId);
+    if (btn && E.isISODate(btn.dataset.iso)) return btn.dataset.iso;
+    var od = ((document.getElementById('otDate') || {}).value || '');
+    if (E.isISODate(od)) return od;
+    var se = document.getElementById('seBox');
+    if (se && se.dataset.d) { var seIso = E.toISO(+se.dataset.d); if (E.isISODate(seIso)) return seIso; }
+    var pd = (typeof dateIso === 'function' && dateIso('pdStartDate')) || '';
+    if (E.isISODate(pd)) return pd;
+    return E.toISO(T);
+  }
   function miniCalOpen(forId, iso) {
     miniCalEnsure();
     MC.open = true; MC.forId = forId;
-    iso = E.isISODate(iso) ? iso : E.toISO(T);
-    MC.iso = E.isISODate((document.getElementById(forId) || {}).dataset && document.getElementById(forId).dataset.iso) ? document.getElementById(forId).dataset.iso : '';
-    var cur = MC.iso || iso;
+    var btn = document.getElementById(forId);
+    var fromBtn = btn && E.isISODate(btn.dataset.iso) ? btn.dataset.iso : '';
+    var cur = fromBtn || (E.isISODate(iso) ? iso : '') || miniCalContextDate(forId);
+    if (btn && btn.classList.contains('datecap') && !fromBtn && E.isISODate(cur)) setDateCap(forId, cur, 'auto');
+    MC.iso = fromBtn || (btn && btn.classList.contains('calcap') ? '' : cur);
+    if (!E.isISODate(MC.iso) && !(btn && btn.classList.contains('calcap'))) MC.iso = cur;
     MC.y = +cur.slice(0, 4); MC.m = +cur.slice(5, 7) - 1;
-    var wrap = document.getElementById('miniCalWrap'); wrap.hidden = false;
+    MC.allowClear = !!(btn && btn.classList.contains('calcap'));
+    var clr = document.querySelector('#miniCalWrap [data-act="mcalClear"]');
+    if (clr) clr.hidden = !MC.allowClear;
+    var wrap = document.getElementById('miniCalWrap');
+    wrap.classList.toggle('mcal-noclear', !MC.allowClear);
+    wrap.hidden = false;
     miniCalRender();
   }
   function miniCalClose() { var wrap = document.getElementById('miniCalWrap'); if (wrap) wrap.hidden = true; MC.open = false; MC.forId = ''; }
+  function dateCapApply(id, iso) {
+    if (!id || !E.isISODate(iso)) return;
+    setDateCap(id, iso, 'user');
+    if (id === 'workedStartDate') autoEndFromStart('dayStart', 'dayEnd', 'workedStartDate', 'workedEndDate');
+    if (id === 'schedStartDate') {
+      var nd2 = E.suggestEndDate(iso, E.normTime(((document.getElementById('schedStart') || {}).value || '').trim()) || '', dateIso('schedEndDate'), E.normTime(((document.getElementById('schedEnd') || {}).value || '').trim()) || '');
+      if (nd2) setDateCap('schedEndDate', nd2, 'auto');
+    }
+    if (id === 'otWorkedStartDate') autoEndFromStart('otStart', 'otEnd', 'otWorkedStartDate', 'otWorkedEndDate');
+    if (id === 'otSchedStartDate') autoEndFromStart('otSchedStart', 'otSchedEnd', 'otSchedStartDate', 'otSchedEndDate');
+    if (id === 'pdStartDate') pdSyncDates();
+    if (id === 'pdStartDate' || id === 'pdEndDate') { pdDateCheck(); pdRemind(); }
+    if (typeof updateEnd === 'function') updateEnd(false);
+    if (document.getElementById('otForm')) otPreview();
+  }
   function miniCalSet(iso) {
     var id = MC.forId, btn = id && document.getElementById(id);
+    if (btn && btn.classList.contains('datecap')) {
+      if (!E.isISODate(iso)) return;
+      dateCapApply(id, iso);
+      miniCalClose();
+      return;
+    }
     if (btn) {
       btn.dataset.iso = iso || '';
       var val = btn.querySelector('.datecap-val');
@@ -8253,7 +8295,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div class="hint">Only this entry changes. Your regular ' + E.fmtHM(regLen) + ' tour stays the same.</div></div>';
   }
     function dateCap(id, iso) {
-      return '<button type="button" class="datecap" id="' + id + '" data-act="dateWheel" data-iso="' + esc(iso || '') + '"' + (iso ? ' aria-label="Date ' + esc(E.fmtMDY(iso)) + '"' : '') + '>' + (iso ? esc(E.fmtMDY(iso)) : 'Date') + '</button>';
+      return '<button type="button" class="datecap" id="' + id + '" data-act="miniCal" data-iso="' + esc(iso || '') + '"' + (iso ? ' aria-label="Date ' + esc(E.fmtMDY(iso)) + '"' : ' aria-label="Pick a date"') + '>' + (iso ? esc(E.fmtMDY(iso)) : 'Date') + '</button>';
     }
     function dateFrame(id, iso, label) {
       return '<div class="dateframe">' + (label ? '<span class="datecap-lbl">' + esc(label) + '</span>' : '') + dateCap(id, iso) + '</div>';
@@ -9550,15 +9592,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     return w;
   }
   function dateWheelOpen(btn) {
+    if (!btn) return;
     DW.forId = btn.id;
-    var iso = btn.dataset.iso || (document.getElementById('seBox') && E.toISO(+document.getElementById('seBox').dataset.d)) || E.toISO(T);
-    var p = E.parts(E.toDay(iso)), w = dwEnsure(), y0 = p.y - 6, years = [];
-    for (var y = y0; y <= p.y + 6; y++) years.push({ v: y, l: String(y) });
-    DW.years = years;
-    dwFill(document.getElementById('dwMonth'), dwMonths(), p.m);
-    dwFill(document.getElementById('dwYear'), years, p.y);
-    dwFill(document.getElementById('dwDay'), dwDays(p.y, p.m), p.d);
-    w.hidden = false;
+    miniCalOpen(btn.id, btn.dataset.iso);
   }
   function dateWheelClose() { var w = document.getElementById('dateWheel'); if (w) w.hidden = true; }
 
@@ -10372,24 +10408,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var y = +dwRead(document.getElementById('dwYear')), m = +dwRead(document.getElementById('dwMonth')), d = +dwRead(document.getElementById('dwDay'));
       if (!(y && m && d)) return dateWheelClose();
       var last = new Date(y, m, 0).getDate(); if (d > last) d = last;
-      var iso = E.toISO(E.fromYMD(y, m, d));
-      setDateCap(DW.forId, iso, 'user');
-      if (DW.forId === 'workedStartDate') {
-        autoEndFromStart('dayStart', 'dayEnd', 'workedStartDate', 'workedEndDate');
-      }
-      if (DW.forId === 'schedStartDate') {
-        var nd2 = E.suggestEndDate(iso, E.normTime(((document.getElementById('schedStart') || {}).value || '').trim()) || '', dateIso('schedEndDate'), E.normTime(((document.getElementById('schedEnd') || {}).value || '').trim()) || '');
-        if (nd2) setDateCap('schedEndDate', nd2, 'auto');
-      }
-      if (DW.forId === 'otWorkedStartDate') {
-        autoEndFromStart('otStart', 'otEnd', 'otWorkedStartDate', 'otWorkedEndDate');
-      }
-      if (DW.forId === 'otSchedStartDate') {
-        autoEndFromStart('otSchedStart', 'otSchedEnd', 'otSchedStartDate', 'otSchedEndDate');
-      }
-      if (DW.forId === 'pdStartDate') pdSyncDates();
-      if (DW.forId === 'pdStartDate' || DW.forId === 'pdEndDate') { pdDateCheck(); pdRemind(); }
-      dateWheelClose(); updateEnd(false); if (document.getElementById('otForm')) otPreview();
+      dateCapApply(DW.forId, E.toISO(E.fromYMD(y, m, d)));
+      dateWheelClose();
     },
     otEditDetails: function (t) {
       var iso = t.dataset.iso, box = document.getElementById('tourBox'), wr = readWorkedTimes();

@@ -50,7 +50,7 @@ so they stay stable when sections move. New sections get the next free letter; r
 |---|---|---|
 | **6 Day page** | 6a | Status line (your schedule for that day only by default) |
 | | 6b | This day (leave / status picker). Changing a scheduled workday’s status to RDO immediately opens a dialog asking whether the day is Day-for-Day or RDO Overtime, then routes to the matching existing recording flow. Cancel reverts 6b to its previous status. The prompt is not shown when the day was already an RDO, or for other status changes. |
-| | 6c | Tour this day: Time actually worked only (framed Date from / Date to, Default Tour button, empty-until-entered hint on focus). Typing Tour start live-fills Tour end from the default tour length (end date moves if it crosses midnight). A manual Tour end is kept until start is edited again. Time scheduled to work is not on this screen — it appears on page 8 when overtime is incurred. Chart time for the day is shown under the tour when it accrues or is pending. |
+| | 6c | Tour this day: Time actually worked only (framed Date from / Date to, Default Tour button, empty-until-entered hint on focus). Tapping Date from or Date to opens the in-app mini calendar (month grid, not a scroll wheel) on the day being edited (the date picked in 1d), never a 2020 default. Typing Tour start live-fills Tour end from the default tour length (end date moves if it crosses midnight). A manual Tour end is kept until start is edited again. Time scheduled to work is not on this screen — it appears on page 8 when overtime is incurred. Chart time for the day is shown under the tour when it accrues or is pending. |
 | | 6d | Assignment (court picker includes NYC Family Court in each borough; sign-in location field reserved, not shown) |
 | | 6e | Paid detail (own section below Assignment: Add paid detail opens page 19; a saved detail shows a summary + Edit). Not an assignment option. |
 | | 6f | Note |
@@ -67,12 +67,12 @@ so they stay stable when sections move. New sections get the next free letter; r
 | **8 Overtime entry** | 8a | Date |
 | | 8b | Type |
 | | 8c | Overtime location (command / precinct). The former “Enter as” (Times / Total hours only) control that sat under this section was removed; overtime is entered with times in 8d (and 8i when scheduled time applies). Existing hours-only records with no times still open in the compact hours field so they can be edited. |
-| | 8d | Time actually worked (framed Date from / Date to, times, computed Hrs:Min, Default Tour). Always on the overtime slip — not nested under 8k. Typing Time from live-fills Time to from the default tour length. When opened from the day page (6c “Edit overtime details”), 8d is prefilled with the tour the user entered on that day (actual start/end and dates), not only the overtime slice; 8i shows the scheduled/default tour and 8j is the computed overtime. |
+| | 8d | Time actually worked (framed Date from / Date to, times, computed Hrs:Min, Default Tour). Always on the overtime slip — not nested under 8k. Tapping Date from or Date to opens the same in-app mini calendar as 6c, on the entry’s date (or the already-chosen from/to date, including the next day on an overnight tour). Typing Time from live-fills Time to from the default tour length. When opened from the day page (6c “Edit overtime details”), 8d is prefilled with the tour the user entered on that day (actual start/end and dates), not only the overtime slice; 8i shows the scheduled/default tour and 8j is the computed overtime. |
 | | 8e | Paid as (Cash / Time / Split) |
 | | 8f | Travel time |
 | | 8g | Pay estimate card. The “starts 20:00 or later” note is small and only shown when the entered tour start is 20:00 or later. |
 | | 8h | Notes |
-| | 8i | Time scheduled to work (same layout + Default Tour). Only on the overtime page, and only when overtime was incurred. Hidden on a scheduled RDO. Never shown on the day screen (6c). |
+| | 8i | Time scheduled to work (same layout + Default Tour). Date from / Date to use the same mini calendar as 6c and 8d, opening on the scheduled date (including the next day when the scheduled tour is overnight). Only on the overtime page, and only when overtime was incurred. Hidden on a scheduled RDO. Never shown on the day screen (6c). |
 | | 8j | Total overtime performed (read-only, auto-calculated) |
 | | 8k | Compensation option (Cash and Time rows; only when Paid as is Split). Hrs:Min uses the same time-typing rule as the rest of the app. |
 | **9 Settings** | 9a | Account |
@@ -109,7 +109,7 @@ so they stay stable when sections move. New sections get the next free letter; r
 | **17 Extra 15 month editor** | — | header tag only |
 | **18 Chart editor** | — | header tag only |
 | **19 Paid detail** | 19a | Paid Detail ID |
-| | 19b | Date from / Date to (framed tappable MM/DD/YYYY + date wheel; overnight times move Date to to the next day) |
+| | 19b | Date from / Date to (framed tappable MM/DD/YYYY; opens the same in-app mini calendar as 6c/8d/8i, not a scroll wheel; overnight times move Date to to the next day) |
 | | 19c | Start time, End time, and computed Hrs:Min (platform-wide auto-colon typing; the official slip Time range) |
 | | 19d | Vendor, with Previous vendors (deduped name+address from past paid details, most recent first, searchable when there are many; picking one fills vendor + both address lines) |
 | | 19e | Address Line 1 (street; same address autocomplete as court/training) |
