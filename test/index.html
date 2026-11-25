@@ -610,16 +610,22 @@ a.dir-tel.mine{color:#0f766e}
 #dirMapWrap{position:relative;z-index:0;margin:0 0 12px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#dbe3ee}
 #dirMap{height:min(62vh,520px);min-height:320px;z-index:0}
 #dirMap .leaflet-container{font:inherit;background:#dbe3ee}
-.dir-map-card{padding:8px 8px 6px;margin-bottom:8px}
+.dir-map-card{position:relative;z-index:5;padding:6px 6px 4px;margin-bottom:8px;overflow:visible}
 .dir-map-chrome{display:flex;gap:6px;align-items:stretch}
 .dir-map-search{flex:1;position:relative;min-width:0}
 .dir-map-chrome .dirq{min-height:36px;font-size:15px;padding:6px 10px}
 .dir-map-chrome .btn{flex:0 0 auto;align-self:center}
-.dir-map-opts{margin-top:8px;padding:8px;border:1px solid var(--line);border-radius:12px;background:#f8fafc} .dir-map-opts .map-opts-title{margin:0 0 8px;font-size:13px;font-weight:800;letter-spacing:.02em}
-.dir-map-opts .fuelchips{gap:6px;margin:6px 0 8px}
-.dir-map-opts .fuelchips .chip{font-size:11px;padding:4px 8px;min-height:28px;border-width:1px;font-weight:700}
-.dir-map-opts .map-toolbar{margin:0 0 6px}
-.dir-map-opts .muted,.dir-map-opts .fuel-src,.dir-map-opts .map-legend,.dir-map-opts .map-src{font-size:11px;line-height:1.35}
+.dir-map-opts{position:absolute;left:0;right:0;top:calc(100% - 2px);margin:0;padding:8px 8px 6px;border:1px solid var(--line);border-radius:12px;background:#fff;box-shadow:0 10px 28px rgba(15,23,42,.22);z-index:6;max-height:min(52vh,420px);overflow:auto;-webkit-overflow-scrolling:touch}
+.dir-map-opts[hidden]{display:none!important}
+.dir-map-opts .map-opts-head{display:flex;align-items:center;gap:8px;margin:0 0 6px}
+.dir-map-opts .map-opts-title{margin:0;flex:1;font-size:12px;font-weight:800;letter-spacing:.02em}
+.dir-map-opts .map-opts-x{flex:0 0 auto;width:28px;height:28px;min-height:28px;margin:0;padding:0;border:0;background:transparent;font-size:22px;line-height:1;color:#334155;cursor:pointer}
+.dir-map-opts .fuelchips{gap:4px;margin:0}
+.dir-map-opts .fuelchips .chip{font-size:11px;padding:3px 6px;min-height:28px;border-width:1px;font-weight:700}
+.dir-map-opts .map-toolbar{margin:0 0 4px}
+.dir-map-opts .muted,.dir-map-opts .fuel-src,.dir-map-opts .map-legend,.dir-map-opts .map-src{font-size:10px;line-height:1.3}
+.dir-map-opts .map-legend{padding:6px 2px 0;background:transparent;border-top:1px solid var(--line);margin-top:4px}
+.dir-map-opts .map-legend p{margin:0}
 .dir-map-card + #dirMapWrap,#dirMapWrap.dir-map-fill{margin:0 0 8px}
 .dir-map-fill #dirMap{height:calc(100dvh - var(--tabh) - 160px - env(safe-area-inset-bottom, 0px));min-height:48vh}
 #app.tab-map{height:100dvh;min-height:100dvh}
@@ -673,11 +679,11 @@ a.dir-tel.mine{color:#0f766e}
 .hosp-mark svg{display:block;width:18px;height:18px;pointer-events:none}
 .hosp-mark.level1{border-color:#991b1b}
 .dir-map-opts .hospchips{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0}
-#hospFilterWrap[hidden],#fuelFilterWrap[hidden],#evFilterWrap[hidden]{display:none!important}
-.dir-map-opts .map-toolbar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;align-items:stretch;margin:0 0 6px}
-.dir-map-opts #fuelFilterWrap.fuel-opts{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;align-items:stretch;flex:unset;width:auto;margin:0}
+#hospFilterWrap[hidden],#fuelFilterWrap[hidden],#evFilterWrap[hidden],#nearestFilterWrap[hidden]{display:none!important}
+.dir-map-opts .map-toolbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;align-items:stretch;margin:0 0 4px}
+.dir-map-opts #fuelFilterWrap.fuel-opts{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;align-items:stretch;flex:unset;width:auto;margin:0}
 .dir-map-opts #fuelFilterWrap .fuelchips{display:contents;margin:0;gap:0}
-.dir-map-opts #hospFilterWrap.hospchips,.dir-map-opts #evFilterWrap.evchips{display:grid;margin:0;align-items:stretch;min-width:0}
+.dir-map-opts #hospFilterWrap.hospchips,.dir-map-opts #evFilterWrap.ev-opts,.dir-map-opts #nearestFilterWrap.nearest-opts{display:grid;margin:0;align-items:stretch;min-width:0}
 .dir-map-opts .map-toolbar .btn,
 .dir-map-opts .map-toolbar .chip,
 .dir-map-opts #fuelFilterWrap .btn,
@@ -686,7 +692,7 @@ a.dir-tel.mine{color:#0f766e}
 .dir-map-opts #hospFilterWrap .chip,
 .dir-map-opts #evFilterWrap .btn,
 .dir-map-opts #evFilterWrap .chip,
-.dir-map-opts #nearestFilterWrap .btn{width:100%;height:44px;min-height:44px;max-height:44px;min-width:0;margin:0;box-sizing:border-box;padding:4px 6px;font-size:11px;font-weight:700;line-height:1.15;white-space:normal;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;text-align:center;border-width:1px;border-radius:10px;background:#fff;color:var(--ink,#0f172a)}
+.dir-map-opts #nearestFilterWrap .btn{width:100%;height:32px;min-height:32px;max-height:32px;min-width:0;margin:0;box-sizing:border-box;padding:3px 6px;font-size:11px;font-weight:700;line-height:1.1;white-space:normal;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;text-align:center;border-width:1px;border-radius:8px;background:#fff;color:var(--ink,#0f172a)}
 .dir-map-opts .map-toolbar .btn.on,
 .dir-map-opts .map-toolbar .chip.on,
 .dir-map-opts #fuelFilterWrap .btn.on,
@@ -696,7 +702,7 @@ a.dir-tel.mine{color:#0f766e}
 .dir-map-opts #evFilterWrap .btn.on,
 .dir-map-opts #evFilterWrap .chip.on,
 .dir-map-opts #nearestFilterWrap .btn.on{background:var(--navy,#0b1f3a);color:#fff;border-color:var(--navy,#0b1f3a)}
-.dir-map-opts #fuelFilterWrap .fuelchips{margin:0;gap:6px}
+.dir-map-opts #fuelFilterWrap .fuelchips{margin:0;gap:4px}
 .ev-pin{display:block;width:28px;height:36px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.45));pointer-events:auto}
 .ev-pin svg{display:block;width:28px;height:36px;pointer-events:none}
 .leaflet-div-icon.ev-charge-ico{background:transparent;border:0}
@@ -705,11 +711,15 @@ a.dir-tel.mine{color:#0f766e}
 .nearest-item .mi{font-weight:800;color:var(--navy)}
 .nearest-panel{position:absolute;left:8px;right:8px;bottom:8px;z-index:520;background:#fff;border-radius:14px;padding:8px 10px 10px;box-shadow:0 4px 16px rgba(0,0,0,.2);display:flex;flex-direction:column;gap:6px;overflow:hidden;}
 #nearestPanel[hidden],.nearest-panel[hidden]{display:none!important}
-.nearest-panel.map-mode{max-height:none}
+.nearest-panel.map-mode{max-height:none;height:auto;top:auto}
 .nearest-panel.map-mode .fuelchips,.nearest-panel.map-mode #fuelFilterEmpty,.nearest-panel.map-mode [data-act="evChip"]{display:none!important}
+.nearest-panel.map-mode #nearestFuelList[hidden]{display:none!important}
 .nearest-panel [data-act="evChip"]{align-self:flex-start;width:auto;height:auto;min-height:28px;max-height:none;padding:4px 8px;font-size:11px;font-weight:700;margin:0;border-width:1px;border-radius:10px}
-.nearest-panel.list-mode #nearestFuelList{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch}
-.nearest-panel.list-mode{height:72%;max-height:72%}
+.nearest-panel.list-mode{top:8px;bottom:8px;height:auto;max-height:none}
+.nearest-panel.list-mode #nearestFuelList{flex:1 1 auto;min-height:180px;overflow:auto;-webkit-overflow-scrolling:touch}
+.nearest-item .ni-name-row{display:flex;align-items:center;gap:6px;min-width:0}
+.nearest-item .ni-ev{flex:0 0 auto;width:16px;height:16px;line-height:0;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
+.nearest-item .ni-ev svg{display:block;width:16px;height:16px}
 .nearest-panel .fuelchips{gap:4px;margin:0}
 .nearest-panel .fuelchips .chip{font-size:11px;padding:4px 8px;min-height:28px;font-weight:700;border-width:1px}
 .nearest-panel .ni-nav{display:flex;align-items:center;gap:8px;grid-column:2 / -1;margin-top:2px}
@@ -6020,7 +6030,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
 
   var FUEL_TYPES = ['unleaded', 'premium', 'diesel', 'electric'];
   var FUEL_RMP_NOTE = 'Does not dispense into a regular RMP.';
-  var FUEL_SOURCE_NOTE = 'Source: PD 171-011 (12/19), may be outdated.';
+  var FUEL_SOURCE_NOTE = ''; // r99: the PD 171-011 source caption is no longer shown
   function cleanFuelFilter(arr, allowEmpty) {
     var out = [], seen = {};
     if (!Array.isArray(arr)) return ['unleaded'];
@@ -7399,7 +7409,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function fuelRmpHtml(site) {
     return E.fuelRmpIncompatible(site) ? '<p class="fuel-rmp">' + esc(E.FUEL_RMP_NOTE) + '</p>' : '';
   }
-  function fuelSourceHtml() { return '<p class="fuel-src">' + esc(E.FUEL_SOURCE_NOTE) + '</p>'; }
+  function fuelSourceHtml() { return ''; }
   function loadPctBounds() {
     var el = document.getElementById('nypd-precincts');
     if (!el) return null;
@@ -7467,11 +7477,13 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var b = document.getElementById('dirNearestBtn');
     if (b) { b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); }
   }
-  function closeMapOpts() {
+  function setMapOptsOpen(on) {
     var p = document.getElementById('dirMapOpts'), b = document.getElementById('dirMapOptsBtn');
-    if (p) p.hidden = true;
-    if (b) b.setAttribute('aria-expanded', 'false');
-    if (dirMap) setTimeout(function () { if (dirMap) dirMap.invalidateSize(); }, 80);
+    if (p) p.hidden = !on;
+    if (b) b.setAttribute('aria-expanded', on ? 'true' : 'false');
+  }
+  function closeMapOpts() {
+    setMapOptsOpen(false);
   }
   function syncBannerSuggest() {
     var b = document.getElementById('btnSuggest'); if (!b) return;
@@ -8848,18 +8860,23 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     el.innerHTML = rows.map(function (r, i) {
       var s = r.site, n = i + 1, focus = nearestFocusId === s.id;
       var isEv = s.kind === 'ev';
+      var evLoc = isEv ? (evChargerById(s.id) || s) : null;
+      var cmd = evLoc ? evCommandForLoc(evLoc) : null;
+      var name = (cmd && cmd.name) || s.name;
       var kind = isEv ? evKindLabel(s) : ('Fuel' + (fuelTypeLabels(s) ? ' · ' + fuelTypeLabels(s) : ''));
+      var evL3 = !!(evLoc && evLoc.levels && evLoc.levels.L3) || (cmd && evCommandHasL3(evLocsForCommand(cmd)));
+      var badge = (cmd && evLayerOn()) ? ('<span class="ni-ev' + (evL3 ? ' l3' : '') + '" aria-hidden="true">' + evBadgeSvg(evL3, 16) + '</span>') : '';
       var rmp = isEv ? '' : fuelRmpHtml(s);
-      return '<div class="nearest-item' + (focus ? ' focus' : '') + (isEv ? ' ev' : ' fuel') + '" data-fuel-id="' + esc(s.id) + '" data-kind="' + (isEv ? 'ev' : 'fuel') + '">' +
-        '<button type="button" class="nr" data-act="nearestFocus" data-id="' + esc(s.id) + '" aria-label="Show ' + esc(s.name) + ' on the map">' + n + '</button>' +
-        '<button type="button" class="ni-body" data-act="nearestFocus" data-id="' + esc(s.id) + '"><span class="ni-name">' + esc(s.name) + '</span>' +
+      return '<div class="nearest-item' + (focus ? ' focus' : '') + (isEv ? ' ev' : ' fuel') + (cmd ? ' cmd' : '') + '" data-fuel-id="' + esc(s.id) + '" data-kind="' + (isEv ? 'ev' : 'fuel') + '"' + (cmd ? ' data-cmd="' + esc(cmd.id) + '"' : '') + '>' +
+        '<button type="button" class="nr" data-act="nearestFocus" data-id="' + esc(s.id) + '" aria-label="Show ' + esc(name) + ' on the map">' + n + '</button>' +
+        '<button type="button" class="ni-body" data-act="nearestFocus" data-id="' + esc(s.id) + '"><span class="ni-name-row"><span class="ni-name">' + esc(name) + '</span>' + badge + '</span>' +
         (s.address ? '<div class="ni-meta">' + esc(s.address) + '</div>' : '') +
         '<div class="ni-meta"><span class="ni-kind">' + esc(kind) + '</span>' + (rmp ? ' · ' + rmp.replace(/<[^>]+>/g, '') : '') + '</div></button>' +
         '<span class="mi">' + esc(nearestDistanceLabel(r.miles)) + '</span>' +
         '<div class="ni-nav">' + navLinks(s) +
         ' <button type="button" class="linkbtn" data-act="fuelOpen" data-id="' + esc(s.id) + '">Details</button></div>' +
         '</div>';
-    }).join('') + '<p class="fuel-src">' + esc(E.FUEL_SOURCE_NOTE) + '<br>EV chargers: NYC Open Data, DCAS. Harbor A is not accessible by automobile and is left out of Nearest. Distances are straight-line, not driving routes.</p>';
+    }).join('') + '<p class="fuel-src">EV chargers: NYC Open Data, DCAS. Harbor A is not accessible by automobile and is left out of Nearest. Distances are straight-line, not driving routes.</p>';
   }
   function paintNearestMarkers() {
     clearNearestMarkers();
@@ -9071,8 +9088,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   ];
   function viewMap() {
     var q = ui.mapQ || '';
-    var mapOpts = '<div id="dirMapOpts" class="dir-map-opts" hidden role="region" aria-label="Filter">' +
-      '<div class="map-opts-title" id="dirMapOptsTitle">Filter</div>' +
+    var mapOpts = '<div id="dirMapOpts" class="dir-map-opts" hidden role="dialog" aria-label="Filter">' +
+      '<div class="map-opts-head"><div class="map-opts-title" id="dirMapOptsTitle">Filter</div>' +
+      '<button type="button" class="map-opts-x" data-act="dirMapOpts" aria-label="Close filter">&times;</button></div>' +
       '<div class="map-toolbar">' +
       '<button type="button" class="btn sm' + (ui.dirFuelOn ? ' on' : '') + '" data-act="dirFuelLayer" aria-pressed="' + (ui.dirFuelOn ? 'true' : 'false') + '">Fuel</button>' +
       '<button type="button" class="btn sm' + (ui.dirEvOn ? ' on' : '') + '" data-act="dirEvLayer" data-sec="4r" aria-pressed="' + (ui.dirEvOn ? 'true' : 'false') + '">EV charger locations</button>' +
@@ -13744,11 +13762,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     },
 
     dirMapOpts: function () {
-      var p = document.getElementById('dirMapOpts'), b = document.getElementById('dirMapOptsBtn');
+      var p = document.getElementById('dirMapOpts');
       if (!p) return;
-      p.hidden = !p.hidden;
-      if (b) b.setAttribute('aria-expanded', p.hidden ? 'false' : 'true');
-      setTimeout(function () { if (dirMap) dirMap.invalidateSize(); }, 80);
+      setMapOptsOpen(!!p.hidden);
     },
     mapCoverClose: function () { clearMapCover(); setPctFocus(null); },
     fuelChip: function (t) {
