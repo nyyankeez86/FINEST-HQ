@@ -704,7 +704,9 @@ a.dir-tel.mine{color:#0f766e}
 .nearest-panel{position:absolute;left:8px;right:8px;bottom:8px;z-index:520;background:#fff;border-radius:14px;padding:8px 10px 10px;box-shadow:0 4px 16px rgba(0,0,0,.2);display:flex;flex-direction:column;gap:6px;overflow:hidden;}
 #nearestPanel[hidden],.nearest-panel[hidden]{display:none!important}
 .nearest-panel.map-mode{max-height:none}
-.nearest-panel.map-mode .fuelchips,.nearest-panel.map-mode #fuelFilterEmpty{display:none!important}
+.nearest-panel.map-mode .fuelchips,.nearest-panel.map-mode #fuelFilterEmpty,.nearest-panel.map-mode [data-act="evChip"]{display:none!important}
+.nearest-panel [data-act="evChip"]{align-self:flex-start;width:auto;height:auto;min-height:28px;max-height:none;padding:4px 8px;font-size:11px;font-weight:700;margin:0;border-width:1px;border-radius:10px}
+.nearest-panel.list-mode #nearestFuelList{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch}
 .nearest-panel.list-mode{height:72%;max-height:72%}
 .nearest-panel .fuelchips{gap:4px;margin:0}
 .nearest-panel .fuelchips .chip{font-size:11px;padding:4px 8px;min-height:28px;font-weight:700;border-width:1px}
@@ -732,6 +734,9 @@ a.dir-tel.mine{color:#0f766e}
 .nearest-item .ni-nav{grid-column:2 / -1}
 .nearest-pin{display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#0b1f3a;color:#fff;font-weight:800;font-size:13px;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4);pointer-events:auto}
 .nearest-pin.focus{background:#1d4ed8;box-shadow:0 0 0 3px rgba(29,78,216,.35),0 1px 4px rgba(0,0,0,.4)}
+.nearest-pin.ev{background:#0000FF;border-color:#fff}
+.nearest-pin.ev.l3{background:#f59e0b;color:#0b1f3a;border-color:#fff}
+.ni-kind{font-weight:800;letter-spacing:.02em}
 .fuel-rmp{color:#9a3412;font-weight:700;margin:6px 0}
 .fuel-src{font-size:12px;color:var(--muted)}
 .leaflet-div-icon{background:transparent;border:0}
@@ -6171,7 +6176,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
 
   var S = load();
   var T = E.today(), tp = E.parts(T);
-  var ui = { tab: 'schedule', calY: tp.y, calM: tp.m, lookup: T, otYear: tp.y, payYear: tp.y, leaveYear: tp.y, leaveOpen: false, pdY: tp.y, pdM: tp.m, onbSquad: null, x15Year: tp.y, otView: 'ot', otSel: false, otSelIds: {}, pdSel: false, pdSelIds: {}, otFilter: 'all', otCollapse: {}, payOpen: {}, calPeek: null, calPeekPicker: false, todayOpen: false, glanceOpen: false, dirQ: '', mapQ: '', dirKind: '', dirView: 'dir', dirFuelOn: false, dirHospOn: false, dirHospLevel1: false, dirFacilitiesOn: false, dirEvOn: false, dirEvFastOnly: false, mapFocusPct: null };
+  var ui = { tab: 'schedule', calY: tp.y, calM: tp.m, lookup: T, otYear: tp.y, payYear: tp.y, leaveYear: tp.y, leaveOpen: false, pdY: tp.y, pdM: tp.m, onbSquad: null, x15Year: tp.y, otView: 'ot', otSel: false, otSelIds: {}, pdSel: false, pdSelIds: {}, otFilter: 'all', otCollapse: {}, payOpen: {}, calPeek: null, calPeekPicker: false, todayOpen: false, glanceOpen: false, dirQ: '', mapQ: '', dirKind: '', dirView: 'dir', dirFuelOn: false, dirHospOn: false, dirHospLevel1: false, dirFacilitiesOn: false, dirEvFastOnly: false, mapFocusPct: null };
   function msgNewIconHtml() { return '<span class="msgunread-dot" aria-hidden="true"></span>'; }
   var MSG_VERIFIED_TIP = 'Official message from a FINEST HQ admin';
   function msgVerifiedHtml() {
@@ -7416,7 +7421,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function nearestSheetOpen() {
     if (nearestMode) return true;
     var h = document.querySelector('#sheetRoot .sheet .shead h3');
-    return !!(h && String(h.textContent || '').trim() === 'Nearest fuel');
+    return !!(h && String(h.textContent || '').trim() === 'Nearest fuel/EV');
   }
   function syncNearestBtn() {
     var on = !!nearestMode || nearestSheetOpen();
@@ -7503,12 +7508,47 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (!ui.dirEvFastOnly) return true;
     return !!(loc.levels && loc.levels.L3);
   }
+  function evLayerOn() { return ui.dirFuelOn !== false; }
+  function evAsSite(loc) {
+    if (!loc) return null;
+    return {
+      id: loc.id, name: loc.name, address: loc.address, lat: loc.lat, lon: loc.lon,
+      kind: 'ev', levels: loc.levels, types: loc.types, agencies: loc.agencies,
+      public: loc.public, fees: loc.fees, chargers: loc.chargers, ports: loc.ports,
+      boro: loc.boro, city: loc.city, zip: loc.zip, street: loc.street
+    };
+  }
+  function evChargerById(id) {
+    var list = evChargerList(), i;
+    for (i = 0; i < list.length; i++) if (list[i].id === id) return list[i];
+    return null;
+  }
+  function evKindLabel(loc) {
+    var levels = (loc && loc.levels) || {}, parts = [];
+    if (levels.L3) parts.push('L3 Fast');
+    if (levels.L2) parts.push('L2');
+    if (levels.L1) parts.push('L1');
+    Object.keys(levels).forEach(function (k) {
+      if (k !== 'L3' && k !== 'L2' && k !== 'L1') parts.push(k);
+    });
+    return 'EV charger' + (parts.length ? ' · ' + parts.join(', ') : '');
+  }
+  function fuelOrEvSearchHits(ql) {
+    var hits = [];
+    (C.fuelLocations || []).forEach(function (s) {
+      if ((s.name + ' ' + (s.address || '')).toLowerCase().indexOf(ql) >= 0) hits.push(s);
+    });
+    evChargerList().forEach(function (s) {
+      if ((s.name + ' ' + (s.address || '')).toLowerCase().indexOf(ql) >= 0) hits.push(evAsSite(s));
+    });
+    return hits;
+  }
   function syncEvAttribution() {
     if (!dirMap || !dirMap.attributionControl) return;
-    if (ui.dirEvOn && !dirEvAttrOn) {
+    if (evLayerOn() && !dirEvAttrOn) {
       dirMap.attributionControl.addAttribution(EV_ATTR);
       dirEvAttrOn = true;
-    } else if (!ui.dirEvOn && dirEvAttrOn) {
+    } else if (!evLayerOn() && dirEvAttrOn) {
       dirMap.attributionControl.removeAttribution(EV_ATTR);
       dirEvAttrOn = false;
     }
@@ -7546,18 +7586,15 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     openSheet(loc.name || 'EV charger', body, 'Fleet EV charger');
   }
   function syncEvFilterUi() {
-    var on = !!ui.dirEvOn;
-    var wrap = document.getElementById('evFilterWrap');
-    if (wrap) wrap.hidden = !on;
-    var btn = document.querySelector('#dirMapOpts [data-act="dirEvLayer"]');
-    if (btn) { btn.classList.toggle('on', on); btn.setAttribute('aria-pressed', on ? 'true' : 'false'); }
-    var chip = document.querySelector('#dirMapOpts [data-act="evChip"][data-filter="fast"]');
-    if (chip) { chip.classList.toggle('on', !!ui.dirEvFastOnly); chip.setAttribute('aria-pressed', ui.dirEvFastOnly ? 'true' : 'false'); }
+    document.querySelectorAll('[data-act="evChip"][data-filter="fast"]').forEach(function (chip) {
+      chip.classList.toggle('on', !!ui.dirEvFastOnly);
+      chip.setAttribute('aria-pressed', ui.dirEvFastOnly ? 'true' : 'false');
+    });
   }
   function refreshEvMarkers() {
     if (dirEvLayer) { try { if (dirMap) dirMap.removeLayer(dirEvLayer); } catch (e) {} dirEvLayer = null; }
     syncEvAttribution();
-    if (!ui.dirEvOn || !dirMap || typeof L === 'undefined') return;
+    if (!evLayerOn() || nearestMode || !dirMap || typeof L === 'undefined') return;
     dirEvLayer = L.layerGroup();
     evChargerList().forEach(function (loc) {
       if (!evChargerVisible(loc)) return;
@@ -8511,8 +8548,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var q = String(ui.mapQ || '').trim();
     if (!q) { clearMapCover(); setPctFocus(null); return; }
     if (parsePctQuery(q)) { dirMapSearch(); return; }
-    var ql = q.toLowerCase(), hits = [];
-    (C.fuelLocations || []).forEach(function (s) { if ((s.name + ' ' + s.address).toLowerCase().indexOf(ql) >= 0) hits.push(s); });
+    var ql = q.toLowerCase(), hits = fuelOrEvSearchHits(ql);
     if (hits.length === 1 && hits[0].lat != null) { showMapCover(hits[0].lat, hits[0].lon, hits[0].name); return; }
     applyMapSearchResult({ value: q });
   }
@@ -8533,10 +8569,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (jumpLL) { dirMap.setView(jumpLL, 14); return; }
     }
     if (fromInit) return;
-    var ql = q.toLowerCase(), hits = [];
-    (C.fuelLocations || []).forEach(function (s) {
-      if ((s.name + ' ' + s.address).toLowerCase().indexOf(ql) >= 0) hits.push(s);
-    });
+    var ql = q.toLowerCase(), hits = fuelOrEvSearchHits(ql);
     if (hits.length === 1 && hits[0].lat != null) dirMap.setView([hits[0].lat, hits[0].lon], 15);
   }
   var NEAREST_N = 5;
@@ -8545,9 +8578,15 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     return mi + ' mi (straight-line)';
   }
   function computeNearestRows() {
+    if (!fuelOrigin || fuelOrigin.lat == null || fuelOrigin.lon == null) return [];
     var types = fuelFilter();
-    if (!fuelOrigin || !types.length) return [];
-    return E.nearestFuel(fuelOrigin, { types: types, car: true }).slice(0, NEAREST_N);
+    var fuelRows = types.length ? E.nearestFuel(fuelOrigin, { types: types, car: true }) : [];
+    var evRows = [];
+    evChargerList().forEach(function (loc) {
+      if (!evChargerVisible(loc)) return;
+      evRows.push({ site: evAsSite(loc), miles: E.haversineMiles(+fuelOrigin.lat, +fuelOrigin.lon, +loc.lat, +loc.lon) });
+    });
+    return fuelRows.concat(evRows).sort(function (a, b) { return a.miles - b.miles; }).slice(0, NEAREST_N);
   }
   function clearNearestMarkers() {
     if (dirNearestLayer && dirMap) { try { dirMap.removeLayer(dirNearestLayer); } catch (e) {} }
@@ -8562,6 +8601,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (!on && has) dirMap.removeLayer(layer);
     }
     setLayer(dirFuelLayer, show);
+    setLayer(dirEvLayer, show);
     setLayer(dirShieldLayer, show);
   }
   function clearNearestMode() {
@@ -8571,7 +8611,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     nearestRows = [];
     clearNearestMarkers();
     setNearestBaseLayers();
-    if (dirMap) { refreshFuelMarkers(); addCommandShields(); }
+    if (dirMap) { refreshFuelMarkers(); refreshEvMarkers(); addCommandShields(); }
     var p = document.getElementById('nearestPanel');
     if (p) { p.hidden = true; p.innerHTML = ''; p.className = 'nearest-panel'; }
     syncNearestBtn();
@@ -8589,33 +8629,33 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function fillNearestList(el) {
     if (!el) return;
-    var types = fuelFilter();
-    if (!types.length) {
-      el.innerHTML = '<p class="dir-empty" id="fuelFilterHint">Select a fuel type to see sites.</p>';
-      return;
-    }
     if (!fuelOrigin) {
       el.innerHTML = '<p class="muted">Choose a starting point to list the closest sites.</p>';
       return;
     }
+    var types = fuelFilter();
     var rows = nearestRows && nearestRows.length ? nearestRows : computeNearestRows();
     if (!rows.length) {
-      el.innerHTML = '<p class="dir-empty">No fuel sites match the selected types near this starting point.</p>';
+      el.innerHTML = types.length
+        ? '<p class="dir-empty">No fuel sites or EV chargers match near this starting point.</p>'
+        : '<p class="dir-empty" id="fuelFilterHint">Select a fuel type to include department fuel sites. Fleet EV chargers still appear once a starting point is set.</p>';
       return;
     }
     el.innerHTML = rows.map(function (r, i) {
       var s = r.site, n = i + 1, focus = nearestFocusId === s.id;
-      var rmp = fuelRmpHtml(s);
-      return '<div class="nearest-item' + (focus ? ' focus' : '') + '" data-fuel-id="' + esc(s.id) + '">' +
+      var isEv = s.kind === 'ev';
+      var kind = isEv ? evKindLabel(s) : ('Fuel' + (fuelTypeLabels(s) ? ' · ' + fuelTypeLabels(s) : ''));
+      var rmp = isEv ? '' : fuelRmpHtml(s);
+      return '<div class="nearest-item' + (focus ? ' focus' : '') + (isEv ? ' ev' : ' fuel') + '" data-fuel-id="' + esc(s.id) + '" data-kind="' + (isEv ? 'ev' : 'fuel') + '">' +
         '<button type="button" class="nr" data-act="nearestFocus" data-id="' + esc(s.id) + '" aria-label="Show ' + esc(s.name) + ' on the map">' + n + '</button>' +
         '<button type="button" class="ni-body" data-act="nearestFocus" data-id="' + esc(s.id) + '"><span class="ni-name">' + esc(s.name) + '</span>' +
         (s.address ? '<div class="ni-meta">' + esc(s.address) + '</div>' : '') +
-        '<div class="ni-meta">' + esc(fuelTypeLabels(s)) + (rmp ? ' · ' + rmp.replace(/<[^>]+>/g, '') : '') + '</div></button>' +
+        '<div class="ni-meta"><span class="ni-kind">' + esc(kind) + '</span>' + (rmp ? ' · ' + rmp.replace(/<[^>]+>/g, '') : '') + '</div></button>' +
         '<span class="mi">' + esc(nearestDistanceLabel(r.miles)) + '</span>' +
         '<div class="ni-nav">' + navLinks(s) +
         ' <button type="button" class="linkbtn" data-act="fuelOpen" data-id="' + esc(s.id) + '">Details</button></div>' +
         '</div>';
-    }).join('') + fuelSourceHtml();
+    }).join('') + '<p class="fuel-src">' + esc(E.FUEL_SOURCE_NOTE) + '<br>EV chargers: NYC Open Data, DCAS. Harbor A is not accessible by automobile and is left out of Nearest. Distances are straight-line, not driving routes.</p>';
   }
   function paintNearestMarkers() {
     clearNearestMarkers();
@@ -8627,9 +8667,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var s = r.site, n = i + 1;
       if (s.lat == null || s.lon == null) return;
       var focus = nearestFocusId === s.id;
+      var isEv = s.kind === 'ev';
+      var evCls = isEv ? (' ev' + (s.levels && s.levels.L3 ? ' l3' : '')) : '';
       var icon = L.divIcon({
         className: 'nearest-pin-icon',
-        html: '<span class="nearest-pin' + (focus ? ' focus' : '') + '" data-fuel-id="' + esc(s.id) + '" data-rank="' + n + '">' + n + '</span>',
+        html: '<span class="nearest-pin' + (focus ? ' focus' : '') + evCls + '" data-fuel-id="' + esc(s.id) + '" data-kind="' + (isEv ? 'ev' : 'fuel') + '" data-rank="' + n + '">' + n + '</span>',
         iconSize: [26, 26],
         iconAnchor: [13, 13]
       });
@@ -8679,20 +8721,20 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     p.className = 'nearest-panel ' + (nearestView === 'list' ? 'list-mode' : 'map-mode');
     p.setAttribute('data-sec', '4l');
     p.innerHTML = '<div class="nearest-head">' +
-      '<h3>Nearest fuel</h3>' +
-      '<div class="seg nearest-seg" role="tablist" aria-label="Nearest fuel view">' +
+      '<h3>Nearest fuel/EV</h3>' +
+      '<div class="seg nearest-seg" role="tablist" aria-label="Nearest fuel/EV view">' +
         '<button type="button" data-act="nearestView" data-v="map" role="tab" class="' + (nearestView === 'map' ? 'on' : '') + '" aria-selected="' + (nearestView === 'map' ? 'true' : 'false') + '">Map</button>' +
         '<button type="button" data-act="nearestView" data-v="list" role="tab" class="' + (nearestView === 'list' ? 'on' : '') + '" aria-selected="' + (nearestView === 'list' ? 'true' : 'false') + '">List</button>' +
       '</div>' +
-      '<button type="button" class="nearest-x" data-act="nearestClose" aria-label="Close nearest fuel">&times;</button>' +
+      '<button type="button" class="nearest-x" data-act="nearestClose" aria-label="Close nearest fuel/EV">&times;</button>' +
       '</div>' +
       fuelChipBar() +
-      '<p class="muted" id="fuelFilterEmpty"' + (typesOn ? ' hidden' : '') + '>Select a fuel type to see sites.</p>' +
+      '<button type="button" class="btn sm chip' + (ui.dirEvFastOnly ? ' on' : '') + '" data-act="evChip" data-filter="fast" data-sec="4q" aria-pressed="' + (ui.dirEvFastOnly ? 'true' : 'false') + '">Fast Charger Only</button>' +
+      '<p class="muted" id="fuelFilterEmpty"' + (typesOn ? ' hidden' : '') + '>Select a fuel type to include department fuel sites. Fleet EV chargers are still listed.</p>' +
       '<p class="nearest-origin" id="nearestOriginLine">' + esc(originText) + '</p>' +
       (hasOrigin ? '<button type="button" class="nearest-change" data-act="nearestChangeOrigin">' + (showPick ? 'Hide starting point options' : 'Change starting point') + '</button>' : '') +
       (showPick ? nearestOriginPickerHtml() : '') +
-      '<div id="nearestFuelList"' + (nearestView === 'list' || !hasOrigin || !typesOn ? '' : ' hidden') + '></div>' +
-      (nearestView === 'list' ? '<p class="fuel-src" style="margin-top:4px">Harbor A is not accessible by automobile and is left out of Nearest. Distances are straight-line, not driving routes.</p>' : '');
+      '<div id="nearestFuelList"' + (nearestView === 'list' || !hasOrigin ? '' : ' hidden') + '></div>';
     fillNearestList(document.getElementById('nearestFuelList'));
     var st = document.getElementById('fuelGeoStatus');
     if (st && hasOrigin) st.textContent = originText;
@@ -8729,7 +8771,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     renderNearestPanel();
     paintNearestMarkers();
     if (dirMap && row.site.lat != null) dirMap.setView([row.site.lat, row.site.lon], Math.max(dirMap.getZoom(), 15), { animate: true });
-    if (opts.openSheet) fuelSiteSheet(row.site);
+    if (opts.openSheet) openFuelOrEvSheet(row.site);
   }
   function nearestFuelSheet() { startNearestMode(); }
   function originPctOptions() {
@@ -8803,6 +8845,16 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     for (var i = 0; i < list.length; i++) if (list[i].id === id) return list[i];
     return null;
   }
+  function fuelOrEvById(id) {
+    var site = fuelById(id);
+    if (site) return site;
+    return evAsSite(evChargerById(id));
+  }
+  function openFuelOrEvSheet(site) {
+    if (!site) return;
+    if (site.kind === 'ev') evChargerSheet(site);
+    else fuelSiteSheet(site);
+  }
 
   var DIR_CHIPS = [
     { id: '', label: 'All' }, { id: 'pct', label: 'Patrol' }, { id: 'psa', label: 'Housing' }, { id: 'td', label: 'Transit' },
@@ -8813,20 +8865,18 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var q = ui.mapQ || '';
     var mapOpts = '<div id="dirMapOpts" class="dir-map-opts" hidden>' +
       '<div class="map-toolbar">' +
-      '<button type="button" class="btn sm' + (ui.dirFuelOn === false ? '' : ' on') + '" data-act="dirFuelLayer" aria-pressed="' + (ui.dirFuelOn === false ? 'false' : 'true') + '">Fuel sites</button>' +
+      '<button type="button" class="btn sm' + (ui.dirFuelOn === false ? '' : ' on') + '" data-act="dirFuelLayer" aria-pressed="' + (ui.dirFuelOn === false ? 'false' : 'true') + '">Fuel/EV chargers</button>' +
       '<button type="button" class="btn sm' + (ui.dirHospOn ? ' on' : '') + '" data-act="dirHospLayer" aria-pressed="' + (ui.dirHospOn ? 'true' : 'false') + '">Hospitals</button>' +
       '<button type="button" class="btn sm' + (ui.dirFacilitiesOn ? ' on' : '') + '" data-act="dirFacilities" aria-pressed="' + (ui.dirFacilitiesOn ? 'true' : 'false') + '">Police facilities</button>' +
-      '<button type="button" class="btn sm' + (ui.dirEvOn ? ' on' : '') + '" data-act="dirEvLayer" data-sec="4p" aria-pressed="' + (ui.dirEvOn ? 'true' : 'false') + '">EV chargers</button>' +
-      '<div id="fuelFilterWrap" class="fuel-opts"' + (ui.dirFuelOn === false ? ' hidden' : '') + ' data-sec="4k" role="group" aria-label="Fuel filters">' +
+      '<div id="fuelFilterWrap" class="fuel-opts"' + (ui.dirFuelOn === false ? ' hidden' : '') + ' data-sec="4k" role="group" aria-label="Fuel/EV filters">' +
         fuelChipBar() +
-        '<button type="button" class="btn sm" id="dirNearestBtn" data-act="dirNearest" aria-pressed="false">Nearest fuel</button>' +
+        '<button type="button" class="btn sm" id="dirNearestBtn" data-act="dirNearest" aria-pressed="false">Nearest fuel/EV</button>' +
+        '<button type="button" class="btn sm chip' + (ui.dirEvFastOnly ? ' on' : '') + '" data-act="evChip" data-filter="fast" data-sec="4q" aria-pressed="' + (ui.dirEvFastOnly ? 'true' : 'false') + '">Fast Charger Only</button>' +
       '</div>' +
       '<div id="hospFilterWrap" class="hospchips"' + (ui.dirHospOn ? '' : ' hidden') + ' data-sec="4n" role="group" aria-label="Hospital filter">' +
         '<button type="button" class="btn sm chip' + (ui.dirHospLevel1 ? ' on' : '') + '" data-act="hospChip" data-filter="level1" aria-pressed="' + (ui.dirHospLevel1 ? 'true' : 'false') + '">Level 1 Trauma</button>' +
       '</div>' +
-      '<div id="evFilterWrap" class="evchips"' + (ui.dirEvOn ? '' : ' hidden') + ' data-sec="4q" role="group" aria-label="EV charger filter">' +
-        '<button type="button" class="btn sm chip' + (ui.dirEvFastOnly ? ' on' : '') + '" data-act="evChip" data-filter="fast" aria-pressed="' + (ui.dirEvFastOnly ? 'true' : 'false') + '">Fast Charger Only</button>' +
-      '</div></div>' +
+      '</div>' +
       '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p></div>' +
       '</div>';
     var mapTools = '<div class="dir-map-chrome">' +
@@ -13395,12 +13445,14 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     dirFuelLayer: function (t) {
       ui.dirFuelOn = ui.dirFuelOn === false;
       if (ui.dirFuelOn === false) {
+        ui.dirEvFastOnly = false;
         clearNearestMode();
         if (nearestSheetOpen()) closeSheet();
       }
       syncFuelFilterUi();
+      syncEvFilterUi();
       syncNearestBtn();
-      refreshFuelMarkers(); refreshHospitalMarkers();
+      refreshFuelMarkers(); refreshHospitalMarkers(); refreshEvMarkers();
       addCommandShields();
     },
     dirHospLayer: function () {
@@ -13421,16 +13473,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       refreshHospitalMarkers();
       if (ui.dirHospOn) fitHospitalView();
     },
-    dirEvLayer: function () {
-      ui.dirEvOn = !ui.dirEvOn;
-      if (!ui.dirEvOn) ui.dirEvFastOnly = false;
-      syncEvFilterUi();
-      refreshEvMarkers();
-    },
     evChip: function (t) {
       if (t.dataset.filter === 'fast') ui.dirEvFastOnly = !ui.dirEvFastOnly;
       syncEvFilterUi();
       refreshEvMarkers();
+      if (nearestMode) refreshNearestResults({ fit: true });
     },
     dirNearest: function () { if (nearestMode) clearNearestMode(); else startNearestMode(); },
     nearestClose: function () { clearNearestMode(); },
@@ -13469,7 +13516,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     fuelUseGeo: function () { useFuelGeolocation(); },
     fuelUsePct: function () { useFuelPrecinct(); },
     fuelUseAddr: function () { useFuelAddress(); },
-    fuelOpen: function (t) { var site = fuelById(t.dataset.id); if (site) fuelSiteSheet(site); },
+    fuelOpen: function (t) { openFuelOrEvSheet(fuelOrEvById(t.dataset.id)); },
     dirJump: function (t) {
       var id = t.dataset.id, c = E.commandById(id);
       closeAll();
