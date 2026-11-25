@@ -214,7 +214,7 @@ h3{font-size:17px;margin:0 0 6px}
 .item .right small{display:block;font-weight:600;color:var(--muted);font-size:12px}
 .chip{display:inline-block;padding:3px 9px;border-radius:999px;font-size:12.5px;font-weight:700;border:1px solid var(--line);background:#fff;margin:2px 4px 2px 0}
 .grp{font-size:13px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:14px 2px 4px;display:flex;justify-content:space-between}
-.period{border-left:6px solid #c4ccd9;scroll-margin-top:84px}
+.period{border-left:6px solid #c4ccd9;scroll-margin-top:calc(var(--hdrh, 72px) + var(--paybanh, 80px) + 8px)}
 .period.current{border-left-color:var(--accent);background:#f0f5ff;box-shadow:0 0 0 2px var(--accent) inset}
 .period .head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .period .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
@@ -241,6 +241,21 @@ h3{font-size:17px;margin:0 0 6px}
 .period .pay-detail[hidden]{display:none!important}
 .yearsel{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:10px}
 .yearsel b{font-size:19px;min-width:60px;text-align:center}
+.payban{position:sticky;top:var(--hdrh,72px);z-index:15;background:var(--bg);margin:0 -14px 10px;padding:8px 14px 10px;border-bottom:1px solid var(--line);box-shadow:0 6px 12px rgba(15,23,42,.06);display:flex;flex-direction:column;gap:6px}
+.payban-row{display:flex;align-items:center;gap:8px;min-width:0}
+.payban .yearsel{margin:0;gap:4px;flex:0 0 auto}
+.payban .yearsel b{font-size:16px;min-width:44px;color:#0000FF}
+.payban .navbtn{width:36px;height:36px;min-height:36px;font-size:18px;border-radius:10px}
+.payban .navbtn:disabled{opacity:.35;cursor:not-allowed}
+.payban-next{flex:1 1 auto;min-width:0;min-height:36px;padding:0 10px;font-size:13px;color:#0000FF;border-color:#0000FF;white-space:nowrap}
+.payban-pick{position:relative;min-width:0}
+.payban-pickbtn{width:100%;box-sizing:border-box;min-height:36px;padding:0 10px;border:1px solid var(--line);border-radius:10px;background:#fff;font:inherit;font-weight:700;font-size:13px;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;color:var(--ink)}
+.payban-pickbtn[aria-expanded="true"]{border-color:#0000FF;box-shadow:0 0 0 2px rgba(0,0,255,.12)}
+.payban-menu{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:16;background:#fff;border:1px solid var(--line);border-radius:12px;max-height:min(50vh,360px);overflow:auto;-webkit-overflow-scrolling:touch;box-shadow:0 10px 28px rgba(15,23,42,.18);padding:4px}
+.payban-menu[hidden]{display:none!important}
+.payban-opt{display:block;width:100%;box-sizing:border-box;text-align:left;border:0;background:none;font:inherit;font-weight:600;font-size:13.5px;padding:10px 12px;min-height:44px;border-radius:8px;cursor:pointer;color:var(--ink)}
+.payban-opt.on,.payban-opt[aria-selected="true"]{background:#0000FF;color:#fff}
+.payban-opt:focus-visible,.payban .navbtn:focus-visible,.payban-next:focus-visible,.payban-pickbtn:focus-visible{outline:2px solid #0000FF;outline-offset:2px}
 .lv-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .lv-card{border-radius:12px;padding:12px;color:#fff}
 .lv-card b{font-size:28px;display:block;line-height:1.1}
@@ -6254,7 +6269,16 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var appEl = document.getElementById('app'); if (appEl) { appEl.classList.toggle('tab-map', ui.tab === 'map'); appEl.classList.remove('tabs-search-off'); } var tabsEl = document.getElementById('tabs'); if (tabsEl) tabsEl.setAttribute('aria-hidden', 'false');
     view.innerHTML = ({ schedule: viewSchedule, overtime: viewOvertime, pay: viewPay, map: viewMap, directory: viewDirectory })[ui.tab]();
     if (CL.enabled && S.profile && !S.profile.taxNumber && !ui.privDismiss) view.insertAdjacentHTML('afterbegin', '<div class="privbanner" id="privBanner">&#128274; Add your tax and reference numbers in Settings. They\'re kept on this device only and never synced, so each new device asks once. <button class="btn sm" data-act="settings">Settings</button> <button class="linkbtn" data-act="privDismiss">Later</button></div>');
-    if (ui.tab === 'pay' && ui.scrollCurrent) { ui.scrollCurrent = false; var c = document.getElementById('curPeriod'); if (c) c.scrollIntoView({ block: 'start' }); }
+    if (ui.tab === 'pay') {
+      syncPayBannerSticky();
+      if (ui.scrollPay != null) {
+        var pdJump = ui.scrollPay; ui.scrollPay = null; ui.scrollCurrent = false;
+        payScrollTo(pdJump, true);
+      } else if (ui.scrollCurrent) {
+        ui.scrollCurrent = false;
+        var c = document.getElementById('curPeriod'); if (c) c.scrollIntoView({ block: 'start' });
+      }
+    }
     if (!onb && ui.tab === 'schedule') startRetireTick(); else stopRetireTick();
     if (ui.scrollLeave) {
       var sl = document.getElementById(ui.scrollLeave) || document.getElementById('leaveBalCard');
@@ -7040,6 +7064,64 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (det) det.hidden = !open;
     if (card.dataset.payday) paySetOpen(card.dataset.payday, open);
   }
+  function payDayYear(d) { return +E.toISO(d).slice(0, 4); }
+  function payYearHasPeriods(y) { return E.payPeriodsInYear(y, payOpts()).length > 0; }
+  function syncPayBannerSticky() {
+    var h = document.querySelector('header.top'), ban = document.getElementById('payBanner'), root = document.documentElement;
+    if (!root) return;
+    root.style.setProperty('--hdrh', Math.round((h && h.getBoundingClientRect().height) || 72) + 'px');
+    root.style.setProperty('--paybanh', Math.round((ban && ban.getBoundingClientRect().height) || 0) + 'px');
+  }
+  function closePayPick() {
+    var m = document.getElementById('payPickList'), b = document.getElementById('payPickBtn');
+    if (m) m.hidden = true;
+    if (b) b.setAttribute('aria-expanded', 'false');
+  }
+  function payScrollTo(payday, open) {
+    var card = document.querySelector('.period[data-payday="' + payday + '"]');
+    if (!card) return false;
+    if (open) payApplyOpen(card, true);
+    syncPayBannerSticky();
+    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return true;
+  }
+  function payGoPayday(payday, doRender) {
+    payday = +payday;
+    if (!payday) return;
+    var y = payDayYear(payday);
+    paySetOpen(payday, true);
+    ui.scrollPay = payday;
+    if (doRender !== false && (ui.payYear !== y || !document.querySelector('.period[data-payday="' + payday + '"]'))) {
+      ui.payYear = y;
+      render();
+      return;
+    }
+    ui.scrollPay = null;
+    closePayPick();
+    payScrollTo(payday, true);
+  }
+  function payBannerHtml(y, periods) {
+    var po = payOpts(), next = E.nextPayday(T, po), curReg = E.regularPaydayFor(T, po), curOT = E.overtimePaydayFor(T, po);
+    var prevOk = payYearHasPeriods(y - 1), nextOk = payYearHasPeriods(y + 1);
+    var opts = periods.map(function (p) {
+      var isCur = p.payday === curReg || p.payday === curOT, isNext = p.payday === next;
+      var extra = isCur ? ' (current)' : (isNext ? ' (next)' : '');
+      return '<button type="button" class="payban-opt' + (isCur ? ' on' : '') + '" role="option" data-act="payGo" data-payday="' + p.payday + '" aria-selected="' + (isCur ? 'true' : 'false') + '">' + esc(fmt(p.payday, 'mdy') + extra) + '</button>';
+    }).join('');
+    return '<div class="payban" data-sec="3c" id="payBanner">' +
+      '<div class="payban-row">' +
+        '<div class="yearsel" role="group" aria-label="Pay year">' +
+          '<button type="button" class="navbtn" data-act="payYear" data-dir="-1" aria-label="Previous year"' + (prevOk ? '' : ' disabled') + '>&lsaquo;</button>' +
+          '<b aria-live="polite">' + y + '</b>' +
+          '<button type="button" class="navbtn" data-act="payYear" data-dir="1" aria-label="Next year"' + (nextOk ? '' : ' disabled') + '>&rsaquo;</button>' +
+        '</div>' +
+        '<button type="button" class="btn sm payban-next" data-act="payNext">Next pay period</button>' +
+      '</div>' +
+      '<div class="payban-pick">' +
+        '<button type="button" class="payban-pickbtn" id="payPickBtn" data-act="payPickOpen" aria-expanded="false" aria-haspopup="listbox" aria-controls="payPickList">Pay period <span aria-hidden="true">▾</span></button>' +
+        '<div id="payPickList" class="payban-menu" role="listbox" aria-label="Pay periods in ' + y + '" hidden>' + opts + '</div>' +
+      '</div></div>';
+  }
   function viewPay() {
     var po = payOpts(), sq = mySquad(), y = ui.payYear, periods = E.payPeriodsInYear(y, po);
     var curReg = E.regularPaydayFor(T, po), curOT = E.overtimePaydayFor(T, po), th = 0, tpay = 0, ttr = 0, ttrp = 0;
@@ -7066,10 +7148,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<div class="grid3"><div><small>OT entries</small><b>' + otInRange(p.overtime.start, p.overtime.end).length + '</b></div><div><small>OT hours</small><b>' + hrs(s.hours) + '</b></div><div><small>Est. OT pay</small><b style="color:var(--pay)">' + money(s.pay) + '</b></div></div>' + (s.travel.minutes ? '<div class="muted travper" style="font-size:12px;margin-top:4px">Travel time: ' + E.fmtHM(s.travel.minutes) + (s.travel.pay ? ' &middot; ' + money(s.travel.pay) + ' cash' : '') + (s.travel.comp ? ' &middot; ' + E.fmtHM(s.travel.comp) + ' comp' : '') + ' (included above)</div>' : '') + '</div></div></div>';
     }).join('');
     th = Math.round(th * 100) / 100;
-    return suggestBar('Pay') + '<div class="card" data-sec="3a"><div class="yearsel"><button class="navbtn" data-act="payYear" data-dir="-1" aria-label="Previous year">&lsaquo;</button><b>' + y + '</b><button class="navbtn" data-act="payYear" data-dir="1" aria-label="Next year">&rsaquo;</button></div>' +
+    return suggestBar('Pay') + payBannerHtml(y, periods) + '<div class="card" data-sec="3a">' +
       '<div class="tot-row"><div class="tot"><small>Paydays</small><b>' + periods.length + '</b></div><div class="tot"><small>OT hours paid</small><b>' + hrs(th) + '</b></div><div class="tot"><small>Est. OT pay</small><b style="font-size:17px">' + money(tpay) + '</b>' + (ttr ? '<span class="travsum" id="payYearTravel">incl. travel ' + E.fmtHM(ttr) + (ttrp ? ' &middot; ' + money(ttrp) : '') + '</span>' : '') + '</div>' +
-      '<div class="tot"><small>Chart time</small><b>' + (ctY.pendingDays && !ctY.minutes ? 'Pending' : E.fmtChart(ctY.minutes)) + '</b>' + (ctY.pendingDays ? '<em>' + ctY.pendingDays + ' day' + (ctY.pendingDays === 1 ? '' : 's') + ' pending</em>' : '<em>accrued this year</em>') + '</div></div>' +
-      (y !== tp.y ? '' : '<button class="btn sm" data-act="payJump" style="margin-top:8px">Jump to current periods</button>') + '</div>' + cards;
+      '<div class="tot"><small>Chart time</small><b>' + (ctY.pendingDays && !ctY.minutes ? 'Pending' : E.fmtChart(ctY.minutes)) + '</b>' + (ctY.pendingDays ? '<em>' + ctY.pendingDays + ' day' + (ctY.pendingDays === 1 ? '' : 's') + ' pending</em>' : '<em>accrued this year</em>') + '</div></div></div>' + cards;
   }
 
   function viewLeave() {
@@ -12833,7 +12914,24 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       histDiffLine();
     },
     otYear: function (t) { ui.otYear += +t.dataset.dir; render(); },
-    payYear: function (t) { ui.payYear += +t.dataset.dir; render(); },
+    payYear: function (t) {
+      if (t.disabled) return;
+      var y = ui.payYear + (+t.dataset.dir);
+      if (!payYearHasPeriods(y)) return;
+      ui.payYear = y;
+      render();
+    },
+    payNext: function () {
+      var d = E.nextPayday(T, payOpts());
+      payGoPayday(d);
+    },
+    payPickOpen: function (t) {
+      var m = document.getElementById('payPickList'), open = t.getAttribute('aria-expanded') === 'true';
+      if (open) { closePayPick(); return; }
+      if (m) m.hidden = false;
+      t.setAttribute('aria-expanded', 'true');
+    },
+    payGo: function (t) { closePayPick(); payGoPayday(t.dataset.payday); },
     legendToggle: function () { S.settings.legendOpen = !S.settings.legendOpen; save(true); var lg = document.getElementById('calLegend'), b = document.querySelector('[data-act="legendToggle"]'); if (lg) lg.hidden = !S.settings.legendOpen; if (b) { b.classList.toggle('on', !!S.settings.legendOpen); b.setAttribute('aria-expanded', S.settings.legendOpen ? 'true' : 'false'); } },
     payToggle: function (t) {
       var card = t.closest ? t.closest('.period') : t.parentNode;
@@ -13265,6 +13363,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var box = document.getElementById('lvOpts');
     if (box && box.classList.contains('open') && !box.contains(ev.target)) closeDaySel();
     if (!(ev.target.closest && ev.target.closest('[data-act="navMore"], .nav-menu'))) closeNavMenus();
+    if (!(ev.target.closest && ev.target.closest('#payBanner .payban-pick'))) closePayPick();
     var t = ev.target.closest('[data-act]'); if (!t) return;
     if (t.dataset.act === 'otEditDetails' && Date.now() - otEditArmed < 1000) { ev.preventDefault(); ev.stopPropagation(); return; }
     var fn = A[t.dataset.act]; if (!fn) return;
@@ -13496,10 +13595,13 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var box = document.getElementById('lvOpts');
     if (box && box.classList.contains('open')) { closeDaySel(); ev.preventDefault(); return; }
     if (document.getElementById('cfmDlg')) return; // the confirm box handles its own Escape
+    var pick = document.getElementById('payPickList');
+    if (pick && !pick.hidden) { closePayPick(); ev.preventDefault(); return; }
     if (document.getElementById('slipFlow')) slipClose(); else if (sheetRoot.firstElementChild) navBack();
   });
   // Refresh "today" if the app is left open past midnight.
   document.addEventListener('visibilitychange', function () { if (!document.hidden && E.today() !== T) { T = E.today(); tp = E.parts(T); render(); } });
+  window.addEventListener('resize', syncPayBannerSticky);
 
   // Sheets that can be returned to (see navable / openSheet)
   daySheet = navable('day', daySheet); daySummary = navable('sum', daySummary);
