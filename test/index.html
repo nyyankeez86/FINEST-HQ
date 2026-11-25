@@ -24,7 +24,7 @@
 html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
 button,input,select,textarea{font:inherit;color:inherit}
 #app{max-width:560px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
-header.top{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.topstack{position:sticky;top:0;z-index:20;flex:none}.payban-host[hidden]{display:none!important}.payban-host{background:var(--bg);min-width:0}header.top{position:relative;top:auto;z-index:auto;background:var(--navy);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 6px rgba(0,0,0,.25)}
 header.top .brand{display:flex;align-items:center;gap:10px;min-width:0}header.top .hdrlogo{width:36px;height:36px;border-radius:8px;background:#0b1f3a;flex-shrink:0;display:block;object-fit:cover}header.top h1{margin:0;font-size:20px;letter-spacing:.2px}
 header.top .sub{font-size:13px;color:#c7d3e6;margin-top:2px}
 .badge-sq{display:inline-block;padding:1px 8px;border-radius:999px;font-weight:700;font-size:12px;margin-left:4px;border:1px solid rgba(255,255,255,.35)}
@@ -214,14 +214,14 @@ h3{font-size:17px;margin:0 0 6px}
 .item .right small{display:block;font-weight:600;color:var(--muted);font-size:12px}
 .chip{display:inline-block;padding:3px 9px;border-radius:999px;font-size:12.5px;font-weight:700;border:1px solid var(--line);background:#fff;margin:2px 4px 2px 0}
 .grp{font-size:13px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:14px 2px 4px;display:flex;justify-content:space-between}
-.period{border-left:6px solid #c4ccd9;scroll-margin-top:calc(var(--hdrh, 72px) + var(--paybanh, 80px) + 8px)}
+.period{border-left:6px solid #c4ccd9;scroll-margin-top:calc(var(--stackh, calc(var(--hdrh, 72px) + var(--paybanh, 80px))) + 8px)}
 .period.current{border-left-color:var(--accent);background:#f0f5ff;box-shadow:0 0 0 2px var(--accent) inset}
 .period .head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .period .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
 .period .grid3 div{background:#f5f7fb;border-radius:10px;padding:8px}
 .pblock.on .grid3 div{background:#fff}
 .period .grid3 b{display:block;font-size:19px}
-.period .grid3 small{font-size:11.5px;color:var(--muted);font-weight:700;text-transform:uppercase}
+.period .grid3 small{font-size:11.5px;color:var(--muted);font-weight:700;text-transform:uppercase}.grid3 .pay-ot-tile{background:#f5f7fb;border-radius:10px;padding:8px;border:0;width:100%;box-sizing:border-box;min-width:0;text-align:left;cursor:pointer;font:inherit;color:inherit;display:block;overflow-wrap:anywhere}.pblock.on .grid3 .pay-ot-tile{background:#fff}.grid3 .pay-ot-tile:focus-visible{outline:2px solid #0000FF;outline-offset:2px}
 .pblock{border:1px solid #dfe4ec;border-radius:12px;padding:10px;margin-top:10px;background:#fff}
 .pblock.on{border:2px solid var(--accent);background:#f0f5ff}
 .pblock .ph{display:flex;justify-content:space-between;gap:6px;font-weight:800;font-size:14px}
@@ -241,7 +241,7 @@ h3{font-size:17px;margin:0 0 6px}
 .period .pay-detail[hidden]{display:none!important}
 .yearsel{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:10px}
 .yearsel b{font-size:19px;min-width:60px;text-align:center}
-.payban{position:fixed;top:var(--hdrh,72px);left:var(--paybanl,0px);width:var(--paybanw,100%);max-width:560px;box-sizing:border-box;z-index:15;background:var(--bg);margin:0;padding:8px 14px 10px;border-bottom:1px solid var(--line);box-shadow:0 6px 12px rgba(15,23,42,.06);display:flex;flex-direction:column;gap:6px;overflow:visible}
+.payban{position:relative;top:auto;left:auto;width:auto;max-width:none;box-sizing:border-box;z-index:auto;background:var(--bg);margin:0;padding:8px 14px 10px;border-bottom:1px solid var(--line);box-shadow:0 6px 12px rgba(15,23,42,.06);display:flex;flex-direction:column;gap:6px;overflow:visible}
 .payban-slot{height:var(--paybanh,0px);margin:0 0 10px;flex:none;pointer-events:none}
 .payban-row{display:flex;align-items:center;gap:8px;min-width:0}
 .payban .yearsel{margin:0;gap:4px;flex:0 0 auto}
@@ -735,6 +735,7 @@ a.dir-tel.mine{color:#0f766e}
 <body>
 <div id="testBuildBanner" role="note" style="position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom) + 64px);z-index:2147483000;display:flex;justify-content:center;pointer-events:none"><span style="background:#dc2626;color:#fff;font:800 12px/1 system-ui,-apple-system,sans-serif;letter-spacing:.06em;padding:6px 12px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.3)">TEST BUILD &middot; not the live app</span></div>
 <div id="app">
+  <div id="topStack" class="topstack">
   <header class="top">
     <div class="brand"><img class="hdrlogo" src="icons/icon-192.png" alt="FINEST HQ"><div><h1>FINEST HQ</h1><div class="sub" id="hdrSub"></div></div></div>
     <div class="headacts" id="headActs" hidden>
@@ -748,6 +749,8 @@ a.dir-tel.mine{color:#0f766e}
       </button>
     </div>
   </header>
+  <div id="payBannerHost" class="payban-host" hidden></div>
+  </div>
   <main id="view"></main>
 </div>
 <nav class="tabs" id="tabs" hidden><div class="wrap">
@@ -6271,7 +6274,13 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     Array.prototype.forEach.call(document.querySelectorAll('nav.tabs button'), function (b) { b.classList.toggle('on', b.dataset.tab === ui.tab); b.setAttribute('aria-current', b.dataset.tab === ui.tab ? 'page' : 'false'); });
     if (dirMap) teardownDirMap();
     var appEl = document.getElementById('app'); if (appEl) { appEl.classList.toggle('tab-map', ui.tab === 'map'); appEl.classList.remove('tabs-search-off'); } var tabsEl = document.getElementById('tabs'); if (tabsEl) tabsEl.setAttribute('aria-hidden', 'false');
+    var payHost = document.getElementById('payBannerHost');
+    if (payHost) { payHost.innerHTML = ''; payHost.hidden = true; }
     view.innerHTML = ({ schedule: viewSchedule, overtime: viewOvertime, pay: viewPay, map: viewMap, directory: viewDirectory })[ui.tab]();
+    if (ui.tab === 'pay' && payHost) {
+      var payBanEl = document.getElementById('payBanner');
+      if (payBanEl) { payHost.appendChild(payBanEl); payHost.hidden = false; }
+    }
     if (CL.enabled && S.profile && !S.profile.taxNumber && !ui.privDismiss) view.insertAdjacentHTML('afterbegin', '<div class="privbanner" id="privBanner">&#128274; Add your tax and reference numbers in Settings. They\'re kept on this device only and never synced, so each new device asks once. <button class="btn sm" data-act="settings">Settings</button> <button class="linkbtn" data-act="privDismiss">Later</button></div>');
     if (ui.tab === 'pay') {
       syncPayBannerSticky();
@@ -6291,6 +6300,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var rootBan = document.documentElement;
       if (rootBan) rootBan.style.setProperty('--paybanh', '0px');
     }
+    if (NAV.cur && NAV.cur.fn && String(NAV.cur.key || '').indexOf('payOt|') === 0) NAV.cur.fn();
+    else if (ui.payOt) ui.payOt = null;
     if (!onb && ui.tab === 'schedule') startRetireTick(); else stopRetireTick();
     if (ui.scrollLeave) {
       var sl = document.getElementById(ui.scrollLeave) || document.getElementById('leaveBalCard');
@@ -6902,9 +6913,28 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div class="t2 otexp">Expected pay date ' + exp + (paid ? ' · ' + paidLbl : '') + '</div></div>' +
       '<div class="right">' + hrs(h) + '<small>' + (function (r) { return payText({ pay: r.pay, comp: r.compMinutes || 0 }); })(entryPay(e)) + '</small></div></button></div>';
   }
-  function otTools() {
-    var list = S.overtime || [], unpaid = list.filter(function (e) { return !otIsPaid(e); }).length;
-    var n = 0, id; for (id in (ui.otSelIds || {})) if (ui.otSelIds[id]) n++;
+  function otSelAllowed(list) {
+    if (!list) return null;
+    var allow = {};
+    list.forEach(function (e) { if (e && e.id) allow[e.id] = true; });
+    return allow;
+  }
+  function otSelCount(list) {
+    var allow = otSelAllowed(list), n = 0, id;
+    for (id in (ui.otSelIds || {})) if (ui.otSelIds[id] && (!allow || allow[id])) n++;
+    return n;
+  }
+  function otSelSet(list) {
+    var allow = otSelAllowed(list), out = {}, id;
+    for (id in (ui.otSelIds || {})) if (ui.otSelIds[id] && (!allow || allow[id])) out[id] = true;
+    return out;
+  }
+  function payOtEntries() { return ui.payOt ? otInRange(ui.payOt.start, ui.payOt.end) : null; }
+  function otTools(list) {
+    var scoped = list != null;
+    list = list || S.overtime || [];
+    var unpaid = list.filter(function (e) { return !otIsPaid(e); }).length;
+    var n = otSelCount(scoped ? list : null);
     var fil = ui.otFilter || 'all';
     return '<div class="ottools" data-sec="2f">' +
       '<button type="button" class="btn sm' + (ui.otSel ? ' on' : '') + '" data-act="otSelMode" id="otSelMode">' + (ui.otSel ? 'Done selecting' : 'Select') + '</button>' +
@@ -6916,7 +6946,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '</div>';
   }
   function applyOtPaidDate(iso, ids) {
-    var set = ids || ui.otSelIds || {}, n = 0;
+    var set = ids || otSelSet(payOtEntries()) || {}, n = 0;
     S.overtime.forEach(function (e) {
       if (!set[e.id]) return;
       if (iso) { e.paid = true; e.paidDate = iso; } else { e.paid = false; e.paidDate = ''; }
@@ -6925,23 +6955,14 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (n) save();
     return n;
   }
-  function viewOvertime() {
-    var po = payOpts(), pp = E.overtimePeriodFor(T, po).overtime, ppPay = E.overtimePaydayFor(T, po);
-    var tm = E.fromYMD(tp.y, tp.m, 1), tmEnd = E.fromYMD(tp.m === 12 ? tp.y + 1 : tp.y, tp.m === 12 ? 1 : tp.m + 1, 1) - 1;
-    var a = sumOT(otInRange(pp.start, pp.end)), b = sumOT(otInRange(tm, tmEnd)), c = sumOT(otInRange(E.fromYMD(tp.y, 1, 1), E.fromYMD(tp.y, 12, 31)));
-    function tot(lbl, s, sub) { return '<div class="tot"><small>' + lbl + '</small><b>' + hrs(s.hours) + '</b><span>' + payText(s) + '</span>' + travelSumText(s) + '<em>' + sub + '</em></div>'; }
-    var html = suggestBar('Overtime') + otViewSeg();
-    if (ui.otView === 'pd') return html + '<button type="button" class="btn primary block" data-act="pdNew" id="pdNewBtn" style="margin:0 0 10px">+ Paid detail</button>' + viewPaidDetailLog();
-    html += '<div class="tot-row" data-sec="2a" style="margin-bottom:12px">' + tot('OT period', a, fmt(pp.start, 'md') + '–' + fmt(pp.end, 'md') + '<br>expected ' + fmt(ppPay, 'md')) + tot('Month', b, MONTHS[tp.m - 1].slice(0, 3) + ' ' + tp.y) + tot('Year', c, String(tp.y)) + '</div>';
-    html += '<button class="btn primary block" data-act="otNew" data-sec="2b" style="margin-bottom:10px">+ Log overtime</button>';
-    html += otTools();
+  function otLogHtml(list) {
     var fil = ui.otFilter || 'all';
-    var list = (S.overtime || []).slice().filter(function (e) {
+    list = (list || []).slice().filter(function (e) {
       if (fil === 'unpaid') return !otIsPaid(e);
       if (fil === 'paid') return otIsPaid(e);
       return true;
     }).sort(function (p, q) { return p.date < q.date ? 1 : p.date > q.date ? -1 : (q.start || '').localeCompare(p.start || ''); });
-    html += '<div class="card otlog" data-sec="2c">';
+    var html = '<div class="card otlog" data-sec="2c">';
     if (!list.length) html += '<div class="empty">' + (fil === 'unpaid' ? 'No unpaid overtime.' : fil === 'paid' ? 'No overtime marked paid yet.' : 'No overtime logged yet.') + '</div>';
     else {
       otGroupByYearMonth(list, function (e) { return e.date; }).forEach(function (yr) {
@@ -6957,6 +6978,27 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       });
     }
     return html + '</div>';
+  }
+  function payOtSheet(start, end, payday) {
+    start = +start; end = +end; payday = +payday || 0;
+    ui.payOt = { start: start, end: end, payday: payday };
+    var list = otInRange(start, end);
+    var title = 'OT entries' + (payday ? ' · payday ' + fmt(payday, 'mdy') : '');
+    var sub = '<p class="muted" id="payOtSummary" style="margin:0 0 10px;font-size:13px">' + list.length + ' ' + (list.length === 1 ? 'entry' : 'entries') + ' in this overtime period (' + fmt(start, 'md') + ' – ' + fmt(end, 'md') + ').</p>';
+    openSheet(title, sub + otTools(list) + otLogHtml(list));
+  }
+  function viewOvertime() {
+    var po = payOpts(), pp = E.overtimePeriodFor(T, po).overtime, ppPay = E.overtimePaydayFor(T, po);
+    var tm = E.fromYMD(tp.y, tp.m, 1), tmEnd = E.fromYMD(tp.m === 12 ? tp.y + 1 : tp.y, tp.m === 12 ? 1 : tp.m + 1, 1) - 1;
+    var a = sumOT(otInRange(pp.start, pp.end)), b = sumOT(otInRange(tm, tmEnd)), c = sumOT(otInRange(E.fromYMD(tp.y, 1, 1), E.fromYMD(tp.y, 12, 31)));
+    function tot(lbl, s, sub) { return '<div class="tot"><small>' + lbl + '</small><b>' + hrs(s.hours) + '</b><span>' + payText(s) + '</span>' + travelSumText(s) + '<em>' + sub + '</em></div>'; }
+    var html = suggestBar('Overtime') + otViewSeg();
+    if (ui.otView === 'pd') return html + '<button type="button" class="btn primary block" data-act="pdNew" id="pdNewBtn" style="margin:0 0 10px">+ Paid detail</button>' + viewPaidDetailLog();
+    html += '<div class="tot-row" data-sec="2a" style="margin-bottom:12px">' + tot('OT period', a, fmt(pp.start, 'md') + '–' + fmt(pp.end, 'md') + '<br>expected ' + fmt(ppPay, 'md')) + tot('Month', b, MONTHS[tp.m - 1].slice(0, 3) + ' ' + tp.y) + tot('Year', c, String(tp.y)) + '</div>';
+    html += '<button class="btn primary block" data-act="otNew" data-sec="2b" style="margin-bottom:10px">+ Log overtime</button>';
+    html += otTools();
+    html += otLogHtml(S.overtime);
+    return html;
   }
   function viewPaidDetailLog() {
     var items = [];
@@ -7079,21 +7121,23 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function payDayYear(d) { return +E.toISO(d).slice(0, 4); }
   function payYearHasPeriods(y) { return E.payPeriodsInYear(y, payOpts()).length > 0; }
   function syncPayBannerSticky() {
-    var h = document.querySelector('header.top'), ban = document.getElementById('payBanner'), app = document.getElementById('app'), root = document.documentElement;
+    var h = document.querySelector('header.top'), ban = document.getElementById('payBanner');
+    var stack = document.getElementById('topStack'), host = document.getElementById('payBannerHost'), root = document.documentElement;
     if (!root) return;
     var hdrH = Math.round((h && h.getBoundingClientRect().height) || 72);
     root.style.setProperty('--hdrh', hdrH + 'px');
-    if (!ban) { root.style.setProperty('--paybanh', '0px'); return; }
-    var ar = (app || document.body).getBoundingClientRect();
-    root.style.setProperty('--paybanl', Math.round(ar.left) + 'px');
-    root.style.setProperty('--paybanw', Math.max(0, Math.round(ar.width)) + 'px');
-    void ban.offsetHeight;
-    root.style.setProperty('--paybanh', Math.round(ban.getBoundingClientRect().height || 0) + 'px');
+    var show = !!(ban && host && !host.hidden);
+    var banH = show ? Math.round(ban.getBoundingClientRect().height || 0) : 0;
+    root.style.setProperty('--paybanh', banH + 'px');
+    var stackH = stack ? Math.round(stack.getBoundingClientRect().height || (hdrH + banH)) : (hdrH + banH);
+    root.style.setProperty('--stackh', stackH + 'px');
   }
   function payBannerOffset() {
     syncPayBannerSticky();
     var root = document.documentElement, cs = getComputedStyle(root);
-    return (parseFloat(cs.getPropertyValue('--hdrh')) || 72) + (parseFloat(cs.getPropertyValue('--paybanh')) || 0) + 8;
+    var stackH = parseFloat(cs.getPropertyValue('--stackh'));
+    if (!isFinite(stackH) || stackH <= 0) stackH = (parseFloat(cs.getPropertyValue('--hdrh')) || 72) + (parseFloat(cs.getPropertyValue('--paybanh')) || 0);
+    return stackH + 8;
   }
   function closePayPick() {
     var m = document.getElementById('payPickList'), b = document.getElementById('payPickBtn');
@@ -7172,8 +7216,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var focusP = null, i;
     for (i = 0; i < periods.length; i++) if (periods[i].payday === focus) { focusP = periods[i]; break; }
     var btnLab = focusP ? ('<span class="payban-opt-main">' + esc(payPeriodRangeText(focusP)) + '</span>' + payPeriodMarkers(focusP)) : 'Pay period';
-    return '<div class="payban-slot" id="payBannerSlot" aria-hidden="true"></div>' +
-      '<div class="payban" data-sec="3c" id="payBanner">' +
+    return '<div class="payban" data-sec="3c" id="payBanner">' +
       '<div class="payban-row">' +
         '<div class="yearsel" role="group" aria-label="Pay year">' +
           '<button type="button" class="navbtn" data-act="payYear" data-dir="-1" aria-label="Previous year"' + (prevOk ? '' : ' disabled') + '>&lsaquo;</button>' +
@@ -7210,7 +7253,16 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<div><small>vs target</small><b style="color:' + (diff < 0 ? 'var(--danger)' : diff > 0 ? 'var(--pay)' : 'inherit') + '">' + (diff > 0 ? '+' : '') + E.fmtHM(diff) + '</b><span class="muted" style="font-size:11.5px">' + ([w.ddWorkDays || w.ddOffDays ? 'D/D +' + w.ddWorkDays + '/−' + w.ddOffDays : '', w.extraDays ? w.extraDays + ' extra OT tour' + (w.extraDays > 1 ? 's' : '') : '', w.leave ? w.leave + ' leave' : ''].filter(Boolean).join(', ') || '&nbsp;') + '</span></div></div>' +
         '<div class="muted" style="font-size:12px;margin-top:6px">Straight time is 8:00 per day. Chart time: <b>' + (ctP.pendingDays && !ctP.minutes ? 'pending' : E.fmtChart(ctP.minutes)) + '</b>' + (ctP.pendingDays ? ' · ' + ctP.pendingDays + ' day' + (ctP.pendingDays === 1 ? '' : 's') + ' pending (rotating Sgt. formula later)' : '') + '</div></div>' +
         '<div class="pblock' + (isOT ? ' on' : '') + '"><div class="ph"><span>Overtime period' + (isOT ? ' <em>CURRENT</em>' : '') + '</span><span>' + fmt(p.overtime.start, 'md') + ' – ' + fmt(p.overtime.end, 'md') + '</span></div>' +
-        '<div class="grid3"><div><small>OT entries</small><b>' + otInRange(p.overtime.start, p.overtime.end).length + '</b></div><div><small>OT hours</small><b>' + hrs(s.hours) + '</b></div><div><small>Est. OT pay</small><b style="color:var(--pay)">' + money(s.pay) + '</b></div></div>' + (s.travel.minutes ? '<div class="muted travper" style="font-size:12px;margin-top:4px">Travel time: ' + E.fmtHM(s.travel.minutes) + (s.travel.pay ? ' &middot; ' + money(s.travel.pay) + ' cash' : '') + (s.travel.comp ? ' &middot; ' + E.fmtHM(s.travel.comp) + ' comp' : '') + ' (included above)</div>' : '') + '</div></div></div>';
+        '<div class="grid3">' +
+        (function (n, st, en, pd) {
+          function tile(lab, val, extra, aria) {
+            return '<button type="button" class="pay-ot-tile" data-act="payOtOpen" data-start="' + st + '" data-end="' + en + '" data-payday="' + pd + '" aria-haspopup="dialog" aria-label="' + aria + '"><small>' + lab + '</small><b' + (extra || '') + '>' + val + '</b></button>';
+          }
+          return tile('OT entries', String(n), '', 'OT entries, ' + n + '. Show overtime entries in this period.') +
+            tile('OT hours', hrs(s.hours), '', 'OT hours, ' + hrs(s.hours) + '. Show overtime entries in this period.') +
+            tile('Est. OT pay', money(s.pay), ' style="color:var(--pay)"', 'Estimated OT pay, ' + money(s.pay) + '. Show overtime entries in this period.');
+        })(otInRange(p.overtime.start, p.overtime.end).length, p.overtime.start, p.overtime.end, p.payday) +
+        '</div>' + (s.travel.minutes ? '<div class="muted travper" style="font-size:12px;margin-top:4px">Travel time: ' + E.fmtHM(s.travel.minutes) + (s.travel.pay ? ' &middot; ' + money(s.travel.pay) + ' cash' : '') + (s.travel.comp ? ' &middot; ' + E.fmtHM(s.travel.comp) + ' comp' : '') + ' (included above)</div>' : '') + '</div></div></div>';
     }).join('');
     th = Math.round(th * 100) / 100;
     return suggestBar('Pay') + payBannerHtml(y, periods) + '<div class="card" data-sec="3a">' +
@@ -8782,7 +8834,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   // Only a top-level sheet closes to the main screen.
   var NAV = { stack: [], cur: null, pending: null };
   // Beta section numbers: pages 1-5 are the bottom tabs (1 Schedule, 2 Overtime, 3 Pay, 4 Map, 5 Directory); sheets have fixed numbers here (see SECTION-NUMBERS.md). Never computed from order. Lookup (former page 5, 5a–5e) is vacated from the tab bar; those letters are not reused. Directory uses 5f–5i.
-  var SHEET_PAGES = { day: '6', sum: '7', ot: '8', settings: '9', hist: '10', suggest: '11', inbox: '12', admin: '13', leaveNew: '14', sync: '15', x15: '16', x15ed: '17', chart: '18', pd: '19', pdTax: '20', messages: '21' };
+  var SHEET_PAGES = { day: '6', sum: '7', ot: '8', settings: '9', hist: '10', suggest: '11', inbox: '12', admin: '13', leaveNew: '14', sync: '15', x15: '16', x15ed: '17', chart: '18', pd: '19', pdTax: '20', messages: '21', payOt: '22' };
   var TAB_PAGES = { schedule: '1', overtime: '2', pay: '3', leave: '4', map: '4', directory: '5' };
   function navable(name, f, keyFn) {
     return function () {
@@ -12955,7 +13007,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     },
     otFilter: function (t) { ui.otFilter = t.dataset.v || 'all'; render(); },
     otMarkPaid: function () {
-      var n = 0, id; for (id in (ui.otSelIds || {})) if (ui.otSelIds[id]) n++;
+      var n = otSelCount(payOtEntries());
       if (!n) return toast('Select at least one entry.');
       MC.iso = ''; MC.forId = 'otBulkPaid';
       var todayIso = E.toISO(T);
@@ -12964,7 +13016,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       MC.forId = 'otBulkPaid';
     },
     otMarkUnpaid: function () {
-      var n = 0, id; for (id in (ui.otSelIds || {})) if (ui.otSelIds[id]) n++;
+      var n = otSelCount(payOtEntries());
       if (!n) return toast('Select at least one entry.');
       if (!confirm('Clear the paid date on ' + n + ' overtime ' + (n === 1 ? 'entry' : 'entries') + ' and mark them unpaid?')) return;
       applyOtPaidDate('');
@@ -12989,6 +13041,14 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     payNext: function () {
       var d = E.nextPayday(T, payOpts());
       payGoPayday(d);
+    },
+    payOtOpen: function (t) {
+      var start = +t.dataset.start, end = +t.dataset.end, payday = +t.dataset.payday;
+      if (!start || !end) return;
+      ui.otFilter = 'all';
+      ui.otSel = false;
+      ui.otSelIds = {};
+      payOtSheet(start, end, payday);
     },
     payPickOpen: function (t) {
       var m = document.getElementById('payPickList'), open = t.getAttribute('aria-expanded') === 'true';
@@ -13673,6 +13733,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   pdSheet = navable('pd', pdSheet, function (iso) { return iso || ''; });
   pdTaxSheet = navable('pdTax', pdTaxSheet, function (year) { return String(year || ''); });
   otSheet = navable('ot', otSheet, function (e, d) { return e ? e.id : 'new:' + (d || ''); });
+  payOtSheet = navable('payOt', payOtSheet, function (s, e, p) { return [s, e, p || ''].join('-'); });
   settingsSheet = navable('settings', settingsSheet, function () { return ''; });
   histEditor = navable('hist', histEditor, function (r) { return r ? r.id : 'new'; });
   chartEditor = navable('chart', chartEditor, function (e) { return e ? e.id : 'new'; });
@@ -13683,7 +13744,13 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   if (CL.enabled) cloudBoot(); else { render(); slipReconcile(); }
   setTimeout(function () { try { if (S.profile) resolveHistPcts(); } catch (e) {} }, 1500);
   if ('serviceWorker' in navigator && document.querySelector('link[rel="manifest"]') && /^(https:|http:\/\/(localhost|127\.0\.0\.1))/.test(location.href)) {
-    navigator.serviceWorker.register('sw.js').catch(function () {});
+    var swRefreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+      if (swRefreshing) return;
+      swRefreshing = true;
+      location.reload();
+    });
+    navigator.serviceWorker.register('sw.js').then(function (reg) { try { reg.update(); } catch (e) {} }).catch(function () {});
     navigator.serviceWorker.addEventListener('message', function (ev) { if (ev.data && ev.data.type === 'open-inbox' && cloudReady()) openInbox(); });
   }
 })();
