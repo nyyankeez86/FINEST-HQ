@@ -615,7 +615,7 @@ a.dir-tel.mine{color:#0f766e}
 .dir-map-search{flex:1;position:relative;min-width:0}
 .dir-map-chrome .dirq{min-height:36px;font-size:15px;padding:6px 10px}
 .dir-map-chrome .btn{flex:0 0 auto;align-self:center}
-.dir-map-opts{margin-top:8px;padding:8px;border:1px solid var(--line);border-radius:12px;background:#f8fafc}
+.dir-map-opts{margin-top:8px;padding:8px;border:1px solid var(--line);border-radius:12px;background:#f8fafc} .dir-map-opts .map-opts-title{margin:0 0 8px;font-size:13px;font-weight:800;letter-spacing:.02em}
 .dir-map-opts .fuelchips{gap:6px;margin:6px 0 8px}
 .dir-map-opts .fuelchips .chip{font-size:11px;padding:4px 8px;min-height:28px;border-width:1px;font-weight:700}
 .dir-map-opts .map-toolbar{margin:0 0 6px}
@@ -3646,6 +3646,25 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       dd: st === 'dd' || st === 'ddoff', ddWork: st === 'dd', ddOff: st === 'ddoff', swap: (ov && ov.swap) || '',
       lenChanged: !!(ov && (ov.len || ov.start)), modified: !!(ov && (st || ov.len || ov.start)), override: ov };
   }
+  // Times 7a / tourText should show: the start and end the user actually saved.
+  // dayTour.end is computed from start + len, and the day-save path omits start/len when
+  // they still match the scheduled tour, so a changed end alone would otherwise re-display
+  // the scheduled window. Regular-hours and pay math keep using dayTour.len.
+  function tourDisplay(t) {
+    if (!t) return { start: '', end: '', len: 0, nextDay: false, startDate: '', endDate: '' };
+    var ov = t.override || null;
+    var start = (ov && ov.start) || t.start || '';
+    var startDate = (ov && ov.startDate) || t.iso || '';
+    var endDate = (ov && ov.endDate) || '';
+    if (ov && ov.end && start) {
+      var end = ov.end;
+      if (!endDate && startDate) endDate = suggestEndDate(startDate, start, '', end) || '';
+      var len = (startDate && endDate) ? tourSpanMinutes(startDate, start, endDate, end) : Math.round(hoursBetween(start, end) * 60);
+      var nextDay = !!(startDate && endDate && toDay(endDate) > toDay(startDate));
+      return { start: start, end: end, len: len, nextDay: nextDay, startDate: startDate, endDate: endDate };
+    }
+    return { start: t.start || '', end: t.end || '', len: t.len || 0, nextDay: !!t.nextDay, startDate: startDate, endDate: endDate };
+  }
   // Tour change: a regular scheduled workday the user actually worked, with a different start, end, or length than the scheduled tour.
   // Not counted: RDOs (including RDO overtime / extra tours), D/D work on an RDO, dropped / D/D-off days, leave days, and chart +15 with no override.
   function isTourChange(tr) {
@@ -6106,7 +6125,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     tour17Key: tour17Key, tour17Squad: tour17Squad, tour17Offset: tour17Offset, tour17WorkPhase: tour17WorkPhase, tour17WorkSquad: tour17WorkSquad, tour17IsOff: tour17IsOff, tour17SquadsOff: tour17SquadsOff, tour17SquadsWorking: tour17SquadsWorking, tour17OvertimeMin: tour17OvertimeMin,
     nextDayOff: nextDayOff, chartDayBlock: chartDayBlock, nextWorkday: nextWorkday, countRDOs: countRDOs, isTourChange: isTourChange, countTourChanges: countTourChanges, isPayday: isPayday, nextPayday: nextPayday,
     periodsForPayday: periodsForPayday, regularPaydayFor: regularPaydayFor, overtimePaydayFor: overtimePaydayFor, regularPeriodFor: regularPeriodFor, overtimePeriodFor: overtimePeriodFor, payPeriodsInYear: payPeriodsInYear, hoursBetween: hoursBetween, entryHours: entryHours,
-    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, fmtMDY: fmtMDY, defaultTourWindow: defaultTourWindow, tourSpanMinutes: tourSpanMinutes, suggestEndDate: suggestEndDate, workedVsScheduled: workedVsScheduled, cleanTourEntry: cleanTourEntry, tourEntries: tourEntries, isAssignmentEntry: isAssignmentEntry, cleanAssignmentEntry: cleanAssignmentEntry, assignmentEntries: assignmentEntries, mergeTourEntries: mergeTourEntries, writeAssignmentEntries: writeAssignmentEntries, assignmentTimeText: assignmentTimeText, assignmentReminderText: assignmentReminderText, paidDetailBrief: paidDetailBrief, dayAssignments: dayAssignments, assignmentEventWindow: assignmentEventWindow, dayTour: dayTour, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameIsReserved: usernameIsReserved, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, assignmentNavAddress: assignmentNavAddress, upcomingItems: upcomingItems, commandById: commandById, isPduCommand: isPduCommand, searchCommands: searchCommands, phoneDigits: phoneDigits, fmtPhone: fmtPhone, telHref: telHref, cleanDirMine: cleanDirMine, cleanDirPhone: cleanDirPhone, cleanDirCustom: cleanDirCustom, emptyDirMine: emptyDirMine, dirKindMatch: dirKindMatch, searchDirectory: searchDirectory, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, routeUrls: routeUrls, navPoint: navPoint, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, stripBoroSuffix: stripBoroSuffix, splitPaidAddress: splitPaidAddress, joinPaidAddress: joinPaidAddress, mergePaidVendors: mergePaidVendors, rememberPaidVendor: rememberPaidVendor, paidVendorKey: paidVendorKey, parsePaidAmount: parsePaidAmount, paidDetailAmount: paidDetailAmount, paidDetailTaxDate: paidDetailTaxDate, daysBetweenISO: daysBetweenISO, paidDetailTiming: paidDetailTiming, paidDetailTimingCaptions: paidDetailTimingCaptions, paidVendorNames: paidVendorNames, cleanVendorGroups: cleanVendorGroups, vendorReportName: vendorReportName, addVendorToGroup: addVendorToGroup, removeVendorFromGroup: removeVendorFromGroup, renameVendorGroup: renameVendorGroup, ungroupVendor: ungroupVendor, suggestVendorGroups: suggestVendorGroups, paidDetailTaxReport: paidDetailTaxReport, buildPaidDetailXlsx: buildPaidDetailXlsx, buildPaidDetailCsv: buildPaidDetailCsv, parseXlsx: parseXlsx, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, addYearsISO: addYearsISO, retirementDateOf: retirementDateOf, retirementRemain: retirementRemain, retirementCountdown: retirementCountdown, endCompare: endCompare, syncEndOT: syncEndOT, syncWorkedOT: syncWorkedOT, syncEntryOT: syncEntryOT, leaveBalances: leaveBalances, fmtChart: fmtChart, chartTimeFromTour: chartTimeFromTour, isDetectiveRank: isDetectiveRank, isSergeantRank: isSergeantRank, isLieutenantRank: isLieutenantRank, isPoliceOfficerRank: isPoliceOfficerRank, chartKind: chartKind, rankStartDate: rankStartDate, yearsInRankAtLeast: yearsInRankAtLeast, chartTimeEligibility: chartTimeEligibility, chartTimeForDay: chartTimeForDay, chartTimeRange: chartTimeRange, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
+    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, fmtMDY: fmtMDY, defaultTourWindow: defaultTourWindow, tourSpanMinutes: tourSpanMinutes, suggestEndDate: suggestEndDate, workedVsScheduled: workedVsScheduled, cleanTourEntry: cleanTourEntry, tourEntries: tourEntries, isAssignmentEntry: isAssignmentEntry, cleanAssignmentEntry: cleanAssignmentEntry, assignmentEntries: assignmentEntries, mergeTourEntries: mergeTourEntries, writeAssignmentEntries: writeAssignmentEntries, assignmentTimeText: assignmentTimeText, assignmentReminderText: assignmentReminderText, paidDetailBrief: paidDetailBrief, dayAssignments: dayAssignments, assignmentEventWindow: assignmentEventWindow, dayTour: dayTour, tourDisplay: tourDisplay, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameIsReserved: usernameIsReserved, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, assignmentNavAddress: assignmentNavAddress, upcomingItems: upcomingItems, commandById: commandById, isPduCommand: isPduCommand, searchCommands: searchCommands, phoneDigits: phoneDigits, fmtPhone: fmtPhone, telHref: telHref, cleanDirMine: cleanDirMine, cleanDirPhone: cleanDirPhone, cleanDirCustom: cleanDirCustom, emptyDirMine: emptyDirMine, dirKindMatch: dirKindMatch, searchDirectory: searchDirectory, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, routeUrls: routeUrls, navPoint: navPoint, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, stripBoroSuffix: stripBoroSuffix, splitPaidAddress: splitPaidAddress, joinPaidAddress: joinPaidAddress, mergePaidVendors: mergePaidVendors, rememberPaidVendor: rememberPaidVendor, paidVendorKey: paidVendorKey, parsePaidAmount: parsePaidAmount, paidDetailAmount: paidDetailAmount, paidDetailTaxDate: paidDetailTaxDate, daysBetweenISO: daysBetweenISO, paidDetailTiming: paidDetailTiming, paidDetailTimingCaptions: paidDetailTimingCaptions, paidVendorNames: paidVendorNames, cleanVendorGroups: cleanVendorGroups, vendorReportName: vendorReportName, addVendorToGroup: addVendorToGroup, removeVendorFromGroup: removeVendorFromGroup, renameVendorGroup: renameVendorGroup, ungroupVendor: ungroupVendor, suggestVendorGroups: suggestVendorGroups, paidDetailTaxReport: paidDetailTaxReport, buildPaidDetailXlsx: buildPaidDetailXlsx, buildPaidDetailCsv: buildPaidDetailCsv, parseXlsx: parseXlsx, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, addYearsISO: addYearsISO, retirementDateOf: retirementDateOf, retirementRemain: retirementRemain, retirementCountdown: retirementCountdown, endCompare: endCompare, syncEndOT: syncEndOT, syncWorkedOT: syncWorkedOT, syncEntryOT: syncEntryOT, leaveBalances: leaveBalances, fmtChart: fmtChart, chartTimeFromTour: chartTimeFromTour, isDetectiveRank: isDetectiveRank, isSergeantRank: isSergeantRank, isLieutenantRank: isLieutenantRank, isPoliceOfficerRank: isPoliceOfficerRank, chartKind: chartKind, rankStartDate: rankStartDate, yearsInRankAtLeast: yearsInRankAtLeast, chartTimeEligibility: chartTimeEligibility, chartTimeForDay: chartTimeForDay, chartTimeRange: chartTimeRange, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
     steadyKey: steadyKey, parseChart: parseChart, validChartKey: validChartKey, chartInfo: chartInfo, sortCharts: sortCharts, chartAt: chartAt, chartChanges: chartChanges, nextOff: nextOff, nextOn: nextOn, reviewOverrides: reviewOverrides, DOW3: DOW3,
     stripAddrLabels: stripAddrLabels, paidAddressSuggestions: paidAddressSuggestions,
     rankAbbr: rankAbbr, rankLabel: rankLabel, displayName: displayName, formatFullName: formatFullName, normMiddleInitial: normMiddleInitial, migrateProfile: migrateProfile, validateProfile: validateProfile,
@@ -6212,7 +6231,12 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var c = E.parseChart(E.chartAt(day, myWho()));
     return E.workedVsScheduled(worked, sched, c.type === '12hr' ? { tour12: true } : c.type === '17hr' ? { tour17: true } : null);
   }
-  function tourText(t) { return E.fmtHM(t.len) + (t.start ? ' &middot; ' + t.start + '–' + t.end + (t.nextDay ? ' (+1 day)' : '') : ''); }
+  function tourText(t) {
+    var a = E.tourDisplay ? E.tourDisplay(t) : t;
+    var s = E.fmtHM(a.len) + (a.start ? ' &middot; ' + a.start + '–' + a.end + (a.nextDay ? ' (+1 day)' : '') : '');
+    if (a.startDate && t && t.iso && a.startDate !== t.iso) s += ' &middot; from ' + E.fmtMDY(a.startDate);
+    return s;
+  }
   function tourField(id, val, label, startId) {
     return '<div class="field"><label for="' + id + '">' + label + '</label><input id="' + id + '" class="tourIn" data-start="' + (startId || '') + '" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="H:MM, e.g. 8:15" value="' + esc(val) + '">' +
       '<div class="picks">' + C.tourPicks.map(function (p) { return '<button type="button" class="pick' + (p === val ? ' on' : '') + '" data-act="tourPick" data-for="' + id + '" data-v="' + p + '">' + p + '</button>'; }).join('') + '</div>' +
@@ -7505,8 +7529,18 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function evChargerVisible(loc) {
     if (!loc || loc.lat == null || loc.lon == null) return false;
+    // 4q Fast Charger Only starts OFF (unhighlighted): show every fleet EV location.
+    // Highlighted / aria-pressed=true: only locations that have a Level 3 charger.
     if (!ui.dirEvFastOnly) return true;
     return !!(loc.levels && loc.levels.L3);
+  }
+  function evFastLabel() {
+    return ui.dirEvFastOnly
+      ? 'Fast Charger Only, on, showing Level 3 chargers only'
+      : 'Fast Charger Only, off, showing all chargers';
+  }
+  function evFastNoteText() {
+    return ui.dirEvFastOnly ? 'Showing only Level 3 (fast) chargers.' : 'All fleet EV chargers are listed.';
   }
   function evLayerOn() { return ui.dirFuelOn !== false; }
   function evAsSite(loc) {
@@ -7589,6 +7623,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     document.querySelectorAll('[data-act="evChip"][data-filter="fast"]').forEach(function (chip) {
       chip.classList.toggle('on', !!ui.dirEvFastOnly);
       chip.setAttribute('aria-pressed', ui.dirEvFastOnly ? 'true' : 'false');
+      chip.setAttribute('aria-label', evFastLabel());
+    });
+    document.querySelectorAll('#evFastNote, .ev-fast-note').forEach(function (n) {
+      n.hidden = false;
+      n.textContent = evFastNoteText();
     });
   }
   function refreshEvMarkers() {
@@ -8729,7 +8768,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<button type="button" class="nearest-x" data-act="nearestClose" aria-label="Close nearest fuel/EV">&times;</button>' +
       '</div>' +
       fuelChipBar() +
-      '<button type="button" class="btn sm chip' + (ui.dirEvFastOnly ? ' on' : '') + '" data-act="evChip" data-filter="fast" data-sec="4q" aria-pressed="' + (ui.dirEvFastOnly ? 'true' : 'false') + '">Fast Charger Only</button>' +
+      '<button type="button" class="btn sm chip' + (ui.dirEvFastOnly ? ' on' : '') + '" data-act="evChip" data-filter="fast" data-sec="4q" aria-pressed="' + (ui.dirEvFastOnly ? 'true' : 'false') + '" aria-label="' + evFastLabel() + '">Fast Charger Only</button>' +
+      '<p class="muted ev-fast-note" id="evFastNote">' + esc(evFastNoteText()) + '</p>' +
       '<p class="muted" id="fuelFilterEmpty"' + (typesOn ? ' hidden' : '') + '>Select a fuel type to include department fuel sites. Fleet EV chargers are still listed.</p>' +
       '<p class="nearest-origin" id="nearestOriginLine">' + esc(originText) + '</p>' +
       (hasOrigin ? '<button type="button" class="nearest-change" data-act="nearestChangeOrigin">' + (showPick ? 'Hide starting point options' : 'Change starting point') + '</button>' : '') +
@@ -8863,7 +8903,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   ];
   function viewMap() {
     var q = ui.mapQ || '';
-    var mapOpts = '<div id="dirMapOpts" class="dir-map-opts" hidden>' +
+    var mapOpts = '<div id="dirMapOpts" class="dir-map-opts" hidden role="region" aria-label="Filter">' +
+      '<div class="map-opts-title" id="dirMapOptsTitle">Filter</div>' +
       '<div class="map-toolbar">' +
       '<button type="button" class="btn sm' + (ui.dirFuelOn === false ? '' : ' on') + '" data-act="dirFuelLayer" aria-pressed="' + (ui.dirFuelOn === false ? 'false' : 'true') + '">Fuel/EV chargers</button>' +
       '<button type="button" class="btn sm' + (ui.dirHospOn ? ' on' : '') + '" data-act="dirHospLayer" aria-pressed="' + (ui.dirHospOn ? 'true' : 'false') + '">Hospitals</button>' +
@@ -8871,7 +8912,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div id="fuelFilterWrap" class="fuel-opts"' + (ui.dirFuelOn === false ? ' hidden' : '') + ' data-sec="4k" role="group" aria-label="Fuel/EV filters">' +
         fuelChipBar() +
         '<button type="button" class="btn sm" id="dirNearestBtn" data-act="dirNearest" aria-pressed="false">Nearest fuel/EV</button>' +
-        '<button type="button" class="btn sm chip' + (ui.dirEvFastOnly ? ' on' : '') + '" data-act="evChip" data-filter="fast" data-sec="4q" aria-pressed="' + (ui.dirEvFastOnly ? 'true' : 'false') + '">Fast Charger Only</button>' +
+        '<button type="button" class="btn sm chip' + (ui.dirEvFastOnly ? ' on' : '') + '" data-act="evChip" data-filter="fast" data-sec="4q" aria-pressed="' + (ui.dirEvFastOnly ? 'true' : 'false') + '" aria-label="' + evFastLabel() + '">Fast Charger Only</button>' +
       '</div>' +
       '<div id="hospFilterWrap" class="hospchips"' + (ui.dirHospOn ? '' : ' hidden') + ' data-sec="4n" role="group" aria-label="Hospital filter">' +
         '<button type="button" class="btn sm chip' + (ui.dirHospLevel1 ? ' on' : '') + '" data-act="hospChip" data-filter="level1" aria-pressed="' + (ui.dirHospLevel1 ? 'true' : 'false') + '">Level 1 Trauma</button>' +
@@ -8881,7 +8922,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '</div>';
     var mapTools = '<div class="dir-map-chrome">' +
       '<div class="dir-map-search"><input id="dirQ" class="dirq acIn" data-ac="map" type="text" value="' + esc(q) + '" placeholder="Search an address or precinct" aria-label="Search an address or precinct" autocomplete="off"></div>' +
-      '<button type="button" class="btn sm" id="dirMapOptsBtn" data-act="dirMapOpts" aria-expanded="false" aria-controls="dirMapOpts">Options</button></div>' + mapOpts;
+      '<button type="button" class="btn sm" id="dirMapOptsBtn" data-act="dirMapOpts" aria-expanded="false" aria-controls="dirMapOpts" aria-label="Filter">Filter</button></div>' + mapOpts;
     var mapPane = '<div id="dirMapWrap" class="dir-map-fill" data-sec="4j"><div id="dirMap" role="application" aria-label="NYPD precincts, NYCHA developments, fuel sites, hospitals, and fleet EV chargers"></div>' +
       '<div id="mapCoverCard" class="map-cover" hidden></div>' +
       '<div id="nearestPanel" class="nearest-panel" hidden data-sec="4l"></div></div>';
@@ -11327,6 +11368,19 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     note.innerHTML = html || '';
     note.dataset.html = html || '';
   }
+  function refreshTourNow() {
+    var now = document.getElementById('tourNow');
+    if (!now || now.hidden) return;
+    var start = E.normTime(((document.getElementById('dayStart') || {}).value || '').trim()) || '';
+    var end = E.normTime(((document.getElementById('dayEnd') || {}).value || '').trim()) || '';
+    if (!start || !end) return;
+    var wStart = dateIso('workedStartDate'), wEnd = dateIso('workedEndDate');
+    if (wStart) wEnd = E.suggestEndDate(wStart, start, wEnd, end) || wEnd;
+    var len = (wStart && wEnd) ? E.tourSpanMinutes(wStart, start, wEnd, end) : Math.round(E.hoursBetween(start, end) * 60);
+    var nextDay = !!(wStart && wEnd && E.toDay(wEnd) > E.toDay(wStart));
+    var extra = ((document.getElementById('tourBox') || {}).dataset.status === 'work');
+    now.innerHTML = 'Currently: working ' + E.fmtHM(len) + ' &middot; ' + start + '–' + end + (nextDay ? ' (+1 day)' : '') + (extra ? ' (overtime)' : '');
+  }
   function updateEnd(flash) {
     var box = document.getElementById('seBox'), si = document.getElementById('dayStart'), out = document.getElementById('dayEnd'), pop = document.getElementById('endPop'); if (!box || !si || !out) return;
     var tb = document.getElementById('tourBox'), rawS = si.value.trim(), endRaw = out.value.trim();
@@ -11344,10 +11398,12 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         var dl = document.getElementById('dayLen'); if (dl) dl.value = E.fmtHM(span.len);
         if (noteR) { noteR.hidden = false; setEndNote('<b>Overtime: ' + esc(span.label) + '</b> (' + esc(span.start) + '&ndash;' + esc(span.end) + '). Saved as one overtime entry.' + otEditHtml(E.toISO(+box.dataset.d)), 'endnote ot'); }
         syncSchedBoxVisibility();
+        refreshTourNow();
         return;
       }
       if (noteR) { noteR.hidden = true; setEndNote('', 'endnote'); }
       syncSchedBoxVisibility();
+      refreshTourNow();
       return;
     }
     var raw = si.value.trim(), start = raw ? E.normTime(raw) : '', lt = (document.getElementById('dayLen') || {}).value, len = (lt && E.parseHM(lt.trim())) || +box.dataset.sl;
@@ -11361,6 +11417,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (flash) { pop.classList.remove('pop'); void pop.offsetWidth; pop.classList.add('pop'); }
     } else { pop.hidden = true; pop.innerHTML = ''; }
     syncSchedBoxVisibility();
+    refreshTourNow();
   }
 
   // Typed tour end vs scheduled end: 1-14 min late = note only (no OT); 15+ = overtime; early = pick the balance to charge
