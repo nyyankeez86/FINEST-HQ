@@ -72,6 +72,25 @@ nav.tabs button{flex:1;height:var(--tabh);border:0;background:none;display:flex;
 nav.tabs button svg{width:22px;height:22px;flex:0 0 22px;display:block}
 nav.tabs .tablbl{display:flex;align-items:flex-start;justify-content:center;min-height:2.3em;line-height:1.15;text-align:center;font-weight:600;max-width:100%}
 nav.tabs button[data-tab="overtime"] .tablbl{font-size:10px;font-weight:700;letter-spacing:-.02em;line-height:1.15}
+.ot-accrual{margin:0 0 12px}
+.ot-accrual .ot-range-seg{margin:0 0 8px}
+.ot-accrual .ot-range-seg button{min-height:30px;font-size:11.5px;padding:0 4px}
+.ot-accrual .ot-range-nav{margin:0 0 8px;gap:8px}
+.ot-accrual .ot-range-nav b{font-size:15px;min-width:108px}
+.ot-accrual .ot-range-nav .navbtn{width:36px;height:36px;font-size:18px}
+.ot-accrual .ot-range-now{text-align:center;margin:0 0 8px}
+.ot-accrual .ot-range-now b{display:block;font-size:15px}
+.ot-accrual .ot-range-now span{font-size:11px;color:var(--muted)}
+.ot-accrual .ot-qmonths{display:block;font-size:11px;font-weight:600;color:var(--muted)}
+.ot-accrual .ot-range-tots{margin:0 0 2px}
+.ot-accrual .ot-range-tots .tot{padding:8px 6px;min-width:0}
+.ot-accrual .ot-range-tots .tot b{font-size:15px;overflow-wrap:anywhere}
+.ot-accrual .travsum,.ot-accrual .ot-range-note{display:block;font-size:11px;margin:2px 2px 0;text-align:center;color:var(--muted)}
+.ot-accrual .ot-months-tog{margin:6px 0 0;padding:6px 0;border-top:1px solid var(--line,#e2e8f0);font-size:12px}
+.ot-accrual .ot-months-tog span:last-child{font-weight:600;color:var(--muted);font-size:11px}
+.ot-accrual .ot-month-list{margin:0}
+.ot-accrual .ot-month-row{cursor:default;padding:3px 0;font-weight:600}
+.ot-accrual .ot-month-row span:last-child{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:600}
 .otviewseg{display:flex;gap:6px;margin:0 0 10px}
 .otviewseg .btn{flex:1}
 .otviewseg .btn.on{background:#0f172a;color:#fff;border-color:#0f172a}
@@ -214,7 +233,7 @@ h3{font-size:17px;margin:0 0 6px}
 .item .right small{display:block;font-weight:600;color:var(--muted);font-size:12px}
 .chip{display:inline-block;padding:3px 9px;border-radius:999px;font-size:12.5px;font-weight:700;border:1px solid var(--line);background:#fff;margin:2px 4px 2px 0}
 .grp{font-size:13px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:14px 2px 4px;display:flex;justify-content:space-between}
-.period{border-left:6px solid #c4ccd9;scroll-margin-top:calc(var(--stackh, calc(var(--hdrh, 72px) + var(--paybanh, 80px))) + 8px)}
+.period{border-left:6px solid #c4ccd9;scroll-margin-top:calc(var(--stackh, calc(var(--hdrh, 72px) + var(--paybanh, 80px))) + 8px)}.pay-end-space{display:block;height:calc(100dvh - var(--stackh, 172px) - var(--tabh, 64px) - 232px - env(safe-area-inset-bottom, 0px));min-height:120px;pointer-events:none;visibility:hidden}
 .period.current{border-left-color:var(--accent);background:#f0f5ff;box-shadow:0 0 0 2px var(--accent) inset}
 .period .head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .period .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
@@ -235,7 +254,7 @@ h3{font-size:17px;margin:0 0 6px}
 .period .pay-sum .chev{flex:0 0 auto;color:#64748b;font-size:14px;line-height:1.6;width:1em}
 .period .pay-sum-main{flex:1;min-width:0}
 .period .pay-sum-main .head{margin:0}
-.period .pay-sum-dates{margin-top:3px;font-size:12.5px;font-weight:600;color:var(--muted);display:flex;flex-direction:column;gap:1px;overflow-wrap:anywhere}
+.period .pay-sum-dates{margin-top:3px;font-size:11px;font-weight:600;color:var(--muted);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .period .pay-sum-earn{flex:0 0 auto;text-align:right;font-weight:800;font-size:13px;line-height:1.3;color:var(--ink)}
 .period .pay-sum-earn .otpay{display:block;color:var(--pay)}
 .period .pay-detail[hidden]{display:none!important}.pay-reg-excusals{margin:8px 0 0;font-size:12.5px;font-weight:600;color:var(--muted);line-height:1.45;overflow-wrap:anywhere}.pblock .pay-days{margin-top:8px;background:#f5f7fb;border-radius:10px;padding:8px 14px;display:block;width:100%;max-width:220px;box-sizing:border-box}.pblock.on .pay-days{background:#fff}.pay-days b{display:block;font-size:19px}.pay-days small{font-size:11.5px;color:var(--muted);font-weight:700;text-transform:uppercase}
@@ -409,7 +428,9 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after,body.beta #
 .m-asg{color:#fff}
 .asgrow .sw{width:40px;height:30px;border-radius:8px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:10.5px}
 #toast{position:fixed;left:50%;bottom:calc(var(--tabh) + 18px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#111827;color:#fff;padding:10px 16px;border-radius:10px;font-weight:600;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:60;max-width:90%}
-#toast.show{opacity:1}
+#toast.show{opacity:1;pointer-events:auto;display:flex;align-items:center;gap:10px}
+#toast .toast-undo{appearance:none;background:transparent;border:0;color:#93c5fd;font:inherit;font-weight:800;padding:0 2px;cursor:pointer;text-decoration:underline}
+.otbadge[data-act]{cursor:pointer}
 .onb{max-width:460px;margin:0 auto}
 .onb .hero{background:var(--navy);color:#fff;border-radius:var(--radius);padding:18px;margin-bottom:14px}
 .onb .hero h2{margin:0 0 4px;font-size:22px}
@@ -572,7 +593,7 @@ input[type="date"]::-webkit-date-and-time-value,input[type="date"]::-webkit-date
 .endnote{margin:6px 0 8px;padding:9px 11px;border-radius:10px;font-size:13.5px;line-height:1.35;overflow-wrap:anywhere;border:1px solid transparent}
 .endnote.late{background:#fffbeb;border-color:#fcd34d;color:#78350f}.endnote.ot{background:#ecfdf5;border-color:#6ee7b7;color:#065f46}.endnote.early{background:#eff6ff;border-color:#93c5fd;color:#1e3a8a;margin-bottom:4px}
 .shortbox{margin:0 0 10px;padding:10px;border:1px solid #93c5fd;border-radius:10px;background:#f8fbff}.sbq{font-weight:800;font-size:14px;margin-bottom:6px;overflow-wrap:anywhere}
-.shortopts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.shortopts .pick{min-width:0;width:100%;min-height:44px;padding:4px 6px;font-size:13px;line-height:1.2;white-space:normal;overflow-wrap:anywhere;text-align:center}
+.shortopts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.short-hm{margin:8px 0 0;gap:8px}.short-hm .field{margin:0}.short-hm label{font-size:12px}.shortopts .pick{min-width:0;width:100%;min-height:44px;padding:4px 6px;font-size:13px;line-height:1.2;white-space:normal;overflow-wrap:anywhere;text-align:center}
 .daydel{margin-top:22px;padding-top:14px;border-top:1px solid var(--line,#e2e8f0)}
 .btn.delbtn{background:#dc2626;border-color:#dc2626;color:#fff;width:100%;max-width:100%;white-space:normal;overflow-wrap:anywhere;text-align:center}.btn.delbtn:active{background:#b91c1c}
 .btn.delbtn[disabled]{background:#fecaca;border-color:#fecaca;color:#7f1d1d;opacity:.75;cursor:not-allowed}
@@ -3748,6 +3769,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     for (d = start; d <= end; d++) {
       rec = leave[toISO(d)];
       if (!rec || !rec.type) continue;
+      if (parseInt(rec.minutes, 10) > 0) continue; // partial hh:mm usage is not a whole-day excusal
       counts[rec.type] = (counts[rec.type] || 0) + 1;
     }
     types = CONFIG.leaveTypes || [];
@@ -3766,9 +3788,28 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function formatRegularPeriodExcusalLine(items, startLabel, endLabel) {
     if (!items || !items.length) return '';
-    return ['Regular ' + startLabel + ' – ' + endLabel].concat(items.map(function (it) {
+    return ['Regular ' + startLabel + '\u2013' + endLabel].concat(items.map(function (it) {
       return it.label + ' ' + it.count + (it.count === 1 ? ' day' : ' days');
     })).join(' \u00b7 ');
+  }
+  function calendarQuarter(m) {
+    m = +m;
+    return (m >= 1 && m <= 12) ? Math.ceil(m / 3) : 0;
+  }
+  function quarterRange(y, q) {
+    y = +y; q = +q;
+    if (!(q >= 1 && q <= 4) || !isFinite(y)) return null;
+    var startM = (q - 1) * 3 + 1;
+    var start = fromYMD(y, startM, 1);
+    var end = fromYMD(q === 4 ? y + 1 : y, q === 4 ? 1 : startM + 3, 1) - 1;
+    return { year: y, quarter: q, start: start, end: end, startIso: toISO(start), endIso: toISO(end) };
+  }
+  function shiftQuarter(y, q, dir) {
+    q = +q + (dir || 0);
+    y = +y;
+    while (q < 1) { q += 4; y--; }
+    while (q > 4) { q -= 4; y++; }
+    return quarterRange(y, q);
   }
   // ---- Pure data helpers for overrides (return new objects; used by the UI and tests) ----
   function copy(o) { var r = {}; for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) r[k] = o[k]; return r; }
@@ -3850,10 +3891,41 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     return list;
   }
   // Leave balances (minutes) minus short-tour deductions recorded on tours[iso].short = { type, minutes }
+  // Starting leave-bank values (H:MM, or a legacy hours-only / decimal hours figure).
+  function parseBalanceHM(v) {
+    var s = String(v == null ? '' : v).trim(), m;
+    if (!s) return null;
+    if ((m = s.match(/^(\d{1,4}):([0-5]\d)$/))) return +m[1] * 60 + +m[2];
+    if (/^\d+(\.\d+)?$/.test(s)) return Math.round(parseFloat(s) * 60);
+    return null;
+  }
+  function bankDayMinutes(state) {
+    var n = parseInt((state && state.profile && state.profile.tourLen), 10);
+    return n > 0 ? n : 480;
+  }
+  // Day equivalent for a minute total using the default tour length. Empty when under one day.
+  function fmtDayEquiv(min, dayMin) {
+    dayMin = +dayMin || 480;
+    if (!(dayMin > 0)) return '';
+    var neg = min < 0, abs = Math.abs(Math.round(min || 0));
+    var days = Math.floor(abs / dayMin), rem = abs % dayMin;
+    if (!days) return '';
+    var s = days + ' day' + (days === 1 ? '' : 's') + (rem ? ' + ' + fmtHM(rem) : '');
+    return neg ? '-' + s : s;
+  }
+  var LEAVE_BANK_OF = { vacation: 'vacation', vacationtime: 'vacation', chart: 'chart', comp: 'comp' };
   function leaveBalances(state) {
-    var st = state || {}, b = (st.settings && st.settings.leaveBalances) || {}, used = {}, out = {}, earned = { comp: st.profile ? otPayList(st.overtime || [], { profile: st.profile }).compMinutes : 0 }; // Captain-and-above OT banked as comp
+    var st = state || {}, b = (st.settings && st.settings.leaveBalances) || {}, used = {}, out = {}, dayMin = bankDayMinutes(st);
+    var earned = { comp: st.profile ? otPayList(st.overtime || [], { profile: st.profile }).compMinutes : 0 }; // Captain-and-above OT banked as comp
     Object.keys(st.tours || {}).forEach(function (iso) { var s = st.tours[iso] && st.tours[iso].short; if (s && s.type && s.minutes > 0) used[s.type] = (used[s.type] || 0) + s.minutes; });
-    CONFIG.shortLeaveTypes.forEach(function (t) { var start = +b[t] || 0; var ea = earned[t] || 0; out[t] = { start: start, used: used[t] || 0, earned: ea, left: start + ea - (used[t] || 0), set: b[t] != null && b[t] !== '' }; });
+    Object.keys(st.leave || {}).forEach(function (iso) {
+      var rec = st.leave[iso], bank, mins;
+      if (!rec || !rec.type) return;
+      bank = LEAVE_BANK_OF[rec.type]; if (!bank) return;
+      mins = parseInt(rec.minutes, 10);
+      used[bank] = (used[bank] || 0) + (mins > 0 && mins < dayMin ? mins : dayMin);
+    });
+    CONFIG.shortLeaveTypes.forEach(function (t) { var start = +b[t] || 0; var ea = earned[t] || 0; out[t] = { start: start, used: used[t] || 0, earned: ea, left: start + ea - (used[t] || 0), set: b[t] != null && b[t] !== '', dayMinutes: dayMin }; });
     if (st.profile && out.chart) {
       var from = isISODate(st.profile.hireDate) ? st.profile.hireDate : '2010-01-01';
       var ct = chartTimeRange(from, toISO(today()), st.profile, { defaultLen: st.profile.tourLen || 480, defaultStart: st.profile.tourStart || '', hist: st.profile.assignHist || null, tours: st.tours || {}, leave: st.leave || {}, unit: (st.settings && st.settings.unit) || '', extra15: st.extra15 || {} });
@@ -4378,6 +4450,27 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (man > 0) { res.source = 'fallback'; res.kind = 'manual'; res.rate = Math.round(man * mlt * 100) / 100; return fin(want, man * mlt, CR); }
     return fin(want, 0, CR);
   }
+  // Worked OT hours split into Cash / Time (comp). Travel minutes are added to Cash or Time
+  // to match how the travel was paid (ineligible travel is omitted). Time is worked hours,
+  // not the 1.5x banked comp minutes. Split entries use cashHours for the cash portion and
+  // the remainder as Time.
+  function otHoursSplitFromResult(r) {
+    var cashH = 0, timeH = 0, tv, th;
+    if (r) {
+      cashH = +r.cashHours || 0;
+      timeH = +r.compHours || 0;
+      tv = r.travel;
+      if (tv && !tv.ineligible && tv.minutes > 0) {
+        th = tv.minutes / 60;
+        if (tv.comp === 'time') timeH += th;
+        else cashH += th;
+      }
+    }
+    cashH = Math.round(cashH * 1e6) / 1e6;
+    timeH = Math.round(timeH * 1e6) / 1e6;
+    return { cashHours: cashH, timeHours: timeH, totalHours: Math.round((cashH + timeH) * 1e6) / 1e6 };
+  }
+  function otHoursSplit(entry, ctx) { return otHoursSplitFromResult(otEntryPay(entry, ctx || {})); }
   // OT pay for a list of entries in date order, so the Captain's yearly cash cap is used up chronologically.
   // ctx: { profile, multiplier, tourFor(iso) -> {start, len} }. Returns { byId: {id: result}, cashUsed: {year: hours}, compMinutes }
   function otPayList(entries, ctx) {
@@ -5097,7 +5190,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   // ---------- Cloud accounts + sync (pure helpers; the network part lives in the UI) ----------
   // Fields that must NEVER leave the device. Stripped from every record before upload; kept from the local copy when a record comes down.
-  var CLOUD_PRIVATE = { profile: ['taxNumber', 'refNumber', 'shieldNumber', 'homeAddress'], settings: ['mapsKey', 'mapsKeyInBackup'] };
+  var CLOUD_PRIVATE = { profile: ['taxNumber', 'refNumber', 'shieldNumber', 'homeAddress'], settings: ['mapsKey', 'mapsKeyInBackup', 'leaveBalances'] };
   var USERNAME_RE = /^[a-z0-9][a-z0-9._-]{2,23}$/;
   function normUsername(u) { return String(u || '').trim().toLowerCase(); }
   function usernameIsReserved(u) {
@@ -6189,7 +6282,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     tour17Key: tour17Key, tour17Squad: tour17Squad, tour17Offset: tour17Offset, tour17WorkPhase: tour17WorkPhase, tour17WorkSquad: tour17WorkSquad, tour17IsOff: tour17IsOff, tour17SquadsOff: tour17SquadsOff, tour17SquadsWorking: tour17SquadsWorking, tour17OvertimeMin: tour17OvertimeMin,
     nextDayOff: nextDayOff, chartDayBlock: chartDayBlock, nextWorkday: nextWorkday, countRDOs: countRDOs, isTourChange: isTourChange, countTourChanges: countTourChanges, isPayday: isPayday, nextPayday: nextPayday,
     periodsForPayday: periodsForPayday, regularPaydayFor: regularPaydayFor, overtimePaydayFor: overtimePaydayFor, regularPeriodFor: regularPeriodFor, overtimePeriodFor: overtimePeriodFor, payPeriodsInYear: payPeriodsInYear, hoursBetween: hoursBetween, entryHours: entryHours,
-    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, fmtMDY: fmtMDY, defaultTourWindow: defaultTourWindow, tourSpanMinutes: tourSpanMinutes, suggestEndDate: suggestEndDate, workedVsScheduled: workedVsScheduled, cleanTourEntry: cleanTourEntry, tourEntries: tourEntries, isAssignmentEntry: isAssignmentEntry, cleanAssignmentEntry: cleanAssignmentEntry, assignmentEntries: assignmentEntries, mergeTourEntries: mergeTourEntries, writeAssignmentEntries: writeAssignmentEntries, assignmentTimeText: assignmentTimeText, assignmentReminderText: assignmentReminderText, paidDetailBrief: paidDetailBrief, dayAssignments: dayAssignments, assignmentEventWindow: assignmentEventWindow, dayTour: dayTour, tourDisplay: tourDisplay, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameIsReserved: usernameIsReserved, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, assignmentNavAddress: assignmentNavAddress, upcomingItems: upcomingItems, commandById: commandById, isPduCommand: isPduCommand, searchCommands: searchCommands, phoneDigits: phoneDigits, fmtPhone: fmtPhone, telHref: telHref, cleanDirMine: cleanDirMine, cleanDirPhone: cleanDirPhone, cleanDirCustom: cleanDirCustom, emptyDirMine: emptyDirMine, dirKindMatch: dirKindMatch, searchDirectory: searchDirectory, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, routeUrls: routeUrls, navPoint: navPoint, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, leaveLineLabel: leaveLineLabel, regularPeriodExcusals: regularPeriodExcusals, formatRegularPeriodExcusalLine: formatRegularPeriodExcusalLine, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, stripBoroSuffix: stripBoroSuffix, splitPaidAddress: splitPaidAddress, joinPaidAddress: joinPaidAddress, mergePaidVendors: mergePaidVendors, rememberPaidVendor: rememberPaidVendor, paidVendorKey: paidVendorKey, parsePaidAmount: parsePaidAmount, paidDetailAmount: paidDetailAmount, paidDetailTaxDate: paidDetailTaxDate, daysBetweenISO: daysBetweenISO, paidDetailTiming: paidDetailTiming, paidDetailTimingCaptions: paidDetailTimingCaptions, paidVendorNames: paidVendorNames, cleanVendorGroups: cleanVendorGroups, vendorReportName: vendorReportName, addVendorToGroup: addVendorToGroup, removeVendorFromGroup: removeVendorFromGroup, renameVendorGroup: renameVendorGroup, ungroupVendor: ungroupVendor, suggestVendorGroups: suggestVendorGroups, paidDetailTaxReport: paidDetailTaxReport, buildPaidDetailXlsx: buildPaidDetailXlsx, buildPaidDetailCsv: buildPaidDetailCsv, parseXlsx: parseXlsx, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, addYearsISO: addYearsISO, retirementDateOf: retirementDateOf, retirementRemain: retirementRemain, retirementCountdown: retirementCountdown, endCompare: endCompare, syncEndOT: syncEndOT, syncWorkedOT: syncWorkedOT, syncEntryOT: syncEntryOT, leaveBalances: leaveBalances, fmtChart: fmtChart, chartTimeFromTour: chartTimeFromTour, isDetectiveRank: isDetectiveRank, isSergeantRank: isSergeantRank, isLieutenantRank: isLieutenantRank, isPoliceOfficerRank: isPoliceOfficerRank, chartKind: chartKind, rankStartDate: rankStartDate, yearsInRankAtLeast: yearsInRankAtLeast, chartTimeEligibility: chartTimeEligibility, chartTimeForDay: chartTimeForDay, chartTimeRange: chartTimeRange, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
+    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, fmtMDY: fmtMDY, defaultTourWindow: defaultTourWindow, tourSpanMinutes: tourSpanMinutes, suggestEndDate: suggestEndDate, workedVsScheduled: workedVsScheduled, cleanTourEntry: cleanTourEntry, tourEntries: tourEntries, isAssignmentEntry: isAssignmentEntry, cleanAssignmentEntry: cleanAssignmentEntry, assignmentEntries: assignmentEntries, mergeTourEntries: mergeTourEntries, writeAssignmentEntries: writeAssignmentEntries, assignmentTimeText: assignmentTimeText, assignmentReminderText: assignmentReminderText, paidDetailBrief: paidDetailBrief, dayAssignments: dayAssignments, assignmentEventWindow: assignmentEventWindow, dayTour: dayTour, tourDisplay: tourDisplay, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameIsReserved: usernameIsReserved, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, assignmentNavAddress: assignmentNavAddress, upcomingItems: upcomingItems, commandById: commandById, isPduCommand: isPduCommand, searchCommands: searchCommands, phoneDigits: phoneDigits, fmtPhone: fmtPhone, telHref: telHref, cleanDirMine: cleanDirMine, cleanDirPhone: cleanDirPhone, cleanDirCustom: cleanDirCustom, emptyDirMine: emptyDirMine, dirKindMatch: dirKindMatch, searchDirectory: searchDirectory, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, routeUrls: routeUrls, navPoint: navPoint, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, leaveLineLabel: leaveLineLabel, regularPeriodExcusals: regularPeriodExcusals, formatRegularPeriodExcusalLine: formatRegularPeriodExcusalLine, calendarQuarter: calendarQuarter, quarterRange: quarterRange, shiftQuarter: shiftQuarter, otHoursSplitFromResult: otHoursSplitFromResult, otHoursSplit: otHoursSplit, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, stripBoroSuffix: stripBoroSuffix, splitPaidAddress: splitPaidAddress, joinPaidAddress: joinPaidAddress, mergePaidVendors: mergePaidVendors, rememberPaidVendor: rememberPaidVendor, paidVendorKey: paidVendorKey, parsePaidAmount: parsePaidAmount, paidDetailAmount: paidDetailAmount, paidDetailTaxDate: paidDetailTaxDate, daysBetweenISO: daysBetweenISO, paidDetailTiming: paidDetailTiming, paidDetailTimingCaptions: paidDetailTimingCaptions, paidVendorNames: paidVendorNames, cleanVendorGroups: cleanVendorGroups, vendorReportName: vendorReportName, addVendorToGroup: addVendorToGroup, removeVendorFromGroup: removeVendorFromGroup, renameVendorGroup: renameVendorGroup, ungroupVendor: ungroupVendor, suggestVendorGroups: suggestVendorGroups, paidDetailTaxReport: paidDetailTaxReport, buildPaidDetailXlsx: buildPaidDetailXlsx, buildPaidDetailCsv: buildPaidDetailCsv, parseXlsx: parseXlsx, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, addYearsISO: addYearsISO, retirementDateOf: retirementDateOf, retirementRemain: retirementRemain, retirementCountdown: retirementCountdown, endCompare: endCompare, syncEndOT: syncEndOT, syncWorkedOT: syncWorkedOT, syncEntryOT: syncEntryOT, leaveBalances: leaveBalances, parseBalanceHM: parseBalanceHM, bankDayMinutes: bankDayMinutes, fmtDayEquiv: fmtDayEquiv, fmtChart: fmtChart, chartTimeFromTour: chartTimeFromTour, isDetectiveRank: isDetectiveRank, isSergeantRank: isSergeantRank, isLieutenantRank: isLieutenantRank, isPoliceOfficerRank: isPoliceOfficerRank, chartKind: chartKind, rankStartDate: rankStartDate, yearsInRankAtLeast: yearsInRankAtLeast, chartTimeEligibility: chartTimeEligibility, chartTimeForDay: chartTimeForDay, chartTimeRange: chartTimeRange, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
     steadyKey: steadyKey, parseChart: parseChart, validChartKey: validChartKey, chartInfo: chartInfo, sortCharts: sortCharts, chartAt: chartAt, chartChanges: chartChanges, nextOff: nextOff, nextOn: nextOn, reviewOverrides: reviewOverrides, DOW3: DOW3,
     stripAddrLabels: stripAddrLabels, paidAddressSuggestions: paidAddressSuggestions,
     rankAbbr: rankAbbr, rankLabel: rankLabel, displayName: displayName, formatFullName: formatFullName, normMiddleInitial: normMiddleInitial, migrateProfile: migrateProfile, validateProfile: validateProfile,
@@ -6226,7 +6319,24 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function hrs(v) { return E.fmtHM(Math.round((v || 0) * 60)); } // decimal hours -> H:MM
   function dec(v) { return (Math.round((v || 0) * 100) / 100) + ' h'; }
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
-  function toast(msg, ms) { var t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove('show'); }, ms || 2200); }
+  function toast(msg, ms, action) {
+    var t = document.getElementById('toast'); if (!t) return;
+    t.textContent = '';
+    t.appendChild(document.createTextNode(msg));
+    if (action && action.label) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'toast-undo'; b.setAttribute('data-act', 'toastUndo');
+      b.textContent = action.label;
+      t.appendChild(b);
+      toast._undo = action.onClick || null;
+    } else toast._undo = null;
+    t.classList.add('show');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(function () { t.classList.remove('show'); toast._undo = null; }, ms || (action ? 5000 : 2200));
+  }
+  function toastPaidUndo(msg, restore) {
+    toast(msg, 5000, { label: 'Undo', onClick: function () { if (restore) restore(); toast('Undo complete'); } });
+  }
 
   function defaultState() {
     return { app: 'patrol-schedule', version: 1, profile: null,
@@ -6259,7 +6369,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
 
   var S = load();
   var T = E.today(), tp = E.parts(T);
-  var ui = { tab: 'schedule', calY: tp.y, calM: tp.m, lookup: T, otYear: tp.y, payYear: tp.y, leaveYear: tp.y, leaveOpen: false, pdY: tp.y, pdM: tp.m, onbSquad: null, x15Year: tp.y, otView: 'ot', otSel: false, otSelIds: {}, pdSel: false, pdSelIds: {}, otFilter: 'all', otCollapse: {}, payOpen: {}, calPeek: null, calPeekPicker: false, todayOpen: false, glanceOpen: false, dirQ: '', mapQ: '', dirKind: '', dirView: 'dir', dirFuelOn: false, dirEvOn: false, dirHospOn: false, dirHospLevel1: false, dirFacilitiesOn: false, dirEvFastOnly: false, mapFocusPct: null };
+  var ui = { tab: 'schedule', calY: tp.y, calM: tp.m, lookup: T, otYear: tp.y, payYear: tp.y, leaveYear: tp.y, leaveOpen: false, pdY: tp.y, pdM: tp.m, onbSquad: null, x15Year: tp.y, otView: 'ot', otScope: 'quarter', otScopeY: tp.y, otScopeQ: 0, otScopeM: tp.m, otMonthsOpen: true, otSel: false, otSelIds: {}, pdSel: false, pdSelIds: {}, otFilter: 'all', pdFilter: 'all', otCollapse: {}, payOpen: {}, calPeek: null, calPeekPicker: false, todayOpen: false, glanceOpen: false, dirQ: '', mapQ: '', dirKind: '', dirView: 'dir', dirFuelOn: false, dirEvOn: false, dirHospOn: false, dirHospLevel1: false, dirFacilitiesOn: false, dirEvFastOnly: false, mapFocusPct: null };
   function msgNewIconHtml() { return '<span class="msgunread-dot" aria-hidden="true"></span>'; }
   var MSG_VERIFIED_TIP = 'Official message from a FINEST HQ admin';
   function msgVerifiedHtml() {
@@ -6442,9 +6552,22 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     return h;
   }
   function balancesHtml() {
-    var b = E.leaveBalances(S), list = E.shortLeaveEntries(S);
-    return '<h3 style="margin-top:6px" id="balHead" data-sec="9e">Leave balances</h3><div class="muted" style="font-size:13px;margin-bottom:6px">Starting balances (H:MM). Leaving a tour early is charged here.</div><div class="balgrid">' +
-      C.shortLeaveTypes.map(function (k) { var x = b[k]; return '<div class="balrow"><label for="lb-' + k + '">' + esc(C.shortLeaveLabels[k]) + '</label><input id="lb-' + k + '" inputmode="decimal" autocomplete="off" placeholder="0:00" value="' + (x.set ? E.fmtHM(x.start) : '') + '"><div class="balinfo">Used ' + E.fmtHM(x.used) + (x.earned ? ' &middot; Earned ' + (k === 'chart' ? E.fmtChart(x.earned) : E.fmtHM(x.earned)) : '') + (x.set || x.earned ? ' &middot; Left <b' + (x.left < 0 ? ' class="neg"' : '') + '>' + (x.left < 0 ? '-' : '') + (k === 'chart' ? E.fmtChart(Math.abs(x.left)) : E.fmtHM(Math.abs(x.left))) + '</b>' : '') + (k === 'chart' && x.pendingDays ? ' &middot; ' + x.pendingDays + ' day' + (x.pendingDays === 1 ? '' : 's') + ' pending' : '') + '</div></div>'; }).join('') + '</div>' +
+    var b = E.leaveBalances(S), list = E.shortLeaveEntries(S), dayMin = b.comp && b.comp.dayMinutes || E.bankDayMinutes(S);
+    function bankLine(k, x) {
+      var used = 'Used ' + E.fmtHM(x.used), ue = E.fmtDayEquiv(x.used, dayMin);
+      if (ue) used += ' (' + ue + ')';
+      var parts = [used];
+      if (x.earned) parts.push('Earned ' + (k === 'chart' ? E.fmtChart(x.earned) : E.fmtHM(x.earned)));
+      if (x.set || x.earned) {
+        var left = (x.left < 0 ? '-' : '') + (k === 'chart' ? E.fmtChart(Math.abs(x.left)) : E.fmtHM(Math.abs(x.left)));
+        var le = E.fmtDayEquiv(x.left, dayMin);
+        parts.push('Left <b' + (x.left < 0 ? ' class="neg"' : '') + '>' + left + (le ? ' (' + le + ')' : '') + '</b>');
+      }
+      if (k === 'chart' && x.pendingDays) parts.push(x.pendingDays + ' day' + (x.pendingDays === 1 ? '' : 's') + ' pending');
+      return parts.join(' \u00b7 ');
+    }
+    return '<h3 style="margin-top:6px" id="balHead" data-sec="9e">Leave balances</h3><div class="muted" style="font-size:13px;margin-bottom:6px">Starting balances in hours and minutes (H:MM). Used counts whole days from the schedule plus partial time. 1 day = ' + E.fmtHM(dayMin) + ', your default tour length. These balances stay on this device and are not synced.</div><div class="balgrid">' +
+      C.shortLeaveTypes.map(function (k) { var x = b[k]; return '<div class="balrow" data-bank="' + k + '"><label for="lb-' + k + '">' + esc(C.shortLeaveLabels[k]) + '</label><input id="lb-' + k + '" inputmode="decimal" autocomplete="off" placeholder="H:MM" value="' + (x.set ? E.fmtHM(x.start) : '') + '"><div class="balinfo">' + bankLine(k, x) + '</div></div>'; }).join('') + '</div>' +
       (list.length ? '<details class="baldet"><summary>Early tour ends (' + list.length + ')</summary><div class="list">' + list.map(function (e) { return '<button type="button" class="item" data-act="day" data-d="' + E.toDay(e.iso) + '"><div class="main"><div class="t1">' + esc(fmt(E.toDay(e.iso), 'md')) + ' &middot; ' + E.fmtHM(e.minutes) + '</div><div class="t2">' + esc(C.shortLeaveLabels[e.type]) + (e.end ? ' &middot; ended ' + esc(e.end) : '') + '</div></div></button>'; }).join('') + '</div></details>' : '');
   }
   function svcLine(p) { var si = E.serviceInfo(p); return (si.service ? 'Service: <b>' + esc(si.service.text) + '</b>' : 'Leave promotion blank if you haven\'t been promoted.') + (si.inRank && si.service ? ' &middot; In rank: <b>' + esc(si.inRank.text) + '</b>' : '') + '<br>Used for your pay step and longevity.'; }
@@ -7003,7 +7126,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var when = fmt(d) + (e.mode === 'times' && e.start ? ' · ' + esc(e.start) + '–' + esc(e.end) : '') + (E.otDay(e) !== d ? ' · <b class="nxtxt">counts ' + fmt(d + 1) + '</b>' : '');
     var paid = otIsPaid(e), paidIso = otPaidDate(e), exp = fmt(E.overtimePaydayFor(d, payOpts()));
     var paidLbl = paid ? ('Paid' + (paidIso ? ' ' + E.fmtMDY(paidIso) : '')) : 'Unpaid';
-    var badge = '<span class="otbadge ' + (paid ? 'paid' : 'unpaid') + '">' + paidLbl + '</span>';
+    var badge = paid
+      ? '<span class="otbadge paid" data-act="otPaidChip" data-kind="ot" data-id="' + esc(e.id) + '" role="button" aria-label="Remove paid">' + paidLbl + '</span>'
+      : '<span class="otbadge unpaid">' + paidLbl + '</span>';
     var chk = sel ? '<input type="checkbox" class="otchk" data-act="otSelOne" data-id="' + esc(e.id) + '"' + (ui.otSelIds && ui.otSelIds[e.id] ? ' checked' : '') + ' aria-label="Select overtime entry">' : '';
     var act = sel ? 'otSelOne' : 'otEdit', on = !!(ui.otSelIds && ui.otSelIds[e.id]);
     return '<div class="swrow' + (on ? ' sw-sel' : '') + '" data-swipe="ot" data-id="' + esc(e.id) + '"><button class="item otitem" data-act="' + act + '" data-id="' + esc(e.id) + '"' + (sel ? ' aria-pressed="' + (on ? 'true' : 'false') + '"' : '') + '>' + chk +
@@ -7056,6 +7181,103 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (n) save();
     return n;
   }
+  function snapshotOtPaid(ids) {
+    var set = ids || otSelSet(payOtEntries()) || {}, snap = [];
+    (S.overtime || []).forEach(function (e) {
+      if (!set[e.id]) return;
+      snap.push({ id: e.id, paid: !!e.paid, paidDate: e.paidDate || '' });
+    });
+    return snap;
+  }
+  function restoreOtPaid(snap) {
+    var map = {};
+    (snap || []).forEach(function (s) { map[s.id] = s; });
+    (S.overtime || []).forEach(function (e) {
+      var s = map[e.id]; if (!s) return;
+      if (s.paid) { e.paid = true; e.paidDate = s.paidDate || ''; }
+      else { e.paid = false; e.paidDate = ''; }
+      e.updated = new Date().toISOString();
+    });
+    save(); render(); refreshPayOtSheetIfOpen();
+  }
+  function pdSelSet() {
+    var set = {}, k;
+    for (k in (ui.pdSelIds || {})) if (ui.pdSelIds[k]) set[k] = true;
+    return set;
+  }
+  function pdSelCount() {
+    var n = 0, k;
+    for (k in (ui.pdSelIds || {})) if (ui.pdSelIds[k]) n++;
+    return n;
+  }
+  function pdIsPaid(pd) { pd = pd || {}; return !!(pd.paid || (E.isISODate(pd.paidDate) && pd.paidDate)); }
+  function snapshotPdPaid(isos) {
+    var set = isos || pdSelSet(), snap = [];
+    Object.keys(set).forEach(function (iso) {
+      if (!set[iso] || !S.assignments || !S.assignments[iso]) return;
+      var pd = E.cleanPaidDetail((S.assignments[iso].pd) || {});
+      snap.push({ iso: iso, paid: !!pd.paid, paidDate: pd.paidDate || '', checkDate: pd.checkDate || '' });
+    });
+    return snap;
+  }
+  function applyPdPaid(paidDate, checkDate, isos) {
+    var set = isos || pdSelSet(), n = 0, iso, rec, pd, asg, paid = !!paidDate;
+    for (iso in set) {
+      if (!set[iso] || !S.assignments[iso]) continue;
+      rec = Object.assign({}, S.assignments[iso]);
+      pd = E.cleanPaidDetail(rec.pd || {});
+      if (paid) { pd.paid = true; pd.paidDate = paidDate; if (checkDate != null && checkDate !== undefined) pd.checkDate = checkDate; }
+      else { pd.paid = false; pd.paidDate = ''; pd.checkDate = ''; }
+      rec.pd = pd;
+      asg = E.cleanAssignment(rec);
+      if (asg) { S.assignments[iso] = Object.assign(asg, { updated: new Date().toISOString() }); n++; }
+    }
+    if (n) save();
+    return n;
+  }
+  function restorePdPaid(snap) {
+    (snap || []).forEach(function (s) {
+      var isos = {}; isos[s.iso] = true;
+      if (s.paid) applyPdPaid(s.paidDate || E.toISO(T), s.checkDate || '', isos);
+      else applyPdPaid('', '', isos);
+    });
+    render();
+  }
+  function refreshPayOtSheetIfOpen() {
+    if (ui.payOt && document.querySelector('#sheetRoot [data-sec="2c"], #sheetRoot [data-sec="2f"]')) {
+      payOtSheet(ui.payOt.start, ui.payOt.end, ui.payOt.payday);
+    }
+  }
+  function entryIsPaid(kind, key) {
+    if (kind === 'ot') return otIsPaid(overtimeById(key));
+    var a = (S.assignments || {})[key], pd = E.cleanPaidDetail((a && a.pd) || {});
+    return pdIsPaid(pd);
+  }
+  function pdPaidLabel(on) { return on ? 'Unmark paid' : 'Mark paid'; }
+  function openRemovePaidDialog(kind, key) {
+    confirmDlg({
+      title: 'Remove paid',
+      body: kind === 'ot'
+        ? '<p>Clear the paid date and mark this overtime entry unpaid?</p>'
+        : '<p>Clear the paid and check dates and mark this paid detail unpaid?</p>',
+      ok: 'Remove paid',
+      onOk: function () {
+        if (kind === 'ot') {
+          var ids = {}; ids[key] = true;
+          var snap = snapshotOtPaid(ids);
+          applyOtPaidDate('', ids);
+          render(); refreshPayOtSheetIfOpen();
+          toastPaidUndo('Marked unpaid', function () { restoreOtPaid(snap); });
+        } else {
+          var isos = {}; isos[key] = true;
+          var snap = snapshotPdPaid(isos);
+          applyPdPaid('', '', isos);
+          render();
+          toastPaidUndo('Marked unpaid', function () { restorePdPaid(snap); });
+        }
+      }
+    });
+  }
   function otLogHtml(list) {
     var fil = ui.otFilter || 'all';
     list = (list || []).slice().filter(function (e) {
@@ -7088,14 +7310,104 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var sub = '<p class="muted" id="payOtSummary" style="margin:0 0 10px;font-size:13px">' + list.length + ' ' + (list.length === 1 ? 'entry' : 'entries') + ' in this overtime period (' + fmt(start, 'md') + ' – ' + fmt(end, 'md') + ').</p>';
     openSheet(title, sub + otTools(list) + otLogHtml(list));
   }
+  var OT_QMONTHS = ['Jan\u2013Mar', 'Apr\u2013Jun', 'Jul\u2013Sep', 'Oct\u2013Dec'];
+  function ensureOtScope() {
+    if (!ui.otScope) ui.otScope = 'quarter';
+    if (!ui.otScopeY) ui.otScopeY = tp.y;
+    if (!ui.otScopeQ) ui.otScopeQ = E.calendarQuarter(tp.m) || 1;
+    if (!ui.otScopeM) ui.otScopeM = tp.m;
+    if (ui.otMonthsOpen == null) ui.otMonthsOpen = true;
+  }
+  function otHoursOf(list) {
+    var cash = 0, time = 0, travelMin = 0;
+    (list || []).forEach(function (e) {
+      var r = entryPay(e), s = E.otHoursSplitFromResult(r);
+      cash += s.cashHours; time += s.timeHours;
+      if (r.travel && !r.travel.ineligible && r.travel.minutes) travelMin += r.travel.minutes;
+    });
+    return { cashHours: cash, timeHours: time, totalHours: cash + time, travelMinutes: travelMin };
+  }
+  function otMonthHourRows(start, end, list) {
+    var map = {}, rows = [], y, m, pe, key, s;
+    (list || []).forEach(function (e) {
+      var d = E.otDay(e); if (!d) return;
+      key = E.toISO(d).slice(0, 7);
+      if (!map[key]) map[key] = [];
+      map[key].push(e);
+    });
+    y = E.parts(start).y; m = E.parts(start).m; pe = E.parts(end);
+    while (y < pe.y || (y === pe.y && m <= pe.m)) {
+      key = y + '-' + ('0' + m).slice(-2);
+      s = otHoursOf(map[key] || []);
+      rows.push({ year: y, month: m, label: MONTHS[m - 1].slice(0, 3), cashHours: s.cashHours, timeHours: s.timeHours, totalHours: s.totalHours });
+      m++; if (m > 12) { m = 1; y++; }
+    }
+    return rows;
+  }
+  function otAccrualHtml() {
+    ensureOtScope();
+    var scope = ui.otScope, po = payOpts(), range, title, sub = '', nav, list, s, note;
+    var scopes = [
+      { id: 'period', lab: 'OT period' },
+      { id: 'month', lab: 'Month' },
+      { id: 'quarter', lab: 'Quarter' },
+      { id: 'year', lab: 'Year' }
+    ];
+    var seg = '<div class="seg ot-range-seg" role="tablist" aria-label="OT totals period">' + scopes.map(function (x) {
+      var on = scope === x.id;
+      return '<button type="button" class="' + (on ? 'on' : '') + '" data-act="otScope" data-v="' + x.id + '" role="tab" aria-selected="' + (on ? 'true' : 'false') + '">' + x.lab + '</button>';
+    }).join('') + '</div>';
+    if (scope === 'period') {
+      var pp = E.overtimePeriodFor(T, po).overtime, ppPay = E.overtimePaydayFor(T, po);
+      range = { start: pp.start, end: pp.end };
+      title = fmt(pp.start, 'md') + '\u2013' + fmt(pp.end, 'md');
+      sub = 'expected ' + fmt(ppPay, 'md');
+    } else if (scope === 'month') {
+      range = { start: E.fromYMD(ui.otScopeY, ui.otScopeM, 1), end: E.fromYMD(ui.otScopeM === 12 ? ui.otScopeY + 1 : ui.otScopeY, ui.otScopeM === 12 ? 1 : ui.otScopeM + 1, 1) - 1 };
+      title = MONTHS[ui.otScopeM - 1].slice(0, 3) + ' ' + ui.otScopeY;
+    } else if (scope === 'year') {
+      range = { start: E.fromYMD(ui.otScopeY, 1, 1), end: E.fromYMD(ui.otScopeY, 12, 31) };
+      title = String(ui.otScopeY);
+    } else {
+      var qr = E.quarterRange(ui.otScopeY, ui.otScopeQ) || E.quarterRange(tp.y, E.calendarQuarter(tp.m));
+      range = qr;
+      title = 'Q' + qr.quarter + ' ' + qr.year;
+      sub = OT_QMONTHS[qr.quarter - 1];
+    }
+    list = otInRange(range.start, range.end);
+    s = otHoursOf(list);
+    if (scope === 'period') {
+      nav = '<div class="ot-range-now"><b>' + title + '</b><span>' + sub + '</span></div>';
+    } else {
+      nav = '<div class="yearsel ot-range-nav"><button type="button" class="navbtn" data-act="otScopeStep" data-dir="-1" aria-label="Previous ' + scope + '">&lsaquo;</button><b>' + title + (sub ? '<span class="ot-qmonths">' + sub + '</span>' : '') + '</b><button type="button" class="navbtn" data-act="otScopeStep" data-dir="1" aria-label="Next ' + scope + '">&rsaquo;</button></div>';
+    }
+    note = 'by date worked \u00b7 travel included in Cash or Time as paid \u00b7 ' + payMdNum(range.start) + '\u2013' + payMdNum(range.end);
+    var monthsHtml = '', openMonths;
+    if (scope === 'quarter' || scope === 'year') {
+      openMonths = ui.otMonthsOpen !== false;
+      monthsHtml = '<button type="button" class="otmhd ot-months-tog" data-act="otMonthsToggle" aria-expanded="' + (openMonths ? 'true' : 'false') + '"><span>' + chev(!openMonths) + ' Months</span><span>Cash \u00b7 Time \u00b7 Total</span></button>';
+      if (openMonths) {
+        monthsHtml += '<div class="ot-month-list">';
+        otMonthHourRows(range.start, range.end, list).forEach(function (row) {
+          monthsHtml += '<div class="otmhd ot-month-row"><span>' + row.label + '</span><span>' + hrs(row.cashHours) + ' \u00b7 ' + hrs(row.timeHours) + ' \u00b7 ' + hrs(row.totalHours) + '</span></div>';
+        });
+        monthsHtml += '</div>';
+      }
+    }
+    return '<div class="ot-accrual" data-sec="2a">' + seg + nav +
+      '<div class="tot-row ot-range-tots">' +
+        '<div class="tot"><small>Cash</small><b>' + hrs(s.cashHours) + '</b></div>' +
+        '<div class="tot"><small>Time</small><b>' + hrs(s.timeHours) + '</b></div>' +
+        '<div class="tot"><small>Total</small><b>' + hrs(s.totalHours) + '</b></div>' +
+      '</div>' +
+      (s.travelMinutes ? '<span class="travsum">incl. travel ' + E.fmtHM(s.travelMinutes) + '</span>' : '') +
+      monthsHtml +
+      '<div class="ot-range-note">' + note + '</div></div>';
+  }
   function viewOvertime() {
-    var po = payOpts(), pp = E.overtimePeriodFor(T, po).overtime, ppPay = E.overtimePaydayFor(T, po);
-    var tm = E.fromYMD(tp.y, tp.m, 1), tmEnd = E.fromYMD(tp.m === 12 ? tp.y + 1 : tp.y, tp.m === 12 ? 1 : tp.m + 1, 1) - 1;
-    var a = sumOT(otInRange(pp.start, pp.end)), b = sumOT(otInRange(tm, tmEnd)), c = sumOT(otInRange(E.fromYMD(tp.y, 1, 1), E.fromYMD(tp.y, 12, 31)));
-    function tot(lbl, s, sub) { return '<div class="tot"><small>' + lbl + '</small><b>' + hrs(s.hours) + '</b><span>' + payText(s) + '</span>' + travelSumText(s) + '<em>' + sub + '</em></div>'; }
     var html = suggestBar('Overtime') + otViewSeg();
     if (ui.otView === 'pd') return html + '<button type="button" class="btn primary block" data-act="pdNew" id="pdNewBtn" style="margin:0 0 10px">+ Paid detail</button>' + viewPaidDetailLog();
-    html += '<div class="tot-row" data-sec="2a" style="margin-bottom:12px">' + tot('OT period', a, fmt(pp.start, 'md') + '–' + fmt(pp.end, 'md') + '<br>expected ' + fmt(ppPay, 'md')) + tot('Month', b, MONTHS[tp.m - 1].slice(0, 3) + ' ' + tp.y) + tot('Year', c, String(tp.y)) + '</div>';
+    html += otAccrualHtml();
     html += '<button class="btn primary block" data-act="otNew" data-sec="2b" style="margin-bottom:10px">+ Log overtime</button>';
     html += otTools();
     html += otLogHtml(S.overtime);
@@ -7122,12 +7434,28 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       pdTotBlock('pdPaid', 'Paid', t.paidCount, t.paidMinutes, t.paidAmount) +
       pdTotBlock('pdUnpaid', 'Unpaid', t.unpaidCount, t.unpaidMinutes, t.unpaidAmount) + '</div>';
     html += '<div class="muted" style="font-size:12.5px;margin:0 2px 4px">' + (t.rate ? 'Flat ' + money(t.rate) + '/hr for your rank' : 'Set your rank in Profile to see pay') + '. Kept separate from overtime and the Captain 180-hour cap.</div></div>';
-    var pn = 0, pid; for (pid in (ui.pdSelIds || {})) if (ui.pdSelIds[pid]) pn++;
-    html += '<div class="card pdcard pdlog" data-sec="2g" id="pdLog"><div class="ottools" style="margin:0 0 8px"><button type="button" class="btn sm' + (ui.pdSel ? ' on' : '') + '" data-act="pdSelMode" id="pdSelMode">' + (ui.pdSel ? 'Done selecting' : 'Select') + '</button></div>';
+    var pn = pdSelCount();
+    var pfil = ui.pdFilter || 'all';
+    var unpaidN = items.filter(function (it) { return !pdIsPaid(it.pd); }).length;
+    var shown = items.filter(function (it) {
+      if (pfil === 'unpaid') return !pdIsPaid(it.pd);
+      if (pfil === 'paid') return pdIsPaid(it.pd);
+      return true;
+    });
+    html += '<div class="card pdcard pdlog" data-sec="2g" id="pdLog"><div class="ottools" style="margin:0 0 8px">' +
+      '<button type="button" class="btn sm' + (ui.pdSel ? ' on' : '') + '" data-act="pdSelMode" id="pdSelMode">' + (ui.pdSel ? 'Done selecting' : 'Select') + '</button>' +
+      '<button type="button" class="btn sm' + (pfil === 'unpaid' ? ' on' : '') + '" data-act="pdFilter" data-v="unpaid">Unpaid' + (unpaidN ? ' (' + unpaidN + ')' : '') + '</button>' +
+      '<button type="button" class="btn sm' + (pfil === 'paid' ? ' on' : '') + '" data-act="pdFilter" data-v="paid">Paid</button>' +
+      '<button type="button" class="btn sm' + (pfil === 'all' ? ' on' : '') + '" data-act="pdFilter" data-v="all">All</button>' +
+      (ui.pdSel ? '<button type="button" class="btn sm" data-act="pdMarkPaidBulk" id="pdMarkPaidBulk">Mark paid' + (pn ? ' (' + pn + ')' : '') + '</button>' +
+        '<button type="button" class="btn sm" data-act="pdMarkUnpaid" id="pdMarkUnpaid">Mark unpaid</button>' : '') +
+      '</div>';
     if (!items.length) {
       html += '<div class="empty">No paid details yet. Use + Paid detail to add one.</div>';
+    } else if (!shown.length) {
+      html += '<div class="empty">' + (pfil === 'unpaid' ? 'No unpaid paid details.' : pfil === 'paid' ? 'No paid details marked paid yet.' : 'No paid details yet. Use + Paid detail to add one.') + '</div>';
     } else {
-      otGroupByYearMonth(items, function (it) { return it.work; }).forEach(function (yr) {
+      otGroupByYearMonth(shown, function (it) { return it.work; }).forEach(function (yr) {
         var yItems = []; yr.order.forEach(function (m) { yItems = yItems.concat(yr.months[m]); });
         var yMin = 0, yAmt = 0; yItems.forEach(function (it) { yMin += it.minutes; yAmt += it.amount; });
         var yClosed = otCollapsed('pdy', yr.year);
@@ -7143,7 +7471,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
             var pon = !!(ui.pdSel && ui.pdSelIds && ui.pdSelIds[x.iso]);
             var pchk = ui.pdSel ? '<input type="checkbox" class="otchk" data-act="pdSelOne" data-iso="' + esc(x.iso) + '"' + (pon ? ' checked' : '') + ' aria-label="Select paid detail entry">' : '';
             var pact = ui.pdSel ? 'pdSelOne' : 'day';
-            html += '<div class="swrow' + (pon ? ' sw-sel' : '') + '" data-swipe="pd" data-iso="' + esc(x.iso) + '"><button class="item otitem" data-act="' + pact + '" data-d="' + E.toDay(x.iso) + '" data-iso="' + esc(x.iso) + '"' + (ui.pdSel ? ' aria-pressed="' + (pon ? 'true' : 'false') + '"' : '') + '>' + pchk + '<div class="main"><div class="t1">' + esc(x.pd.vendor || 'Paid Detail') + (x.pd.id ? ' · #' + esc(x.pd.id) : ' · ' + pdIdNeededMark()) + '</div>' +
+            var pPaid = pdIsPaid(x.pd), pPaidIso = E.isISODate(x.pd.paidDate) ? x.pd.paidDate : '', pLbl = pPaid ? ('Paid' + (pPaidIso ? ' ' + E.fmtMDY(pPaidIso) : '')) : 'Unpaid';
+            var pBadge = pPaid
+              ? '<span class="otbadge paid" data-act="otPaidChip" data-kind="pd" data-id="' + esc(x.iso) + '" role="button" aria-label="Remove paid">' + pLbl + '</span>'
+              : '<span class="otbadge unpaid">' + pLbl + '</span>';
+            html += '<div class="swrow' + (pon ? ' sw-sel' : '') + '" data-swipe="pd" data-iso="' + esc(x.iso) + '"><button class="item otitem" data-act="' + pact + '" data-d="' + E.toDay(x.iso) + '" data-iso="' + esc(x.iso) + '"' + (ui.pdSel ? ' aria-pressed="' + (pon ? 'true' : 'false') + '"' : '') + '>' + pchk + '<div class="main"><div class="t1">' + esc(x.pd.vendor || 'Paid Detail') + (x.pd.id ? ' · #' + esc(x.pd.id) : ' · ' + pdIdNeededMark()) + pBadge + '</div>' +
               '<div class="t2">' + fmt(E.toDay(x.work)) + (x.pd.start ? ' · ' + esc(hhmm(x.pd.start)) + (x.pd.end ? '–' + esc(hhmm(x.pd.end)) : '') : '') + '</div></div>' +
               '<div class="right">' + E.fmtHM(x.minutes) + '<small>' + (x.amount ? money(x.amount) : '') + '</small></div></button></div>';
           });
@@ -7345,13 +7677,13 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="pay-sum" data-act="payToggle" data-payday="' + p.payday + '" aria-expanded="' + (open ? 'true' : 'false') + '" aria-controls="' + detId + '">' +
         chev(!open) +
         '<div class="pay-sum-main"><div class="head"><div><b>Payday ' + fmt(p.payday, 'mdy') + '</b>' + tag + '</div></div>' +
-        '<div class="pay-sum-dates"><span>Reg ' + fmt(p.regular.start, 'md') + ' – ' + fmt(p.regular.end, 'md') + '</span><span>OT ' + fmt(p.overtime.start, 'md') + ' – ' + fmt(p.overtime.end, 'md') + '</span></div></div>' +
+        '<div class="pay-sum-dates">Reg ' + payMdNum(p.regular.start) + '\u2013' + payMdNum(p.regular.end) + ' \u00b7 OT ' + payMdNum(p.overtime.start) + '\u2013' + payMdNum(p.overtime.end) + '</div></div>' +
         '<div class="pay-sum-earn"><span class="otpay">OT ' + money(s.pay) + '</span></div></button>' +
         '<div class="pay-detail" id="' + detId + '"' + (open ? '' : ' hidden') + '>' +
         (function () {
           var items = E.regularPeriodExcusals(S.leave, p.regular.start, p.regular.end);
-          var line = E.formatRegularPeriodExcusalLine(items, fmt(p.regular.start, 'md'), fmt(p.regular.end, 'md'));
-          return line ? '<p class="pay-reg-excusals" data-sec="3b-excusals">' + esc(line) + '</p>' : '';
+          var line = E.formatRegularPeriodExcusalLine(items, payMdNum(p.regular.start), payMdNum(p.regular.end));
+          return line ? '<p class="pay-reg-excusals" data-sec="3b2">' + esc(line) + '</p>' : '';
         })() +
         '<div class="pblock' + (isOT ? ' on' : '') + '"><div class="ph"><span>Overtime period' + (isOT ? ' <em>CURRENT</em>' : '') + '</span><span>' + fmt(p.overtime.start, 'md') + ' – ' + fmt(p.overtime.end, 'md') + '</span></div>' +
         '<div class="grid3">' +
@@ -7368,7 +7700,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     th = Math.round(th * 100) / 100;
     return suggestBar('Pay') + payBannerHtml(y, periods) + '<div class="card" data-sec="3a">' +
       '<div class="tot-row"><div class="tot"><small>Paydays</small><b>' + periods.length + '</b></div><div class="tot"><small>OT hours paid</small><b>' + hrs(th) + '</b></div><div class="tot"><small>Est. OT pay</small><b style="font-size:17px">' + money(tpay) + '</b>' + (ttr ? '<span class="travsum" id="payYearTravel">incl. travel ' + E.fmtHM(ttr) + (ttrp ? ' &middot; ' + money(ttrp) : '') + '</span>' : '') + '</div>' +
-      '<div class="tot"><small>Chart time</small><b>' + (ctY.pendingDays && !ctY.minutes ? 'Pending' : E.fmtChart(ctY.minutes)) + '</b>' + (ctY.pendingDays ? '<em>' + ctY.pendingDays + ' day' + (ctY.pendingDays === 1 ? '' : 's') + ' pending</em>' : '<em>accrued this year</em>') + '</div></div></div>' + cards;
+      '<div class="tot"><small>Chart time</small><b>' + (ctY.pendingDays && !ctY.minutes ? 'Pending' : E.fmtChart(ctY.minutes)) + '</b>' + (ctY.pendingDays ? '<em>' + ctY.pendingDays + ' day' + (ctY.pendingDays === 1 ? '' : 's') + ' pending</em>' : '<em>accrued this year</em>') + '</div></div></div>' + cards + '<i class="pay-end-space" aria-hidden="true"></i>';
   }
 
   function viewLeave() {
@@ -9216,7 +9548,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="btn sm chip' + (ui.dirHospLevel1 ? ' on' : '') + '" data-act="hospChip" data-filter="level1" aria-pressed="' + (ui.dirHospLevel1 ? 'true' : 'false') + '">Level 1 Trauma</button>' +
       '</div>' +
       '</div>' +
-      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r101 · patrol-test-651032b420df</p></div>' +
+      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r102 · patrol-test-c0ff3b9783d4</p></div>' +
       '</div>';
     var mapTools = '<div class="dir-map-chrome">' +
       '<div class="dir-map-search"><input id="dirQ" class="dirq acIn" data-ac="map" type="text" value="' + esc(q) + '" placeholder="Search an address or precinct" aria-label="Search an address or precinct" autocomplete="off"></div>' +
@@ -9476,7 +9808,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var on = !!pd.paid;
     var amt = pd.amount ? String(pd.amount) : '';
     return '<div class="field pdpaysec" data-sec="19g">' +
-      '<div class="pdpayhd"><button type="button" class="btn pdpaidbtn' + (on ? ' on' : '') + '" id="pdPaidBtn" data-act="pdTogglePaid" aria-pressed="' + (on ? 'true' : 'false') + '">' + (on ? 'Paid ✓' : 'Paid') + '</button>' +
+      '<div class="pdpayhd"><button type="button" class="btn pdpaidbtn' + (on ? ' on' : '') + '" id="pdPaidBtn" data-act="pdTogglePaid" aria-pressed="' + (on ? 'true' : 'false') + '">' + pdPaidLabel(on) + '</button>' +
       '<span class="hint">Mark when you receive payment for this detail</span></div>' +
       '<input type="hidden" id="pdPaidFlag" value="' + (on ? '1' : '0') + '">' +
       '<div class="datepair pdcalpair">' + pdCalCap('pdPaidDate', 'Paid date', pd.paidDate, '') + pdCalCap('pdCheckDate', 'Check date', pd.checkDate, 'This is the date printed on the check, not the day you received it.') + '</div>' +
@@ -9494,7 +9826,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     pd = E.cleanPaidDetail(pd || {});
     var on = !!pd.paid;
     return '<div class="pdsumpay">' +
-      '<button type="button" class="btn sm pdpaidbtn' + (on ? ' on' : '') + '" data-act="pdMarkPaid" data-iso="' + esc(iso) + '" aria-pressed="' + (on ? 'true' : 'false') + '">' + (on ? 'Paid ✓' : 'Paid') + '</button>' +
+      '<button type="button" class="btn sm pdpaidbtn' + (on ? ' on' : '') + '" data-act="pdMarkPaid" data-iso="' + esc(iso) + '" id="pdMarkPaidBtn" aria-pressed="' + (on ? 'true' : 'false') + '">' + pdPaidLabel(on) + '</button>' +
       '<div class="datepair pdcalpair">' +
       pdCalCap('pdSumPaidDate', 'Paid date', pd.paidDate, '') +
       pdCalCap('pdSumCheckDate', 'Check date', pd.checkDate, 'This is the date printed on the check, not the day you received it.') +
@@ -9845,15 +10177,17 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (id === 'pdPaidDate' && iso) {
       var flag = document.getElementById('pdPaidFlag'), pbtn = document.getElementById('pdPaidBtn');
       if (flag) flag.value = '1';
-      if (pbtn) { pbtn.classList.add('on'); pbtn.setAttribute('aria-pressed', 'true'); pbtn.textContent = 'Paid ✓'; }
+      if (pbtn) { pbtn.classList.add('on'); pbtn.setAttribute('aria-pressed', 'true'); pbtn.textContent = pdPaidLabel(true); }
     }
     if (id === 'pdSumPaidDate' || id === 'pdSumCheckDate') pdSaveDatesFromSummary(id === 'pdSumPaidDate' ? 'paidDate' : 'checkDate', iso);
     if (id === 'otBulkPaid') {
       if (!iso) { toast('Pick the date you were paid'); return; }
+      var snapB = snapshotOtPaid();
       var n = applyOtPaidDate(iso);
       ui.otSel = false; ui.otSelIds = {};
-      miniCalClose(); save(); render();
-      toast(n ? ('Marked ' + n + ' overtime ' + (n === 1 ? 'entry' : 'entries') + ' paid ' + E.fmtMDY(iso)) : 'Select overtime entries first');
+      miniCalClose(); save(); render(); refreshPayOtSheetIfOpen();
+      if (n) toastPaidUndo('Marked ' + n + ' overtime ' + (n === 1 ? 'entry' : 'entries') + ' paid ' + E.fmtMDY(iso), function () { restoreOtPaid(snapB); });
+      else toast('Select overtime entries first');
       return;
     }
     pdTimingRefresh();
@@ -9863,7 +10197,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var sec = document.getElementById('pdSec'); if (!sec) return;
     var day = sec.dataset.iso; if (!day || !S.assignments[day]) return;
     var pd = E.cleanPaidDetail((S.assignments[day] || {}).pd || {});
-    if (field === 'paidDate') { pd.paidDate = iso || ''; if (iso) pd.paid = true; }
+    if (field === 'paidDate') { pd.paidDate = iso || ''; pd.paid = !!iso; }
     if (field === 'checkDate') pd.checkDate = iso || '';
     var cur = Object.assign({}, S.assignments[day], { pd: pd });
     var asg = E.cleanAssignment(cur);
@@ -10073,7 +10407,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     set('pdAmount', pd.amount ? String(pd.amount) : '');
     var flag = document.getElementById('pdPaidFlag'); if (flag) flag.value = pd.paid ? '1' : '0';
     var pbtn = document.getElementById('pdPaidBtn');
-    if (pbtn) { pbtn.classList.toggle('on', !!pd.paid); pbtn.setAttribute('aria-pressed', pd.paid ? 'true' : 'false'); pbtn.textContent = pd.paid ? 'Paid ✓' : 'Paid'; }
+    if (pbtn) { pbtn.classList.toggle('on', !!pd.paid); pbtn.setAttribute('aria-pressed', pd.paid ? 'true' : 'false'); pbtn.textContent = pdPaidLabel(!!pd.paid); }
     if (typeof pdSetCal === 'function') { pdSetCal('pdPaidDate', pd.paidDate); pdSetCal('pdCheckDate', pd.checkDate); }
     if (pd.date) setDateCap('pdStartDate', pd.date, 'auto');
     if (pd.endDate) setDateCap('pdEndDate', pd.endDate, 'auto');
@@ -11544,7 +11878,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div id="endNote" class="endnote" role="status" aria-live="polite" hidden></div>' +
       '<div id="shortBox" class="shortbox" data-sel="' + esc(ov.short && ov.short.type || '') + '" hidden><div class="sbq" id="shortQ">Which balance should be charged?</div><div class="shortopts">' +
         C.shortLeaveTypes.map(function (k) { var on = ov.short && ov.short.type === k; return '<button type="button" class="pick' + (on ? ' on' : '') + '" aria-pressed="' + !!on + '" data-act="shortPick" data-t="' + k + '">' + esc(C.shortLeaveLabels[k]) + '</button>'; }).join('') +
-        '</div><div class="err" id="shortErr"></div></div></div>';
+        '</div>' +
+        '<div class="row short-hm" id="shortHMWrap"><div class="field"><label for="shortH">Hours</label><input id="shortH" class="shortHmIn" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="0" value="' + (ov.short && ov.short.minutes ? String(Math.floor(ov.short.minutes / 60)) : '') + '" aria-label="Hours used"></div><div class="field"><label for="shortM">Minutes</label><input id="shortM" class="shortHmIn" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="00" value="' + (ov.short && ov.short.minutes ? String(ov.short.minutes % 60) : '') + '" aria-label="Minutes used"></div></div>' +
+        '<div class="hint">Enter the time used as hours and minutes. Leaving early fills this for you; you can edit it.</div>' +
+        '<div class="err" id="shortErr"></div></div></div>';
     var lenFields = '<div id="tourLenWrap">' + workedBlock + pduBox +
       (addEntry ? '<input type="hidden" id="dayLen" value="">' : lenOverrideHtml(ov, regLen)) + '</div>';
     if (t.dd && !addEntry) {
@@ -11736,11 +12073,37 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var noteCls = 'endnote' + (c ? ' ' + c.kind : '');
     if (c && c.kind === 'late') setEndNote('<b>Ended ' + mm(c.delta || (c.otMin || 0)) + ' late</b>' + (c.sched ? ' (scheduled ' + esc(c.sched) + ')' : '') + '. No overtime: OT starts at ' + C.otThresholdMin + ' minutes past the scheduled end.', noteCls);
     else if (c && c.kind === 'ot') setEndNote('<b>Overtime: ' + E.fmtHM(c.otMin) + '</b>' + (c.sched ? ' (' + esc(c.sched) + '&ndash;' + esc(c.end) + ')' : '') + '. Saved to your Overtime log for this day.' + (box ? otEditHtml(E.toISO(+box.dataset.d)) : ''), noteCls);
-    else if (c && c.kind === 'early') { setEndNote('<b>Ended ' + mm(c.shortMin) + ' early</b>' + (c.sched ? ' (scheduled ' + esc(c.sched) + ')' : '') + '.', noteCls); document.getElementById('shortQ').textContent = 'Charge ' + E.fmtHM(c.shortMin) + ' to which balance?'; }
+    else if (c && c.kind === 'early') { setEndNote('<b>Ended ' + mm(c.shortMin) + ' early</b>' + (c.sched ? ' (scheduled ' + esc(c.sched) + ')' : '') + '.', noteCls); document.getElementById('shortQ').textContent = 'Charge ' + E.fmtHM(c.shortMin) + ' to which balance?'; if (typeof fillShortHM === 'function') fillShortHM(c.shortMin); }
     else setEndNote('', noteCls);
     note.hidden = !(c && c.kind !== 'on');
     syncSchedBoxVisibility();
     return c;
+  }
+  function fillShortHM(min) {
+    var h = document.getElementById('shortH'), m = document.getElementById('shortM');
+    if (!h || !m) return;
+    if (h.dataset.touched || m.dataset.touched) return;
+    min = Math.max(0, Math.round(min || 0));
+    h.value = String(Math.floor(min / 60));
+    m.value = String(min % 60);
+  }
+  function readShortHM() {
+    var hEl = document.getElementById('shortH'), mEl = document.getElementById('shortM');
+    if (!hEl && !mEl) return null;
+    var hs = (hEl && hEl.value || '').trim(), ms = (mEl && mEl.value || '').trim();
+    if (!hs && !ms) return null;
+    if (ms && !hs && /^\d+(\.\d+)?$/.test(ms) && +ms > 59) {
+      var migrated = E.parseHM(ms) || E.parseBalanceHM(ms);
+      if (migrated) return migrated;
+    }
+    if (!ms && hs && /^\d+(\.\d+)?$/.test(hs) && !/^\d+$/.test(hs)) {
+      var dec = E.parseHM(hs) || E.parseBalanceHM(hs);
+      if (dec) return dec;
+    }
+    var h = hs === '' ? 0 : +hs, m = ms === '' ? 0 : +ms;
+    if (!isFinite(h) || !isFinite(m) || h < 0 || m < 0 || m > 59) return null;
+    var tot = Math.round(h * 60 + m);
+    return tot > 0 ? tot : null;
   }
   function slipKindOf(iso) { var m = (S.slips || {})[iso], k = m && E.slipKind ? E.slipKind(m.kind) : null; return k && k.label ? k.label : 'Slip'; }
   function deleteDayNow(d) {
@@ -11829,18 +12192,23 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         if (!E.isISODate(paid)) { toast('Pick the date you were paid'); return false; }
         if (kind === 'ot') {
           var ids = {}; ids[key] = true;
+          var snapOt = snapshotOtPaid(ids);
           var n = applyOtPaidDate(paid, ids);
-          render();
-          toast(n ? ('Marked paid ' + E.fmtMDY(paid)) : 'Couldn\'t mark paid');
+          render(); refreshPayOtSheetIfOpen();
+          if (n) toastPaidUndo('Marked paid ' + E.fmtMDY(paid), function () { restoreOtPaid(snapOt); });
+          else toast('Couldn\'t mark paid');
         } else {
           if (!S.assignments[key]) return;
+          var isos = {}; isos[key] = true;
+          var snapPd = snapshotPdPaid(isos);
           var rec = Object.assign({}, S.assignments[key]);
           var pd2 = E.cleanPaidDetail(rec.pd || {});
           pd2.paid = true; pd2.paidDate = paid; pd2.checkDate = check;
           rec.pd = pd2;
           var asg = E.cleanAssignment(rec);
           if (asg) S.assignments[key] = Object.assign(asg, { updated: new Date().toISOString() });
-          save(); render(); toast('Marked paid ' + E.fmtMDY(paid) + (check ? ' · check ' + E.fmtMDY(check) : ''));
+          save(); render();
+          toastPaidUndo('Marked paid ' + E.fmtMDY(paid) + (check ? ' \u00b7 check ' + E.fmtMDY(check) : ''), function () { restorePdPaid(snapPd); });
         }
       }
     });
@@ -11917,7 +12285,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     SW.row = null; SW.id = 0; SW.axis = ''; SW.locked = false; SW.dx = 0;
     row.classList.remove('swiping');
     if (axis === 'x' && Math.abs(dx) >= 8) { SW.suppressClick = true; SW.suppressRow = row; }
-    if (axis === 'x' && dx >= SW_THRESH) { swipeClear(row, true); if (swipeCanPay(kind)) openSwipePaidDialog(kind, key); return; }
+    if (axis === 'x' && dx >= SW_THRESH) { swipeClear(row, true); if (swipeCanPay(kind)) { if (entryIsPaid(kind, key)) openRemovePaidDialog(kind, key); else openSwipePaidDialog(kind, key); } return; }
     if (axis === 'x' && dx <= -SW_THRESH) { swipeClear(row, true); openSwipeDeleteDialog(kind, key, row); return; }
     swipeClear(row, true);
   }
@@ -12191,6 +12559,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       otCompField(e) + travelField(e) +
       '<div class="card otpaycard" data-sec="8g" style="background:#f5f7fb;margin-bottom:12px"><b id="otPreview">0 h &middot; $0.00</b><div class="muted otrate" id="otRateLine"></div><div class="muted otnxnote" id="otNxNote" hidden></div></div>' +
       '<div class="field" data-sec="8h"><label for="otNotes">Notes</label><textarea id="otNotes" placeholder="Case #, location, approving supervisor...">' + esc(e.notes || '') + '</textarea></div>' +
+      (entry ? (otIsPaid(e)
+        ? '<button type="button" class="btn block" data-act="otUnmarkPaidOne" data-id="' + esc(e.id) + '" id="otUnmarkPaidOne" style="margin-top:8px">Unmark paid</button>'
+        : '<button type="button" class="btn block" data-act="otMarkPaidOne" data-id="' + esc(e.id) + '" id="otMarkPaidOne" style="margin-top:8px">Mark paid</button>') : '') +
       '<button class="btn primary block" data-act="otSave">' + (entry ? 'Save changes' : 'Add overtime') + '</button>' +
       (entry ? '<button class="btn danger block" data-act="otDelete" style="margin-top:8px">Delete entry</button>' : '') + '</form>');
     otPreview(); otTravResolve();
@@ -12444,7 +12815,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="' + ((s.defaultCalendar || 'google') === 'apple' ? 'on' : '') + '" data-act="calDefault" data-v="apple">Apple</button></div>' +
       '<h3 style="margin-top:20px" data-sec="9m">Subscribe to calendar</h3>' + calendarSubscribeHtml() +
       '<button class="btn danger block" data-act="reset" data-sec="9k" style="margin-top:20px">Erase all data</button>' +
-      '<p class="build-tag muted" id="appBuildTag">Build r101 · patrol-test-651032b420df</p>');
+      '<p class="build-tag muted" id="appBuildTag">Build r102 · patrol-test-c0ff3b9783d4</p>');
   }
 
   // ---------- Day summary: what's saved on a date; tap an entry to view or change it ----------
@@ -13007,7 +13378,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (!rdoOt && end && !effStart) { document.getElementById('dayEnd-err').textContent = 'Set the tour start first'; return toast('Set a tour start to use a tour end'); }
       if (ec && ec.kind === 'early') {
         var sbt = document.getElementById('shortBox').dataset.sel; if (!sbt) { var se2 = document.getElementById('shortErr'); se2.textContent = 'Pick Comp time, Chart time or Vacation time'; document.getElementById('shortBox').scrollIntoView({ block: 'center' }); return toast('Pick which balance to charge for leaving early'); }
-        shortSel = { type: sbt, minutes: ec.shortMin };
+        var typedMin = readShortHM(), chargeMin = typedMin || ec.shortMin;
+        if (!(chargeMin > 0)) { document.getElementById('shortErr').textContent = 'Enter hours and minutes'; return toast('Enter the time used as hours and minutes'); }
+        shortSel = { type: sbt, minutes: chargeMin };
       }
       if (!rdoOt) { if (len === sc.len) len = null; if (start === sc.start) start = ''; } // keep only real changes; blank = scheduled (PDU keeps the PM/AM length when only the start moves)
       var stampTimes = function (o) {
@@ -13315,18 +13688,20 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var flag = document.getElementById('pdPaidFlag'), btn = document.getElementById('pdPaidBtn');
       var on = !(flag && flag.value === '1');
       if (flag) flag.value = on ? '1' : '0';
-      if (btn) { btn.classList.toggle('on', on); btn.setAttribute('aria-pressed', on ? 'true' : 'false'); btn.textContent = on ? 'Paid ✓' : 'Paid'; }
+      if (btn) { btn.classList.toggle('on', on); btn.setAttribute('aria-pressed', on ? 'true' : 'false'); btn.textContent = pdPaidLabel(on); }
+      if (!on) { if (typeof pdSetCal === 'function') { pdSetCal('pdPaidDate', ''); pdSetCal('pdCheckDate', ''); } }
+      else if (typeof pdSetCal === 'function') {
+        var p = document.getElementById('pdPaidDate');
+        if (p && !p.dataset.iso) pdSetCal('pdPaidDate', E.toISO(T));
+      }
       pdTimingRefresh();
     },
     pdMarkPaid: function (t) {
       var iso = t.dataset.iso || ((document.getElementById('pdSec') || {}).dataset || {}).iso;
       if (!iso || !S.assignments[iso]) return;
       var pd = E.cleanPaidDetail((S.assignments[iso] || {}).pd || {});
-      pd.paid = !pd.paid;
-      var cur = Object.assign({}, S.assignments[iso], { pd: pd });
-      var asg = E.cleanAssignment(cur);
-      if (asg) S.assignments[iso] = Object.assign(asg, { updated: new Date().toISOString() });
-      save(); pdRefreshDaySection();
+      if (pdIsPaid(pd)) openRemovePaidDialog('pd', iso);
+      else openSwipePaidDialog('pd', iso);
     },
     miniCal: function (t) { miniCalOpen(t.id, t.dataset.iso); },
     mcalPrev: function () { MC.m--; if (MC.m < 0) { MC.m = 11; MC.y--; } miniCalRender(); },
@@ -13488,6 +13863,22 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       commitOvertimeDelete(id, true);
     },
     otView: function (t) { ui.otView = t.dataset.v === 'pd' ? 'pd' : 'ot'; ui.otSel = false; ui.otSelIds = {}; ui.pdSel = false; ui.pdSelIds = {}; render(); },
+    otScope: function (t) { ui.otScope = t.dataset.v || 'quarter'; ensureOtScope(); render(); },
+    otScopeStep: function (t) {
+      ensureOtScope();
+      var dir = +t.dataset.dir || 0, n, m, y;
+      if (ui.otScope === 'quarter') {
+        n = E.shiftQuarter(ui.otScopeY, ui.otScopeQ, dir);
+        if (n) { ui.otScopeY = n.year; ui.otScopeQ = n.quarter; }
+      } else if (ui.otScope === 'month') {
+        m = ui.otScopeM + dir; y = ui.otScopeY;
+        while (m < 1) { m += 12; y--; }
+        while (m > 12) { m -= 12; y++; }
+        ui.otScopeM = m; ui.otScopeY = y;
+      } else if (ui.otScope === 'year') ui.otScopeY += dir;
+      render();
+    },
+    otMonthsToggle: function () { ui.otMonthsOpen = ui.otMonthsOpen === false; render(); },
     otToggle: function (t) { otToggleCollapse(t.dataset.k, t.dataset.v); render(); },
     otSelMode: function () { ui.otSel = !ui.otSel; if (!ui.otSel) ui.otSelIds = {}; render(); },
     pdSelMode: function () { ui.pdSel = !ui.pdSel; if (!ui.pdSel) ui.pdSelIds = {}; render(); },
@@ -13519,9 +13910,65 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var n = otSelCount(payOtEntries());
       if (!n) return toast('Select at least one entry.');
       if (!confirm('Clear the paid date on ' + n + ' overtime ' + (n === 1 ? 'entry' : 'entries') + ' and mark them unpaid?')) return;
+      var snapU = snapshotOtPaid();
       applyOtPaidDate('');
       ui.otSel = false; ui.otSelIds = {};
-      save(); render(); toast('Marked unpaid');
+      save(); render(); refreshPayOtSheetIfOpen();
+      toastPaidUndo('Marked unpaid', function () { restoreOtPaid(snapU); });
+    },
+    otMarkPaidOne: function (t) { var id = t.dataset.id; if (id) openSwipePaidDialog('ot', id); },
+    otUnmarkPaidOne: function (t) {
+      var id = t.dataset.id, e = overtimeById(id); if (!e) return;
+      var ids = {}; ids[id] = true;
+      var snap = snapshotOtPaid(ids);
+      applyOtPaidDate('', ids);
+      closeSheet(); render(); refreshPayOtSheetIfOpen();
+      toastPaidUndo('Marked unpaid', function () { restoreOtPaid(snap); });
+    },
+    otPaidChip: function (t) {
+      var kind = t.dataset.kind || 'ot', key = t.dataset.id;
+      if (!key) return;
+      if (entryIsPaid(kind, key)) openRemovePaidDialog(kind, key);
+      else if (kind === 'ot') openSwipePaidDialog('ot', key);
+      else openSwipePaidDialog('pd', key);
+    },
+    toastUndo: function () {
+      var fn = toast._undo; toast._undo = null;
+      var el = document.getElementById('toast');
+      if (el) el.classList.remove('show');
+      clearTimeout(toast._t);
+      if (fn) fn();
+    },
+    pdFilter: function (t) { ui.pdFilter = t.dataset.v || 'all'; render(); },
+    pdMarkPaidBulk: function () {
+      var n = pdSelCount();
+      if (!n) return toast('Select at least one entry.');
+      var todayIso = E.toISO(T);
+      confirmDlg({
+        title: 'Mark paid',
+        body: '<p>Mark ' + n + ' paid detail ' + (n === 1 ? 'entry' : 'entries') + ' as paid.</p><div class="datepair pdcalpair">' + pdCalCap('swipePaidDate', 'Paid date', todayIso, '') + pdCalCap('swipeCheckDate', 'Check date', '', 'This is the date printed on the check, not the day you received it.') + '</div>',
+        ok: 'Mark paid',
+        onOk: function () {
+          var p = document.getElementById('swipePaidDate'), c = document.getElementById('swipeCheckDate');
+          var paid = (p && p.dataset.iso) || '', check = (c && c.dataset.iso) || '';
+          if (!E.isISODate(paid)) { toast('Pick the date you were paid'); return false; }
+          var isos = pdSelSet(), snap = snapshotPdPaid(isos);
+          var m = applyPdPaid(paid, check, isos);
+          ui.pdSel = false; ui.pdSelIds = {};
+          render();
+          if (m) toastPaidUndo('Marked ' + m + ' paid detail ' + (m === 1 ? 'entry' : 'entries') + ' paid ' + E.fmtMDY(paid), function () { restorePdPaid(snap); });
+        }
+      });
+    },
+    pdMarkUnpaid: function () {
+      var n = pdSelCount();
+      if (!n) return toast('Select at least one entry.');
+      if (!confirm('Clear the paid and check dates on ' + n + ' paid detail ' + (n === 1 ? 'entry' : 'entries') + ' and mark them unpaid?')) return;
+      var isos = pdSelSet(), snap = snapshotPdPaid(isos);
+      applyPdPaid('', '', isos);
+      ui.pdSel = false; ui.pdSelIds = {};
+      render();
+      toastPaidUndo('Marked unpaid', function () { restorePdPaid(snap); });
     },
     heInv: function (t) {
       var on = t.dataset.v === '1', inp = document.getElementById('heInvestigative');
@@ -13605,7 +14052,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       S.settings.multiplier = m;
       var dcEl = document.querySelector('#stCalSeg button.on'), dc = dcEl && dcEl.dataset.v;
       if (dc === 'google' || dc === 'apple') S.settings.defaultCalendar = dc;
-      var lb = {}, lbBad = ''; C.shortLeaveTypes.forEach(function (k) { var v = document.getElementById('lb-' + k).value.trim(); if (!v) return; var mn = /^\d{1,4}:[0-5]\d$/.test(v) ? +v.split(':')[0] * 60 + +v.split(':')[1] : /^\d+(\.\d+)?$/.test(v) ? Math.round(parseFloat(v) * 60) : null; if (mn === null) lbBad = C.shortLeaveLabels[k]; else lb[k] = mn; });
+      var lb = {}, lbBad = ''; C.shortLeaveTypes.forEach(function (k) { var el = document.getElementById('lb-' + k); var v = el ? el.value.trim() : ''; if (!v) return; var mn = E.parseBalanceHM(v); if (mn === null) lbBad = C.shortLeaveLabels[k]; else lb[k] = mn; });
       if (lbBad) return toast(lbBad + ' balance: use H:MM (e.g. 40:00)');
       S.settings.leaveBalances = lb;
       save(); closeSheet(); render(); toast('Settings saved');
@@ -14159,6 +14606,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (ev.target.id === 'pdVendorQ') pdRenderVendors(ev.target.value);
     if (/^pd(Start|End|Dur)$/.test(ev.target.id)) pdRemind();
     if (ev.target.id === 'pdAmount') { pdAmtHint(); if (typeof pdPayFrom === 'function') { var form = document.getElementById('pdForm'); pdPayFrom(readPaid(), form && form.dataset.iso); } }
+    if (ev.target.classList.contains('shortHmIn')) ev.target.dataset.touched = '1';
     if (ev.target.classList.contains('tourIn')) {
       // auto-colon; keep the caret after the same number of digits it followed before formatting
       var inp = ev.target, raw = inp.value, pos = inp.selectionStart == null ? raw.length : inp.selectionStart;
