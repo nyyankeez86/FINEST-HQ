@@ -241,7 +241,8 @@ h3{font-size:17px;margin:0 0 6px}
 .period .pay-detail[hidden]{display:none!important}
 .yearsel{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:10px}
 .yearsel b{font-size:19px;min-width:60px;text-align:center}
-.payban{position:sticky;top:var(--hdrh,72px);z-index:15;background:var(--bg);margin:0 -14px 10px;padding:8px 14px 10px;border-bottom:1px solid var(--line);box-shadow:0 6px 12px rgba(15,23,42,.06);display:flex;flex-direction:column;gap:6px}
+.payban{position:fixed;top:var(--hdrh,72px);left:var(--paybanl,0px);width:var(--paybanw,100%);max-width:560px;box-sizing:border-box;z-index:15;background:var(--bg);margin:0;padding:8px 14px 10px;border-bottom:1px solid var(--line);box-shadow:0 6px 12px rgba(15,23,42,.06);display:flex;flex-direction:column;gap:6px;overflow:visible}
+.payban-slot{height:var(--paybanh,0px);margin:0 0 10px;flex:none;pointer-events:none}
 .payban-row{display:flex;align-items:center;gap:8px;min-width:0}
 .payban .yearsel{margin:0;gap:4px;flex:0 0 auto}
 .payban .yearsel b{font-size:16px;min-width:44px;color:#0000FF}
@@ -249,12 +250,15 @@ h3{font-size:17px;margin:0 0 6px}
 .payban .navbtn:disabled{opacity:.35;cursor:not-allowed}
 .payban-next{flex:1 1 auto;min-width:0;min-height:36px;padding:0 10px;font-size:13px;color:#0000FF;border-color:#0000FF;white-space:nowrap}
 .payban-pick{position:relative;min-width:0}
-.payban-pickbtn{width:100%;box-sizing:border-box;min-height:36px;padding:0 10px;border:1px solid var(--line);border-radius:10px;background:#fff;font:inherit;font-weight:700;font-size:13px;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;color:var(--ink)}
+.payban-pickbtn{width:100%;box-sizing:border-box;min-height:36px;height:auto;padding:6px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;font:inherit;font-weight:700;font-size:12.5px;text-align:left;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;cursor:pointer;color:var(--ink)}
+.payban-pickbtn-lab{flex:1 1 auto;min-width:0;overflow-wrap:anywhere;white-space:normal;line-height:1.25}
 .payban-pickbtn[aria-expanded="true"]{border-color:#0000FF;box-shadow:0 0 0 2px rgba(0,0,255,.12)}
 .payban-menu{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:16;background:#fff;border:1px solid var(--line);border-radius:12px;max-height:min(50vh,360px);overflow:auto;-webkit-overflow-scrolling:touch;box-shadow:0 10px 28px rgba(15,23,42,.18);padding:4px}
 .payban-menu[hidden]{display:none!important}
-.payban-opt{display:block;width:100%;box-sizing:border-box;text-align:left;border:0;background:none;font:inherit;font-weight:600;font-size:13.5px;padding:10px 12px;min-height:44px;border-radius:8px;cursor:pointer;color:var(--ink)}
+.payban-opt{display:flex;align-items:flex-start;flex-wrap:wrap;gap:4px 6px;width:100%;box-sizing:border-box;text-align:left;border:0;background:none;font:inherit;font-weight:600;font-size:12.5px;padding:8px 10px;min-height:44px;border-radius:8px;cursor:pointer;color:var(--ink);white-space:normal;overflow-wrap:anywhere;line-height:1.3}
+.payban-opt-main{flex:1 1 12em;min-width:0;overflow-wrap:anywhere}
 .payban-opt.on,.payban-opt[aria-selected="true"]{background:#0000FF;color:#fff}
+.payban-opt.on .muted,.payban-opt[aria-selected="true"] .muted{color:rgba(255,255,255,.88)}
 .payban-opt:focus-visible,.payban .navbtn:focus-visible,.payban-next:focus-visible,.payban-pickbtn:focus-visible{outline:2px solid #0000FF;outline-offset:2px}
 .lv-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .lv-card{border-radius:12px;padding:12px;color:#fff}
@@ -6276,8 +6280,16 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         payScrollTo(pdJump, true);
       } else if (ui.scrollCurrent) {
         ui.scrollCurrent = false;
-        var c = document.getElementById('curPeriod'); if (c) c.scrollIntoView({ block: 'start' });
+        var c = document.getElementById('curPeriod');
+        if (c && c.dataset.payday) payScrollTo(+c.dataset.payday, false, 'auto');
+        else if (c) {
+          var yOff = window.scrollY + c.getBoundingClientRect().top - payBannerOffset();
+          window.scrollTo({ top: Math.max(0, yOff), behavior: 'auto' });
+        }
       }
+    } else {
+      var rootBan = document.documentElement;
+      if (rootBan) rootBan.style.setProperty('--paybanh', '0px');
     }
     if (!onb && ui.tab === 'schedule') startRetireTick(); else stopRetireTick();
     if (ui.scrollLeave) {
@@ -7067,29 +7079,78 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function payDayYear(d) { return +E.toISO(d).slice(0, 4); }
   function payYearHasPeriods(y) { return E.payPeriodsInYear(y, payOpts()).length > 0; }
   function syncPayBannerSticky() {
-    var h = document.querySelector('header.top'), ban = document.getElementById('payBanner'), root = document.documentElement;
+    var h = document.querySelector('header.top'), ban = document.getElementById('payBanner'), app = document.getElementById('app'), root = document.documentElement;
     if (!root) return;
-    root.style.setProperty('--hdrh', Math.round((h && h.getBoundingClientRect().height) || 72) + 'px');
-    root.style.setProperty('--paybanh', Math.round((ban && ban.getBoundingClientRect().height) || 0) + 'px');
+    var hdrH = Math.round((h && h.getBoundingClientRect().height) || 72);
+    root.style.setProperty('--hdrh', hdrH + 'px');
+    if (!ban) { root.style.setProperty('--paybanh', '0px'); return; }
+    var ar = (app || document.body).getBoundingClientRect();
+    root.style.setProperty('--paybanl', Math.round(ar.left) + 'px');
+    root.style.setProperty('--paybanw', Math.max(0, Math.round(ar.width)) + 'px');
+    void ban.offsetHeight;
+    root.style.setProperty('--paybanh', Math.round(ban.getBoundingClientRect().height || 0) + 'px');
+  }
+  function payBannerOffset() {
+    syncPayBannerSticky();
+    var root = document.documentElement, cs = getComputedStyle(root);
+    return (parseFloat(cs.getPropertyValue('--hdrh')) || 72) + (parseFloat(cs.getPropertyValue('--paybanh')) || 0) + 8;
   }
   function closePayPick() {
     var m = document.getElementById('payPickList'), b = document.getElementById('payPickBtn');
     if (m) m.hidden = true;
     if (b) b.setAttribute('aria-expanded', 'false');
   }
-  function payScrollTo(payday, open) {
-    var card = document.querySelector('.period[data-payday="' + payday + '"]');
+  function payScrollTo(payday, open, behavior) {
+    var card = document.querySelector('.period[data-payday="' + payday + '"]') || (payday === 'cur' ? document.getElementById('curPeriod') : null);
     if (!card) return false;
     if (open) payApplyOpen(card, true);
-    syncPayBannerSticky();
-    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    var y = window.scrollY + card.getBoundingClientRect().top - payBannerOffset();
+    window.scrollTo({ top: Math.max(0, y), behavior: behavior || 'smooth' });
     return true;
+  }
+  function payMdNum(n) {
+    var d = new Date(n * E.DAY);
+    return (d.getUTCMonth() + 1) + '/' + d.getUTCDate();
+  }
+  function payPeriodRangeText(p) {
+    return fmt(p.payday, 'mdy') + ' (Reg ' + payMdNum(p.regular.start) + '\u2013' + payMdNum(p.regular.end) + ', OT ' + payMdNum(p.overtime.start) + '\u2013' + payMdNum(p.overtime.end) + ')';
+  }
+  function payPeriodMarkers(p) {
+    if (p.payday >= T && p.payday - T < 14) return ' <span class="nowtag">NEXT</span>';
+    if (p.payday < T) return ' <span class="muted" style="font-size:12px">paid</span>';
+    return '';
+  }
+  function payFocusPayday(periods) {
+    var focus = ui.payFocus, po, next, cur, i;
+    if (focus) {
+      for (i = 0; i < periods.length; i++) if (periods[i].payday === focus) return focus;
+    }
+    po = payOpts();
+    next = E.nextPayday(T, po);
+    for (i = 0; i < periods.length; i++) if (periods[i].payday === next) return next;
+    cur = E.regularPaydayFor(T, po);
+    for (i = 0; i < periods.length; i++) if (periods[i].payday === cur) return cur;
+    return periods[0] ? periods[0].payday : 0;
+  }
+  function paySyncPickLabel(payday) {
+    ui.payFocus = payday || ui.payFocus;
+    var list = document.getElementById('payPickList'), btn = document.getElementById('payPickBtn');
+    var lab = btn && btn.querySelector('.payban-pickbtn-lab');
+    var opt = list && payday ? list.querySelector('[data-act="payGo"][data-payday="' + payday + '"]') : null;
+    if (list) Array.prototype.forEach.call(list.querySelectorAll('[data-act="payGo"]'), function (o) {
+      var on = payday && +o.dataset.payday === +payday;
+      o.classList.toggle('on', on);
+      o.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    if (lab && opt) lab.innerHTML = opt.innerHTML;
+    syncPayBannerSticky();
   }
   function payGoPayday(payday, doRender) {
     payday = +payday;
     if (!payday) return;
     var y = payDayYear(payday);
     paySetOpen(payday, true);
+    ui.payFocus = payday;
     ui.scrollPay = payday;
     if (doRender !== false && (ui.payYear !== y || !document.querySelector('.period[data-payday="' + payday + '"]'))) {
       ui.payYear = y;
@@ -7098,17 +7159,21 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     }
     ui.scrollPay = null;
     closePayPick();
+    paySyncPickLabel(payday);
     payScrollTo(payday, true);
   }
   function payBannerHtml(y, periods) {
-    var po = payOpts(), next = E.nextPayday(T, po), curReg = E.regularPaydayFor(T, po), curOT = E.overtimePaydayFor(T, po);
     var prevOk = payYearHasPeriods(y - 1), nextOk = payYearHasPeriods(y + 1);
+    var focus = payFocusPayday(periods);
     var opts = periods.map(function (p) {
-      var isCur = p.payday === curReg || p.payday === curOT, isNext = p.payday === next;
-      var extra = isCur ? ' (current)' : (isNext ? ' (next)' : '');
-      return '<button type="button" class="payban-opt' + (isCur ? ' on' : '') + '" role="option" data-act="payGo" data-payday="' + p.payday + '" aria-selected="' + (isCur ? 'true' : 'false') + '">' + esc(fmt(p.payday, 'mdy') + extra) + '</button>';
+      var on = p.payday === focus;
+      return '<button type="button" class="payban-opt' + (on ? ' on' : '') + '" role="option" data-act="payGo" data-payday="' + p.payday + '" aria-selected="' + (on ? 'true' : 'false') + '"><span class="payban-opt-main">' + esc(payPeriodRangeText(p)) + '</span>' + payPeriodMarkers(p) + '</button>';
     }).join('');
-    return '<div class="payban" data-sec="3c" id="payBanner">' +
+    var focusP = null, i;
+    for (i = 0; i < periods.length; i++) if (periods[i].payday === focus) { focusP = periods[i]; break; }
+    var btnLab = focusP ? ('<span class="payban-opt-main">' + esc(payPeriodRangeText(focusP)) + '</span>' + payPeriodMarkers(focusP)) : 'Pay period';
+    return '<div class="payban-slot" id="payBannerSlot" aria-hidden="true"></div>' +
+      '<div class="payban" data-sec="3c" id="payBanner">' +
       '<div class="payban-row">' +
         '<div class="yearsel" role="group" aria-label="Pay year">' +
           '<button type="button" class="navbtn" data-act="payYear" data-dir="-1" aria-label="Previous year"' + (prevOk ? '' : ' disabled') + '>&lsaquo;</button>' +
@@ -7118,7 +7183,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="btn sm payban-next" data-act="payNext">Next pay period</button>' +
       '</div>' +
       '<div class="payban-pick">' +
-        '<button type="button" class="payban-pickbtn" id="payPickBtn" data-act="payPickOpen" aria-expanded="false" aria-haspopup="listbox" aria-controls="payPickList">Pay period <span aria-hidden="true">▾</span></button>' +
+        '<button type="button" class="payban-pickbtn" id="payPickBtn" data-act="payPickOpen" aria-expanded="false" aria-haspopup="listbox" aria-controls="payPickList"><span class="payban-pickbtn-lab">' + btnLab + '</span><span aria-hidden="true">▾</span></button>' +
         '<div id="payPickList" class="payban-menu" role="listbox" aria-label="Pay periods in ' + y + '" hidden>' + opts + '</div>' +
       '</div></div>';
   }
