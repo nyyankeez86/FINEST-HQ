@@ -655,7 +655,7 @@ a.dir-tel.mine{color:#0f766e}
 .cmd-shield-lab{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);margin:0;padding:0;max-width:66%;font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-weight:800;color:#0b1f3a;text-align:center;line-height:1.05;white-space:nowrap;pointer-events:none}
 .cmd-shield.has-fuel .cmd-shield-lab.with-pump{top:36%}
 .cmd-shield-pump{position:absolute;left:50%;top:63%;transform:translate(-50%,-50%);margin:0;padding:0;line-height:0;pointer-events:none;width:28%;height:auto}
-.cmd-shield-pump.solo{top:50%;width:38%}
+.cmd-shield-pump.solo{top:50%;width:38%} .cmd-shield-ev{position:absolute;right:-15%;top:-8%;width:42%;height:auto;line-height:0;pointer-events:none;z-index:2;filter:drop-shadow(0 1px 1px rgba(0,0,0,.45))} .cmd-shield-ev svg{display:block;width:100%;height:auto}
 .cmd-shield-pump svg{display:block;width:100%;height:auto}
 .map-cover .cov-sub{font-size:11px;color:#64748b;margin:0 0 2px 0;font-weight:400}
 .fuelchips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 10px}
@@ -685,7 +685,8 @@ a.dir-tel.mine{color:#0f766e}
 .dir-map-opts #hospFilterWrap .btn,
 .dir-map-opts #hospFilterWrap .chip,
 .dir-map-opts #evFilterWrap .btn,
-.dir-map-opts #evFilterWrap .chip{width:100%;height:44px;min-height:44px;max-height:44px;min-width:0;margin:0;box-sizing:border-box;padding:4px 6px;font-size:11px;font-weight:700;line-height:1.15;white-space:normal;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;text-align:center;border-width:1px;border-radius:10px;background:#fff;color:var(--ink,#0f172a)}
+.dir-map-opts #evFilterWrap .chip,
+.dir-map-opts #nearestFilterWrap .btn{width:100%;height:44px;min-height:44px;max-height:44px;min-width:0;margin:0;box-sizing:border-box;padding:4px 6px;font-size:11px;font-weight:700;line-height:1.15;white-space:normal;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;text-align:center;border-width:1px;border-radius:10px;background:#fff;color:var(--ink,#0f172a)}
 .dir-map-opts .map-toolbar .btn.on,
 .dir-map-opts .map-toolbar .chip.on,
 .dir-map-opts #fuelFilterWrap .btn.on,
@@ -693,7 +694,8 @@ a.dir-tel.mine{color:#0f766e}
 .dir-map-opts #hospFilterWrap .btn.on,
 .dir-map-opts #hospFilterWrap .chip.on,
 .dir-map-opts #evFilterWrap .btn.on,
-.dir-map-opts #evFilterWrap .chip.on{background:var(--navy,#0b1f3a);color:#fff;border-color:var(--navy,#0b1f3a)}
+.dir-map-opts #evFilterWrap .chip.on,
+.dir-map-opts #nearestFilterWrap .btn.on{background:var(--navy,#0b1f3a);color:#fff;border-color:var(--navy,#0b1f3a)}
 .dir-map-opts #fuelFilterWrap .fuelchips{margin:0;gap:6px}
 .ev-pin{display:block;width:28px;height:36px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.45));pointer-events:auto}
 .ev-pin svg{display:block;width:28px;height:36px;pointer-events:none}
@@ -6175,7 +6177,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (prof) prof = E.migrateHist(prof, prof.hireDate || earliestEntry(d)); // rank / command / chart / tour history (one record for older profiles)
     var setIn = Object.assign({}, d.settings || {}); delete setIn.paydayAnchor; delete setIn.regularTargetMin; delete setIn.regularHours;
     return { app: b.app, version: b.version, profile: prof, sync: d.sync && typeof d.sync === 'object' ? d.sync : {}, updatedAt: d.updatedAt || null, tours: d.tours && typeof d.tours === 'object' && !Array.isArray(d.tours) ? d.tours : {},
-      settings: (function () { var st = Object.assign({}, b.settings, setIn); st.fuelFilter = E.cleanFuelFilter(st.fuelFilter, true); return st; })(),
+      settings: (function () { var st = Object.assign({}, b.settings, setIn); st.fuelFilter = E.cleanFuelFilter(st.fuelFilter, true); ['mapEvOn','dirEvOn','evLayer','evChargers','evOn','showEv','evDefault'].forEach(function (k) { if (Object.prototype.hasOwnProperty.call(st, k)) delete st[k]; }); return st; })(),
       overtime: Array.isArray(d.overtime) ? d.overtime : [],
       leave: d.leave && typeof d.leave === 'object' && !Array.isArray(d.leave) ? d.leave : {},
       extra15: d.extra15 && typeof d.extra15 === 'object' && !Array.isArray(d.extra15) ? d.extra15 : {}, // per-month +15 range overrides
@@ -6195,7 +6197,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
 
   var S = load();
   var T = E.today(), tp = E.parts(T);
-  var ui = { tab: 'schedule', calY: tp.y, calM: tp.m, lookup: T, otYear: tp.y, payYear: tp.y, leaveYear: tp.y, leaveOpen: false, pdY: tp.y, pdM: tp.m, onbSquad: null, x15Year: tp.y, otView: 'ot', otSel: false, otSelIds: {}, pdSel: false, pdSelIds: {}, otFilter: 'all', otCollapse: {}, payOpen: {}, calPeek: null, calPeekPicker: false, todayOpen: false, glanceOpen: false, dirQ: '', mapQ: '', dirKind: '', dirView: 'dir', dirFuelOn: false, dirHospOn: false, dirHospLevel1: false, dirFacilitiesOn: false, dirEvFastOnly: false, mapFocusPct: null };
+  var ui = { tab: 'schedule', calY: tp.y, calM: tp.m, lookup: T, otYear: tp.y, payYear: tp.y, leaveYear: tp.y, leaveOpen: false, pdY: tp.y, pdM: tp.m, onbSquad: null, x15Year: tp.y, otView: 'ot', otSel: false, otSelIds: {}, pdSel: false, pdSelIds: {}, otFilter: 'all', otCollapse: {}, payOpen: {}, calPeek: null, calPeekPicker: false, todayOpen: false, glanceOpen: false, dirQ: '', mapQ: '', dirKind: '', dirView: 'dir', dirFuelOn: false, dirEvOn: false, dirHospOn: false, dirHospLevel1: false, dirFacilitiesOn: false, dirEvFastOnly: false, mapFocusPct: null };
   function msgNewIconHtml() { return '<span class="msgunread-dot" aria-hidden="true"></span>'; }
   var MSG_VERIFIED_TIP = 'Official message from a FINEST HQ admin';
   function msgVerifiedHtml() {
@@ -7436,11 +7438,24 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     else fillNearestList(document.getElementById('nearestFuelList'));
   }
   function syncFuelFilterUi() {
-    var on = ui.dirFuelOn !== false;
+    var on = !!ui.dirFuelOn;
     var wrap = document.getElementById('fuelFilterWrap');
     if (wrap) wrap.hidden = !on;
     var btn = document.querySelector('#dirMapOpts [data-act="dirFuelLayer"]');
     if (btn) { btn.classList.toggle('on', on); btn.setAttribute('aria-pressed', on ? 'true' : 'false'); }
+    var near = document.getElementById('nearestFilterWrap');
+    if (near) near.hidden = !(on || evLayerOn());
+  }
+  function syncEvLayerUi() {
+    var on = evLayerOn();
+    var wrap = document.getElementById('evFilterWrap');
+    if (wrap) wrap.hidden = !on;
+    var btn = document.querySelector('#dirMapOpts [data-act="dirEvLayer"]');
+    if (btn) { btn.classList.toggle('on', on); btn.setAttribute('aria-pressed', on ? 'true' : 'false'); }
+    var near = document.getElementById('nearestFilterWrap');
+    if (near) near.hidden = !(on || !!ui.dirFuelOn);
+    if (!on) ui.dirEvFastOnly = false;
+    syncEvFilterUi();
   }
   function nearestSheetOpen() {
     if (nearestMode) return true;
@@ -7529,10 +7544,122 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function evChargerVisible(loc) {
     if (!loc || loc.lat == null || loc.lon == null) return false;
+    if (!evLayerOn()) return false;
     // 4q Fast Charger Only starts OFF (unhighlighted): show every fleet EV location.
     // Highlighted / aria-pressed=true: only locations that have a Level 3 charger.
     if (!ui.dirEvFastOnly) return true;
     return !!(loc.levels && loc.levels.L3);
+  }
+  function evLayerOn() { return !!ui.dirEvOn; }
+  var EV_CMD_METERS = 75;
+  function evNormAddr(s) {
+    s = String(s || '').toUpperCase();
+    s = s.replace(/EASTCHESTR/g, 'EASTCHESTER');
+    s = s.replace(/[.,]/g, ' ');
+    s = s.replace(/(\d+)(?:ST|ND|RD|TH)\b/g, '$1');
+    s = s.replace(/\bSTREET\b/g, 'ST').replace(/\bAVENUE\b/g, 'AVE').replace(/\bBOULEVARD\b/g, 'BLVD');
+    s = s.replace(/\bPLACE\b/g, 'PL').replace(/\bROAD\b/g, 'RD');
+    s = s.replace(/\b(NEW YORK|NY|USA|BROOKLYN|QUEENS|BRONX|MANHATTAN|STATEN ISLAND|BAYSIDE|FLUSHING|JAMAICA)\b/g, '');
+    return s.replace(/\s+/g, ' ').trim();
+  }
+  function evZipOf(s) { var m = String(s || '').match(/\b(1\d{4})\b/); return m ? m[1] : ''; }
+  function evHouseNo(s) { var m = evNormAddr(s).match(/^(\d[\d/\-]*)/); return m ? m[1] : ''; }
+  function evSameAddress(a, b) {
+    if (!a || !b) return false;
+    var na = evNormAddr(a), nb = evNormAddr(b), ha = evHouseNo(na), hb = evHouseNo(nb);
+    if (!ha || ha !== hb) return false;
+    var za = evZipOf(a), zb = evZipOf(b);
+    if (za && zb && za !== zb) return false;
+    var ta = na.replace(/^\d[\d/\-]*\s*/, ''), tb = nb.replace(/^\d[\d/\-]*\s*/, '');
+    var wa = ta.split(' ').filter(Boolean), wb = tb.split(' ').filter(Boolean);
+    return !!(wa[0] && wa[0] === wb[0] && (wa[1] || '') === (wb[1] || ''));
+  }
+  function evNameCommand(loc) {
+    var t = [loc && loc.name, loc && loc.address, loc && loc.street].filter(Boolean).join(' ');
+    if (!t) return null;
+    if (/midtown\s+south|\bMTS\b/i.test(t)) return 'pct-midtown-south';
+    if (/midtown\s+north|\bMTN\b/i.test(t)) return 'pct-midtown-north';
+    if (/central\s+park/i.test(t)) return 'pct-central-park';
+    var m = t.match(/(?:nypd\s+)?(\d{1,3})(?:st|nd|rd|th)?\s*(?:police\s+)?(?:precinct|pct)\b/i) || t.match(/\b(?:pct|precinct)\s*#?\s*(\d{1,3})\b/i);
+    if (m) return 'pct-' + (+m[1]);
+    m = t.match(/\bhousing\s+psa\s*#?\s*(\d{1,2})\b|\bpsa\s*#?\s*(\d{1,2})\b/i);
+    if (m) return 'psa-' + (+(m[1] || m[2]));
+    m = t.match(/\btransit\s+district\s*#?\s*(\d{1,2})\b|\btd\s*#?\s*(\d{1,2})\b/i);
+    if (m) return 'td-' + (+(m[1] || m[2]));
+    return null;
+  }
+  var evCmdCache = null;
+  function evCommandIndex() {
+    if (evCmdCache) return evCmdCache;
+    var siteMap = commandSiteById(), geo = loadPctBounds(), byId = {}, list = [];
+    (C.commands || []).forEach(function (cmd) {
+      if (cmd.kind !== 'pct' && cmd.kind !== 'psa' && cmd.kind !== 'td') return;
+      var ll = commandLL(cmd, siteMap, geo);
+      if (!ll) return;
+      var rec = { cmd: cmd, ll: ll };
+      byId[cmd.id] = rec;
+      list.push(rec);
+    });
+    evCmdCache = { byId: byId, list: list };
+    return evCmdCache;
+  }
+  function evInvalidateCommandIndex() { evCmdCache = null; evMatchCache = null; }
+  function evWhyMatch(loc, rec) {
+    if (!loc || !rec) return '';
+    if (loc.lat != null && metersBetween(loc.lat, loc.lon, rec.ll[0], rec.ll[1]) <= EV_CMD_METERS) return 'coord';
+    if (evSameAddress(loc.address || loc.street, rec.cmd.address)) return 'address';
+    var nid = evNameCommand(loc);
+    if (nid && nid === rec.cmd.id) {
+      // Name alone is not enough (do not invent a far-away match); require a nearby or same-address confirmation.
+      return '';
+    }
+    return '';
+  }
+  function evResolveCommandForLoc(loc) {
+    if (!loc || loc.lat == null || loc.lon == null) return null;
+    var idx = evCommandIndex(), hits = [], i, rec, why;
+    var nid = evNameCommand(loc);
+    if (nid && idx.byId[nid] && evWhyMatch(loc, idx.byId[nid])) return idx.byId[nid].cmd;
+    for (i = 0; i < idx.list.length; i++) {
+      rec = idx.list[i];
+      why = evWhyMatch(loc, rec);
+      if (why) hits.push(rec);
+    }
+    if (hits.length === 1) return hits[0].cmd;
+    return null;
+  }
+  var evMatchCache = null;
+  function evBuildMatchCache() {
+    if (evMatchCache) return evMatchCache;
+    var byCmd = {}, byLoc = {}, list = evChargerList(), i, loc, cmd;
+    evCommandIndex();
+    for (i = 0; i < list.length; i++) {
+      loc = list[i];
+      cmd = evResolveCommandForLoc(loc);
+      if (!cmd) continue;
+      byLoc[loc.id] = cmd.id;
+      (byCmd[cmd.id] = byCmd[cmd.id] || []).push(loc);
+    }
+    evMatchCache = { byCmd: byCmd, byLoc: byLoc };
+    return evMatchCache;
+  }
+  function evCommandForLoc(loc) {
+    if (!loc || !loc.id) return evResolveCommandForLoc(loc);
+    var id = evBuildMatchCache().byLoc[loc.id];
+    if (!id) return null;
+    var rec = evCommandIndex().byId[id];
+    return rec ? rec.cmd : null;
+  }
+  function evLocsForCommand(cmd) {
+    if (!cmd) return [];
+    return (evBuildMatchCache().byCmd[cmd.id] || []).slice();
+  }
+  function evLocsForCommandVisible(cmd) {
+    return evLocsForCommand(cmd).filter(evChargerVisible);
+  }
+  function evIsMergedLoc(loc) { return !!evCommandForLoc(loc); }
+  function evCommandHasL3(locs) {
+    return (locs || []).some(function (loc) { return loc.levels && loc.levels.L3; });
   }
   function evFastLabel() {
     return ui.dirEvFastOnly
@@ -7542,7 +7669,6 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function evFastNoteText() {
     return ui.dirEvFastOnly ? 'Showing only Level 3 (fast) chargers.' : 'All fleet EV chargers are listed.';
   }
-  function evLayerOn() { return ui.dirFuelOn !== false; }
   function evAsSite(loc) {
     if (!loc) return null;
     return {
@@ -7637,6 +7763,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     dirEvLayer = L.layerGroup();
     evChargerList().forEach(function (loc) {
       if (!evChargerVisible(loc)) return;
+      if (evIsMergedLoc(loc)) return;
       var m = L.marker([loc.lat, loc.lon], { icon: evChargerIcon(loc), keyboard: true, title: loc.name || 'EV charger' });
       m.on('click', function () { evChargerSheet(loc); });
       dirEvLayer.addLayer(m);
@@ -7680,6 +7807,26 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var s = fuelSiteMergedTo(cmd);
     if (!s) return null;
     return E.fuelMatches(s, fuelFilter()) ? s : null;
+  }
+  function commandEvHtml(cmd) {
+    var locs = evLocsForCommand(cmd);
+    if (!locs.length) return '';
+    var chargers = 0, ports = 0, i, loc, levels = {}, order = ['L3', 'L2', 'L1'], lines = [];
+    for (i = 0; i < locs.length; i++) {
+      loc = locs[i];
+      chargers += loc.chargers || 0;
+      ports += loc.ports || 0;
+      Object.keys(loc.levels || {}).forEach(function (k) {
+        var cur = levels[k] || { chargers: 0, ports: 0 }, add = loc.levels[k] || {};
+        levels[k] = { chargers: cur.chargers + (add.chargers || 0), ports: cur.ports + (add.ports || 0) };
+      });
+    }
+    order.forEach(function (k) { if (levels[k]) lines.push(evLevelLine(k, levels[k])); });
+    Object.keys(levels).forEach(function (k) { if (order.indexOf(k) < 0) lines.push(evLevelLine(k, levels[k])); });
+    var total = chargers + (chargers === 1 ? ' charger' : ' chargers') + ' (' + ports + (ports === 1 ? ' port' : ' ports') + ')';
+    return '<div class="cmd-ev" data-sec="4p"><p style="margin:8px 0 6px"><strong>Fleet EV chargers:</strong> ' + esc(total) + '</p>' +
+      (lines.length ? '<ul style="margin:0 0 8px;padding:0 0 0 18px">' + lines.map(function (l) { return '<li>' + esc(l) + '</li>'; }).join('') + '</ul>' : '') +
+      '<p class="muted" style="margin:0 0 8px;font-size:12px">NYC Open Data, DCAS. Counts are chargers (dataset rows) and ports (no_of_ports).</p></div>';
   }
   function commandFuelHtml(cmd) {
     var site = fuelSiteMergedTo(cmd);
@@ -7819,19 +7966,33 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     }
     return null;
   }
+  function evBadgeSvg(isL3, sz) {
+    var fill = isL3 ? '#f59e0b' : '#0000FF', stroke = isL3 ? '#92400e' : '#0b1f3a';
+    sz = sz || 14;
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="' + sz + '" height="' + sz + '" aria-hidden="true">' +
+      '<circle cx="8" cy="8" r="7.1" fill="' + fill + '" stroke="' + stroke + '" stroke-width="1.2"/>' +
+      '<path fill="#fff" d="M8.85 3.1 5.15 8.7h2.45L6.3 13.1 10.9 6.7H8.45z"/>' +
+      '</svg>';
+  }
   function shieldIconFor(cmd, spec, isMine) {
     var w = spec.w + (isMine ? (spec.text ? 6 : 4) : 0);
     var d = shieldDims(w);
     var label = commandShieldLabel(cmd);
     var fuel = shieldFuelVisible(cmd);
+    var evs = evLocsForCommandVisible(cmd);
+    var showEv = !!(evs && evs.length);
+    var evL3 = evCommandHasL3(evs);
     var showPump = !!(fuel && d.w >= 24);
     var labCls = 'cmd-shield-lab' + (showPump && spec.text ? ' with-pump' : '');
     var lab = (spec.text && label) ? ('<span class="' + labCls + '" style="font-size:' + shieldLabelFont(label, d.w) + 'px">' + esc(label) + "</span>") : "";
     var pumpSz = Math.max(8, Math.round(d.w * (spec.text ? 0.28 : 0.38)));
     var pump = showPump ? ('<span class="cmd-shield-pump' + (spec.text ? '' : ' solo') + '" data-fuel-id="' + esc(fuel.id) + '">' + badgeSvg(GAS_ICON, pumpSz) + '</span>') : '';
-    var html = '<div class="cmd-shield' + (isMine ? " mine" : "") + (showPump ? " has-fuel" : "") + '" data-id="' + esc(cmd.id) + '" data-kind="' + esc(cmd.kind) + '"' +
-      (showPump ? ' data-fuel-id="' + esc(fuel.id) + '"' : '') + '>' +
-      '<img src="' + SHIELD_SRC + '" alt="" width="' + d.w + '" height="' + d.h + '" draggable="false">' + lab + pump + "</div>";
+    var evSz = Math.max(10, Math.round(d.w * 0.42));
+    var evb = showEv ? ('<span class="cmd-shield-ev' + (evL3 ? ' l3' : '') + '" data-ev-cmd="' + esc(cmd.id) + '" aria-label="EV chargers">' + evBadgeSvg(evL3, evSz) + '</span>') : '';
+    var html = '<div class="cmd-shield' + (isMine ? " mine" : "") + (showPump ? " has-fuel" : "") + (showEv ? " has-ev" : "") + '" data-id="' + esc(cmd.id) + '" data-kind="' + esc(cmd.kind) + '"' +
+      (showPump ? ' data-fuel-id="' + esc(fuel.id) + '"' : '') +
+      (showEv ? ' data-ev="1"' : '') + '>' +
+      '<img src="' + SHIELD_SRC + '" alt="" width="' + d.w + '" height="' + d.h + '" draggable="false">' + lab + pump + evb + "</div>";
     return L.divIcon({ className: "cmd-shield-icon", html: html, iconSize: [d.w, d.h], iconAnchor: [d.w / 2, d.h] });
   }
   function addCommandShields() {
@@ -7845,8 +8006,12 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (cmd.kind !== "pct" && cmd.kind !== "psa" && cmd.kind !== "td") return;
       var ll = commandLL(cmd, siteMap, geo);
       if (!ll) return;
-      if (ui.dirFuelOn !== false) { if (!shieldFuelVisible(cmd)) return; }
-      else if (!ui.dirFacilitiesOn) return;
+      var fuelOn = !!ui.dirFuelOn, evOn = evLayerOn(), facOn = !!ui.dirFacilitiesOn;
+      var evHere = evOn && evLocsForCommandVisible(cmd).length;
+      if (fuelOn && evOn) { if (!shieldFuelVisible(cmd) && !evHere) return; }
+      else if (fuelOn) { if (!shieldFuelVisible(cmd)) return; }
+      else if (evOn) { if (!evHere && !facOn) return; }
+      else if (!facOn) return;
       var isMine = cmd.kind === "pct" && mine && E.pctNumFromId(cmd.id) === mine;
       var m = L.marker(ll, { icon: shieldIconFor(cmd, spec, isMine), title: cmd.name, riseOnHover: true, keyboard: true, zIndexOffset: isMine ? 220 : 80 });
       m.on("click", function (ev) { if (ev && ev.originalEvent) L.DomEvent.stop(ev.originalEvent); commandSheet(cmd.id); });
@@ -8229,7 +8394,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var addr = c.address || "";
     var pub = c.phone ? dirPhoneLink(c.phone, E.fmtPhone(c.phone), false) : '<p class="muted">No official phone on file.</p>';
     var body = '<div data-sec="4j">' + pub + (addr ? '<p style="margin:8px 0">' + esc(addr) + "</p>" + navLinks(c) : "") +
-      commandFuelHtml(c) +
+      commandFuelHtml(c) + commandEvHtml(c) +
       '<div class="dir-actions"><button type="button" class="btn primary sm" data-act="dirJump" data-id="' + esc(id) + '">View in Directory</button></div></div>';
     openSheet(c.name, body, ui.tab === 'directory' ? 'Directory' : 'Map');
   }
@@ -8457,7 +8622,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var addr = (c && c.address) || '';
     var pub = c && c.phone ? dirPhoneLink(c.phone, E.fmtPhone(c.phone), false) : '<p class="muted">No official phone on file.</p>';
     var body = '<div data-sec="4j">' + pub + (addr ? '<p style="margin:8px 0">' + esc(addr) + '</p>' + navLinks(c || addr) : '') +
-      commandFuelHtml(c) +
+      commandFuelHtml(c) + commandEvHtml(c) +
       '<div class="dir-actions"><button type="button" class="btn primary sm" data-act="dirJump" data-id="' + esc(id) + '">View in Directory</button></div></div>';
     openSheet(name, body, ui.tab === 'directory' ? 'Directory' : 'Map');
   }
@@ -8619,9 +8784,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function computeNearestRows() {
     if (!fuelOrigin || fuelOrigin.lat == null || fuelOrigin.lon == null) return [];
     var types = fuelFilter();
-    var fuelRows = types.length ? E.nearestFuel(fuelOrigin, { types: types, car: true }) : [];
+    var fuelRows = (ui.dirFuelOn && types.length) ? E.nearestFuel(fuelOrigin, { types: types, car: true }) : [];
     var evRows = [];
-    evChargerList().forEach(function (loc) {
+    if (evLayerOn()) evChargerList().forEach(function (loc) {
       if (!evChargerVisible(loc)) return;
       evRows.push({ site: evAsSite(loc), miles: E.haversineMiles(+fuelOrigin.lat, +fuelOrigin.lon, +loc.lat, +loc.lon) });
     });
@@ -8640,7 +8805,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (!on && has) dirMap.removeLayer(layer);
     }
     setLayer(dirFuelLayer, show);
-    setLayer(dirEvLayer, show);
+    setLayer(dirEvLayer, show && evLayerOn());
     setLayer(dirShieldLayer, show);
   }
   function clearNearestMode() {
@@ -8892,8 +9057,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function openFuelOrEvSheet(site) {
     if (!site) return;
-    if (site.kind === 'ev') evChargerSheet(site);
-    else fuelSiteSheet(site);
+    if (site.kind === 'ev') {
+      var cmd = evCommandForLoc(site);
+      if (cmd) { if (cmd.kind === 'pct') precinctSheet(E.pctNumFromId(cmd.id)); else commandSheet(cmd.id); return; }
+      evChargerSheet(site);
+    } else fuelSiteSheet(site);
   }
 
   var DIR_CHIPS = [
@@ -8906,13 +9074,18 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var mapOpts = '<div id="dirMapOpts" class="dir-map-opts" hidden role="region" aria-label="Filter">' +
       '<div class="map-opts-title" id="dirMapOptsTitle">Filter</div>' +
       '<div class="map-toolbar">' +
-      '<button type="button" class="btn sm' + (ui.dirFuelOn === false ? '' : ' on') + '" data-act="dirFuelLayer" aria-pressed="' + (ui.dirFuelOn === false ? 'false' : 'true') + '">Fuel/EV chargers</button>' +
+      '<button type="button" class="btn sm' + (ui.dirFuelOn ? ' on' : '') + '" data-act="dirFuelLayer" aria-pressed="' + (ui.dirFuelOn ? 'true' : 'false') + '">Fuel</button>' +
+      '<button type="button" class="btn sm' + (ui.dirEvOn ? ' on' : '') + '" data-act="dirEvLayer" data-sec="4r" aria-pressed="' + (ui.dirEvOn ? 'true' : 'false') + '">EV charger locations</button>' +
       '<button type="button" class="btn sm' + (ui.dirHospOn ? ' on' : '') + '" data-act="dirHospLayer" aria-pressed="' + (ui.dirHospOn ? 'true' : 'false') + '">Hospitals</button>' +
       '<button type="button" class="btn sm' + (ui.dirFacilitiesOn ? ' on' : '') + '" data-act="dirFacilities" aria-pressed="' + (ui.dirFacilitiesOn ? 'true' : 'false') + '">Police facilities</button>' +
-      '<div id="fuelFilterWrap" class="fuel-opts"' + (ui.dirFuelOn === false ? ' hidden' : '') + ' data-sec="4k" role="group" aria-label="Fuel/EV filters">' +
+      '<div id="fuelFilterWrap" class="fuel-opts"' + (ui.dirFuelOn ? '' : ' hidden') + ' data-sec="4k" role="group" aria-label="Fuel filters">' +
         fuelChipBar() +
-        '<button type="button" class="btn sm" id="dirNearestBtn" data-act="dirNearest" aria-pressed="false">Nearest fuel/EV</button>' +
+      '</div>' +
+      '<div id="evFilterWrap" class="ev-opts"' + (ui.dirEvOn ? '' : ' hidden') + ' data-sec="4r" role="group" aria-label="EV charger filters">' +
         '<button type="button" class="btn sm chip' + (ui.dirEvFastOnly ? ' on' : '') + '" data-act="evChip" data-filter="fast" data-sec="4q" aria-pressed="' + (ui.dirEvFastOnly ? 'true' : 'false') + '" aria-label="' + evFastLabel() + '">Fast Charger Only</button>' +
+      '</div>' +
+      '<div id="nearestFilterWrap" class="nearest-opts"' + (ui.dirFuelOn || ui.dirEvOn ? '' : ' hidden') + ' role="group" aria-label="Nearest fuel or EV">' +
+        '<button type="button" class="btn sm" id="dirNearestBtn" data-act="dirNearest" aria-pressed="false">Nearest fuel/EV</button>' +
       '</div>' +
       '<div id="hospFilterWrap" class="hospchips"' + (ui.dirHospOn ? '' : ' hidden') + ' data-sec="4n" role="group" aria-label="Hospital filter">' +
         '<button type="button" class="btn sm chip' + (ui.dirHospLevel1 ? ' on' : '') + '" data-act="hospChip" data-filter="level1" aria-pressed="' + (ui.dirHospLevel1 ? 'true' : 'false') + '">Level 1 Trauma</button>' +
@@ -13500,17 +13673,28 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     },
     dirView: function (t) { ui.tab = t.dataset.v === 'map' ? 'map' : 'directory'; render(); },
     dirFuelLayer: function (t) {
-      ui.dirFuelOn = ui.dirFuelOn === false;
-      if (ui.dirFuelOn === false) {
-        ui.dirEvFastOnly = false;
+      ui.dirFuelOn = !ui.dirFuelOn;
+      if (!ui.dirFuelOn && !evLayerOn()) {
         clearNearestMode();
         if (nearestSheetOpen()) closeSheet();
       }
       syncFuelFilterUi();
-      syncEvFilterUi();
       syncNearestBtn();
-      refreshFuelMarkers(); refreshHospitalMarkers(); refreshEvMarkers();
+      refreshFuelMarkers(); refreshHospitalMarkers();
       addCommandShields();
+    },
+    dirEvLayer: function () {
+      ui.dirEvOn = !ui.dirEvOn;
+      if (!ui.dirEvOn) ui.dirEvFastOnly = false;
+      if (!ui.dirFuelOn && !evLayerOn()) {
+        clearNearestMode();
+        if (nearestSheetOpen()) closeSheet();
+      }
+      syncEvLayerUi();
+      syncNearestBtn();
+      refreshEvMarkers();
+      addCommandShields();
+      if (nearestMode) refreshNearestResults({ fit: true });
     },
     dirHospLayer: function () {
       ui.dirHospOn = !ui.dirHospOn;
@@ -13531,9 +13715,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (ui.dirHospOn) fitHospitalView();
     },
     evChip: function (t) {
+      if (!evLayerOn()) return; // 4q depends on EV charger locations (4r)
       if (t.dataset.filter === 'fast') ui.dirEvFastOnly = !ui.dirEvFastOnly;
       syncEvFilterUi();
       refreshEvMarkers();
+      addCommandShields();
       if (nearestMode) refreshNearestResults({ fit: true });
     },
     dirNearest: function () { if (nearestMode) clearNearestMode(); else startNearestMode(); },
