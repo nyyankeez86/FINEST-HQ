@@ -238,7 +238,7 @@ h3{font-size:17px;margin:0 0 6px}
 .period .pay-sum-dates{margin-top:3px;font-size:12.5px;font-weight:600;color:var(--muted);display:flex;flex-direction:column;gap:1px;overflow-wrap:anywhere}
 .period .pay-sum-earn{flex:0 0 auto;text-align:right;font-weight:800;font-size:13px;line-height:1.3;color:var(--ink)}
 .period .pay-sum-earn .otpay{display:block;color:var(--pay)}
-.period .pay-detail[hidden]{display:none!important}.pblock .pay-days{margin-top:8px;background:#f5f7fb;border-radius:10px;padding:8px 14px;display:block;width:100%;max-width:220px;box-sizing:border-box}.pblock.on .pay-days{background:#fff}.pay-days b{display:block;font-size:19px}.pay-days small{font-size:11.5px;color:var(--muted);font-weight:700;text-transform:uppercase}
+.period .pay-detail[hidden]{display:none!important}.pay-reg-excusals{margin:8px 0 0;font-size:12.5px;font-weight:600;color:var(--muted);line-height:1.45;overflow-wrap:anywhere}.pblock .pay-days{margin-top:8px;background:#f5f7fb;border-radius:10px;padding:8px 14px;display:block;width:100%;max-width:220px;box-sizing:border-box}.pblock.on .pay-days{background:#fff}.pay-days b{display:block;font-size:19px}.pay-days small{font-size:11.5px;color:var(--muted);font-weight:700;text-transform:uppercase}
 .yearsel{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:10px}
 .yearsel b{font-size:19px;min-width:60px;text-align:center}
 .payban{position:relative;top:auto;left:auto;width:auto;max-width:none;box-sizing:border-box;z-index:auto;background:var(--bg);margin:0;padding:8px 14px 10px;border-bottom:1px solid var(--line);box-shadow:0 6px 12px rgba(15,23,42,.06);display:flex;flex-direction:column;gap:6px;overflow:visible}
@@ -626,6 +626,8 @@ a.dir-tel.mine{color:#0f766e}
 .dir-map-opts .muted,.dir-map-opts .fuel-src,.dir-map-opts .map-legend,.dir-map-opts .map-src{font-size:10px;line-height:1.3}
 .dir-map-opts .map-legend{padding:6px 2px 0;background:transparent;border-top:1px solid var(--line);margin-top:4px}
 .dir-map-opts .map-legend p{margin:0}
+.build-tag{margin:8px 0 0;font-size:11px;text-align:center;color:var(--muted,#64748b)}
+#appBuildTag{margin:16px 0 0}
 .dir-map-card + #dirMapWrap,#dirMapWrap.dir-map-fill{margin:0 0 8px}
 .dir-map-fill #dirMap{height:calc(100dvh - var(--tabh) - 160px - env(safe-area-inset-bottom, 0px));min-height:48vh}
 #app.tab-map{height:100dvh;min-height:100dvh}
@@ -634,6 +636,10 @@ a.dir-tel.mine{color:#0f766e}
 #app.tab-map .dir-map-card{flex:0 0 auto;margin-bottom:8px}
 #app.tab-map #dirMapWrap.dir-map-fill{flex:1;margin:0;min-height:48vh;display:flex;flex-direction:column}
 #app.tab-map .dir-map-fill #dirMap{flex:1;height:auto;min-height:48vh}
+#app.tab-map #dirMapWrap.nearest-list-open #dirMap,
+#app.tab-map .dir-map-fill.nearest-list-open #dirMap{flex:0 0 28%;min-height:112px;max-height:32%;height:auto}
+#app.tab-map #dirMapWrap.nearest-list-open .nearest-panel.list-mode{position:relative;left:auto;right:auto;top:auto;bottom:auto;flex:1 1 auto;width:auto;height:auto;min-height:0;max-height:none;margin:0 8px 8px;z-index:520}
+body:has(#testBuildBanner) #app.tab-map main#view{padding-bottom:calc(var(--tabh) + 44px + 8px + env(safe-area-inset-bottom, 0px))}
 .dir-locate-ctl a.dir-locate-btn{display:flex;align-items:center;justify-content:center;color:#0b1f3a;line-height:0;cursor:pointer}
 .dir-locate-ctl a.dir-locate-btn svg{display:block;width:18px;height:18px}
 .dir-locate-ctl a.dir-locate-btn.on{color:#1d4ed8;background:#eff6ff}
@@ -712,11 +718,15 @@ a.dir-tel.mine{color:#0f766e}
 .nearest-panel{position:absolute;left:8px;right:8px;bottom:8px;z-index:520;background:#fff;border-radius:14px;padding:8px 10px 10px;box-shadow:0 4px 16px rgba(0,0,0,.2);display:flex;flex-direction:column;gap:6px;overflow:hidden;}
 #nearestPanel[hidden],.nearest-panel[hidden]{display:none!important}
 .nearest-panel.map-mode{max-height:none;height:auto;top:auto}
-.nearest-panel.map-mode .fuelchips,.nearest-panel.map-mode #fuelFilterEmpty,.nearest-panel.map-mode [data-act="evChip"]{display:none!important}
+.nearest-panel.map-mode .nearest-chiprow,.nearest-panel.map-mode .fuelchips,.nearest-panel.map-mode #fuelFilterEmpty,.nearest-panel.map-mode [data-act="evChip"]{display:none!important}
 .nearest-panel.map-mode #nearestFuelList[hidden]{display:none!important}
 .nearest-panel [data-act="evChip"]{align-self:flex-start;width:auto;height:auto;min-height:28px;max-height:none;padding:4px 8px;font-size:11px;font-weight:700;margin:0;border-width:1px;border-radius:10px}
-.nearest-panel.list-mode{top:8px;bottom:8px;height:auto;max-height:none}
-.nearest-panel.list-mode #nearestFuelList{flex:1 1 auto;min-height:180px;overflow:auto;-webkit-overflow-scrolling:touch}
+.nearest-panel.list-mode{top:auto;bottom:auto;height:auto;max-height:none}
+.nearest-panel.list-mode #nearestFuelList{flex:1 1 auto;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch}
+.nearest-panel.list-mode .nearest-chiprow{display:flex;flex-wrap:nowrap;align-items:center;gap:6px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:0;flex:0 0 auto}
+.nearest-panel.list-mode .nearest-chiprow::-webkit-scrollbar{display:none}
+.nearest-panel.list-mode .nearest-chiprow .fuelchips{display:contents;margin:0}
+.nearest-panel.list-mode .nearest-chiprow .chip,.nearest-panel.list-mode .nearest-chiprow [data-act="evChip"]{flex:0 0 auto;min-height:28px;height:28px;max-height:28px;padding:3px 10px;white-space:nowrap}
 .nearest-item .ni-name-row{display:flex;align-items:center;gap:6px;min-width:0}
 .nearest-item .ni-ev{flex:0 0 auto;width:16px;height:16px;line-height:0;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
 .nearest-item .ni-ev svg{display:block;width:16px;height:16px}
@@ -3718,6 +3728,48 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     }
     return r;
   }
+  // Whole-day excusals in a regular pay period (S.leave only). Partial-hour
+  // usage of comp / vacation / chart time (tours[iso].short) is not counted.
+  var LEAVE_LINE_LABELS = {
+    vacation: 'Vacation', vacationtime: 'Vacation Time', chart: 'Chart', comp: 'Comp',
+    sick: 'Sick', military: 'Military', commanders: 'Commanders', bereavement: 'Bereavement',
+    juryduty: 'Jury Duty', emprelations: 'Employee Relations', personal: 'Personal'
+  };
+  function leaveLineLabel(type) {
+    if (!type) return '';
+    var id = type.id || type, t = type.label ? type : null;
+    if (LEAVE_LINE_LABELS[id]) return LEAVE_LINE_LABELS[id];
+    if (t && t.label) return String(t.label).replace(/\s+(Day|Leave)$/, '');
+    return String(id);
+  }
+  function regularPeriodExcusals(leave, start, end) {
+    var counts = {}, items = [], seen = {}, d, rec, id, n, i, types;
+    leave = leave || {};
+    for (d = start; d <= end; d++) {
+      rec = leave[toISO(d)];
+      if (!rec || !rec.type) continue;
+      counts[rec.type] = (counts[rec.type] || 0) + 1;
+    }
+    types = CONFIG.leaveTypes || [];
+    for (i = 0; i < types.length; i++) {
+      id = types[i].id; n = counts[id] || 0;
+      if (!n) continue;
+      seen[id] = true;
+      items.push({ id: id, label: leaveLineLabel(types[i]), count: n });
+    }
+    Object.keys(counts).forEach(function (id) {
+      if (seen[id]) return;
+      n = counts[id];
+      if (n) items.push({ id: id, label: leaveLineLabel(id), count: n });
+    });
+    return items;
+  }
+  function formatRegularPeriodExcusalLine(items, startLabel, endLabel) {
+    if (!items || !items.length) return '';
+    return ['Regular ' + startLabel + ' – ' + endLabel].concat(items.map(function (it) {
+      return it.label + ' ' + it.count + (it.count === 1 ? ' day' : ' days');
+    })).join(' \u00b7 ');
+  }
   // ---- Pure data helpers for overrides (return new objects; used by the UI and tests) ----
   function copy(o) { var r = {}; for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) r[k] = o[k]; return r; }
   function clearDayForDay(tours, iso) {
@@ -6137,7 +6189,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     tour17Key: tour17Key, tour17Squad: tour17Squad, tour17Offset: tour17Offset, tour17WorkPhase: tour17WorkPhase, tour17WorkSquad: tour17WorkSquad, tour17IsOff: tour17IsOff, tour17SquadsOff: tour17SquadsOff, tour17SquadsWorking: tour17SquadsWorking, tour17OvertimeMin: tour17OvertimeMin,
     nextDayOff: nextDayOff, chartDayBlock: chartDayBlock, nextWorkday: nextWorkday, countRDOs: countRDOs, isTourChange: isTourChange, countTourChanges: countTourChanges, isPayday: isPayday, nextPayday: nextPayday,
     periodsForPayday: periodsForPayday, regularPaydayFor: regularPaydayFor, overtimePaydayFor: overtimePaydayFor, regularPeriodFor: regularPeriodFor, overtimePeriodFor: overtimePeriodFor, payPeriodsInYear: payPeriodsInYear, hoursBetween: hoursBetween, entryHours: entryHours,
-    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, fmtMDY: fmtMDY, defaultTourWindow: defaultTourWindow, tourSpanMinutes: tourSpanMinutes, suggestEndDate: suggestEndDate, workedVsScheduled: workedVsScheduled, cleanTourEntry: cleanTourEntry, tourEntries: tourEntries, isAssignmentEntry: isAssignmentEntry, cleanAssignmentEntry: cleanAssignmentEntry, assignmentEntries: assignmentEntries, mergeTourEntries: mergeTourEntries, writeAssignmentEntries: writeAssignmentEntries, assignmentTimeText: assignmentTimeText, assignmentReminderText: assignmentReminderText, paidDetailBrief: paidDetailBrief, dayAssignments: dayAssignments, assignmentEventWindow: assignmentEventWindow, dayTour: dayTour, tourDisplay: tourDisplay, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameIsReserved: usernameIsReserved, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, assignmentNavAddress: assignmentNavAddress, upcomingItems: upcomingItems, commandById: commandById, isPduCommand: isPduCommand, searchCommands: searchCommands, phoneDigits: phoneDigits, fmtPhone: fmtPhone, telHref: telHref, cleanDirMine: cleanDirMine, cleanDirPhone: cleanDirPhone, cleanDirCustom: cleanDirCustom, emptyDirMine: emptyDirMine, dirKindMatch: dirKindMatch, searchDirectory: searchDirectory, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, routeUrls: routeUrls, navPoint: navPoint, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, stripBoroSuffix: stripBoroSuffix, splitPaidAddress: splitPaidAddress, joinPaidAddress: joinPaidAddress, mergePaidVendors: mergePaidVendors, rememberPaidVendor: rememberPaidVendor, paidVendorKey: paidVendorKey, parsePaidAmount: parsePaidAmount, paidDetailAmount: paidDetailAmount, paidDetailTaxDate: paidDetailTaxDate, daysBetweenISO: daysBetweenISO, paidDetailTiming: paidDetailTiming, paidDetailTimingCaptions: paidDetailTimingCaptions, paidVendorNames: paidVendorNames, cleanVendorGroups: cleanVendorGroups, vendorReportName: vendorReportName, addVendorToGroup: addVendorToGroup, removeVendorFromGroup: removeVendorFromGroup, renameVendorGroup: renameVendorGroup, ungroupVendor: ungroupVendor, suggestVendorGroups: suggestVendorGroups, paidDetailTaxReport: paidDetailTaxReport, buildPaidDetailXlsx: buildPaidDetailXlsx, buildPaidDetailCsv: buildPaidDetailCsv, parseXlsx: parseXlsx, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, addYearsISO: addYearsISO, retirementDateOf: retirementDateOf, retirementRemain: retirementRemain, retirementCountdown: retirementCountdown, endCompare: endCompare, syncEndOT: syncEndOT, syncWorkedOT: syncWorkedOT, syncEntryOT: syncEntryOT, leaveBalances: leaveBalances, fmtChart: fmtChart, chartTimeFromTour: chartTimeFromTour, isDetectiveRank: isDetectiveRank, isSergeantRank: isSergeantRank, isLieutenantRank: isLieutenantRank, isPoliceOfficerRank: isPoliceOfficerRank, chartKind: chartKind, rankStartDate: rankStartDate, yearsInRankAtLeast: yearsInRankAtLeast, chartTimeEligibility: chartTimeEligibility, chartTimeForDay: chartTimeForDay, chartTimeRange: chartTimeRange, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
+    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, fmtMDY: fmtMDY, defaultTourWindow: defaultTourWindow, tourSpanMinutes: tourSpanMinutes, suggestEndDate: suggestEndDate, workedVsScheduled: workedVsScheduled, cleanTourEntry: cleanTourEntry, tourEntries: tourEntries, isAssignmentEntry: isAssignmentEntry, cleanAssignmentEntry: cleanAssignmentEntry, assignmentEntries: assignmentEntries, mergeTourEntries: mergeTourEntries, writeAssignmentEntries: writeAssignmentEntries, assignmentTimeText: assignmentTimeText, assignmentReminderText: assignmentReminderText, paidDetailBrief: paidDetailBrief, dayAssignments: dayAssignments, assignmentEventWindow: assignmentEventWindow, dayTour: dayTour, tourDisplay: tourDisplay, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameIsReserved: usernameIsReserved, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, assignmentNavAddress: assignmentNavAddress, upcomingItems: upcomingItems, commandById: commandById, isPduCommand: isPduCommand, searchCommands: searchCommands, phoneDigits: phoneDigits, fmtPhone: fmtPhone, telHref: telHref, cleanDirMine: cleanDirMine, cleanDirPhone: cleanDirPhone, cleanDirCustom: cleanDirCustom, emptyDirMine: emptyDirMine, dirKindMatch: dirKindMatch, searchDirectory: searchDirectory, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, routeUrls: routeUrls, navPoint: navPoint, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, leaveLineLabel: leaveLineLabel, regularPeriodExcusals: regularPeriodExcusals, formatRegularPeriodExcusalLine: formatRegularPeriodExcusalLine, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, stripBoroSuffix: stripBoroSuffix, splitPaidAddress: splitPaidAddress, joinPaidAddress: joinPaidAddress, mergePaidVendors: mergePaidVendors, rememberPaidVendor: rememberPaidVendor, paidVendorKey: paidVendorKey, parsePaidAmount: parsePaidAmount, paidDetailAmount: paidDetailAmount, paidDetailTaxDate: paidDetailTaxDate, daysBetweenISO: daysBetweenISO, paidDetailTiming: paidDetailTiming, paidDetailTimingCaptions: paidDetailTimingCaptions, paidVendorNames: paidVendorNames, cleanVendorGroups: cleanVendorGroups, vendorReportName: vendorReportName, addVendorToGroup: addVendorToGroup, removeVendorFromGroup: removeVendorFromGroup, renameVendorGroup: renameVendorGroup, ungroupVendor: ungroupVendor, suggestVendorGroups: suggestVendorGroups, paidDetailTaxReport: paidDetailTaxReport, buildPaidDetailXlsx: buildPaidDetailXlsx, buildPaidDetailCsv: buildPaidDetailCsv, parseXlsx: parseXlsx, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, addYearsISO: addYearsISO, retirementDateOf: retirementDateOf, retirementRemain: retirementRemain, retirementCountdown: retirementCountdown, endCompare: endCompare, syncEndOT: syncEndOT, syncWorkedOT: syncWorkedOT, syncEntryOT: syncEntryOT, leaveBalances: leaveBalances, fmtChart: fmtChart, chartTimeFromTour: chartTimeFromTour, isDetectiveRank: isDetectiveRank, isSergeantRank: isSergeantRank, isLieutenantRank: isLieutenantRank, isPoliceOfficerRank: isPoliceOfficerRank, chartKind: chartKind, rankStartDate: rankStartDate, yearsInRankAtLeast: yearsInRankAtLeast, chartTimeEligibility: chartTimeEligibility, chartTimeForDay: chartTimeForDay, chartTimeRange: chartTimeRange, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
     steadyKey: steadyKey, parseChart: parseChart, validChartKey: validChartKey, chartInfo: chartInfo, sortCharts: sortCharts, chartAt: chartAt, chartChanges: chartChanges, nextOff: nextOff, nextOn: nextOn, reviewOverrides: reviewOverrides, DOW3: DOW3,
     stripAddrLabels: stripAddrLabels, paidAddressSuggestions: paidAddressSuggestions,
     rankAbbr: rankAbbr, rankLabel: rankLabel, displayName: displayName, formatFullName: formatFullName, normMiddleInitial: normMiddleInitial, migrateProfile: migrateProfile, validateProfile: validateProfile,
@@ -7296,8 +7348,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<div class="pay-sum-dates"><span>Reg ' + fmt(p.regular.start, 'md') + ' – ' + fmt(p.regular.end, 'md') + '</span><span>OT ' + fmt(p.overtime.start, 'md') + ' – ' + fmt(p.overtime.end, 'md') + '</span></div></div>' +
         '<div class="pay-sum-earn"><span class="otpay">OT ' + money(s.pay) + '</span></div></button>' +
         '<div class="pay-detail" id="' + detId + '"' + (open ? '' : ' hidden') + '>' +
-        '<div class="pblock' + (isReg ? ' on' : '') + '"><div class="ph"><span>Regular period' + (isReg ? ' <em>CURRENT</em>' : '') + '</span><span>' + fmt(p.regular.start, 'md') + ' – ' + fmt(p.regular.end, 'md') + '</span></div>' +
-        '<div class="pay-days"><small>Days worked</small><b>' + w.worked + '</b><span class="muted" style="font-size:11.5px">of ' + w.scheduled + ' sched' + (w.leave ? ', ' + w.leave + ' leave' : '') + '</span></div></div>' +
+        (function () {
+          var items = E.regularPeriodExcusals(S.leave, p.regular.start, p.regular.end);
+          var line = E.formatRegularPeriodExcusalLine(items, fmt(p.regular.start, 'md'), fmt(p.regular.end, 'md'));
+          return line ? '<p class="pay-reg-excusals" data-sec="3b-excusals">' + esc(line) + '</p>' : '';
+        })() +
         '<div class="pblock' + (isOT ? ' on' : '') + '"><div class="ph"><span>Overtime period' + (isOT ? ' <em>CURRENT</em>' : '') + '</span><span>' + fmt(p.overtime.start, 'md') + ' – ' + fmt(p.overtime.end, 'md') + '</span></div>' +
         '<div class="grid3">' +
         (function (n, st, en, pd) {
@@ -8426,6 +8481,24 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     }
     dirLocateWatch = null;
   }
+  var dirLocateNeedFly = false;
+  function syncLocateFollowZoom() {
+    if (!dirMap) return;
+    var center = !!dirLocateFollowing;
+    dirMap.options.scrollWheelZoom = center ? 'center' : true;
+    dirMap.options.touchZoom = center ? 'center' : true;
+    try {
+      if (dirMap.scrollWheelZoom) { dirMap.scrollWheelZoom.disable(); dirMap.scrollWheelZoom.enable(); }
+      if (dirMap.touchZoom) { dirMap.touchZoom.disable(); dirMap.touchZoom.enable(); }
+    } catch (e) {}
+  }
+  function flyToLocate(ll) {
+    if (!dirMap || !ll) return;
+    var lat = ll.lat != null ? ll.lat : ll[0], lon = ll.lng != null ? ll.lng : (ll.lon != null ? ll.lon : ll[1]);
+    try { dirMap.stop(); } catch (e) {}
+    dirMap.setView([lat, lon], 15, { animate: true });
+    dirLocateNeedFly = false;
+  }
   function startLocateWatch() {
     if (dirLocateWatch != null) return true;
     if (!navigator.geolocation || !navigator.geolocation.watchPosition) return false;
@@ -8466,6 +8539,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     opts = opts || {};
     pauseLocateWatch();
     dirLocateFollowing = false;
+    dirLocateNeedFly = false;
+    syncLocateFollowZoom();
     if (dirLocateMarker && dirMap) { try { dirMap.removeLayer(dirLocateMarker); } catch (e) {} }
     if (dirLocateCircle && dirMap) { try { dirMap.removeLayer(dirLocateCircle); } catch (e) {} }
     dirLocateMarker = null;
@@ -8503,8 +8578,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     dirLocateLast = { lat: lat, lon: lon, accuracy: pos.coords.accuracy };
     paintLocateFix(lat, lon, pos.coords.accuracy);
     if (dirLocateFollowing) {
-      var z = dirMap.getZoom();
-      if (first || z < 15) dirMap.setView([lat, lon], 15, { animate: true });
+      if (dirLocateNeedFly) flyToLocate({ lat: lat, lng: lon });
       else dirMap.panTo([lat, lon], { animate: true, duration: 0.45 });
     }
   }
@@ -8516,11 +8590,13 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var userAsked = !!dirLocateFollowing;
     pauseLocateWatch();
     dirLocateFollowing = false;
+    dirLocateNeedFly = false;
     if (dirLocateMarker && dirMap) { try { dirMap.removeLayer(dirLocateMarker); } catch (e) {} }
     if (dirLocateCircle && dirMap) { try { dirMap.removeLayer(dirLocateCircle); } catch (e) {} }
     dirLocateMarker = null;
     dirLocateCircle = null;
     setLocateBtnOn(false);
+    syncLocateFollowZoom();
     if (!userAsked) return;
     if (code === 1) toast('Location permission was denied.');
     else if (code === 2) toast("Location isn't available right now.");
@@ -8538,18 +8614,17 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function toggleLocateMe() {
     if (dirLocateFollowing) {
       dirLocateFollowing = false;
+      dirLocateNeedFly = false;
       setLocateBtnOn(false);
+      syncLocateFollowZoom();
       return;
     }
     dirLocateFollowing = true;
+    dirLocateNeedFly = true;
     setLocateBtnOn(true);
     startLocateMe();
-    if (dirLocateFollowing && dirLocateMarker && dirMap) {
-      var ll = dirLocateMarker.getLatLng();
-      var z = dirMap.getZoom();
-      if (z < 15) dirMap.setView(ll, 15, { animate: true });
-      else dirMap.panTo(ll, { animate: true, duration: 0.45 });
-    }
+    syncLocateFollowZoom();
+    if (dirLocateFollowing && dirLocateMarker && dirMap) flyToLocate(dirLocateMarker.getLatLng());
   }
   function addLocateControl() {
     if (!dirMap || typeof L === 'undefined' || !L.Control) return;
@@ -8573,7 +8648,12 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     });
     (new Ctrl()).addTo(dirMap);
     dirMap.on('dragstart', function () {
-      if (dirLocateFollowing) { dirLocateFollowing = false; setLocateBtnOn(false); }
+      if (dirLocateFollowing) {
+        dirLocateFollowing = false;
+        dirLocateNeedFly = false;
+        setLocateBtnOn(false);
+        syncLocateFollowZoom();
+      }
     });
     bindLocateLifecycle();
     maybeResumeLocateWatch();
@@ -8830,6 +8910,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (dirMap) { refreshFuelMarkers(); refreshEvMarkers(); addCommandShields(); }
     var p = document.getElementById('nearestPanel');
     if (p) { p.hidden = true; p.innerHTML = ''; p.className = 'nearest-panel'; }
+    syncNearestListLayout();
     syncNearestBtn();
   }
   function nearestOriginPickerHtml() {
@@ -8845,8 +8926,12 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function fillNearestList(el) {
     if (!el) return;
+    if (fuelOriginPending) {
+      el.innerHTML = '<p class="muted" id="nearestListStatus">Finding your location…</p>';
+      return;
+    }
     if (!fuelOrigin) {
-      el.innerHTML = '<p class="muted">Choose a starting point to list the closest sites.</p>';
+      el.innerHTML = '<p class="muted" id="nearestListStatus">' + esc(fuelOriginError || 'Choose a starting point to list the closest sites.') + '</p>';
       return;
     }
     var types = fuelFilter();
@@ -8929,15 +9014,23 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     setNearestBaseLayers();
     if (opts.fit !== false && nearestView === 'map' && nearestRows.length) fitNearestBounds();
   }
+  var fuelOriginPending = false, fuelOriginError = '';
+  function syncNearestListLayout() {
+    var wrap = document.getElementById('dirMapWrap');
+    if (wrap) wrap.classList.toggle('nearest-list-open', !!(nearestMode && nearestView === 'list'));
+    if (dirMap) setTimeout(function () { if (dirMap) dirMap.invalidateSize(); }, 80);
+  }
   function renderNearestPanel() {
     var p = document.getElementById('nearestPanel');
     if (!p || !nearestMode) return;
     var hasOrigin = !!(fuelOrigin && fuelOrigin.lat != null);
     var showPick = !hasOrigin || p.dataset.pick === '1';
     var typesOn = (fuelFilter() || []).length > 0;
-    var originText = hasOrigin
-      ? ('Starting from ' + (fuelOrigin.label || 'the selected point') + '.')
-      : 'Choose a starting point to see the closest sites.';
+    var originText = fuelOriginPending
+      ? 'Finding your location…'
+      : (hasOrigin
+        ? ('Starting from ' + (fuelOrigin.label || 'the selected point') + '.')
+        : (fuelOriginError || 'Choose a starting point to see the closest sites.'));
     p.hidden = false;
     p.className = 'nearest-panel ' + (nearestView === 'list' ? 'list-mode' : 'map-mode');
     p.setAttribute('data-sec', '4l');
@@ -8949,8 +9042,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '</div>' +
       '<button type="button" class="nearest-x" data-act="nearestClose" aria-label="Close nearest fuel/EV">&times;</button>' +
       '</div>' +
-      fuelChipBar() +
-      '<button type="button" class="btn sm chip' + (ui.dirEvFastOnly ? ' on' : '') + '" data-act="evChip" data-filter="fast" data-sec="4q" aria-pressed="' + (ui.dirEvFastOnly ? 'true' : 'false') + '" aria-label="' + evFastLabel() + '">Fast Charger Only</button>' +
+      '<div class="nearest-chiprow" data-sec="4k">' + fuelChipBar() +
+      '<button type="button" class="btn sm chip' + (ui.dirEvFastOnly ? ' on' : '') + '" data-act="evChip" data-filter="fast" data-sec="4q" aria-pressed="' + (ui.dirEvFastOnly ? 'true' : 'false') + '" aria-label="' + evFastLabel() + '">Fast Charger Only</button></div>' +
       '<p class="muted ev-fast-note" id="evFastNote">' + esc(evFastNoteText()) + '</p>' +
       '<p class="muted" id="fuelFilterEmpty"' + (typesOn ? ' hidden' : '') + '>Select a fuel type to include department fuel sites. Fleet EV chargers are still listed.</p>' +
       '<p class="nearest-origin" id="nearestOriginLine">' + esc(originText) + '</p>' +
@@ -8959,7 +9052,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div id="nearestFuelList"' + (nearestView === 'list' || !hasOrigin ? '' : ' hidden') + '></div>';
     fillNearestList(document.getElementById('nearestFuelList'));
     var st = document.getElementById('fuelGeoStatus');
-    if (st && hasOrigin) st.textContent = originText;
+    if (st && (hasOrigin || fuelOriginPending || fuelOriginError)) st.textContent = originText;
+    syncNearestListLayout();
   }
   function startNearestMode() {
     nearestMode = true;
@@ -9004,6 +9098,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     }).join('');
   }
   function setFuelOrigin(lat, lon, label) {
+    fuelOriginPending = false;
+    fuelOriginError = '';
     fuelOrigin = { lat: +lat, lon: +lon, label: label || '' };
     var p = document.getElementById('nearestPanel');
     if (p) p.dataset.pick = '';
@@ -9023,14 +9119,25 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       return;
     }
     if (!navigator.geolocation) {
-      if (st) st.textContent = 'This device cannot share a location. Pick a precinct or enter an address.';
+      fuelOriginPending = false;
+      fuelOriginError = 'Location unavailable. Pick a precinct or enter an address.';
+      if (st) st.textContent = fuelOriginError;
+      if (nearestMode) renderNearestPanel();
       return;
     }
-    if (st) st.textContent = 'Asking for your location…';
+    fuelOriginPending = true;
+    fuelOriginError = '';
+    if (st) st.textContent = 'Finding your location…';
+    if (nearestMode) renderNearestPanel();
     navigator.geolocation.getCurrentPosition(function (pos) {
+      fuelOriginPending = false;
+      fuelOriginError = '';
       setFuelOrigin(pos.coords.latitude, pos.coords.longitude, 'your location');
     }, function () {
-      if (st) st.textContent = 'Location is off or was denied. Pick a precinct or enter an address as the starting point.';
+      fuelOriginPending = false;
+      fuelOriginError = 'Location unavailable. Pick a precinct or enter an address as the starting point.';
+      if (st) st.textContent = fuelOriginError;
+      if (nearestMode) renderNearestPanel();
     }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 5000 });
   }
   function useFuelPrecinct() {
@@ -9109,7 +9216,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="btn sm chip' + (ui.dirHospLevel1 ? ' on' : '') + '" data-act="hospChip" data-filter="level1" aria-pressed="' + (ui.dirHospLevel1 ? 'true' : 'false') + '">Level 1 Trauma</button>' +
       '</div>' +
       '</div>' +
-      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p></div>' +
+      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r101 · patrol-test-651032b420df</p></div>' +
       '</div>';
     var mapTools = '<div class="dir-map-chrome">' +
       '<div class="dir-map-search"><input id="dirQ" class="dirq acIn" data-ac="map" type="text" value="' + esc(q) + '" placeholder="Search an address or precinct" aria-label="Search an address or precinct" autocomplete="off"></div>' +
@@ -12336,7 +12443,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="' + ((s.defaultCalendar || 'google') === 'google' ? 'on' : '') + '" data-act="calDefault" data-v="google">Google</button>' +
         '<button type="button" class="' + ((s.defaultCalendar || 'google') === 'apple' ? 'on' : '') + '" data-act="calDefault" data-v="apple">Apple</button></div>' +
       '<h3 style="margin-top:20px" data-sec="9m">Subscribe to calendar</h3>' + calendarSubscribeHtml() +
-      '<button class="btn danger block" data-act="reset" data-sec="9k" style="margin-top:20px">Erase all data</button>');
+      '<button class="btn danger block" data-act="reset" data-sec="9k" style="margin-top:20px">Erase all data</button>' +
+      '<p class="build-tag muted" id="appBuildTag">Build r101 · patrol-test-651032b420df</p>');
   }
 
   // ---------- Day summary: what's saved on a date; tap an entry to view or change it ----------
