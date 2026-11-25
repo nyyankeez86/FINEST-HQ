@@ -86,11 +86,14 @@ nav.tabs button[data-tab="overtime"] .tablbl{font-size:10px;font-weight:700;lett
 .ot-accrual .ot-range-tots .tot{padding:8px 6px;min-width:0}
 .ot-accrual .ot-range-tots .tot b{font-size:15px;overflow-wrap:anywhere}
 .ot-accrual .travsum,.ot-accrual .ot-range-note{display:block;font-size:11px;margin:2px 2px 0;text-align:center;color:var(--muted)}
-.ot-accrual .ot-months-tog{margin:6px 0 0;padding:6px 0;border-top:1px solid var(--line,#e2e8f0);font-size:12px}
-.ot-accrual .ot-months-tog span:last-child{font-weight:600;color:var(--muted);font-size:11px}
+.ot-accrual .ot-months-tog,.ot-accrual .ot-month-row{display:grid;grid-template-columns:minmax(4.2rem,1fr) repeat(3,3.6rem);column-gap:8px;align-items:center;justify-content:stretch;width:100%;max-width:100%;min-width:0}
+.ot-accrual .ot-months-tog{margin:6px 0 0;padding:8px 0;border-top:1px solid var(--line,#e2e8f0);font-size:12px}
 .ot-accrual .ot-month-list{margin:0}
-.ot-accrual .ot-month-row{cursor:default;padding:3px 0;font-weight:600}
-.ot-accrual .ot-month-row span:last-child{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:600}
+.ot-accrual .ot-month-row{cursor:default;padding:8px 0;font-weight:600}
+.ot-accrual .ot-mlab{min-width:0;text-align:left}
+.ot-accrual .ot-mcol{text-align:right;font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1;min-width:0}
+.ot-accrual .ot-months-tog .ot-mcol{font-weight:600;color:var(--muted);font-size:11px}
+.ot-accrual .ot-month-row .ot-mcol{color:var(--muted);font-weight:600}
 .otviewseg{display:flex;gap:6px;margin:0 0 10px}
 .otviewseg .btn{flex:1}
 .otviewseg .btn.on{background:#0f172a;color:#fff;border-color:#0f172a}
@@ -4450,25 +4453,22 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (man > 0) { res.source = 'fallback'; res.kind = 'manual'; res.rate = Math.round(man * mlt * 100) / 100; return fin(want, man * mlt, CR); }
     return fin(want, 0, CR);
   }
-  // Worked OT hours split into Cash / Time (comp). Travel minutes are added to Cash or Time
-  // to match how the travel was paid (ineligible travel is omitted). Time is worked hours,
-  // not the 1.5x banked comp minutes. Split entries use cashHours for the cash portion and
-  // the remainder as Time.
+  // Worked OT hours split into Cash / Time (comp) for 2A / cap-style totals.
+  // Travel is returned separately and is not added to Cash, Time, or Total:
+  // officers are paid for it, but it does not count toward monthly OT caps.
+  // Time is worked hours, not the 1.5x banked comp minutes. Split entries use
+  // cashHours for the cash portion and the remainder as Time. Ineligible travel is omitted.
   function otHoursSplitFromResult(r) {
-    var cashH = 0, timeH = 0, tv, th;
+    var cashH = 0, timeH = 0, travelMin = 0, tv;
     if (r) {
       cashH = +r.cashHours || 0;
       timeH = +r.compHours || 0;
       tv = r.travel;
-      if (tv && !tv.ineligible && tv.minutes > 0) {
-        th = tv.minutes / 60;
-        if (tv.comp === 'time') timeH += th;
-        else cashH += th;
-      }
+      if (tv && !tv.ineligible && tv.minutes > 0) travelMin = tv.minutes;
     }
     cashH = Math.round(cashH * 1e6) / 1e6;
     timeH = Math.round(timeH * 1e6) / 1e6;
-    return { cashHours: cashH, timeHours: timeH, totalHours: Math.round((cashH + timeH) * 1e6) / 1e6 };
+    return { cashHours: cashH, timeHours: timeH, totalHours: Math.round((cashH + timeH) * 1e6) / 1e6, travelMinutes: travelMin };
   }
   function otHoursSplit(entry, ctx) { return otHoursSplitFromResult(otEntryPay(entry, ctx || {})); }
   // OT pay for a list of entries in date order, so the Captain's yearly cash cap is used up chronologically.
@@ -7339,7 +7339,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     while (y < pe.y || (y === pe.y && m <= pe.m)) {
       key = y + '-' + ('0' + m).slice(-2);
       s = otHoursOf(map[key] || []);
-      rows.push({ year: y, month: m, label: MONTHS[m - 1].slice(0, 3), cashHours: s.cashHours, timeHours: s.timeHours, totalHours: s.totalHours });
+      rows.push({ year: y, month: m, label: MONTHS[m - 1].slice(0, 3), cashHours: s.cashHours, timeHours: s.timeHours, totalHours: s.totalHours, travelMinutes: s.travelMinutes });
       m++; if (m > 12) { m = 1; y++; }
     }
     return rows;
@@ -7381,15 +7381,15 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     } else {
       nav = '<div class="yearsel ot-range-nav"><button type="button" class="navbtn" data-act="otScopeStep" data-dir="-1" aria-label="Previous ' + scope + '">&lsaquo;</button><b>' + title + (sub ? '<span class="ot-qmonths">' + sub + '</span>' : '') + '</b><button type="button" class="navbtn" data-act="otScopeStep" data-dir="1" aria-label="Next ' + scope + '">&rsaquo;</button></div>';
     }
-    note = 'by date worked \u00b7 travel included in Cash or Time as paid \u00b7 ' + payMdNum(range.start) + '\u2013' + payMdNum(range.end);
+    note = 'by date worked \u00b7 travel not counted toward OT caps \u00b7 ' + payMdNum(range.start) + '\u2013' + payMdNum(range.end);
     var monthsHtml = '', openMonths;
     if (scope === 'quarter' || scope === 'year') {
       openMonths = ui.otMonthsOpen !== false;
-      monthsHtml = '<button type="button" class="otmhd ot-months-tog" data-act="otMonthsToggle" aria-expanded="' + (openMonths ? 'true' : 'false') + '"><span>' + chev(!openMonths) + ' Months</span><span>Cash \u00b7 Time \u00b7 Total</span></button>';
+      monthsHtml = '<button type="button" class="otmhd ot-months-tog" data-act="otMonthsToggle" aria-expanded="' + (openMonths ? 'true' : 'false') + '"><span class="ot-mlab">' + chev(!openMonths) + ' Months</span><span class="ot-mcol">Cash</span><span class="ot-mcol">Time</span><span class="ot-mcol">Total</span></button>';
       if (openMonths) {
         monthsHtml += '<div class="ot-month-list">';
         otMonthHourRows(range.start, range.end, list).forEach(function (row) {
-          monthsHtml += '<div class="otmhd ot-month-row"><span>' + row.label + '</span><span>' + hrs(row.cashHours) + ' \u00b7 ' + hrs(row.timeHours) + ' \u00b7 ' + hrs(row.totalHours) + '</span></div>';
+          monthsHtml += '<div class="otmhd ot-month-row"><span class="ot-mlab">' + row.label + '</span><span class="ot-mcol">' + hrs(row.cashHours) + '</span><span class="ot-mcol">' + hrs(row.timeHours) + '</span><span class="ot-mcol">' + hrs(row.totalHours) + '</span></div>';
         });
         monthsHtml += '</div>';
       }
@@ -7400,7 +7400,6 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<div class="tot"><small>Time</small><b>' + hrs(s.timeHours) + '</b></div>' +
         '<div class="tot"><small>Total</small><b>' + hrs(s.totalHours) + '</b></div>' +
       '</div>' +
-      (s.travelMinutes ? '<span class="travsum">incl. travel ' + E.fmtHM(s.travelMinutes) + '</span>' : '') +
       monthsHtml +
       '<div class="ot-range-note">' + note + '</div></div>';
   }
@@ -9548,7 +9547,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="btn sm chip' + (ui.dirHospLevel1 ? ' on' : '') + '" data-act="hospChip" data-filter="level1" aria-pressed="' + (ui.dirHospLevel1 ? 'true' : 'false') + '">Level 1 Trauma</button>' +
       '</div>' +
       '</div>' +
-      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r102 · patrol-test-c0ff3b9783d4</p></div>' +
+      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r103 · patrol-test-1bfb5ba2d940</p></div>' +
       '</div>';
     var mapTools = '<div class="dir-map-chrome">' +
       '<div class="dir-map-search"><input id="dirQ" class="dirq acIn" data-ac="map" type="text" value="' + esc(q) + '" placeholder="Search an address or precinct" aria-label="Search an address or precinct" autocomplete="off"></div>' +
@@ -12815,7 +12814,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="' + ((s.defaultCalendar || 'google') === 'apple' ? 'on' : '') + '" data-act="calDefault" data-v="apple">Apple</button></div>' +
       '<h3 style="margin-top:20px" data-sec="9m">Subscribe to calendar</h3>' + calendarSubscribeHtml() +
       '<button class="btn danger block" data-act="reset" data-sec="9k" style="margin-top:20px">Erase all data</button>' +
-      '<p class="build-tag muted" id="appBuildTag">Build r102 · patrol-test-c0ff3b9783d4</p>');
+      '<p class="build-tag muted" id="appBuildTag">Build r103 · patrol-test-1bfb5ba2d940</p>');
   }
 
   // ---------- Day summary: what's saved on a date; tap an entry to view or change it ----------
