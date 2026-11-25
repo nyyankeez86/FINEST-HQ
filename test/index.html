@@ -4,6 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b1f3a">
+<script>
+(function(){
+  var k='patrolSchedule.appearance', p='light';
+  try { var v=localStorage.getItem(k); if(v==='light'||v==='dark'||v==='auto') p=v; } catch(e){}
+  var dark=p==='dark'||(p==='auto'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);
+  document.documentElement.setAttribute('data-theme', dark?'dark':'light');
+  var m=document.querySelector('meta[name="theme-color"]');
+  if(m) m.setAttribute('content', dark?'#0d1b2e':'#0b1f3a');
+})();
+</script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="FHQ TEST">
 <title>FINEST HQ TEST</title>
@@ -19,7 +29,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
 <style>
-:root{--navy:#0b1f3a;--navy2:#16345f;--bg:#eef1f6;--card:#fff;--ink:#0f172a;--muted:#4b5a70;--line:#cfd6e2;--pay:#047857;--ot:#6d28d9;--accent:#1d4ed8;--danger:#b91c1c;--radius:14px;--tabh:64px}
+:root{--navy:#0b1f3a;--navy2:#16345f;--bg:#eef1f6;--card:#fff;--ink:#0f172a;--muted:#4b5a70;--line:#cfd6e2;--pay:#047857;--ot:#6d28d9;--accent:#1d4ed8;--danger:#b91c1c;--radius:14px;--tabh:64px;--tab-bg:#fff;--tab-fg:#5b6678;--btn-bg:#fff;--chip-bg:#fff;--sheet-bg:#fff;--input-bg:#fff;--soft:#eef1f6;--soft2:#f5f7fb;--ok-bg:#ecfdf5;--ok-fg:#065f46;--ok-line:#bbf7d0;--warn-bg:#fffbeb;--warn-fg:#713f12;--warn-line:#fcd34d;--bad-bg:#fef2f2;--bad-fg:#991b1b;--note-red:#dc2626;--theme:#0b1f3a;color-scheme:light}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
 button,input,select,textarea{font:inherit;color:inherit}
@@ -66,9 +76,9 @@ header.top .sub{font-size:13px;color:#c7d3e6;margin-top:2px}
 .pushhint{font-size:12.5px;color:var(--muted);margin:6px 0 10px}
 .chkline{display:flex;gap:10px;align-items:center;min-height:44px;font-weight:700}
 main{flex:1;padding:14px 14px calc(var(--tabh) + 24px + env(safe-area-inset-bottom))}
-nav.tabs[hidden],#headActs[hidden],#btnSettings[hidden],#btnInbox[hidden],#inboxBadge[hidden],#inboxBadgeSheet[hidden],#sugPop[hidden],#sugPreview[hidden]{display:none!important}nav.tabs{position:fixed;bottom:0;left:0;right:0;z-index:20;background:#fff;border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs[hidden],#headActs[hidden],#btnSettings[hidden],#btnInbox[hidden],#inboxBadge[hidden],#inboxBadgeSheet[hidden],#sugPop[hidden],#sugPreview[hidden]{display:none!important}nav.tabs{position:fixed;bottom:0;left:0;right:0;z-index:20;background:var(--tab-bg,#fff);border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom)}
 nav.tabs .wrap{display:flex;width:100%;max-width:560px}
-nav.tabs button{flex:1;height:var(--tabh);border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:1px;font-size:12px;font-weight:600;color:#5b6678;cursor:pointer;padding:5px 2px 2px;position:relative}
+nav.tabs button{flex:1;height:var(--tabh);border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:1px;font-size:12px;font-weight:600;color:var(--tab-fg,#5b6678);cursor:pointer;padding:5px 2px 2px;position:relative}
 nav.tabs button svg{width:22px;height:22px;flex:0 0 22px;display:block}
 nav.tabs .tablbl{display:flex;align-items:flex-start;justify-content:center;min-height:2.3em;line-height:1.15;text-align:center;font-weight:600;max-width:100%}
 nav.tabs button[data-tab="overtime"] .tablbl{font-size:10px;font-weight:700;letter-spacing:-.02em;line-height:1.15}
@@ -87,9 +97,9 @@ nav.tabs button[data-tab="overtime"] .tablbl{font-size:10px;font-weight:700;lett
 .ot-accrual .ot-range-tots .tot b{font-size:15px;overflow-wrap:anywhere}
 .ot-accrual .travsum,.ot-accrual .ot-range-note{display:block;font-size:11px;margin:2px 2px 0;text-align:center;color:var(--muted)}
 .ot-accrual .ot-months-tog,.ot-accrual .ot-month-row{display:grid;grid-template-columns:minmax(4.2rem,1fr) repeat(3,3.6rem);column-gap:8px;align-items:center;justify-content:stretch;width:100%;max-width:100%;min-width:0}
-.ot-accrual .ot-months-tog{margin:6px 0 0;padding:8px 0;border-top:1px solid var(--line,#e2e8f0);font-size:12px}
+.ot-accrual .ot-months-tog{margin:6px 0 0;padding:6px 0;border-top:1px solid var(--line,#e2e8f0);font-size:12px;line-height:1.2}
 .ot-accrual .ot-month-list{margin:0}
-.ot-accrual .ot-month-row{cursor:default;padding:8px 0;font-weight:600}
+.ot-accrual .ot-month-row{cursor:default;padding:4px 0;font-weight:600;line-height:1.2}
 .ot-accrual .ot-mlab{min-width:0;text-align:left}
 .ot-accrual .ot-mcol{text-align:right;font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1;min-width:0}
 .ot-accrual .ot-months-tog .ot-mcol{font-weight:600;color:var(--muted);font-size:11px}
@@ -133,7 +143,7 @@ nav.tabs{transition:transform .22s ease,opacity .22s ease}
 main#view{transition:padding-bottom .22s ease}
 @media (prefers-reduced-motion:reduce){nav.tabs,main#view{transition:none}}
 
-.card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:0 1px 2px rgba(15,23,42,.08);border:1px solid #e1e6ee;margin-bottom:12px}
+.card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:0 1px 2px rgba(15,23,42,.08);border:1px solid var(--line,#e1e6ee);margin-bottom:12px}
 .row{display:flex;gap:10px}.row[hidden]{display:none}.field.mi{flex:0 0 64px;min-width:64px;max-width:72px}.field.mi input{text-align:center;text-transform:uppercase}
 .row>*{flex:1;min-width:0}
 .namerow{display:flex;gap:8px;align-items:stretch}.namerow>*{flex:1;min-width:0}.namerow .field{display:flex;flex-direction:column;margin-bottom:12px}.namerow .field label{min-height:18px;line-height:18px;white-space:nowrap}.namerow .field input,.namerow .field select{height:48px;min-height:48px;width:100%}
@@ -176,7 +186,7 @@ main#view{transition:padding-bottom .22s ease}
 h2{font-size:18px;margin:4px 0 10px}
 h3{font-size:17px;margin:0 0 6px}
 .muted{color:var(--muted)}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:48px;padding:0 18px;border-radius:12px;border:1px solid var(--line);background:#fff;font-weight:700;cursor:pointer}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:48px;padding:0 18px;border-radius:12px;border:1px solid var(--line);background:var(--btn-bg,#fff);font-weight:700;cursor:pointer}
 .btn.primary{background:var(--navy);border-color:var(--navy);color:#fff}
 .btn.danger{color:var(--danger);border-color:#f0c4c4}
 .btn.block{width:100%}
@@ -234,7 +244,7 @@ h3{font-size:17px;margin:0 0 6px}
 .item .t2{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .item .right{text-align:right;font-weight:800;white-space:nowrap}
 .item .right small{display:block;font-weight:600;color:var(--muted);font-size:12px}
-.chip{display:inline-block;padding:3px 9px;border-radius:999px;font-size:12.5px;font-weight:700;border:1px solid var(--line);background:#fff;margin:2px 4px 2px 0}
+.chip{display:inline-block;padding:3px 9px;border-radius:999px;font-size:12.5px;font-weight:700;border:1px solid var(--line);background:var(--chip-bg,#fff);margin:2px 4px 2px 0}
 .grp{font-size:13px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:14px 2px 4px;display:flex;justify-content:space-between}
 .period{border-left:6px solid #c4ccd9;scroll-margin-top:calc(var(--stackh, calc(var(--hdrh, 72px) + var(--paybanh, 80px))) + 8px)}.pay-end-space{display:block;height:calc(100dvh - var(--stackh, 172px) - var(--tabh, 64px) - 232px - env(safe-area-inset-bottom, 0px));min-height:120px;pointer-events:none;visibility:hidden}
 .period.current{border-left-color:var(--accent);background:#f0f5ff;box-shadow:0 0 0 2px var(--accent) inset}
@@ -300,11 +310,11 @@ h3{font-size:17px;margin:0 0 6px}
 .field textarea{min-height:76px;resize:vertical}
 .field .hint{font-size:12.5px;color:var(--muted);margin-top:4px}
 .sheet-bg{position:fixed;inset:0;background:rgba(5,15,30,.55);z-index:50;display:flex;align-items:flex-end;justify-content:center;padding-top:env(safe-area-inset-top,0px);animation:fade .15s}
-.sheet{background:#fff;width:100%;max-width:560px;max-height:92vh;overflow:auto;-webkit-overflow-scrolling:touch;border-radius:18px 18px 0 0;padding:0 16px calc(18px + env(safe-area-inset-bottom));scroll-padding-top:96px;animation:up .18s ease-out}
-.sheet .sbar{position:sticky;top:0;z-index:8;background:#fff;margin:0 -16px 8px;padding:8px 16px 10px;border-bottom:1px solid var(--line,#cfd6e2);box-shadow:0 8px 0 #fff}
+.sheet{background:var(--sheet-bg,#fff);color:var(--ink);width:100%;max-width:560px;max-height:92vh;overflow:auto;-webkit-overflow-scrolling:touch;border-radius:18px 18px 0 0;padding:0 16px calc(18px + env(safe-area-inset-bottom));scroll-padding-top:96px;animation:up .18s ease-out}
+.sheet .sbar{position:sticky;top:0;z-index:8;background:var(--sheet-bg,#fff);margin:0 -16px 8px;padding:8px 16px 10px;border-bottom:1px solid var(--line,#cfd6e2);box-shadow:0 8px 0 var(--sheet-bg,#fff)}
 .sheet .grab{width:44px;height:5px;border-radius:5px;background:#c8cfdb;margin:4px auto 8px}
-.sheet .shead{display:flex;justify-content:space-between;align-items:center;margin-bottom:0;background:#fff}
-.sheet .sback{min-height:40px;padding:0 12px 0 8px;margin-right:8px;border-radius:10px;border:0;background:#eef1f6;font-weight:800;font-size:15px;color:var(--ink,#0f172a);cursor:pointer;flex-shrink:0}
+.sheet .shead{display:flex;justify-content:space-between;align-items:center;margin-bottom:0;background:var(--sheet-bg,#fff)}
+.sheet .sback{min-height:40px;padding:0 12px 0 8px;margin-right:8px;border-radius:10px;border:0;background:var(--soft,#eef1f6);font-weight:800;font-size:15px;color:var(--ink,#0f172a);cursor:pointer;flex-shrink:0}
 .sheet .shead h3{flex:1;min-width:0}
 .travsum{display:block;font-size:11.5px;color:#0f766e;font-weight:600}.travchip{background:#ecfdf5;border:1px solid #99f6e4;color:#0f766e}
 .travbox{border:1.5px solid var(--line);border-radius:12px;padding:10px 12px 2px;margin-bottom:12px;background:#fbfcfe}
@@ -313,7 +323,7 @@ h3{font-size:17px;margin:0 0 6px}
 body.beta [data-sec]{position:relative}
 body.beta [data-sec]::after{content:attr(data-sec);position:absolute;top:2px;right:2px;z-index:5;font:800 9.5px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.02em;color:#7c3aed;background:rgba(245,243,255,.92);border:1px solid #ddd6fe;border-radius:5px;padding:2px 4px;pointer-events:none}
 body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after,body.beta #btnSuggest[data-sec]::after{top:-4px;left:0;right:auto;font-size:10.5px}
-.sheet .x{width:44px;height:44px;border-radius:10px;border:0;background:#eef1f6;font-size:22px;cursor:pointer}
+.sheet .x{width:44px;height:44px;border-radius:10px;border:0;background:var(--soft,#eef1f6);font-size:22px;cursor:pointer}
 @keyframes up{from{transform:translateY(40px);opacity:.5}to{transform:none;opacity:1}}
 @keyframes fade{from{opacity:0}}
 .ddpair{background:#fff;border:2px solid #0f172a;border-radius:12px;padding:10px;margin:6px 0 10px;font-size:14px}
@@ -786,6 +796,75 @@ body:has(#testBuildBanner) #app.tab-map main#view{padding-bottom:calc(var(--tabh
 .fuel-rmp{color:#9a3412;font-weight:700;margin:6px 0}
 .fuel-src{font-size:12px;color:var(--muted)}
 .leaflet-div-icon{background:transparent;border:0}
+
+
+.pdcam-note{color:var(--note-red,#dc2626);font-size:12.5px;font-weight:700;margin:8px 0 4px;line-height:1.35}
+.appearchips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}
+.appearchips .chip{min-height:36px;margin:0;cursor:pointer}
+.appearchips .chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+html[data-theme="dark"]{
+  --navy:#142033;--navy2:#1c3254;--bg:#0f141c;--card:#1a2230;--ink:#e8eef6;--muted:#9aa8bc;--line:#2c394c;
+  --pay:#34d399;--ot:#c4b5fd;--accent:#60a5fa;--danger:#f87171;
+  --tab-bg:#151b24;--tab-fg:#b0bccb;--btn-bg:#232b38;--chip-bg:#232b38;--sheet-bg:#1a2230;--input-bg:#121821;
+  --soft:#151c27;--soft2:#121821;--ok-bg:#0c2f24;--ok-fg:#6ee7b7;--ok-line:#115e47;
+  --warn-bg:#3a2a0a;--warn-fg:#fde68a;--warn-line:#92400e;--bad-bg:#3f1515;--bad-fg:#fca5a5;
+  --note-red:#ff7b7b;--theme:#0d1b2e;color-scheme:dark
+}
+html[data-theme="dark"] html,html[data-theme="dark"] body,html[data-theme="dark"] #app{background:var(--bg);color:var(--ink)}
+html[data-theme="dark"] button,html[data-theme="dark"] input,html[data-theme="dark"] select,html[data-theme="dark"] textarea{color:inherit;background:var(--input-bg);border-color:var(--line)}
+html[data-theme="dark"] input,html[data-theme="dark"] select,html[data-theme="dark"] textarea{color:var(--ink);background:var(--input-bg);caret-color:var(--ink)}
+html[data-theme="dark"] nav.tabs button.on,html[data-theme="dark"] nav.tabs button.on .tablbl,html[data-theme="dark"] nav.tabs button.on svg{color:var(--accent);stroke:currentColor}
+html[data-theme="dark"] .btn.primary,html[data-theme="dark"] .pick.on,html[data-theme="dark"] .navdefchips .chip.on,html[data-theme="dark"] .appearchips .chip.on,html[data-theme="dark"] .dirchips .chip.on,html[data-theme="dark"] .navdefchips .chip.on,html[data-theme="dark"] .map-toolbar .btn.on,html[data-theme="dark"] .otviewseg .btn.on{background:var(--navy);border-color:var(--navy);color:#fff}
+html[data-theme="dark"] .btn.danger{background:var(--danger);border-color:var(--danger);color:#fff}
+html[data-theme="dark"] .seg{background:var(--soft)}
+html[data-theme="dark"] .seg button{background:transparent;color:var(--ink)}
+html[data-theme="dark"] .seg button.on{background:var(--card);color:var(--accent);box-shadow:0 1px 2px rgba(0,0,0,.4)}
+html[data-theme="dark"] .tot,.period .grid3 div,.pblock .pay-days,.grid3 .pay-ot-tile{background:var(--soft2);color:var(--ink)}
+html[data-theme="dark"] .pblock.on .grid3 .pay-ot-tile,.pblock.on .pay-days{background:var(--card)}
+html[data-theme="dark"] .yearsel b,.payban .yearsel b{color:var(--accent)}
+html[data-theme="dark"] .payban{background:var(--bg);border-bottom-color:var(--line);box-shadow:0 6px 12px rgba(0,0,0,.35)}
+html[data-theme="dark"] .payban-pickbtn,.payban-menu,.payban-opt{background:var(--card);color:var(--ink);border-color:var(--line)}
+html[data-theme="dark"] .payban-opt.on,.payban-opt[aria-selected="true"]{background:var(--accent);color:#0b1220}
+html[data-theme="dark"] .payban-next{color:var(--accent);border-color:var(--accent)}
+html[data-theme="dark"] .navbtn{background:var(--card);color:var(--ink);border-color:var(--line)}
+html[data-theme="dark"] .cell{background:var(--card);border-color:var(--line);color:var(--ink)}
+html[data-theme="dark"] .cell.today{outline-color:var(--accent)}
+html[data-theme="dark"] .hstat,.peekbar,.chartline,.histprev,.authwarn,.privnote,.savedban,.cmdcard,.slipcard,.lenbox,.ddpair{background:var(--soft);color:var(--ink);border-color:var(--line)}
+html[data-theme="dark"] .item,.list .item,.histcard{background:var(--card);color:var(--ink);border-color:var(--line)}
+html[data-theme="dark"] .pdpay,.pdstat{background:var(--ok-bg);color:var(--ok-fg);border-color:var(--ok-line)}
+html[data-theme="dark"] .pdstat.bad,.pdnote.bad{background:var(--bad-bg);color:var(--bad-fg)}
+html[data-theme="dark"] .pdnote,.pdwarn{background:var(--warn-bg);color:var(--warn-fg);border-color:var(--warn-line)}
+html[data-theme="dark"] .acdrop,.daysel-list,.mcal,.sugcard,.sugpop .sugcard{background:var(--sheet-bg);color:var(--ink);border-color:var(--line)}
+html[data-theme="dark"] .acopt{border-bottom-color:var(--line);color:var(--ink)}
+html[data-theme="dark"] .acopt.on,html[data-theme="dark"] .acopt:hover{background:var(--soft)}
+html[data-theme="dark"] .daysel-btn{background:var(--card);color:var(--ink);border-color:var(--line)}
+html[data-theme="dark"] .mcalday{color:var(--ink)}
+html[data-theme="dark"] .mcalday.on{background:var(--navy);color:#fff}
+html[data-theme="dark"] .mcalhd b{color:var(--accent)}
+html[data-theme="dark"] .sheet-bg{background:rgba(0,0,0,.72)}
+html[data-theme="dark"] .sheet .grab{background:#4b5568}
+html[data-theme="dark"] #toast{background:#0b1220;color:#fff}
+html[data-theme="dark"] .paycard,.balrow input,.field input,.field select,.field textarea,.timeIn,.tourIn{background:var(--input-bg);color:var(--ink);border-color:var(--line)}
+html[data-theme="dark"] .ot-accrual .ot-mcol,.ot-accrual .ot-range-note,.muted,.hint{color:var(--muted)}
+html[data-theme="dark"] .leaflet-popup-content-wrapper,html[data-theme="dark"] .leaflet-popup-tip{background:var(--card);color:var(--ink)}
+html[data-theme="dark"] .leaflet-bar a,html[data-theme="dark"] .leaflet-control-zoom a,html[data-theme="dark"] .leaflet-control{background:var(--card);color:var(--ink);border-color:var(--line)}
+html[data-theme="dark"] .leaflet-bar a:hover{background:var(--soft)}
+html[data-theme="dark"] .nearest-panel,.nearest-item,.dir-map-card,.map-toolbar .btn,.dir-map-opts{background:var(--card);color:var(--ink);border-color:var(--line)}
+html[data-theme="dark"] .nearest-item .mi,.nearest-change,a.dir-tel{color:var(--accent)}
+html[data-theme="dark"] body.beta [data-sec]::after{color:#e9d5ff;background:rgba(30,20,50,.92);border-color:#6d28d9}
+html[data-theme="dark"] .authtabs{background:var(--soft)}
+html[data-theme="dark"] .authtabs button.on{background:var(--card);color:var(--ink)}
+html[data-theme="dark"] .onb .hero{background:var(--navy);color:#fff}
+html[data-theme="dark"] .suggestbtn{background:var(--card);color:var(--ink);border-color:var(--line)}
+html[data-theme="dark"] header.top .sub{color:#b6c3d6}
+html[data-theme="dark"] .payban-host{background:var(--bg)}
+html[data-theme="dark"] .travsum,.travchip{color:#5eead4;border-color:#115e59;background:#042f2e}
+html[data-theme="dark"] .nowtag{background:#1e3a5f;color:#93c5fd}
+html[data-theme="dark"] [style*="background:#fff"],html[data-theme="dark"] [style*="background: #fff"]{background:var(--card)}
+html[data-theme="dark"] [style*="background:#f8fafc"],html[data-theme="dark"] [style*="background:#f5f7fb"],html[data-theme="dark"] [style*="background:#eef1f6"]{background:var(--soft)}
+html[data-theme="dark"] [style*="color:#0f172a"],html[data-theme="dark"] [style*="color:#334155"]{color:var(--ink)}
+html[data-theme="dark"] [style*="color:#0000FF"]{color:var(--accent)}
+html[data-theme="dark"] .pdcam-note{color:var(--note-red)}
 
 </style>
 <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
@@ -5863,7 +5942,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     };
   }
   // Backup: the Maps key lives outside the app state and is only added when the user opts in.
-  function buildBackup(state, mapsKey, includeKey) { var b = copy(state || {}); delete b.mapsKey; delete b.defaultNav; if (b.settings) delete b.settings.defaultNav; if (includeKey && mapsKey) b.mapsKey = mapsKey; return b; }
+  function buildBackup(state, mapsKey, includeKey) { var b = copy(state || {}); delete b.mapsKey; delete b.defaultNav; delete b.appearance; if (b.settings) { delete b.settings.defaultNav; delete b.settings.appearance; } if (includeKey && mapsKey) b.mapsKey = mapsKey; return b; }
   // ---- Arrival time (optional Google Maps key). All I/O is injected so it can be tested with a mocked Google API. ----
   function fmtClock(d) { var h = d.getHours(), m = d.getMinutes(); return ((h % 12) || 12) + ':' + pad2(m) + ' ' + (h < 12 ? 'AM' : 'PM'); }
   function fmtDur(sec) { var m = Math.max(1, Math.round(sec / 60)); return m < 60 ? m + ' min' : Math.floor(m / 60) + ' h' + (m % 60 ? ' ' + (m % 60) + ' min' : ''); }
@@ -9547,7 +9626,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="btn sm chip' + (ui.dirHospLevel1 ? ' on' : '') + '" data-act="hospChip" data-filter="level1" aria-pressed="' + (ui.dirHospLevel1 ? 'true' : 'false') + '">Level 1 Trauma</button>' +
       '</div>' +
       '</div>' +
-      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r103 · patrol-test-1bfb5ba2d940</p></div>' +
+      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r104 · patrol-test-fa87de21b402</p></div>' +
       '</div>';
     var mapTools = '<div class="dir-map-chrome">' +
       '<div class="dir-map-search"><input id="dirQ" class="dirq acIn" data-ac="map" type="text" value="' + esc(q) + '" placeholder="Search an address or precinct" aria-label="Search an address or precinct" autocomplete="off"></div>' +
@@ -10507,7 +10586,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var f = function (id, lbl, v, extra, sec) { return '<div class="field"' + (sec ? ' data-sec="' + sec + '"' : '') + '><label for="' + id + '">' + lbl + '</label><input id="' + id + '" value="' + esc(v || '') + '"' + (extra || '') + '></div>'; };
     var vendors = pdVendorList();
     var body = '<form id="pdForm" class="pdpage" data-iso="' + esc(iso) + '" data-sec="19"' + (fromLog ? ' data-bind-date="1"' : '') + ' onsubmit="return false">' +
-      '<div class="pdscan"><label class="btn sm pdup" for="pdFile">&#128247; Upload screenshot</label><input type="file" id="pdFile" accept="image/*" hidden>' +
+      '<div class="pdscan" data-sec="19j"><label class="btn sm pdup" for="pdFile">&#128247; Upload screenshot</label><input type="file" id="pdFile" accept="image/*" hidden>' +
+      '<p class="pdcam-note" id="pdCamNote">For best results, use your device\'s camera app and upload the picture after.</p>' +
       '<div class="hint">Reads your &ldquo;Selected Paid Details&rdquo; screen on this phone and fills the fields below. The picture is not uploaded, saved or synced.</div><div class="pdstat" id="pdStat" role="status" aria-live="polite" hidden></div></div>' +
       f('pdId', 'Paid Detail ID', pd.id, ' inputmode="numeric" autocomplete="off" placeholder="e.g. 4320372"', '19a') +
       '<div class="field" data-sec="19b"><div class="datepair">' + dateFrame('pdStartDate', pd.date, 'Date from') + dateFrame('pdEndDate', pd.endDate || pd.date, 'Date to') + '</div>' +
@@ -11456,6 +11536,53 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function trLocOptions() { return E.trainingLocations(S.assignments).map(function (x) { return '<option value="' + esc(x.name) + '"' + (x.address ? ' label="' + esc(x.address) + '"' : '') + '>'; }).join(''); }
   function addrOptions(type) { return E.addressSuggestions(S.assignments, type).map(function (x) { return '<option value="' + esc(x.value) + '"' + (x.label ? ' label="' + esc(x.label) + '"' : '') + '>'; }).join(''); }
   var NAV_KEY = 'patrolSchedule.defaultNav'; // device-only; never written into S or synced
+  var THEME_KEY = 'patrolSchedule.appearance'; // device-only; never written into S or synced
+  function appearancePref() {
+    try {
+      var v = localStorage.getItem(THEME_KEY);
+      if (v === 'light' || v === 'dark' || v === 'auto') return v;
+    } catch (e) {}
+    return 'light';
+  }
+  function systemDark() {
+    return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  }
+  function resolvedTheme() {
+    var p = appearancePref();
+    return (p === 'auto') ? (systemDark() ? 'dark' : 'light') : p;
+  }
+  function applyTheme() {
+    var theme = resolvedTheme();
+    document.documentElement.setAttribute('data-theme', theme);
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', theme === 'dark' ? '#0d1b2e' : '#0b1f3a');
+  }
+  function setAppearance(v) {
+    try {
+      if (v === 'light' || v === 'dark' || v === 'auto') localStorage.setItem(THEME_KEY, v);
+      else localStorage.removeItem(THEME_KEY);
+    } catch (e) {}
+    applyTheme();
+  }
+  function watchTheme() {
+    if (!window.matchMedia) return;
+    var mq = window.matchMedia('(prefers-color-scheme: dark)');
+    var fn = function () { if (appearancePref() === 'auto') applyTheme(); };
+    if (mq.addEventListener) mq.addEventListener('change', fn);
+    else if (mq.addListener) mq.addListener(fn);
+  }
+  function appearanceHtml() {
+    var cur = appearancePref();
+    function chip(v, lab) {
+      var on = cur === v;
+      return '<button type="button" class="chip' + (on ? ' on' : '') + '" role="radio" aria-checked="' + (on ? 'true' : 'false') + '" data-act="appearance" data-v="' + v + '">' + lab + '</button>';
+    }
+    return '<h3 style="margin-top:18px" data-sec="9p">Appearance</h3>' +
+      '<div class="muted" style="font-size:13px;margin-bottom:8px">Light, Dark, or Auto (follows this device). Stored only on this device, never synced to your account.</div>' +
+      '<div class="appearchips" id="stAppearSeg" role="radiogroup" aria-label="Appearance">' +
+        chip('light', 'Light') + chip('dark', 'Dark') + chip('auto', 'Auto') + '</div>' +
+      '<div class="hint">Current: <b>' + (cur === 'auto' ? 'Auto' : (cur === 'dark' ? 'Dark' : 'Light')) + '</b>' + (cur === 'auto' ? ' (using ' + (resolvedTheme() === 'dark' ? 'Dark' : 'Light') + ' on this device)' : '') + '.</div>';
+  }
   var NAV_LABELS = { google: 'Google Maps', apple: 'Apple Maps', waze: 'Waze' };
   var NAV_CLS = { google: 'nav-g', apple: 'nav-a', waze: 'nav-w' };
   var NAV_ORDER = ['google', 'apple', 'waze'];
@@ -12769,7 +12896,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function settingsSheet() {
     var p = S.profile, s = S.settings;
     openSheet('Settings',
-      accountPanel() + (CL.enabled ? privacySectionHtml({ title: true, deleteBtn: !!CS.uid, sec: '9n', top: '18px' }) : '') + '<h3 data-sec="9b" style="margin-top:' + (CL.enabled ? '18px' : '0') + '">Profile</h3>' + profileFields('st', p, 'row') + homeField('st', p) +
+      accountPanel() + (CL.enabled ? privacySectionHtml({ title: true, deleteBtn: !!CS.uid, sec: '9n', top: '18px' }) : '') + appearanceHtml() + '<h3 data-sec="9b" style="margin-top:18px">Profile</h3>' + profileFields('st', p, 'row') + homeField('st', p) +
       '<h3 id="histHead" data-sec="9c">Rank &amp; assignment</h3><div id="histWrap">' + histPanel() + '</div>' +
       '<h3 style="margin-top:20px" data-sec="9o">Default navigation app</h3>' +
       '<div class="muted" style="font-size:13px;margin-bottom:8px">Used when you tap a navigate button. Stored only on this device, never synced to your account. You can still pick a different app for one trip.</div>' +
@@ -12814,7 +12941,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="' + ((s.defaultCalendar || 'google') === 'apple' ? 'on' : '') + '" data-act="calDefault" data-v="apple">Apple</button></div>' +
       '<h3 style="margin-top:20px" data-sec="9m">Subscribe to calendar</h3>' + calendarSubscribeHtml() +
       '<button class="btn danger block" data-act="reset" data-sec="9k" style="margin-top:20px">Erase all data</button>' +
-      '<p class="build-tag muted" id="appBuildTag">Build r103 · patrol-test-1bfb5ba2d940</p>');
+      '<p class="build-tag muted" id="appBuildTag">Build r104 · patrol-test-fa87de21b402</p>');
   }
 
   // ---------- Day summary: what's saved on a date; tap an entry to view or change it ----------
@@ -14206,6 +14333,18 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var seg = document.getElementById('stCalSeg');
       if (seg) Array.prototype.forEach.call(seg.querySelectorAll('[data-act="calDefault"]'), function (b) { b.classList.toggle('on', b === t); });
     },
+    appearance: function (t) {
+      var v = t.dataset.v; if (v !== 'light' && v !== 'dark' && v !== 'auto') return;
+      setAppearance(v);
+      var seg = document.getElementById('stAppearSeg');
+      if (seg) Array.prototype.forEach.call(seg.querySelectorAll('[data-act="appearance"]'), function (b) {
+        var on = b === t; b.classList.toggle('on', on); b.setAttribute('aria-checked', on ? 'true' : 'false');
+      });
+      var hint = seg && seg.nextElementSibling;
+      if (hint && hint.classList.contains('hint')) {
+        hint.innerHTML = 'Current: <b>' + (v === 'auto' ? 'Auto' : (v === 'dark' ? 'Dark' : 'Light')) + '</b>' + (v === 'auto' ? ' (using ' + (resolvedTheme() === 'dark' ? 'Dark' : 'Light') + ' on this device)' : '') + '.';
+      }
+    },
     navDefault: function (t) {
       var v = t.dataset.v; if (v !== 'google' && v !== 'apple' && v !== 'waze' && v !== 'ask') return;
       setDefaultNav(v);
@@ -14707,6 +14846,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   inboxSheet = navable('inbox', inboxSheet, function () { return ''; }); userInboxSheet = navable('messages', userInboxSheet, function (k) { return k || ''; }); adminSheet = navable('admin', adminSheet, function () { return ''; });
   x15Sheet = navable('x15', x15Sheet); x15Editor = navable('x15ed', x15Editor, function (y, m, t) { return [y, m, t].join('-'); });
   A.leaveNew = navable('leaveNew', A.leaveNew, function (t) { return t && t.dataset ? t.dataset.kind || '' : ''; }); A.syncOpen = navable('sync', A.syncOpen, function () { return ''; });
+  applyTheme(); watchTheme();
   if (CL.enabled) cloudBoot(); else { render(); slipReconcile(); }
   setTimeout(function () { try { if (S.profile) resolveHistPcts(); } catch (e) {} }, 1500);
   if ('serviceWorker' in navigator && document.querySelector('link[rel="manifest"]') && /^(https:|http:\/\/(localhost|127\.0\.0\.1))/.test(location.href)) {
