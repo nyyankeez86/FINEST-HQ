@@ -6448,7 +6448,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
 
   var S = load();
   var T = E.today(), tp = E.parts(T);
-  var ui = { tab: 'schedule', calY: tp.y, calM: tp.m, lookup: T, otYear: tp.y, payYear: tp.y, leaveYear: tp.y, leaveOpen: false, pdY: tp.y, pdM: tp.m, onbSquad: null, x15Year: tp.y, otView: 'ot', otScope: 'quarter', otScopeY: tp.y, otScopeQ: 0, otScopeM: tp.m, otMonthsOpen: true, otSel: false, otSelIds: {}, pdSel: false, pdSelIds: {}, otFilter: 'all', pdFilter: 'all', otCollapse: {}, payOpen: {}, calPeek: null, calPeekPicker: false, todayOpen: false, glanceOpen: false, dirQ: '', mapQ: '', dirKind: '', dirView: 'dir', dirFuelOn: false, dirEvOn: false, dirHospOn: false, dirHospLevel1: false, dirFacilitiesOn: false, dirEvFastOnly: false, mapFocusPct: null };
+  var ui = { tab: 'schedule', calY: tp.y, calM: tp.m, lookup: T, otYear: tp.y, payYear: tp.y, leaveYear: tp.y, leaveOpen: false, pdY: tp.y, pdM: tp.m, onbSquad: null, x15Year: tp.y, otView: 'ot', otScope: 'month', otScopeY: tp.y, otScopeQ: 0, otScopeM: tp.m, otMonthsOpen: true, otSel: false, otSelIds: {}, pdSel: false, pdSelIds: {}, otFilter: 'all', pdFilter: 'all', otCollapse: {}, payOpen: {}, calPeek: null, calPeekPicker: false, todayOpen: false, glanceOpen: false, dirQ: '', mapQ: '', dirKind: '', dirView: 'dir', dirFuelOn: false, dirEvOn: false, dirHospOn: false, dirHospLevel1: false, dirFacilitiesOn: false, dirEvFastOnly: false, mapFocusPct: null };
   function msgNewIconHtml() { return '<span class="msgunread-dot" aria-hidden="true"></span>'; }
   var MSG_VERIFIED_TIP = 'Official message from a FINEST HQ admin';
   function msgVerifiedHtml() {
@@ -7391,7 +7391,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   var OT_QMONTHS = ['Jan\u2013Mar', 'Apr\u2013Jun', 'Jul\u2013Sep', 'Oct\u2013Dec'];
   function ensureOtScope() {
-    if (!ui.otScope) ui.otScope = 'quarter';
+    if (!ui.otScope) ui.otScope = 'month';
     if (!ui.otScopeY) ui.otScopeY = tp.y;
     if (!ui.otScopeQ) ui.otScopeQ = E.calendarQuarter(tp.m) || 1;
     if (!ui.otScopeM) ui.otScopeM = tp.m;
@@ -9626,7 +9626,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="btn sm chip' + (ui.dirHospLevel1 ? ' on' : '') + '" data-act="hospChip" data-filter="level1" aria-pressed="' + (ui.dirHospLevel1 ? 'true' : 'false') + '">Level 1 Trauma</button>' +
       '</div>' +
       '</div>' +
-      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r104 · patrol-test-fa87de21b402</p></div>' +
+      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r104 · patrol-test-95dd9da0a734</p></div>' +
       '</div>';
     var mapTools = '<div class="dir-map-chrome">' +
       '<div class="dir-map-search"><input id="dirQ" class="dirq acIn" data-ac="map" type="text" value="' + esc(q) + '" placeholder="Search an address or precinct" aria-label="Search an address or precinct" autocomplete="off"></div>' +
@@ -12941,7 +12941,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="' + ((s.defaultCalendar || 'google') === 'apple' ? 'on' : '') + '" data-act="calDefault" data-v="apple">Apple</button></div>' +
       '<h3 style="margin-top:20px" data-sec="9m">Subscribe to calendar</h3>' + calendarSubscribeHtml() +
       '<button class="btn danger block" data-act="reset" data-sec="9k" style="margin-top:20px">Erase all data</button>' +
-      '<p class="build-tag muted" id="appBuildTag">Build r104 · patrol-test-fa87de21b402</p>');
+      '<p class="build-tag muted" id="appBuildTag">Build r104 · patrol-test-95dd9da0a734</p>');
   }
 
   // ---------- Day summary: what's saved on a date; tap an entry to view or change it ----------
@@ -13989,7 +13989,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       commitOvertimeDelete(id, true);
     },
     otView: function (t) { ui.otView = t.dataset.v === 'pd' ? 'pd' : 'ot'; ui.otSel = false; ui.otSelIds = {}; ui.pdSel = false; ui.pdSelIds = {}; render(); },
-    otScope: function (t) { ui.otScope = t.dataset.v || 'quarter'; ensureOtScope(); render(); },
+    otScope: function (t) { ui.otScope = t.dataset.v || 'month'; ensureOtScope(); render(); },
     otScopeStep: function (t) {
       ensureOtScope();
       var dir = +t.dataset.dir || 0, n, m, y;

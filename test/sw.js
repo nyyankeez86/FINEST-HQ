@@ -1,5 +1,5 @@
 // Offline cache for the home-screen app. The version changes with every build, so updates replace the old copy.
-const CACHE = 'patrol-test-fa87de21b402'; // TEST build: own cache, scope /FINEST-HQ/test/
+const CACHE = 'patrol-test-95dd9da0a734'; // TEST build: own cache, scope /FINEST-HQ/test/
 const FILES = ["./","./index.html","./config.js","./manifest.webmanifest","./icons/favicon-16.png","./icons/favicon-32.png","./icons/apple-touch-icon.png","./icons/icon-192.png","./icons/icon-512.png","./icons/icon-maskable-512.png","./icons/shield-128.png","./icons/shield-verified.svg","./vendor/leaflet/leaflet.js","./vendor/leaflet/leaflet.css","./vendor/data/command-sites.json","./vendor/data/mta-stations.json","./vendor/data/nyc-fleet-ev.json","./vendor/data/nyc-hospitals.json","./vendor/data/nycha-developments.json","./vendor/icons/shield.png"];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE && k.indexOf('patrol-test-') === 0).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
