@@ -657,10 +657,11 @@ a.dir-tel.mine{color:#0f766e}
 #vdirPdfTitle{flex:1;font-weight:800;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #vdirPdfNav{display:flex;align-items:center;gap:6px}
 #vdirPdfPageNum{font-size:12px;min-width:64px;text-align:center}
-#vdirPdfStage{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;background:#1a1a1a;padding:4px 0 16px}
-#vdirPdfPage{position:relative;margin:0 auto}
-#vdirPdfCanvas{display:block;background:#fff}
-#vdirPdfLinks{position:absolute;left:0;top:0;right:0;bottom:0}
+#vdirPdfStage{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;background:#1a1a1a;padding:4px 0 24px;touch-action:pan-x pan-y;overscroll-behavior:contain}
+#vdirPdfDoc{margin:0 auto}
+.vdir-pdf-page{position:relative;margin:0 auto 8px;background:#222;box-shadow:0 1px 4px rgba(0,0,0,.35)}
+.vdir-pdf-page canvas{display:block;width:100%;height:auto;background:#fff}
+.vdir-pdf-links{position:absolute;left:0;top:0;right:0;bottom:0}
 a.vdir-pdf-link{position:absolute;display:block;z-index:2;background:rgba(37,99,235,.12);border-radius:2px}
 
 
@@ -5778,6 +5779,24 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       return row;
     });
     CONFIG.commands = CONFIG.commands.concat(pds, CONFIG.unitCommands, CONFIG.addedCommands || []);
+    // Precinct / PSA FTUs stay in the catalog for the command picker, but inherit the parent command's address
+    // and map location (e.g. 75 FTU uses the 75 Precinct address). Do not invent FTUs or Times Square's address.
+    var byId = {};
+    CONFIG.commands.forEach(function (c) { if (c && c.id) byId[c.id] = c; });
+    CONFIG.commands.forEach(function (c) {
+      if (!c || c.kind !== 'ftu') return;
+      var orig = c.name || '', pctN = (c.id.match(/^ftu-(\d+)$/) || [])[1], psaN = (c.id.match(/^ftu-psa-(\d+)$/) || [])[1];
+      if (pctN) { c.abbr = pctN + ' FTU'; c.name = pctN + ' FTU'; }
+      else if (psaN) { c.abbr = 'PSA ' + psaN + ' FTU'; c.name = 'PSA ' + psaN + ' FTU'; }
+      else if (/times square/i.test(orig)) { c.abbr = 'Times Square FTU'; c.name = 'Times Square FTU'; }
+      else { c.name = orig.replace(/\s*Precinct Field Training Unit/i, ' FTU').replace(/\s*Field Training Unit/i, ' FTU').trim(); if (!c.abbr) c.abbr = c.name; }
+      c.aka = [orig, c.aka, 'Field Training Unit', 'FTU'].filter(Boolean).join(' ');
+      var parent = c.precinct ? byId[c.precinct] : null;
+      if (parent && parent.address && !c.address) {
+        c.address = parent.address;
+        c.addrFrom = parent.id;
+      }
+    });
   })();
   CONFIG.commandGroups = { pct: 'Precinct', psa: 'Housing PSA', td: 'Transit District', pds: 'Precinct Detective Squad', gls: 'Grand Larceny', svs: 'Special Victims', narc: 'Narcotics', warr: 'Warrant Division', srg: 'Strategic Response Group', crc: 'Critical Response Command', spec: 'Specialty unit', boro: 'Bureau / Patrol Borough', dv: 'Domestic Violence Squad', ftu: 'Field Training Unit', viper: 'Housing VIPER' };
   // ---- Patrol boroughs and overtime travel time ----
@@ -5817,6 +5836,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (!c || !c.id) return null; var k = c.id !== 'other' ? commandById(c.id) : null;
     if (k && k.kind === 'pct') return pctNumFromId(k.id);
     if (k && k.kind === 'pds' && k.precinct) return pctNumFromId(k.precinct);
+    if (k && k.kind === 'ftu' && k.precinct && /^pct-/.test(k.precinct)) return pctNumFromId(k.precinct);
     var addr = String(c.address || (k && k.address) || '').trim();
     if (c.pct != null && c.pctFor != null && normAddr(c.pctFor) === normAddr(addr)) return isPrecinctNum(c.pct) ? +c.pct : 0;
     return null; // not resolved yet
@@ -5890,6 +5910,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function finishTimeInput(raw) { var v = String(raw || '').trim(); if (!v) return ''; var d = v.replace(/\D/g, ''); var n = normTime(d.length && d.length <= 4 && /^[\d:]+$/.test(v) ? d : v); return n || v; }
   function commandById(id) { for (var i = 0; i < CONFIG.commands.length; i++) if (CONFIG.commands[i].id === id) return CONFIG.commands[i]; return null; }
   // PDU commands: precinct detective squads (kind pds / id pds-*) and any listed or typed command whose name or abbreviation includes "PDU".
+  function isFtuCommand(c) {
+    if (!c) return false;
+    if (c.kind === 'ftu' || String(c.id || '').indexOf('ftu-') === 0) return true;
+    return /\bfield training\b|\bftu\b/i.test(String(c.name || '') + ' ' + String(c.abbr || ''));
+  }
   function isPduCommand(c) {
     if (!c) return false;
     var id = String(c.id || '');
@@ -5901,13 +5926,13 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     return false;
   }
   function searchCommands(q, limit) {
-    var s = String(q || '').toLowerCase().replace(/[.#]/g, ' ').replace(/\s+/g, ' ').trim(), n = (s.match(/\d+/) || [])[0], kind = /detective|\bsquad\b|\bpds\b|\bpdu\b/.test(s) && /\d/.test(s) ? 'pds' : /\bpsa\b|^psa\d|housing ?\d/.test(s) ? 'psa' : /\btd\b|transit( district)? ?\d/.test(s) ? 'td' : /pct|precinct/.test(s) && !/detective/.test(s) ? 'pct' : '';
-    var pure = /^(pct|precinct|psa|housing|td|transit( district)?)?\s*\d+(st|nd|rd|th)?\s*(pct|precinct|precinct detective squad|detective squad|detective|squad|pds|pdu)?$/.test(s);
+    var s = String(q || '').toLowerCase().replace(/[.#]/g, ' ').replace(/\s+/g, ' ').trim(), n = (s.match(/\d+/) || [])[0], kind = /\bftu\b|field training/.test(s) ? 'ftu' : /detective|\bsquad\b|\bpds\b|\bpdu\b/.test(s) && /\d/.test(s) ? 'pds' : /\bpsa\b|^psa\d|housing ?\d/.test(s) ? 'psa' : /\btd\b|transit( district)? ?\d/.test(s) ? 'td' : /pct|precinct/.test(s) && !/detective/.test(s) ? 'pct' : '';
+    var pure = /^(pct|precinct|psa|housing|td|transit( district)?|ftu|field training( unit)?)?\s*\d+(st|nd|rd|th)?\s*(pct|precinct|precinct detective squad|detective squad|detective|squad|pds|pdu|ftu|field training( unit)?)?$/.test(s);
     var words = s.replace(/\d+(st|nd|rd|th)?/g, ' ').replace(kind ? /\b(pct|precinct|psa|housing|td|transit|district|detective|squad|pds|pdu)\b/g : /\b(pct|precinct)\b/g, ' ').split(' ').filter(Boolean);
     var r = CONFIG.commands.filter(function (c) {
       if (!s) return true;
       if (kind && c.kind !== kind) return false;
-      if (pure && !kind && !/^(pct|psa|td|pds)$/.test(c.kind)) return false; // a bare number means a precinct / PSA / TD (and its squad)
+      if (pure && !kind && !/^(pct|psa|td|pds|ftu)$/.test(c.kind)) return false; // a bare number means a precinct / PSA / TD (and its squad or FTU)
       var num = (c.id.match(/-(\d+)$/) || [])[1];
       var phDigits = String(c.phone || '').replace(/\D/g, ''), qDigits = s.replace(/\D/g, '');
       var phoneHit = !pure && qDigits.length >= 3 && phDigits.indexOf(qDigits) >= 0;
@@ -5972,11 +5997,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var mine = cleanDirMine(opts.mine), chip = opts.kind || '', limit = opts.limit || 0;
     var s = String(q || '').toLowerCase().replace(/\s+/g, ' ').trim();
     var qd = phoneDigits(s);
-    var official = searchCommands(q, 0).filter(function (c) { return dirKindMatch(c, chip); });
+    var official = searchCommands(q, 0).filter(function (c) { return !isFtuCommand(c) && dirKindMatch(c, chip); });
     if (qd.length >= 4 || (!/^\d{1,3}$/.test(s) && qd.length >= 3 && /[-.() ]/.test(String(q || '')))) {
       var seen = {}; official.forEach(function (c) { seen[c.id] = 1; });
       CONFIG.commands.forEach(function (c) {
-        if (seen[c.id] || !dirKindMatch(c, chip)) return;
+        if (seen[c.id] || isFtuCommand(c) || !dirKindMatch(c, chip)) return;
         if (phoneDigits(c.phone).indexOf(qd) >= 0) { official.push(c); seen[c.id] = 1; }
       });
     }
@@ -6668,7 +6693,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     tour17Key: tour17Key, tour17Squad: tour17Squad, tour17Offset: tour17Offset, tour17WorkPhase: tour17WorkPhase, tour17WorkSquad: tour17WorkSquad, tour17IsOff: tour17IsOff, tour17SquadsOff: tour17SquadsOff, tour17SquadsWorking: tour17SquadsWorking, tour17OvertimeMin: tour17OvertimeMin,
     nextDayOff: nextDayOff, chartDayBlock: chartDayBlock, nextWorkday: nextWorkday, countRDOs: countRDOs, isTourChange: isTourChange, countTourChanges: countTourChanges, isPayday: isPayday, nextPayday: nextPayday,
     periodsForPayday: periodsForPayday, regularPaydayFor: regularPaydayFor, overtimePaydayFor: overtimePaydayFor, regularPeriodFor: regularPeriodFor, overtimePeriodFor: overtimePeriodFor, payPeriodsInYear: payPeriodsInYear, hoursBetween: hoursBetween, entryHours: entryHours,
-    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, fmtMDY: fmtMDY, defaultTourWindow: defaultTourWindow, tourSpanMinutes: tourSpanMinutes, suggestEndDate: suggestEndDate, workedVsScheduled: workedVsScheduled, cleanTourEntry: cleanTourEntry, tourEntries: tourEntries, isAssignmentEntry: isAssignmentEntry, cleanAssignmentEntry: cleanAssignmentEntry, assignmentEntries: assignmentEntries, mergeTourEntries: mergeTourEntries, writeAssignmentEntries: writeAssignmentEntries, assignmentTimeText: assignmentTimeText, assignmentReminderText: assignmentReminderText, paidDetailBrief: paidDetailBrief, dayAssignments: dayAssignments, assignmentEventWindow: assignmentEventWindow, dayTour: dayTour, tourDisplay: tourDisplay, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameIsReserved: usernameIsReserved, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, assignmentNavAddress: assignmentNavAddress, upcomingItems: upcomingItems, commandById: commandById, isPduCommand: isPduCommand, searchCommands: searchCommands, phoneDigits: phoneDigits, fmtPhone: fmtPhone, telHref: telHref, cleanDirMine: cleanDirMine, cleanDirPhone: cleanDirPhone, cleanDirCustom: cleanDirCustom, emptyDirMine: emptyDirMine, dirKindMatch: dirKindMatch, searchDirectory: searchDirectory, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, routeUrls: routeUrls, navPoint: navPoint, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, leaveLineLabel: leaveLineLabel, regularPeriodExcusals: regularPeriodExcusals, formatRegularPeriodExcusalLine: formatRegularPeriodExcusalLine, calendarQuarter: calendarQuarter, quarterRange: quarterRange, shiftQuarter: shiftQuarter, otHoursSplitFromResult: otHoursSplitFromResult, otHoursSplit: otHoursSplit, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, stripBoroSuffix: stripBoroSuffix, splitPaidAddress: splitPaidAddress, joinPaidAddress: joinPaidAddress, mergePaidVendors: mergePaidVendors, rememberPaidVendor: rememberPaidVendor, paidVendorKey: paidVendorKey, textMatchKey: textMatchKey, titleCaseName: titleCaseName, canonicalLabel: canonicalLabel, previousDetailNames: previousDetailNames, previousDetailLocations: previousDetailLocations, vendorNameList: vendorNameList, unifyDuplicateLabels: unifyDuplicateLabels, parseIntersection: parseIntersection, isIntersectionQuery: isIntersectionQuery, normalizeIntersectionQuery: normalizeIntersectionQuery, parsePaidAmount: parsePaidAmount, paidDetailAmount: paidDetailAmount, paidDetailTaxDate: paidDetailTaxDate, daysBetweenISO: daysBetweenISO, paidDetailTiming: paidDetailTiming, paidDetailTimingCaptions: paidDetailTimingCaptions, paidVendorNames: paidVendorNames, cleanVendorGroups: cleanVendorGroups, vendorReportName: vendorReportName, addVendorToGroup: addVendorToGroup, removeVendorFromGroup: removeVendorFromGroup, renameVendorGroup: renameVendorGroup, ungroupVendor: ungroupVendor, suggestVendorGroups: suggestVendorGroups, paidDetailTaxReport: paidDetailTaxReport, buildPaidDetailXlsx: buildPaidDetailXlsx, buildPaidDetailCsv: buildPaidDetailCsv, parseXlsx: parseXlsx, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, addYearsISO: addYearsISO, retirementDateOf: retirementDateOf, retirementRemain: retirementRemain, retirementCountdown: retirementCountdown, endCompare: endCompare, parseTourCross: parseTourCross, inferTourOT: inferTourOT, syncEndOT: syncEndOT, syncWorkedOT: syncWorkedOT, syncEntryOT: syncEntryOT, leaveBalances: leaveBalances, parseBalanceHM: parseBalanceHM, bankDayMinutes: bankDayMinutes, fmtDayEquiv: fmtDayEquiv, fmtChart: fmtChart, chartTimeFromTour: chartTimeFromTour, isDetectiveRank: isDetectiveRank, isSergeantRank: isSergeantRank, isLieutenantRank: isLieutenantRank, isPoliceOfficerRank: isPoliceOfficerRank, chartKind: chartKind, rankStartDate: rankStartDate, yearsInRankAtLeast: yearsInRankAtLeast, chartTimeEligibility: chartTimeEligibility, chartTimeForDay: chartTimeForDay, chartTimeRange: chartTimeRange, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
+    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, fmtMDY: fmtMDY, defaultTourWindow: defaultTourWindow, tourSpanMinutes: tourSpanMinutes, suggestEndDate: suggestEndDate, workedVsScheduled: workedVsScheduled, cleanTourEntry: cleanTourEntry, tourEntries: tourEntries, isAssignmentEntry: isAssignmentEntry, cleanAssignmentEntry: cleanAssignmentEntry, assignmentEntries: assignmentEntries, mergeTourEntries: mergeTourEntries, writeAssignmentEntries: writeAssignmentEntries, assignmentTimeText: assignmentTimeText, assignmentReminderText: assignmentReminderText, paidDetailBrief: paidDetailBrief, dayAssignments: dayAssignments, assignmentEventWindow: assignmentEventWindow, dayTour: dayTour, tourDisplay: tourDisplay, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameIsReserved: usernameIsReserved, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, assignmentNavAddress: assignmentNavAddress, upcomingItems: upcomingItems, commandById: commandById, isPduCommand: isPduCommand, isFtuCommand: isFtuCommand, searchCommands: searchCommands, phoneDigits: phoneDigits, fmtPhone: fmtPhone, telHref: telHref, cleanDirMine: cleanDirMine, cleanDirPhone: cleanDirPhone, cleanDirCustom: cleanDirCustom, emptyDirMine: emptyDirMine, dirKindMatch: dirKindMatch, searchDirectory: searchDirectory, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, routeUrls: routeUrls, navPoint: navPoint, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, leaveLineLabel: leaveLineLabel, regularPeriodExcusals: regularPeriodExcusals, formatRegularPeriodExcusalLine: formatRegularPeriodExcusalLine, calendarQuarter: calendarQuarter, quarterRange: quarterRange, shiftQuarter: shiftQuarter, otHoursSplitFromResult: otHoursSplitFromResult, otHoursSplit: otHoursSplit, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, stripBoroSuffix: stripBoroSuffix, splitPaidAddress: splitPaidAddress, joinPaidAddress: joinPaidAddress, mergePaidVendors: mergePaidVendors, rememberPaidVendor: rememberPaidVendor, paidVendorKey: paidVendorKey, textMatchKey: textMatchKey, titleCaseName: titleCaseName, canonicalLabel: canonicalLabel, previousDetailNames: previousDetailNames, previousDetailLocations: previousDetailLocations, vendorNameList: vendorNameList, unifyDuplicateLabels: unifyDuplicateLabels, parseIntersection: parseIntersection, isIntersectionQuery: isIntersectionQuery, normalizeIntersectionQuery: normalizeIntersectionQuery, parsePaidAmount: parsePaidAmount, paidDetailAmount: paidDetailAmount, paidDetailTaxDate: paidDetailTaxDate, daysBetweenISO: daysBetweenISO, paidDetailTiming: paidDetailTiming, paidDetailTimingCaptions: paidDetailTimingCaptions, paidVendorNames: paidVendorNames, cleanVendorGroups: cleanVendorGroups, vendorReportName: vendorReportName, addVendorToGroup: addVendorToGroup, removeVendorFromGroup: removeVendorFromGroup, renameVendorGroup: renameVendorGroup, ungroupVendor: ungroupVendor, suggestVendorGroups: suggestVendorGroups, paidDetailTaxReport: paidDetailTaxReport, buildPaidDetailXlsx: buildPaidDetailXlsx, buildPaidDetailCsv: buildPaidDetailCsv, parseXlsx: parseXlsx, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, addYearsISO: addYearsISO, retirementDateOf: retirementDateOf, retirementRemain: retirementRemain, retirementCountdown: retirementCountdown, endCompare: endCompare, parseTourCross: parseTourCross, inferTourOT: inferTourOT, syncEndOT: syncEndOT, syncWorkedOT: syncWorkedOT, syncEntryOT: syncEntryOT, leaveBalances: leaveBalances, parseBalanceHM: parseBalanceHM, bankDayMinutes: bankDayMinutes, fmtDayEquiv: fmtDayEquiv, fmtChart: fmtChart, chartTimeFromTour: chartTimeFromTour, isDetectiveRank: isDetectiveRank, isSergeantRank: isSergeantRank, isLieutenantRank: isLieutenantRank, isPoliceOfficerRank: isPoliceOfficerRank, chartKind: chartKind, rankStartDate: rankStartDate, yearsInRankAtLeast: yearsInRankAtLeast, chartTimeEligibility: chartTimeEligibility, chartTimeForDay: chartTimeForDay, chartTimeRange: chartTimeRange, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
     steadyKey: steadyKey, parseChart: parseChart, validChartKey: validChartKey, chartInfo: chartInfo, sortCharts: sortCharts, chartAt: chartAt, chartChanges: chartChanges, nextOff: nextOff, nextOn: nextOn, reviewOverrides: reviewOverrides, DOW3: DOW3,
     stripAddrLabels: stripAddrLabels, paidAddressSuggestions: paidAddressSuggestions,
     rankAbbr: rankAbbr, rankLabel: rankLabel, displayName: displayName, formatFullName: formatFullName, normMiddleInitial: normMiddleInitial, migrateProfile: migrateProfile, validateProfile: validateProfile,
@@ -9914,7 +9939,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
 
   var DIR_CHIPS = [
     { id: '', label: 'All' }, { id: 'pct', label: 'Patrol' }, { id: 'psa', label: 'Housing' }, { id: 'td', label: 'Transit' },
-    { id: 'det', label: 'Detective' }, { id: 'dv', label: 'Domestic Violence' }, { id: 'ftu', label: 'Field Training' },
+    { id: 'det', label: 'Detective' }, { id: 'dv', label: 'Domestic Violence' },
     { id: 'spec', label: 'Specialty' }, { id: 'boro', label: 'Bureau' }, { id: 'mine', label: 'My contacts' }
   ];
   function viewMap() {
@@ -9940,7 +9965,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="btn sm chip' + (ui.dirHospLevel1 ? ' on' : '') + '" data-act="hospChip" data-filter="level1" aria-pressed="' + (ui.dirHospLevel1 ? 'true' : 'false') + '">Level 1 Trauma</button>' +
       '</div>' +
       '</div>' +
-      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r107 · patrol-test-5bd8f8a0d4b6</p></div>' +
+      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r108 · patrol-test-b3c76bce29b5</p></div>' +
       '</div>';
     var mapTools = '<div class="dir-map-chrome">' +
       '<div class="dir-map-search"><input id="dirQ" class="dirq acIn" data-ac="map" type="text" value="' + esc(q) + '" placeholder="Search an address or precinct" aria-label="Search an address or precinct" autocomplete="off"></div>' +
@@ -10038,11 +10063,21 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     });
   }
   function closeVerifiedDirectoryPdf() {
+    if (CL.dirPdfObs && CL.dirPdfObs.disconnect) try { CL.dirPdfObs.disconnect(); } catch (e) {}
+    CL.dirPdfObs = null;
+    if (CL.dirPdfOnResize) { window.removeEventListener('resize', CL.dirPdfOnResize); CL.dirPdfOnResize = null; }
+    if (CL.dirPdfStage && CL.dirPdfUnbindZoom) try { CL.dirPdfUnbindZoom(); } catch (e) {}
+    CL.dirPdfUnbindZoom = null;
+    CL.dirPdfStage = null;
     var wrap = document.getElementById('vdirPdfWrap');
     if (wrap && wrap.parentNode) wrap.parentNode.removeChild(wrap);
     if (CL.dirPdfDoc && CL.dirPdfDoc.destroy) try { CL.dirPdfDoc.destroy(); } catch (e) {}
     CL.dirPdfDoc = null;
     CL.dirPdfPage = 1;
+    CL.dirPdfZoom = 1;
+    CL.dirPdfGen = (CL.dirPdfGen || 0) + 1;
+    CL.dirPdfRendered = {};
+    CL.dirPdfSizes = null;
     if (CL.dirPdfUrl) { try { URL.revokeObjectURL(CL.dirPdfUrl); } catch (e) {} }
     CL.dirPdfUrl = null;
     CL.dirPdfBlob = null;
@@ -10058,10 +10093,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     wrap.setAttribute('data-sec', '5l');
     wrap.innerHTML = '<div id="vdirPdfBar"><button type="button" class="btn sm" data-act="dirClosePdf" id="vdirPdfClose">Close</button>' +
       '<div id="vdirPdfTitle">Verified directory</div>' +
-      '<div id="vdirPdfNav"><button type="button" class="btn sm" data-act="dirPdfPrev" id="vdirPdfPrev" aria-label="Previous page">Prev</button>' +
-      '<span id="vdirPdfPageNum">Loading\u2026</span>' +
-      '<button type="button" class="btn sm" data-act="dirPdfNext" id="vdirPdfNext" aria-label="Next page">Next</button></div></div>' +
-      '<div id="vdirPdfStage"><div id="vdirPdfPage"><canvas id="vdirPdfCanvas"></canvas><div id="vdirPdfLinks"></div></div></div>';
+      '<div id="vdirPdfNav"><span id="vdirPdfPageNum">Loading\u2026</span></div></div>' +
+      '<div id="vdirPdfStage"><div id="vdirPdfDoc"></div></div>';
     document.body.appendChild(wrap);
     return Promise.resolve(cloudClient().storage.from(VDIR_BUCKET).download(VDIR_OBJECT)).then(q).then(function (blob) {
       if (!blob) throw new Error('Directory PDF was not available');
@@ -10077,7 +10110,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         }).then(function (pdf) {
           CL.dirPdfDoc = pdf;
           CL.dirPdfPage = 1;
-          return renderVerifiedPdfPage(1);
+          CL.dirPdfZoom = 1;
+          return setupVerifiedPdfScroll(pdf);
         });
       });
     }).catch(function (e) {
@@ -10085,49 +10119,193 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       toast(errText(e) || 'Could not open the verified directory');
     });
   }
-  function renderVerifiedPdfPage(n) {
-    var pdf = CL.dirPdfDoc, canvas = document.getElementById('vdirPdfCanvas'), stage = document.getElementById('vdirPdfStage'), links = document.getElementById('vdirPdfLinks');
-    if (!pdf || !canvas) return Promise.resolve();
-    n = Math.max(1, Math.min(pdf.numPages, n || 1));
-    CL.dirPdfPage = n;
-    var label = document.getElementById('vdirPdfPageNum');
-    if (label) label.textContent = n + ' / ' + pdf.numPages;
-    var prev = document.getElementById('vdirPdfPrev'), next = document.getElementById('vdirPdfNext');
-    if (prev) prev.disabled = n <= 1;
-    if (next) next.disabled = n >= pdf.numPages;
+  function vdirPdfStageWidth() {
+    var stage = document.getElementById('vdirPdfStage');
+    return (stage && stage.clientWidth) ? stage.clientWidth : (window.innerWidth || 390);
+  }
+  function vdirPdfCssFor(i) {
+    var base = (CL.dirPdfSizes && CL.dirPdfSizes[i - 1]) || CL.dirPdfBase;
+    if (!base || !base.width) return { width: 1, height: 1, scale: 1 };
+    var zoom = CL.dirPdfZoom || 1;
+    var cssW = Math.max(1, Math.floor((vdirPdfStageWidth() - 8) * zoom));
+    var scale = cssW / base.width;
+    return { width: cssW, height: Math.max(1, Math.round(base.height * scale)), scale: scale };
+  }
+  function paintVdirPdfLinks(page, annots, links, scale) {
+    if (!links) return;
+    links.innerHTML = '';
+    var vp = page.getViewport({ scale: scale });
+    (annots || []).forEach(function (a) {
+      var url = a && (a.url || a.unsafeUrl);
+      if (!url || (a.subtype && a.subtype !== 'Link')) return;
+      var rect = a.rect || a.Rect;
+      if (!rect || rect.length < 4) return;
+      var vr = vp.convertToViewportRectangle(rect);
+      var x = Math.min(vr[0], vr[2]), y = Math.min(vr[1], vr[3]), w = Math.abs(vr[2] - vr[0]), h = Math.abs(vr[3] - vr[1]);
+      var el = document.createElement('a');
+      el.className = 'vdir-pdf-link';
+      el.href = url;
+      if (/^tel:/i.test(url)) { el.setAttribute('aria-label', 'Call'); }
+      else { el.target = '_blank'; el.rel = 'noopener'; el.setAttribute('aria-label', 'Open maps'); }
+      el.style.left = x + 'px';
+      el.style.top = y + 'px';
+      el.style.width = Math.max(12, w) + 'px';
+      el.style.height = Math.max(12, h) + 'px';
+      links.appendChild(el);
+    });
+  }
+  function updateVerifiedPdfPageLabel() {
+    var stage = document.getElementById('vdirPdfStage'), label = document.getElementById('vdirPdfPageNum'), pdf = CL.dirPdfDoc;
+    if (!stage || !label || !pdf) return;
+    var mid = stage.scrollTop + Math.min(stage.clientHeight * 0.35, 220);
+    var pages = stage.querySelectorAll('.vdir-pdf-page'), current = 1, i, el, top;
+    for (i = 0; i < pages.length; i++) {
+      el = pages[i];
+      top = el.offsetTop;
+      if (top - 8 <= mid) current = i + 1;
+    }
+    CL.dirPdfPage = current;
+    label.textContent = current + ' / ' + pdf.numPages;
+  }
+  function unrenderVerifiedPdfPageSlot(n) {
+    var pageEl = document.getElementById('vdirPdfPage' + n);
+    if (!pageEl) return;
+    var canvas = pageEl.querySelector('canvas');
+    if (canvas) canvas.parentNode.removeChild(canvas);
+    var links = pageEl.querySelector('.vdir-pdf-links');
+    if (links) links.innerHTML = '';
+    if (CL.dirPdfRendered) CL.dirPdfRendered[n] = 0;
+  }
+  function renderVerifiedPdfPageSlot(n) {
+    var pdf = CL.dirPdfDoc, pageEl = document.getElementById('vdirPdfPage' + n);
+    if (!pdf || !pageEl) return Promise.resolve();
+    if (CL.dirPdfRendered && CL.dirPdfRendered[n]) return Promise.resolve();
+    var css = vdirPdfCssFor(n), gen = CL.dirPdfGen || 0;
+    CL.dirPdfRendered = CL.dirPdfRendered || {};
+    CL.dirPdfRendered[n] = 1;
+    var dpr = Math.min(2, window.devicePixelRatio || 1);
     return pdf.getPage(n).then(function (page) {
-      var width = (stage && stage.clientWidth) ? stage.clientWidth : (window.innerWidth || 390);
-      var vp0 = page.getViewport({ scale: 1 });
-      var scale = Math.max(1, (width - 8) / vp0.width);
-      var vp = page.getViewport({ scale: scale });
+      if ((CL.dirPdfGen || 0) !== gen || !document.getElementById('vdirPdfPage' + n)) return;
+      var vp = page.getViewport({ scale: css.scale * dpr });
+      var canvas = document.createElement('canvas');
       canvas.width = vp.width;
       canvas.height = vp.height;
-      canvas.style.width = vp.width + 'px';
-      canvas.style.height = vp.height + 'px';
-      var pageBox = document.getElementById('vdirPdfPage');
-      if (pageBox) { pageBox.style.width = vp.width + 'px'; pageBox.style.height = vp.height + 'px'; }
+      canvas.style.width = css.width + 'px';
+      canvas.style.height = css.height + 'px';
       var ctx = canvas.getContext('2d');
       return page.render({ canvasContext: ctx, viewport: vp }).promise.then(function () { return page.getAnnotations(); }).then(function (annots) {
-        if (links) links.innerHTML = '';
-        (annots || []).forEach(function (a) {
-          var url = a && (a.url || a.unsafeUrl);
-          if (!url || (a.subtype && a.subtype !== 'Link')) return;
-          var rect = a.rect || a.Rect;
-          if (!rect || rect.length < 4) return;
-          var vr = vp.convertToViewportRectangle(rect);
-          var x = Math.min(vr[0], vr[2]), y = Math.min(vr[1], vr[3]), w = Math.abs(vr[2] - vr[0]), h = Math.abs(vr[3] - vr[1]);
-          var el = document.createElement('a');
-          el.className = 'vdir-pdf-link';
-          el.href = url;
-          if (/^tel:/i.test(url)) { el.setAttribute('aria-label', 'Call'); }
-          else { el.target = '_blank'; el.rel = 'noopener'; el.setAttribute('aria-label', 'Open maps'); }
-          el.style.left = x + 'px';
-          el.style.top = y + 'px';
-          el.style.width = Math.max(12, w) + 'px';
-          el.style.height = Math.max(12, h) + 'px';
-          if (links) links.appendChild(el);
-        });
+        if ((CL.dirPdfGen || 0) !== gen || !document.getElementById('vdirPdfPage' + n)) return;
+        var old = pageEl.querySelector('canvas');
+        if (old) old.parentNode.removeChild(old);
+        pageEl.insertBefore(canvas, pageEl.firstChild);
+        paintVdirPdfLinks(page, annots, pageEl.querySelector('.vdir-pdf-links'), css.scale);
+        CL.dirPdfRendered[n] = 2;
       });
+    }).catch(function () {
+      if ((CL.dirPdfGen || 0) === gen && CL.dirPdfRendered) CL.dirPdfRendered[n] = 0;
+    });
+  }
+  function bindVerifiedPdfObserver() {
+    if (CL.dirPdfObs && CL.dirPdfObs.disconnect) try { CL.dirPdfObs.disconnect(); } catch (e) {}
+    var stage = document.getElementById('vdirPdfStage');
+    if (!stage || !window.IntersectionObserver) {
+      var pdf = CL.dirPdfDoc, i;
+      if (pdf) for (i = 1; i <= pdf.numPages; i++) renderVerifiedPdfPageSlot(i);
+      return;
+    }
+    CL.dirPdfObs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        var n = +en.target.getAttribute('data-page');
+        if (!n) return;
+        if (en.isIntersecting) renderVerifiedPdfPageSlot(n);
+        else unrenderVerifiedPdfPageSlot(n);
+      });
+    }, { root: stage, rootMargin: '180% 0px', threshold: 0.01 });
+    stage.querySelectorAll('.vdir-pdf-page').forEach(function (el) { CL.dirPdfObs.observe(el); });
+  }
+  function layoutVerifiedPdfPages(keepScroll) {
+    var pdf = CL.dirPdfDoc, doc = document.getElementById('vdirPdfDoc'), stage = document.getElementById('vdirPdfStage');
+    if (!pdf || !doc || !stage) return;
+    var frac = keepScroll && stage.scrollHeight ? (stage.scrollTop / stage.scrollHeight) : 0;
+    CL.dirPdfGen = (CL.dirPdfGen || 0) + 1;
+    CL.dirPdfRendered = {};
+    var html = '', i, css;
+    for (i = 1; i <= pdf.numPages; i++) {
+      css = vdirPdfCssFor(i);
+      html += '<div class="vdir-pdf-page" data-page="' + i + '" id="vdirPdfPage' + i + '" style="width:' + css.width + 'px;height:' + css.height + 'px"><div class="vdir-pdf-links"></div></div>';
+    }
+    doc.innerHTML = html;
+    bindVerifiedPdfObserver();
+    if (keepScroll) stage.scrollTop = frac * stage.scrollHeight;
+    updateVerifiedPdfPageLabel();
+  }
+  function bindVerifiedPdfZoom(stage) {
+    if (!stage) return;
+    var startDist = 0, startZoom = 1, startX = 0, startY = 0, startLeft = 0, startTop = 0;
+    function dist(touches) {
+      var a = touches[0], b = touches[1], dx = a.clientX - b.clientX, dy = a.clientY - b.clientY;
+      return Math.sqrt(dx * dx + dy * dy) || 1;
+    }
+    function mid(touches) { return { x: (touches[0].clientX + touches[1].clientX) / 2, y: (touches[0].clientY + touches[1].clientY) / 2 }; }
+    function onStart(e) {
+      if (!e.touches || e.touches.length !== 2) return;
+      startDist = dist(e.touches);
+      startZoom = CL.dirPdfZoom || 1;
+      var m = mid(e.touches), r = stage.getBoundingClientRect();
+      startX = m.x - r.left; startY = m.y - r.top;
+      startLeft = stage.scrollLeft; startTop = stage.scrollTop;
+    }
+    function onMove(e) {
+      if (!e.touches || e.touches.length !== 2 || !startDist) return;
+      e.preventDefault();
+      var z = Math.max(1, Math.min(4, startZoom * (dist(e.touches) / startDist)));
+      if (Math.abs(z - (CL.dirPdfZoom || 1)) < 0.02) return;
+      var ratio = z / (CL.dirPdfZoom || 1);
+      CL.dirPdfZoom = z;
+      layoutVerifiedPdfPages(false);
+      stage.scrollLeft = (startLeft + startX) * ratio - startX;
+      stage.scrollTop = (startTop + startY) * ratio - startY;
+    }
+    function onEnd(e) {
+      if (!e.touches || e.touches.length < 2) startDist = 0;
+    }
+    function onScroll() { updateVerifiedPdfPageLabel(); }
+    stage.addEventListener('touchstart', onStart, { passive: true });
+    stage.addEventListener('touchmove', onMove, { passive: false });
+    stage.addEventListener('touchend', onEnd, { passive: true });
+    stage.addEventListener('scroll', onScroll, { passive: true });
+    CL.dirPdfStage = stage;
+    CL.dirPdfUnbindZoom = function () {
+      stage.removeEventListener('touchstart', onStart);
+      stage.removeEventListener('touchmove', onMove);
+      stage.removeEventListener('touchend', onEnd);
+      stage.removeEventListener('scroll', onScroll);
+    };
+  }
+  function setupVerifiedPdfScroll(pdf) {
+    var stage = document.getElementById('vdirPdfStage');
+    if (!pdf || !stage) return Promise.resolve();
+    CL.dirPdfDoc = pdf;
+    CL.dirPdfZoom = CL.dirPdfZoom || 1;
+    var jobs = [], i;
+    for (i = 1; i <= pdf.numPages; i++) {
+      jobs.push(pdf.getPage(i).then(function (page) {
+        var vp = page.getViewport({ scale: 1 });
+        return { width: vp.width, height: vp.height };
+      }));
+    }
+    return Promise.all(jobs).then(function (sizes) {
+      CL.dirPdfSizes = sizes;
+      CL.dirPdfBase = sizes[0] || { width: 1, height: 1 };
+      layoutVerifiedPdfPages(false);
+      bindVerifiedPdfZoom(stage);
+      if (CL.dirPdfOnResize) window.removeEventListener('resize', CL.dirPdfOnResize);
+      var t = 0;
+      CL.dirPdfOnResize = function () {
+        clearTimeout(t);
+        t = setTimeout(function () { if (CL.dirPdfDoc) layoutVerifiedPdfPages(true); }, 160);
+      };
+      window.addEventListener('resize', CL.dirPdfOnResize);
     });
   }
 
@@ -13574,7 +13752,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="' + ((s.defaultCalendar || 'google') === 'apple' ? 'on' : '') + '" data-act="calDefault" data-v="apple">Apple</button></div>' +
       '<h3 style="margin-top:20px" data-sec="9m">Subscribe to calendar</h3>' + calendarSubscribeHtml() +
       '<button class="btn danger block" data-act="reset" data-sec="9k" style="margin-top:20px">Erase all data</button>' +
-      '<p class="build-tag muted" id="appBuildTag">Build r107 · patrol-test-5bd8f8a0d4b6</p>');
+      '<p class="build-tag muted" id="appBuildTag">Build r108 · patrol-test-b3c76bce29b5</p>');
   }
 
   // ---------- Day summary: what's saved on a date; tap an entry to view or change it ----------
@@ -14328,8 +14506,6 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       Promise.resolve(openVerifiedDirectoryPdf()).then(function () { if (t) t.disabled = false; }, function () { if (t) t.disabled = false; });
     },
     dirClosePdf: function () { closeVerifiedDirectoryPdf(); },
-    dirPdfPrev: function () { if (CL.dirPdfDoc) renderVerifiedPdfPage((CL.dirPdfPage || 1) - 1); },
-    dirPdfNext: function () { if (CL.dirPdfDoc) renderVerifiedPdfPage((CL.dirPdfPage || 1) + 1); },
     dirAccessApprove: function (t) {
       var id = t && t.dataset && t.dataset.id; if (!id) return; t.disabled = true;
       Promise.resolve(cloudClient().rpc('approve_directory_access', { request_id: id })).then(q).then(function () { toast('Approved'); dirAccessAdminSheet(); refreshDirAccess(true); }, function (e) { t.disabled = false; toast(errText(e)); });
