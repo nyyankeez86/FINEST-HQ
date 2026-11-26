@@ -639,6 +639,19 @@ a.dir-tel:active,a.dir-tel:hover{text-decoration:underline}
 a.dir-tel.mine{color:#0f766e}
 .dir-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .dir-empty{color:var(--muted);padding:16px 8px;text-align:center}
+.vdir{margin-top:4px}
+.vdir-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:0 0 6px}
+.vdir-head h3{margin:0}
+.vdir-status{font-size:13px;margin:8px 0;color:var(--muted)}
+.vdir-group{margin:14px 0 4px;padding-top:8px;border-top:1px solid var(--line);font-size:13px;font-weight:800}
+.vdir-group:first-child{border-top:0;padding-top:0;margin-top:8px}
+.vdir-unit{margin:10px 0 2px;font-size:12px;font-weight:700;color:var(--muted)}
+.vdir-card{padding:10px 14px}
+.vdir-card .t1{font-weight:800;font-size:15px}
+.vdir-card .t2{color:var(--muted);font-size:12.5px;margin-top:2px}
+.vdir-badge{position:relative;display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;margin-left:6px;padding:0 5px;border-radius:999px;background:#dc2626;color:#fff;font-size:11px;font-weight:800;line-height:1;vertical-align:middle}
+.vdir-badge[hidden]{display:none!important}
+
 
 
 #dirMapWrap{position:relative;z-index:0;margin:0 0 12px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#dbe3ee}
@@ -6533,7 +6546,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   // Beta testers (profiles.beta, set by the admin) see section numbers (1a, 2b...) on every page; everyone else never does.
   function isBeta() { return !!(CL.enabled && CS && CS.uid && CS.status === 'approved' && CS.beta === true); }
   function isDirSearchInput(el) {
-    return !!(el && el.id === 'dirQ' && (ui.tab === 'map' || ui.tab === 'directory'));
+    return !!(el && (el.id === 'dirQ' || el.id === 'vdirQ') && (ui.tab === 'map' || ui.tab === 'directory'));
   }
   function setSearchTabsHidden(hide) {
     var app = document.getElementById('app'), tabs = document.getElementById('tabs');
@@ -9626,7 +9639,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="btn sm chip' + (ui.dirHospLevel1 ? ' on' : '') + '" data-act="hospChip" data-filter="level1" aria-pressed="' + (ui.dirHospLevel1 ? 'true' : 'false') + '">Level 1 Trauma</button>' +
       '</div>' +
       '</div>' +
-      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r104 · patrol-test-95dd9da0a734</p></div>' +
+      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r105 · patrol-test-c97fc49e618e</p></div>' +
       '</div>';
     var mapTools = '<div class="dir-map-chrome">' +
       '<div class="dir-map-search"><input id="dirQ" class="dirq acIn" data-ac="map" type="text" value="' + esc(q) + '" placeholder="Search an address or precinct" aria-label="Search an address or precinct" autocomplete="off"></div>' +
@@ -9636,6 +9649,165 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div id="nearestPanel" class="nearest-panel" hidden data-sec="4l"></div></div>';
     return suggestBar('Map') + '<div class="card dir-map-card" data-sec="4e">' + mapTools + '</div>' + mapPane;
   }
+
+  function isDirectoryAdmin() {
+    return !!(CS && CS.role === 'admin' && CS.status === 'approved' && (CS.username === 'admin' || CS.username === 'zee'));
+  }
+  function clearRestrictedDirCache() {
+    CL.dirVerified = false;
+    CL.dirReq = null;
+    CL.dirUnits = null;
+    CL.dirPendingCount = 0;
+    CL.dirAccessLoaded = false;
+  }
+  function dirAccessReady() { return !!(CL.enabled && CS && CS.uid && CS.status === 'approved'); }
+  function latestDirRequest(rows) {
+    var list = (rows || []).slice().sort(function (a, b) { return String(b.created_at || '') < String(a.created_at || '') ? -1 : 1; });
+    return list[0] || null;
+  }
+  function refreshDirAccess(force) {
+    if (!dirAccessReady()) { clearRestrictedDirCache(); refreshDirVerifiedUi(); return Promise.resolve(); }
+    if (CL.dirAccessLoading) return CL.dirAccessLoading;
+    if (CL.dirAccessLoaded && !force) return Promise.resolve();
+    var c = cloudClient();
+    var jobs = [];
+    jobs.push(Promise.resolve(c.rpc('is_directory_verified')).then(q).then(function (v) {
+      return v === true || !!(v && (v.is_directory_verified === true || v === 'true'));
+    }).catch(function () { return false; }));
+    jobs.push(Promise.resolve(c.from('directory_access_requests').select('id,status,created_at,decided_at,note').order('created_at', { ascending: false }).limit(8)).then(q).catch(function () { return []; }));
+    if (isDirectoryAdmin()) {
+      jobs.push(Promise.resolve(c.from('directory_access_requests').select('id').eq('status', 'pending')).then(q).catch(function () { return []; }));
+    }
+    CL.dirAccessLoading = Promise.all(jobs).then(function (parts) {
+      var verified = !!parts[0] || isDirectoryAdmin();
+      var reqs = parts[1] || [];
+      CL.dirVerified = verified;
+      CL.dirReq = latestDirRequest(reqs);
+      CL.dirPendingCount = isDirectoryAdmin() ? ((parts[2] || []).length) : 0;
+      CL.dirAccessLoaded = true;
+      if (!verified) CL.dirUnits = null;
+      refreshDirVerifiedUi();
+      var badge = document.getElementById('dirAccessBadge');
+      if (badge) { badge.hidden = !CL.dirPendingCount; badge.textContent = CL.dirPendingCount ? String(CL.dirPendingCount) : ''; }
+      if (verified && CL.dirUnits == null) return loadRestrictedDir();
+    }).catch(function () {
+      refreshDirVerifiedUi();
+    }).then(function () { CL.dirAccessLoading = null; });
+    return CL.dirAccessLoading;
+  }
+  function loadRestrictedDir() {
+    if (!dirAccessReady() || !(CL.dirVerified || isDirectoryAdmin())) { CL.dirUnits = null; refreshDirVerifiedUi(); return Promise.resolve(); }
+    return Promise.resolve(cloudClient().from('restricted_directory_units').select('id,kind,label,source_label,bureau,unit,sub_unit,phones,address,email,sort_order').order('sort_order')).then(q).then(function (rows) {
+      CL.dirUnits = rows || [];
+      refreshDirVerifiedUi();
+    }).catch(function (e) {
+      CL.dirUnits = [];
+      CL.dirLoadError = errText(e);
+      refreshDirVerifiedUi();
+    });
+  }
+  function vdirMatches(r, q) {
+    if (!q) return true;
+    var phones = (r.phones || []).map(function (p) { return String((p && p.number) || ''); }).join(' ');
+    var blob = [r.label, r.source_label, r.bureau, r.unit, r.sub_unit, r.address, r.email, phones].join(' ').toLowerCase();
+    return blob.indexOf(q) >= 0;
+  }
+  function vdirCardHtml(r) {
+    var tels = (r.phones || []).map(function (p) {
+      var num = p && p.number, typ = p && p.type && p.type !== 'main' ? String(p.type) + ' · ' : '';
+      return num ? dirPhoneLink(num, typ + (E.fmtPhone(num) || num), false) : '';
+    }).filter(Boolean).join('');
+    var addr = r.address || '';
+    var meta = r.kind === 'role' ? ((r.unit || r.bureau) ? esc(r.unit || r.bureau) : '') : '';
+    return '<div class="card dir-card vdir-card" data-sec="5l" data-id="' + esc(r.id) + '"><div class="t1">' + esc(r.label) + '</div>' +
+      (meta ? '<div class="t2">' + meta + '</div>' : '') +
+      (tels ? '<div class="dir-tels">' + tels + '</div>' : '') +
+      (addr ? '<div class="t2" style="margin-top:6px">' + esc(addr) + '</div>' + navLinks(addr) : '') +
+      (r.email ? '<div class="t2">' + esc(r.email) + '</div>' : '') +
+      '</div>';
+  }
+  function vdirResultsHtml() {
+    var q = String(ui.vdirQ || '').trim().toLowerCase();
+    var rows = (CL.dirUnits || []).filter(function (r) { return vdirMatches(r, q); });
+    if (!(CL.dirUnits || []).length) {
+      return '<div class="dir-empty" data-sec="5l">' + (CL.dirLoadError ? esc(CL.dirLoadError) : 'No verified directory entries.') + '</div>';
+    }
+    if (!rows.length) return '<div class="dir-empty" data-sec="5l">No matches for \u201c' + esc(ui.vdirQ || '') + '\u201d.</div>';
+    var html = '<div class="muted" style="font-size:12.5px;margin:4px 0 8px" data-sec="5l">' + rows.length + ' result' + (rows.length === 1 ? '' : 's') + '</div>';
+    var bi = -1, ui_ = -1, buro = null, unit = null;
+    rows.forEach(function (r) {
+      if (r.bureau !== buro) { buro = r.bureau; unit = null; html += '<div class="vdir-group" data-sec="5l">' + esc(buro || 'Other') + '</div>'; }
+      var un = r.unit || r.source_label || r.label;
+      if (un !== unit) { unit = un; html += '<div class="vdir-unit">' + esc(un) + '</div>'; }
+      html += vdirCardHtml(r);
+    });
+    return html;
+  }
+  function vdirGateHtml() {
+    if (!CL.enabled) return '';
+    if (!CS.uid || CS.status !== 'approved') {
+      return '<div class="card vdir" data-sec="5j"><div class="vdir-head"><h3>Verified directory</h3></div><p class="vdir-status">Sign in with an approved account to request verified access.</p></div>';
+    }
+    if (CL.dirVerified || isDirectoryAdmin()) {
+      return '<div class="card vdir" id="vdirCard" data-sec="5k"><div class="vdir-head"><h3>Verified directory</h3></div>' +
+        '<input id="vdirQ" class="dirq" type="search" value="' + esc(ui.vdirQ || '') + '" placeholder="Search verified units, phones, or addresses" aria-label="Search the verified directory" autocomplete="off">' +
+        '</div><div id="vdirList">' + vdirResultsHtml() + '</div>';
+    }
+    var req = CL.dirReq, status = req && req.status, body;
+    if (status === 'pending') {
+      body = '<p class="vdir-status" id="vdirStatus">Your request is pending.</p>';
+    } else if (status === 'denied') {
+      body = '<p class="vdir-status" id="vdirStatus">Your request is pending further information. Additional verification information will be requested.</p>' +
+        '<button type="button" class="btn primary block" data-act="dirRequestAccess" id="dirRequestBtn">Request verified access</button>';
+    } else {
+      body = '<p class="vdir-status" id="vdirStatus">This section is for verified members only.</p>' +
+        '<button type="button" class="btn primary block" data-act="dirRequestAccess" id="dirRequestBtn">Request verified access</button>';
+    }
+    return '<div class="card vdir" id="vdirCard" data-sec="5j"><div class="vdir-head"><h3>Verified directory</h3></div>' + body + '</div>';
+  }
+  function refreshDirVerifiedUi() {
+    var list = document.getElementById('vdirList');
+    if (list) list.innerHTML = vdirResultsHtml();
+    var host = document.getElementById('vdirHost');
+    if (host) host.innerHTML = vdirGateHtml();
+  }
+  function dirAccessAdminSheet() {
+    if (!isDirectoryAdmin()) return toast('Only the directory admin can open this');
+    openSheet('Verified Access',
+      '<div id="dirAccessPending" data-sec="23a"><h3>Pending requests</h3><div class="muted">Loading\u2026</div></div>' +
+      '<div id="dirAccessMembers" data-sec="23b" style="margin-top:16px"><h3>Verified members</h3><div class="muted">Loading\u2026</div></div>');
+    var c = cloudClient();
+    Promise.resolve(c.rpc('directory_admin_overview')).then(q).then(function (d) {
+      d = d || {};
+      var pending = d.pending || [], users = d.members || [];
+      var byId = {};
+      pending.concat(users).forEach(function (u) { if (u && u.user_id) byId[u.user_id] = u; if (u && u.id) byId[u.id] = u; });
+      var pendEl = document.getElementById('dirAccessPending');
+      if (pendEl) {
+        pendEl.innerHTML = '<h3>Pending requests</h3>' + (pending.length ? '<div class="list">' + pending.map(function (r) {
+          var u = byId[r.user_id] || {};
+          return '<div class="item admrow" data-id="' + esc(r.id) + '"><div class="main"><div class="t1">' + esc(r.username || u.username || 'Member') + '</div><div class="t2">Requested ' + esc(fmtStamp(r.created_at)) + '</div></div><div class="admbtns">' +
+            '<button class="btn sm primary" data-act="dirAccessApprove" data-id="' + esc(r.id) + '">Approve</button>' +
+            '<button class="btn sm danger" data-act="dirAccessDeny" data-id="' + esc(r.id) + '">Deny</button></div></div>';
+        }).join('') + '</div>' : '<div class="empty">None</div>');
+      }
+      var verified = users;
+      var memEl = document.getElementById('dirAccessMembers');
+      if (memEl) {
+        memEl.innerHTML = '<h3>Verified members</h3>' + (verified.length ? '<div class="list">' + verified.map(function (u) {
+          return '<div class="item admrow" data-uid="' + esc(u.id) + '"><div class="main"><div class="t1">' + esc(u.username) + '</div><div class="t2">' + (u.directory_verified_at ? ('Verified ' + esc(fmtStamp(u.directory_verified_at))) : 'Verified') + '</div></div><div class="admbtns">' +
+            '<button class="btn sm danger" data-act="dirAccessRevoke" data-id="' + esc(u.id) + '" data-user="' + esc(u.username) + '">Revoke</button></div></div>';
+        }).join('') + '</div>' : '<div class="empty">None</div>');
+      }
+      CL.dirPendingCount = pending.length;
+      var badge = document.getElementById('dirAccessBadge');
+      if (badge) { badge.hidden = !CL.dirPendingCount; badge.textContent = CL.dirPendingCount ? String(CL.dirPendingCount) : ''; }
+    }).catch(function (e) {
+      var pendEl = document.getElementById('dirAccessPending');
+      if (pendEl) pendEl.innerHTML = '<h3>Pending requests</h3><div class="empty">Couldn\'t load: ' + esc(errText(e)) + '</div>';
+    });
+  }
+
   function viewDirectory() {
     var q = ui.dirQ || '', chip = ui.dirKind || '';
     var chips = '<div class="dirchips" data-sec="5g">' + DIR_CHIPS.map(function (x) {
@@ -9644,9 +9816,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var dirTools = chips +
       '<div class="dir-actions" style="margin:0 0 8px" data-sec="5i"><button type="button" class="btn primary sm" data-act="dirAddCustom">Add custom contact</button></div>' +
       '<p class="muted" style="font-size:12.5px;margin:0 0 8px">Public numbers come from official NYPD pages. Numbers you add stay on your account only and are not shared.</p>';
+    if (dirAccessReady()) refreshDirAccess();
     return suggestBar('Directory') + '<div class="card" data-sec="5f"><h3>Directory</h3>' +
       '<input id="dirQ" class="dirq" type="search" value="' + esc(q) + '" placeholder="Name, number, category, or phone" aria-label="Search the directory" autocomplete="off">' +
       dirTools + '</div>' +
+      '<div id="vdirHost">' + vdirGateHtml() + '</div>' +
       '<div id="dirList">' + dirResultsHtml() + '</div>';
   }
   // r71: Lookup (former page 5, sections 5a–5e) was removed from the tab bar. Zee will relocate it later.
@@ -9727,7 +9901,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   // Only a top-level sheet closes to the main screen.
   var NAV = { stack: [], cur: null, pending: null };
   // Beta section numbers: pages 1-5 are the bottom tabs (1 Schedule, 2 Overtime, 3 Pay, 4 Map, 5 Directory); sheets have fixed numbers here (see SECTION-NUMBERS.md). Never computed from order. Lookup (former page 5, 5a–5e) is vacated from the tab bar; those letters are not reused. Directory uses 5f–5i.
-  var SHEET_PAGES = { day: '6', sum: '7', ot: '8', settings: '9', hist: '10', suggest: '11', inbox: '12', admin: '13', leaveNew: '14', sync: '15', x15: '16', x15ed: '17', chart: '18', pd: '19', pdTax: '20', messages: '21', payOt: '22' };
+  var SHEET_PAGES = { day: '6', sum: '7', ot: '8', settings: '9', hist: '10', suggest: '11', inbox: '12', admin: '13', leaveNew: '14', sync: '15', x15: '16', x15ed: '17', chart: '18', pd: '19', pdTax: '20', messages: '21', payOt: '22', dirAccess: '23' };
   var TAB_PAGES = { schedule: '1', overtime: '2', pay: '3', leave: '4', map: '4', directory: '5' };
   function navable(name, f, keyFn) {
     return function () {
@@ -10737,24 +10911,24 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function afterAuth(uid) {
     return fetchProfile(uid).then(function (p) {
       setProfile(p, uid);
-      if (CS.status === 'approved') { if (!adoptDevice(uid)) return signOutLocal(); render(); inboxListen(); if (/(?:\?|&)inbox=1(?:&|$)/.test(location.search || '')) setTimeout(function () { openInbox(); }, 200); if (SM.migrating) toast('Uploading the schedule saved on this device to your account\u2026'); return syncNow('signin'); }
+      if (CS.status === 'approved') { if (!adoptDevice(uid)) return signOutLocal(); render(); inboxListen(); refreshDirAccess(true); if (/(?:\?|&)inbox=1(?:&|$)/.test(location.search || '')) setTimeout(function () { openInbox(); }, 200); if (SM.migrating) toast('Uploading the schedule saved on this device to your account\u2026'); return syncNow('signin'); }
       render();
     });
   }
   function signOutLocal() { CS = {}; saveCS(); render(); }
   // On start: show the cached state right away (works offline), then check the session and approval in the background.
   function cloudBoot() {
-    render(); if (cloudReady()) { slipReconcile(); inboxListen(); if (/(?:\?|&)inbox=1(?:&|$)/.test(location.search || '')) setTimeout(function () { openInbox(); }, 200); }
+    render(); if (cloudReady()) { slipReconcile(); inboxListen(); refreshDirAccess(true); if (/(?:\?|&)inbox=1(?:&|$)/.test(location.search || '')) setTimeout(function () { openInbox(); }, 200); }
     var c = cloudClient();
     Promise.resolve(c.auth.getSession()).then(function (r) {
       var sess = r && r.data && r.data.session;
-      if (!sess) { if (CS.uid && online()) { ui.lastUser = CS.username; CS = {}; saveCS(); render(); toast('Please sign in again'); } return; }
+      if (!sess) { if (CS.uid && online()) { ui.lastUser = CS.username; CS = {}; saveCS(); clearRestrictedDirCache(); render(); toast('Please sign in again'); } return; }
       if (!online()) return;
       return afterAuth(sess.user.id);
     }).catch(function () { /* offline or service down: keep the cached screen */ });
     window.addEventListener('online', function () { if (cloudReady()) syncNow('online'); else if (CS.uid) afterAuth(CS.uid).catch(function () {}); else render(); });
     window.addEventListener('offline', function () { CL.status = 'offline'; if (!CS.uid) render(); });
-    document.addEventListener('visibilitychange', function () { if (!document.hidden && cloudReady()) syncNow('visible'); });
+    document.addEventListener('visibilitychange', function () { if (!document.hidden && cloudReady()) { syncNow('visible'); refreshDirAccess(true); } });
     setInterval(function () { if (!document.hidden && cloudReady()) syncNow('timer'); }, 120000);
   }
   // ----- sync -----
@@ -10848,7 +11022,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function accountPanel() {
     if (!CL.enabled) return '';
     return '<h3 style="margin-top:0" id="acctHead" data-sec="9a">Account</h3><div class="acct"><div><b>' + esc(CS.username || '') + '</b>' + (CS.role === 'admin' ? ' <span class="betatag">admin</span>' : '') + '<div class="muted" id="syncLine" style="font-size:13px">' + esc(syncLine()) + '</div></div></div>' +
-      '<div class="row" style="margin-bottom:6px"><button class="btn sm" data-act="syncNowBtn">Sync now</button>' + (CS.role === 'admin' ? '<button class="btn sm" data-act="inboxOpen" id="adminInboxBtn">Suggestions<span class="inbadge msgnew" id="inboxBadgeSheet"' + (ui.inboxUnread ? '' : ' hidden') + ' title="Unread"></span></button><button class="btn sm" data-act="adminOpen" id="adminBtn">Admin: beta users</button>' : (cloudReady() ? '<button class="btn sm" data-act="inboxOpen" id="userInboxBtn">Inbox<span class="inbadge msgnew" id="inboxBadgeSheet"' + (ui.inboxUnread ? '' : ' hidden') + ' title="Unread"></span></button>' : '')) + '<button class="btn sm" data-act="authSignOut">Sign out</button></div>';
+      '<div class="row" style="margin-bottom:6px"><button class="btn sm" data-act="syncNowBtn">Sync now</button>' + (CS.role === 'admin' ? '<button class="btn sm" data-act="inboxOpen" id="adminInboxBtn">Suggestions<span class="inbadge msgnew" id="inboxBadgeSheet"' + (ui.inboxUnread ? '' : ' hidden') + ' title="Unread"></span></button><button class="btn sm" data-act="adminOpen" id="adminBtn">Admin: beta users</button>' + (isDirectoryAdmin() ? '<button class="btn sm" data-act="dirAccessAdminOpen" id="dirAccessAdminBtn">Verified Access<span class="vdir-badge" id="dirAccessBadge"' + (CL.dirPendingCount ? '' : ' hidden') + '>' + (CL.dirPendingCount ? CL.dirPendingCount : '') + '</span></button>' : '') : (cloudReady() ? '<button class="btn sm" data-act="inboxOpen" id="userInboxBtn">Inbox<span class="inbadge msgnew" id="inboxBadgeSheet"' + (ui.inboxUnread ? '' : ' hidden') + ' title="Unread"></span></button>' : '')) + '<button class="btn sm" data-act="authSignOut">Sign out</button></div>';
   }
 
   // ---------- Beta suggestions (send to the admin) ----------
@@ -12941,7 +13115,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="' + ((s.defaultCalendar || 'google') === 'apple' ? 'on' : '') + '" data-act="calDefault" data-v="apple">Apple</button></div>' +
       '<h3 style="margin-top:20px" data-sec="9m">Subscribe to calendar</h3>' + calendarSubscribeHtml() +
       '<button class="btn danger block" data-act="reset" data-sec="9k" style="margin-top:20px">Erase all data</button>' +
-      '<p class="build-tag muted" id="appBuildTag">Build r104 · patrol-test-95dd9da0a734</p>');
+      '<p class="build-tag muted" id="appBuildTag">Build r105 · patrol-test-c97fc49e618e</p>');
   }
 
   // ---------- Day summary: what's saved on a date; tap an entry to view or change it ----------
@@ -13646,10 +13820,35 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     authSignOut: function () {
       var unsynced = Object.keys(SM.recs || {}).some(function (k) { return SM.recs[k].d; }) || Object.keys(SM.slipQ || {}).length;
       if (unsynced && CS.status === 'approved' && !confirm('Some changes haven\'t been uploaded yet. They stay on this device and upload the next time you sign in here. Sign out?')) return;
-      closeAll(); Promise.resolve(cloudClient().auth.signOut()).catch(function () {}).then(function () { ui.lastUser = CS.username; CS = {}; saveCS(); ui.authTab = 'signin'; render(); toast('Signed out. Your data stays on this device until another account signs in.'); });
+      closeAll(); Promise.resolve(cloudClient().auth.signOut()).catch(function () {}).then(function () { ui.lastUser = CS.username; CS = {}; saveCS(); clearRestrictedDirCache(); ui.authTab = 'signin'; render(); toast('Signed out. Your data stays on this device until another account signs in.'); });
     },
     syncNowBtn: function () { if (!online()) return toast('Offline: changes will sync when you\'re back online'); syncNow('manual').then(function () { toast(CL.status === 'error' ? 'Sync problem: ' + CL.error : 'Synced'); }); },
     adminOpen: function () { adminSheet(); },
+    dirAccessAdminOpen: function () { dirAccessAdminSheet(); },
+    dirRequestAccess: function (t) {
+      if (t) t.disabled = true;
+      Promise.resolve(cloudClient().rpc('request_directory_access')).then(q).then(function () {
+        toast('Request sent');
+        CL.dirAccessLoaded = false;
+        return refreshDirAccess(true);
+      }, function (e) { if (t) t.disabled = false; toast(errText(e)); });
+    },
+    dirAccessApprove: function (t) {
+      var id = t && t.dataset && t.dataset.id; if (!id) return; t.disabled = true;
+      Promise.resolve(cloudClient().rpc('approve_directory_access', { request_id: id })).then(q).then(function () { toast('Approved'); dirAccessAdminSheet(); refreshDirAccess(true); }, function (e) { t.disabled = false; toast(errText(e)); });
+    },
+    dirAccessDeny: function (t) {
+      var id = t && t.dataset && t.dataset.id; if (!id) return; t.disabled = true;
+      Promise.resolve(cloudClient().rpc('deny_directory_access', { request_id: id })).then(q).then(function () { toast('Denied'); dirAccessAdminSheet(); }, function (e) { t.disabled = false; toast(errText(e)); });
+    },
+    dirAccessRevoke: function (t) {
+      var id = t && t.dataset && t.dataset.id, name = (t && t.dataset && t.dataset.user) || 'this member';
+      if (!id) return;
+      confirmDlg({ title: 'Revoke verified access?', body: '<p>Revoke verified directory access for <b>' + esc(name) + '</b>? They will lose access immediately.</p>', ok: 'Revoke', danger: true, onOk: function () {
+        Promise.resolve(cloudClient().rpc('revoke_directory_access', { target_id: id })).then(q).then(function () { toast('Access revoked'); dirAccessAdminSheet(); }, function (e) { toast(errText(e)); });
+      } });
+    },
+
     adminBeta: function (t) {
       var r = (ui.adminRows || []).filter(function (x) { return x.id === t.dataset.id; })[0]; if (!r) return; t.disabled = true;
       Promise.resolve(cloudClient().rpc('set_user_beta', { target_id: r.id, beta_on: !r.beta })).then(q).then(function () {
@@ -14761,6 +14960,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (ev.target.maxLength > 0 && ev.target.getAttribute('inputmode') === 'numeric' && ev.target.value.length > ev.target.maxLength) ev.target.value = ev.target.value.slice(0, ev.target.maxLength); // paste can exceed maxlength
     if (ev.target.classList.contains('cmdq')) cmdResults(ev.target.dataset.px, ev.target.value);
     if (ev.target.id === 'dirQ') { if (ui.tab === 'map') { ui.mapQ = ev.target.value; dirMapSearch(); } else { ui.dirQ = ev.target.value; refreshDirList(); } if (ui.tab === 'map' || ui.tab === 'directory') hideSearchTabs(); }
+    if (ev.target.id === 'vdirQ') { ui.vdirQ = ev.target.value; refreshDirVerifiedUi(); hideSearchTabs(); }
     if (ev.target.classList.contains('otSplitIn')) {
       var sv = ev.target.value, del = /^delete/.test(ev.inputType || '');
       var sf = /^\d{1,2}:\d{2}$/.test(String(sv).trim()) ? String(sv).trim() : E.formatTimeInput(sv, del);
@@ -14843,7 +15043,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   histEditor = navable('hist', histEditor, function (r) { return r ? r.id : 'new'; });
   chartEditor = navable('chart', chartEditor, function (e) { return e ? e.id : 'new'; });
   suggestSheet = navable('suggest', suggestSheet, function () { return ''; });
-  inboxSheet = navable('inbox', inboxSheet, function () { return ''; }); userInboxSheet = navable('messages', userInboxSheet, function (k) { return k || ''; }); adminSheet = navable('admin', adminSheet, function () { return ''; });
+  inboxSheet = navable('inbox', inboxSheet, function () { return ''; }); userInboxSheet = navable('messages', userInboxSheet, function (k) { return k || ''; }); adminSheet = navable('admin', adminSheet, function () { return ''; }); dirAccessAdminSheet = navable('dirAccess', dirAccessAdminSheet, function () { return ''; });
   x15Sheet = navable('x15', x15Sheet); x15Editor = navable('x15ed', x15Editor, function (y, m, t) { return [y, m, t].join('-'); });
   A.leaveNew = navable('leaveNew', A.leaveNew, function (t) { return t && t.dataset ? t.dataset.kind || '' : ''; }); A.syncOpen = navable('sync', A.syncOpen, function () { return ''; });
   applyTheme(); watchTheme();
