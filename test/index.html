@@ -651,6 +651,18 @@ a.dir-tel.mine{color:#0f766e}
 .vdir-card .t2{color:var(--muted);font-size:12.5px;margin-top:2px}
 .vdir-badge{position:relative;display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;margin-left:6px;padding:0 5px;border-radius:999px;background:#dc2626;color:#fff;font-size:11px;font-weight:800;line-height:1;vertical-align:middle}
 .vdir-badge[hidden]{display:none!important}
+#vdirPdfWrap{position:fixed;inset:0;z-index:6000;background:#111;display:flex;flex-direction:column;color:#fff}
+#vdirPdfBar{display:flex;align-items:center;gap:8px;padding:8px 10px calc(8px + env(safe-area-inset-top));background:#0b1f3a;flex-shrink:0}
+#vdirPdfBar .btn{background:#fff;color:#0b1f3a;border:0;font-weight:700}
+#vdirPdfTitle{flex:1;font-weight:800;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#vdirPdfNav{display:flex;align-items:center;gap:6px}
+#vdirPdfPageNum{font-size:12px;min-width:64px;text-align:center}
+#vdirPdfStage{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;background:#1a1a1a;padding:4px 0 16px}
+#vdirPdfPage{position:relative;margin:0 auto}
+#vdirPdfCanvas{display:block;background:#fff}
+#vdirPdfLinks{position:absolute;left:0;top:0;right:0;bottom:0}
+a.vdir-pdf-link{position:absolute;display:block;z-index:2;background:rgba(37,99,235,.12);border-radius:2px}
+
 
 
 
@@ -6546,7 +6558,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   // Beta testers (profiles.beta, set by the admin) see section numbers (1a, 2b...) on every page; everyone else never does.
   function isBeta() { return !!(CL.enabled && CS && CS.uid && CS.status === 'approved' && CS.beta === true); }
   function isDirSearchInput(el) {
-    return !!(el && (el.id === 'dirQ' || el.id === 'vdirQ') && (ui.tab === 'map' || ui.tab === 'directory'));
+    return !!(el && el.id === 'dirQ' && (ui.tab === 'map' || ui.tab === 'directory'));
   }
   function setSearchTabsHidden(hide) {
     var app = document.getElementById('app'), tabs = document.getElementById('tabs');
@@ -9639,7 +9651,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="btn sm chip' + (ui.dirHospLevel1 ? ' on' : '') + '" data-act="hospChip" data-filter="level1" aria-pressed="' + (ui.dirHospLevel1 ? 'true' : 'false') + '">Level 1 Trauma</button>' +
       '</div>' +
       '</div>' +
-      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r105 · patrol-test-c97fc49e618e</p></div>' +
+      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r106 · patrol-test-f81d783ef082</p></div>' +
       '</div>';
     var mapTools = '<div class="dir-map-chrome">' +
       '<div class="dir-map-search"><input id="dirQ" class="dirq acIn" data-ac="map" type="text" value="' + esc(q) + '" placeholder="Search an address or precinct" aria-label="Search an address or precinct" autocomplete="off"></div>' +
@@ -9653,12 +9665,13 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function isDirectoryAdmin() {
     return !!(CS && CS.role === 'admin' && CS.status === 'approved' && (CS.username === 'admin' || CS.username === 'zee'));
   }
+  var VDIR_BUCKET = 'verified-directory', VDIR_OBJECT = 'directory.pdf';
   function clearRestrictedDirCache() {
     CL.dirVerified = false;
     CL.dirReq = null;
-    CL.dirUnits = null;
     CL.dirPendingCount = 0;
     CL.dirAccessLoaded = false;
+    closeVerifiedDirectoryPdf();
   }
   function dirAccessReady() { return !!(CL.enabled && CS && CS.uid && CS.status === 'approved'); }
   function latestDirRequest(rows) {
@@ -9685,63 +9698,14 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       CL.dirReq = latestDirRequest(reqs);
       CL.dirPendingCount = isDirectoryAdmin() ? ((parts[2] || []).length) : 0;
       CL.dirAccessLoaded = true;
-      if (!verified) CL.dirUnits = null;
+      if (!verified) closeVerifiedDirectoryPdf();
       refreshDirVerifiedUi();
       var badge = document.getElementById('dirAccessBadge');
       if (badge) { badge.hidden = !CL.dirPendingCount; badge.textContent = CL.dirPendingCount ? String(CL.dirPendingCount) : ''; }
-      if (verified && CL.dirUnits == null) return loadRestrictedDir();
     }).catch(function () {
       refreshDirVerifiedUi();
     }).then(function () { CL.dirAccessLoading = null; });
     return CL.dirAccessLoading;
-  }
-  function loadRestrictedDir() {
-    if (!dirAccessReady() || !(CL.dirVerified || isDirectoryAdmin())) { CL.dirUnits = null; refreshDirVerifiedUi(); return Promise.resolve(); }
-    return Promise.resolve(cloudClient().from('restricted_directory_units').select('id,kind,label,source_label,bureau,unit,sub_unit,phones,address,email,sort_order').order('sort_order')).then(q).then(function (rows) {
-      CL.dirUnits = rows || [];
-      refreshDirVerifiedUi();
-    }).catch(function (e) {
-      CL.dirUnits = [];
-      CL.dirLoadError = errText(e);
-      refreshDirVerifiedUi();
-    });
-  }
-  function vdirMatches(r, q) {
-    if (!q) return true;
-    var phones = (r.phones || []).map(function (p) { return String((p && p.number) || ''); }).join(' ');
-    var blob = [r.label, r.source_label, r.bureau, r.unit, r.sub_unit, r.address, r.email, phones].join(' ').toLowerCase();
-    return blob.indexOf(q) >= 0;
-  }
-  function vdirCardHtml(r) {
-    var tels = (r.phones || []).map(function (p) {
-      var num = p && p.number, typ = p && p.type && p.type !== 'main' ? String(p.type) + ' · ' : '';
-      return num ? dirPhoneLink(num, typ + (E.fmtPhone(num) || num), false) : '';
-    }).filter(Boolean).join('');
-    var addr = r.address || '';
-    var meta = r.kind === 'role' ? ((r.unit || r.bureau) ? esc(r.unit || r.bureau) : '') : '';
-    return '<div class="card dir-card vdir-card" data-sec="5l" data-id="' + esc(r.id) + '"><div class="t1">' + esc(r.label) + '</div>' +
-      (meta ? '<div class="t2">' + meta + '</div>' : '') +
-      (tels ? '<div class="dir-tels">' + tels + '</div>' : '') +
-      (addr ? '<div class="t2" style="margin-top:6px">' + esc(addr) + '</div>' + navLinks(addr) : '') +
-      (r.email ? '<div class="t2">' + esc(r.email) + '</div>' : '') +
-      '</div>';
-  }
-  function vdirResultsHtml() {
-    var q = String(ui.vdirQ || '').trim().toLowerCase();
-    var rows = (CL.dirUnits || []).filter(function (r) { return vdirMatches(r, q); });
-    if (!(CL.dirUnits || []).length) {
-      return '<div class="dir-empty" data-sec="5l">' + (CL.dirLoadError ? esc(CL.dirLoadError) : 'No verified directory entries.') + '</div>';
-    }
-    if (!rows.length) return '<div class="dir-empty" data-sec="5l">No matches for \u201c' + esc(ui.vdirQ || '') + '\u201d.</div>';
-    var html = '<div class="muted" style="font-size:12.5px;margin:4px 0 8px" data-sec="5l">' + rows.length + ' result' + (rows.length === 1 ? '' : 's') + '</div>';
-    var bi = -1, ui_ = -1, buro = null, unit = null;
-    rows.forEach(function (r) {
-      if (r.bureau !== buro) { buro = r.bureau; unit = null; html += '<div class="vdir-group" data-sec="5l">' + esc(buro || 'Other') + '</div>'; }
-      var un = r.unit || r.source_label || r.label;
-      if (un !== unit) { unit = un; html += '<div class="vdir-unit">' + esc(un) + '</div>'; }
-      html += vdirCardHtml(r);
-    });
-    return html;
   }
   function vdirGateHtml() {
     if (!CL.enabled) return '';
@@ -9750,8 +9714,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     }
     if (CL.dirVerified || isDirectoryAdmin()) {
       return '<div class="card vdir" id="vdirCard" data-sec="5k"><div class="vdir-head"><h3>Verified directory</h3></div>' +
-        '<input id="vdirQ" class="dirq" type="search" value="' + esc(ui.vdirQ || '') + '" placeholder="Search verified units, phones, or addresses" aria-label="Search the verified directory" autocomplete="off">' +
-        '</div><div id="vdirList">' + vdirResultsHtml() + '</div>';
+        '<p class="vdir-status">Open the verified roster PDF to tap phone numbers and addresses.</p>' +
+        '<button type="button" class="btn primary block" data-act="dirOpenPdf" id="vdirOpenBtn">Verified directory</button></div>';
     }
     var req = CL.dirReq, status = req && req.status, body;
     if (status === 'pending') {
@@ -9766,11 +9730,118 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     return '<div class="card vdir" id="vdirCard" data-sec="5j"><div class="vdir-head"><h3>Verified directory</h3></div>' + body + '</div>';
   }
   function refreshDirVerifiedUi() {
-    var list = document.getElementById('vdirList');
-    if (list) list.innerHTML = vdirResultsHtml();
     var host = document.getElementById('vdirHost');
     if (host) host.innerHTML = vdirGateHtml();
   }
+  function loadPdfJs() {
+    if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+    return new Promise(function (resolve, reject) {
+      var s = document.createElement('script');
+      s.src = 'vendor/pdfjs/pdf.min.js';
+      s.onload = function () {
+        var lib = window.pdfjsLib;
+        if (!lib) return reject(new Error('PDF library failed to load'));
+        try { lib.GlobalWorkerOptions.workerSrc = 'vendor/pdfjs/pdf.worker.min.js'; } catch (e) {}
+        resolve(lib);
+      };
+      s.onerror = function () { reject(new Error('Could not load the PDF viewer')); };
+      document.head.appendChild(s);
+    });
+  }
+  function closeVerifiedDirectoryPdf() {
+    var wrap = document.getElementById('vdirPdfWrap');
+    if (wrap && wrap.parentNode) wrap.parentNode.removeChild(wrap);
+    if (CL.dirPdfDoc && CL.dirPdfDoc.destroy) try { CL.dirPdfDoc.destroy(); } catch (e) {}
+    CL.dirPdfDoc = null;
+    CL.dirPdfPage = 1;
+    if (CL.dirPdfUrl) { try { URL.revokeObjectURL(CL.dirPdfUrl); } catch (e) {} }
+    CL.dirPdfUrl = null;
+    CL.dirPdfBlob = null;
+  }
+  function openVerifiedDirectoryPdf() {
+    if (!dirAccessReady() || !(CL.dirVerified || isDirectoryAdmin())) {
+      toast('Verified access is required to open the directory');
+      return Promise.resolve();
+    }
+    closeVerifiedDirectoryPdf();
+    var wrap = document.createElement('div');
+    wrap.id = 'vdirPdfWrap';
+    wrap.setAttribute('data-sec', '5l');
+    wrap.innerHTML = '<div id="vdirPdfBar"><button type="button" class="btn sm" data-act="dirClosePdf" id="vdirPdfClose">Close</button>' +
+      '<div id="vdirPdfTitle">Verified directory</div>' +
+      '<div id="vdirPdfNav"><button type="button" class="btn sm" data-act="dirPdfPrev" id="vdirPdfPrev" aria-label="Previous page">Prev</button>' +
+      '<span id="vdirPdfPageNum">Loading\u2026</span>' +
+      '<button type="button" class="btn sm" data-act="dirPdfNext" id="vdirPdfNext" aria-label="Next page">Next</button></div></div>' +
+      '<div id="vdirPdfStage"><div id="vdirPdfPage"><canvas id="vdirPdfCanvas"></canvas><div id="vdirPdfLinks"></div></div></div>';
+    document.body.appendChild(wrap);
+    return Promise.resolve(cloudClient().storage.from(VDIR_BUCKET).download(VDIR_OBJECT)).then(q).then(function (blob) {
+      if (!blob) throw new Error('Directory PDF was not available');
+      CL.dirPdfBlob = blob;
+      return loadPdfJs().then(function (lib) {
+        return blob.arrayBuffer().then(function (buf) {
+          var opts = { data: buf, disableStream: true, disableRange: true };
+          return lib.getDocument(opts).promise.catch(function () {
+            opts.isEvalSupported = false;
+            try { lib.disableWorker = true; } catch (e) {}
+            return lib.getDocument(opts).promise;
+          });
+        }).then(function (pdf) {
+          CL.dirPdfDoc = pdf;
+          CL.dirPdfPage = 1;
+          return renderVerifiedPdfPage(1);
+        });
+      });
+    }).catch(function (e) {
+      closeVerifiedDirectoryPdf();
+      toast(errText(e) || 'Could not open the verified directory');
+    });
+  }
+  function renderVerifiedPdfPage(n) {
+    var pdf = CL.dirPdfDoc, canvas = document.getElementById('vdirPdfCanvas'), stage = document.getElementById('vdirPdfStage'), links = document.getElementById('vdirPdfLinks');
+    if (!pdf || !canvas) return Promise.resolve();
+    n = Math.max(1, Math.min(pdf.numPages, n || 1));
+    CL.dirPdfPage = n;
+    var label = document.getElementById('vdirPdfPageNum');
+    if (label) label.textContent = n + ' / ' + pdf.numPages;
+    var prev = document.getElementById('vdirPdfPrev'), next = document.getElementById('vdirPdfNext');
+    if (prev) prev.disabled = n <= 1;
+    if (next) next.disabled = n >= pdf.numPages;
+    return pdf.getPage(n).then(function (page) {
+      var width = (stage && stage.clientWidth) ? stage.clientWidth : (window.innerWidth || 390);
+      var vp0 = page.getViewport({ scale: 1 });
+      var scale = Math.max(1, (width - 8) / vp0.width);
+      var vp = page.getViewport({ scale: scale });
+      canvas.width = vp.width;
+      canvas.height = vp.height;
+      canvas.style.width = vp.width + 'px';
+      canvas.style.height = vp.height + 'px';
+      var pageBox = document.getElementById('vdirPdfPage');
+      if (pageBox) { pageBox.style.width = vp.width + 'px'; pageBox.style.height = vp.height + 'px'; }
+      var ctx = canvas.getContext('2d');
+      return page.render({ canvasContext: ctx, viewport: vp }).promise.then(function () { return page.getAnnotations(); }).then(function (annots) {
+        if (links) links.innerHTML = '';
+        (annots || []).forEach(function (a) {
+          var url = a && (a.url || a.unsafeUrl);
+          if (!url || (a.subtype && a.subtype !== 'Link')) return;
+          var rect = a.rect || a.Rect;
+          if (!rect || rect.length < 4) return;
+          var vr = vp.convertToViewportRectangle(rect);
+          var x = Math.min(vr[0], vr[2]), y = Math.min(vr[1], vr[3]), w = Math.abs(vr[2] - vr[0]), h = Math.abs(vr[3] - vr[1]);
+          var el = document.createElement('a');
+          el.className = 'vdir-pdf-link';
+          el.href = url;
+          if (/^tel:/i.test(url)) { el.setAttribute('aria-label', 'Call'); }
+          else { el.target = '_blank'; el.rel = 'noopener'; el.setAttribute('aria-label', 'Open maps'); }
+          el.style.left = x + 'px';
+          el.style.top = y + 'px';
+          el.style.width = Math.max(12, w) + 'px';
+          el.style.height = Math.max(12, h) + 'px';
+          if (links) links.appendChild(el);
+        });
+      });
+    });
+  }
+
   function dirAccessAdminSheet() {
     if (!isDirectoryAdmin()) return toast('Only the directory admin can open this');
     openSheet('Verified Access',
@@ -13115,7 +13186,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="' + ((s.defaultCalendar || 'google') === 'apple' ? 'on' : '') + '" data-act="calDefault" data-v="apple">Apple</button></div>' +
       '<h3 style="margin-top:20px" data-sec="9m">Subscribe to calendar</h3>' + calendarSubscribeHtml() +
       '<button class="btn danger block" data-act="reset" data-sec="9k" style="margin-top:20px">Erase all data</button>' +
-      '<p class="build-tag muted" id="appBuildTag">Build r105 · patrol-test-c97fc49e618e</p>');
+      '<p class="build-tag muted" id="appBuildTag">Build r106 · patrol-test-f81d783ef082</p>');
   }
 
   // ---------- Day summary: what's saved on a date; tap an entry to view or change it ----------
@@ -13833,6 +13904,13 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         return refreshDirAccess(true);
       }, function (e) { if (t) t.disabled = false; toast(errText(e)); });
     },
+    dirOpenPdf: function (t) {
+      if (t) t.disabled = true;
+      Promise.resolve(openVerifiedDirectoryPdf()).then(function () { if (t) t.disabled = false; }, function () { if (t) t.disabled = false; });
+    },
+    dirClosePdf: function () { closeVerifiedDirectoryPdf(); },
+    dirPdfPrev: function () { if (CL.dirPdfDoc) renderVerifiedPdfPage((CL.dirPdfPage || 1) - 1); },
+    dirPdfNext: function () { if (CL.dirPdfDoc) renderVerifiedPdfPage((CL.dirPdfPage || 1) + 1); },
     dirAccessApprove: function (t) {
       var id = t && t.dataset && t.dataset.id; if (!id) return; t.disabled = true;
       Promise.resolve(cloudClient().rpc('approve_directory_access', { request_id: id })).then(q).then(function () { toast('Approved'); dirAccessAdminSheet(); refreshDirAccess(true); }, function (e) { t.disabled = false; toast(errText(e)); });
@@ -14960,7 +15038,6 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (ev.target.maxLength > 0 && ev.target.getAttribute('inputmode') === 'numeric' && ev.target.value.length > ev.target.maxLength) ev.target.value = ev.target.value.slice(0, ev.target.maxLength); // paste can exceed maxlength
     if (ev.target.classList.contains('cmdq')) cmdResults(ev.target.dataset.px, ev.target.value);
     if (ev.target.id === 'dirQ') { if (ui.tab === 'map') { ui.mapQ = ev.target.value; dirMapSearch(); } else { ui.dirQ = ev.target.value; refreshDirList(); } if (ui.tab === 'map' || ui.tab === 'directory') hideSearchTabs(); }
-    if (ev.target.id === 'vdirQ') { ui.vdirQ = ev.target.value; refreshDirVerifiedUi(); hideSearchTabs(); }
     if (ev.target.classList.contains('otSplitIn')) {
       var sv = ev.target.value, del = /^delete/.test(ev.inputType || '');
       var sf = /^\d{1,2}:\d{2}$/.test(String(sv).trim()) ? String(sv).trim() : E.formatTimeInput(sv, del);
