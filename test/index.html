@@ -663,6 +663,22 @@ a.dir-tel.mine{color:#0f766e}
 .vdir-pdf-page canvas{display:block;width:100%;height:auto;background:#fff}
 .vdir-pdf-links{position:absolute;left:0;top:0;right:0;bottom:0}
 a.vdir-pdf-link{position:absolute;display:block;z-index:2;background:rgba(37,99,235,.12);border-radius:2px}
+#vdirPdfSearch{display:flex;align-items:center;gap:8px;padding:0 10px 8px;background:#0b1f3a;flex-shrink:0}
+#vdirPdfQ{flex:1;min-width:0;height:36px;border:0;border-radius:10px;padding:0 12px;font:inherit;font-size:16px;background:#fff;color:#0b1f3a}
+#vdirPdfQ:disabled{opacity:.7}
+#vdirPdfMatchNav{display:flex;align-items:center;gap:4px;flex-shrink:0}
+#vdirPdfMatchNav[hidden],#vdirPdfResults[hidden]{display:none!important}
+#vdirPdfMatchNum{font-size:12px;min-width:44px;text-align:center;white-space:nowrap}
+#vdirPdfSearch .btn{background:#fff;color:#0b1f3a;border:0;font-weight:700;min-width:32px;padding:0 8px}
+#vdirPdfResults{flex-shrink:0;max-height:40%;overflow:auto;-webkit-overflow-scrolling:touch;background:#0f2744;border-top:1px solid rgba(255,255,255,.12)}
+.vdir-pdf-hit{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:10px 12px;border:0;border-bottom:1px solid rgba(255,255,255,.08);background:transparent;color:#fff;text-align:left;font:inherit;cursor:pointer}
+.vdir-pdf-hit .t1{font-weight:700;min-width:0}
+.vdir-pdf-hit .t2{color:#cbd5e1;font-size:12px;white-space:nowrap}
+.vdir-pdf-hit.on,.vdir-pdf-hit:active{background:rgba(250,204,21,.18)}
+.vdir-pdf-empty{padding:10px 12px;color:#94a3b8;font-size:13px}
+.vdir-pdf-hilite{position:absolute;z-index:3;pointer-events:none;background:rgba(250,204,21,.45);outline:2px solid #facc15;border-radius:3px;animation:vdirHilite 2.2s ease-out forwards}
+@keyframes vdirHilite{0%{opacity:1}65%{opacity:1}100%{opacity:0}}
+
 
 
 
@@ -5925,6 +5941,241 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     for (var i = 0; i < parts.length; i++) if (parts[i] && /\bPDU\b/i.test(String(parts[i]))) return true;
     return false;
   }
+
+  // Verified-directory unit search: index is built at runtime from the PDF text
+  // layer (pdf.js getTextContent) and kept in memory only. Labels are unit or
+  // command names — never personal names. Not written to disk, localStorage, or
+  // the service worker cache.
+  var VDIR_UNIT_PHRASES = [
+    [/internal affairs bureau/g, 'iab'],
+    [/internal affairs/g, 'iab'],
+    [/emergency service unit/g, 'esu'],
+    [/emergency service/g, 'esu'],
+    [/field training unit/g, 'ftu'],
+    [/field training/g, 'ftu'],
+    [/precinct detective squad/g, 'pdu'],
+    [/detective squad/g, 'pdu'],
+    [/\bdet(?:ective)?\s+sq(?:d|uad)?\b/g, 'pdu'],
+    [/police service area/g, 'psa'],
+    [/transit district/g, 'td'],
+    [/staten island/g, 'si'],
+    [/\bbklyn\b/g, 'brooklyn'],
+    [/\bmanh(?:attan)?\b/g, 'manhattan'],
+    [/\bqns\b/g, 'queens'],
+    [/\bboroughs?\b/g, 'boro'],
+    [/\bboro\b/g, 'boro'],
+    [/\bprecincts?\b/g, 'pct'],
+    [/\bpcts?\b/g, 'pct'],
+    [/\bprec\b/g, 'pct'],
+    [/\bdetectives?\b/g, 'det'],
+    [/\bsquads?\b/g, 'sqd'],
+    [/\bsqd\b/g, 'sqd'],
+    [/\bnorth\b/g, 'north'],
+    [/\bsouth\b/g, 'south'],
+    [/\bno\b/g, 'north'],
+    [/\bso\b/g, 'south']
+  ];
+  function dirUnitCanon(s) {
+    var t = String(s == null ? '' : s).toLowerCase();
+    t = t.replace(/[()]/g, ' ');
+    t = t.replace(/(\d+)(?:st|nd|rd|th)\b/g, '$1');
+    t = t.replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim();
+    if (!t) return '';
+    var i, pair;
+    for (i = 0; i < VDIR_UNIT_PHRASES.length; i++) {
+      pair = VDIR_UNIT_PHRASES[i];
+      t = t.replace(pair[0], ' ' + pair[1] + ' ');
+    }
+    return t.replace(/\s+/g, ' ').trim();
+  }
+  var VDIR_UNIT_WORD = /\b(precinct|pct|psa|pdu|ftu|esu|iab|squad|sqd|unit|division|section|bureau|borough|boro|command|team|detail|district|platoon|company|homicide|detective|det|transit|housing|patrol|task\s+force|service\s+area)\b/i;
+  var VDIR_PCT_HEAD = /^(\d{1,3}(?:st|nd|rd|th)?\.?\s*(?:pct|precinct)\.?)\b/i;
+  var VDIR_PSA_HEAD = /^(psa\s*\d{1,3}|police service area\s*\d{1,3})\b/i;
+  var VDIR_TD_HEAD = /^(td\s*\d{1,3}|transit district\s*\d{1,3})\b/i;
+  var VDIR_PHONE = /(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}(?:\s*\/\s*\d+)*/g;
+  var VDIR_EMAIL = /\b\S+@\S+\.\S+\b/g;
+  var VDIR_STREET = /\b(street|st\.|avenue|ave\.?|boulevard|blvd\.?|road|rd\.?|place|pl\.?|plaza|drive|dr\.?|lane|ln\.?|parkway|pkwy\.?|terrace|court|ct\.?|highway|hwy\.?|way|expressway)\b/i;
+  function isDirPersonLine(line) {
+    var s = String(line || '').replace(/\s+/g, ' ').trim();
+    if (!s) return false;
+    if (/^\s*(c\.?\s*o\.?|x\.?\s*o\.?|exec\.?\s*officer|commanding officer|executive officer|director|deputy director|adjutant|chaplain|administrator|personnel admin)\b/i.test(s)) return true;
+    if (/\b(insp\.|inspector|capt\.|captain|lt\.|lieut\.|sgt\.|sergeant|p\.o\.|police officer|det\.|d\.i\.|dy\.?\s*insp\.?|dep\.?\s*insp\.?)\s+[A-Z]/.test(s)) return true;
+    if (/\b(fr\.|rev\.|rabbi|imam|pastor|monsignor|msgr|sister|brother|dr\.)\s+[A-Z]/i.test(s)) return true;
+    if (/,\s*m\.d\./i.test(s)) return true;
+    if (/^[A-Z][A-Z'’.\-]+,\s+[A-Z]/.test(s)) return true;
+    if (/^[A-Z][A-Z'’.\-]+(?:\s+[A-Z]\.)(?:\s+[A-Z][A-Z'’.\-]+){1,2}$/.test(s)) return true;
+    if (/^(adjutant|administrator|personnel admin\.? mgr\.?|borough captains?|supervisor of patrol|special projects|exec\.?\s*officer)\s*-?\s*$/i.test(s)) return true;
+    return false;
+  }
+  function stripDirUnitTrail(line) {
+    var s = String(line || '').replace(/\s+/g, ' ').trim();
+    s = s.replace(VDIR_PHONE, ' ').replace(VDIR_EMAIL, ' ');
+    s = s.replace(/\s*\.{2,}\s*/g, ' ');
+    s = s.replace(/\s+\d{1,3}\s*$/, ' '); // TOC page number
+    return s.replace(/\s+/g, ' ').trim().replace(/[.\s]+$/, '').trim();
+  }
+  function isDirTocLine(raw) {
+    var s = String(raw || '').replace(/\s+/g, ' ').trim();
+    if (VDIR_PHONE.test(s)) { VDIR_PHONE.lastIndex = 0; return false; }
+    VDIR_PHONE.lastIndex = 0;
+    return /^(.*\S)(?:\s*\.{2,}|\s{2,})\s*\d{1,3}$/.test(s);
+  }
+  function dirUnitAliases(label) {
+    var out = [], m, seen = {};
+    function add(v) {
+      v = String(v || '').replace(/\s+/g, ' ').trim();
+      if (!v) return;
+      var k = dirUnitCanon(v);
+      if (!k || seen[k]) return;
+      seen[k] = 1;
+      out.push(v);
+    }
+    add(label);
+    String(label || '').replace(/\(([^)]+)\)/g, function (_, inner) {
+      inner.split(/[,;/]/).forEach(function (p) { add(p); });
+      return '';
+    });
+    return out;
+  }
+  function extractDirUnitLabel(line) {
+    var raw = String(line || '').replace(/\s+/g, ' ').trim();
+    if (!raw || isDirPersonLine(raw)) return null;
+    if (/^[\d\s./-]+$/.test(raw)) return null;
+    if (VDIR_EMAIL.test(raw) && !VDIR_UNIT_WORD.test(raw)) { VDIR_EMAIL.lastIndex = 0; return null; }
+    VDIR_EMAIL.lastIndex = 0;
+    var toc = isDirTocLine(raw);
+    var s = stripDirUnitTrail(raw);
+    if (!s || isDirPersonLine(s)) return null;
+    var head = s.match(VDIR_PCT_HEAD) || s.match(VDIR_PSA_HEAD) || s.match(VDIR_TD_HEAD);
+    if (head) {
+      var rest = s.slice(head[0].length).trim();
+      if (!rest || VDIR_STREET.test(rest) || /^\d/.test(rest) || /^\d{5}(-\d{4})?$/.test(rest.replace(/.*,\s*/, ''))) {
+        s = head[0].replace(/\.$/, '');
+      }
+    }
+    if (!s) return null;
+    if (!head) {
+      if (VDIR_STREET.test(s) && /^\d/.test(s) && !VDIR_UNIT_WORD.test(s)) return null;
+      if (!VDIR_UNIT_WORD.test(s) && !/^\d{1,3}$/.test(dirUnitCanon(s).split(' ')[0] || '')) return null;
+      // bare number is not a unit by itself
+      if (/^\d{1,3}$/.test(dirUnitCanon(s))) return null;
+    }
+    if (s.length > 80) return null;
+    return { label: s, toc: toc, aliases: dirUnitAliases(s) };
+  }
+  function dirTextItemBox(it) {
+    var tr = it && it.transform, x, y, w, h;
+    if (tr && tr.length >= 6) { x = +tr[4] || 0; y = +tr[5] || 0; }
+    else { x = +(it && it.x) || 0; y = +(it && it.y) || 0; }
+    w = +(it && it.width) || 0;
+    h = +(it && it.height) || (tr && Math.abs(tr[3])) || 10;
+    return { str: String((it && (it.str != null ? it.str : it.text)) || ''), x: x, y: y, w: w, h: h };
+  }
+  function groupDirTextLines(items) {
+    var boxes = (items || []).map(dirTextItemBox).filter(function (b) { return b.str && b.str !== ' '; });
+    boxes.sort(function (a, b) { return (b.y - a.y) || (a.x - b.x); });
+    var lines = [], i, b, line, mid, tol;
+    for (i = 0; i < boxes.length; i++) {
+      b = boxes[i];
+      mid = b.y + b.h / 2;
+      if (line && Math.abs((line.y + line.h / 2) - mid) <= Math.max(2.5, Math.min(line.h, b.h) * 0.6)) {
+        line.items.push(b);
+        line.x = Math.min(line.x, b.x);
+        line.y = Math.min(line.y, b.y);
+        line.w = Math.max(line.x + line.w, b.x + b.w) - line.x;
+        line.h = Math.max(line.y + line.h, b.y + b.h) - line.y;
+      } else {
+        if (line) lines.push(line);
+        line = { items: [b], x: b.x, y: b.y, w: b.w, h: b.h };
+      }
+    }
+    if (line) lines.push(line);
+    lines.forEach(function (ln) {
+      ln.items.sort(function (a, b) { return a.x - b.x; });
+      var t = '', prev = null, gap;
+      ln.items.forEach(function (it) {
+        if (prev) {
+          gap = it.x - (prev.x + prev.w);
+          if (gap > Math.max(1.2, (prev.h || 10) * 0.15)) t += ' ';
+        }
+        t += it.str;
+        prev = it;
+      });
+      ln.text = t.replace(/\s+/g, ' ').trim();
+    });
+    return lines;
+  }
+  function buildVerifiedDirectoryIndex(pages) {
+    var out = [], seen = {}, i, p, lines, li, parsed, key, entry;
+    (pages || []).forEach(function (p) {
+      if (!p) return;
+      var page = +p.page || +p.pageNumber || 0;
+      lines = groupDirTextLines(p.items || p.textItems || []);
+      for (li = 0; li < lines.length; li++) {
+        parsed = extractDirUnitLabel(lines[li].text);
+        if (!parsed) continue;
+        entry = {
+          label: parsed.label,
+          aliases: parsed.aliases,
+          page: page,
+          x: lines[li].x,
+          y: lines[li].y,
+          w: lines[li].w,
+          h: lines[li].h,
+          toc: !!parsed.toc
+        };
+        key = dirUnitCanon(entry.label) + '#' + page + (entry.toc ? '#toc' : '');
+        if (seen[key]) continue;
+        seen[key] = 1;
+        out.push(entry);
+      }
+    });
+    // Prefer the in-body occurrence over a table-of-contents pointer for the same unit.
+    out = out.filter(function (e) {
+      if (!e.toc) return true;
+      var c = dirUnitCanon(e.label);
+      return !out.some(function (o) {
+        if (o.toc) return false;
+        var b = dirUnitCanon(o.label);
+        if (b === c) return true;
+        if (c.indexOf(b) === 0) {
+          var rest = c.slice(b.length).trim();
+          return !rest || /^(sqd|unit|bureau|division|section|team|command)$/.test(rest);
+        }
+        return false;
+      });
+    });
+    return out;
+  }
+  function searchVerifiedDirectory(index, query) {
+    var q = dirUnitCanon(query), qt, hits = [], i, e, hay, hs, ok, j, score, ql;
+    if (!q) return [];
+    qt = q.split(' ');
+    ql = q.length;
+    for (i = 0; i < (index || []).length; i++) {
+      e = index[i];
+      hay = dirUnitCanon((e.label || '') + ' ' + (e.aliases || []).join(' '));
+      if (!hay) continue;
+      hs = {};
+      hay.split(' ').forEach(function (t) { if (t) hs[t] = 1; });
+      ok = true;
+      for (j = 0; j < qt.length; j++) if (!hs[qt[j]]) { ok = false; break; }
+      if (!ok) continue;
+      score = 0;
+      if (hay === q) score = 400;
+      else if (hay.indexOf(q) === 0) score = 300;
+      else if ((' ' + hay + ' ').indexOf(' ' + q + ' ') >= 0) score = 200;
+      else score = 100;
+      score += Math.max(0, 40 - Math.abs(hay.length - ql));
+      hits.push({
+        label: e.label, page: e.page, x: e.x, y: e.y, w: e.w, h: e.h,
+        toc: !!e.toc, score: score, index: i
+      });
+    }
+    hits.sort(function (a, b) { return (b.score - a.score) || (a.page - b.page) || (b.y - a.y); });
+    return hits;
+  }
+
   function searchCommands(q, limit) {
     var s = String(q || '').toLowerCase().replace(/[.#]/g, ' ').replace(/\s+/g, ' ').trim(), n = (s.match(/\d+/) || [])[0], kind = /\bftu\b|field training/.test(s) ? 'ftu' : /detective|\bsquad\b|\bpds\b|\bpdu\b/.test(s) && /\d/.test(s) ? 'pds' : /\bpsa\b|^psa\d|housing ?\d/.test(s) ? 'psa' : /\btd\b|transit( district)? ?\d/.test(s) ? 'td' : /pct|precinct/.test(s) && !/detective/.test(s) ? 'pct' : '';
     var pure = /^(pct|precinct|psa|housing|td|transit( district)?|ftu|field training( unit)?)?\s*\d+(st|nd|rd|th)?\s*(pct|precinct|precinct detective squad|detective squad|detective|squad|pds|pdu|ftu|field training( unit)?)?$/.test(s);
@@ -6693,7 +6944,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     tour17Key: tour17Key, tour17Squad: tour17Squad, tour17Offset: tour17Offset, tour17WorkPhase: tour17WorkPhase, tour17WorkSquad: tour17WorkSquad, tour17IsOff: tour17IsOff, tour17SquadsOff: tour17SquadsOff, tour17SquadsWorking: tour17SquadsWorking, tour17OvertimeMin: tour17OvertimeMin,
     nextDayOff: nextDayOff, chartDayBlock: chartDayBlock, nextWorkday: nextWorkday, countRDOs: countRDOs, isTourChange: isTourChange, countTourChanges: countTourChanges, isPayday: isPayday, nextPayday: nextPayday,
     periodsForPayday: periodsForPayday, regularPaydayFor: regularPaydayFor, overtimePaydayFor: overtimePaydayFor, regularPeriodFor: regularPeriodFor, overtimePeriodFor: overtimePeriodFor, payPeriodsInYear: payPeriodsInYear, hoursBetween: hoursBetween, entryHours: entryHours,
-    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, fmtMDY: fmtMDY, defaultTourWindow: defaultTourWindow, tourSpanMinutes: tourSpanMinutes, suggestEndDate: suggestEndDate, workedVsScheduled: workedVsScheduled, cleanTourEntry: cleanTourEntry, tourEntries: tourEntries, isAssignmentEntry: isAssignmentEntry, cleanAssignmentEntry: cleanAssignmentEntry, assignmentEntries: assignmentEntries, mergeTourEntries: mergeTourEntries, writeAssignmentEntries: writeAssignmentEntries, assignmentTimeText: assignmentTimeText, assignmentReminderText: assignmentReminderText, paidDetailBrief: paidDetailBrief, dayAssignments: dayAssignments, assignmentEventWindow: assignmentEventWindow, dayTour: dayTour, tourDisplay: tourDisplay, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameIsReserved: usernameIsReserved, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, assignmentNavAddress: assignmentNavAddress, upcomingItems: upcomingItems, commandById: commandById, isPduCommand: isPduCommand, isFtuCommand: isFtuCommand, searchCommands: searchCommands, phoneDigits: phoneDigits, fmtPhone: fmtPhone, telHref: telHref, cleanDirMine: cleanDirMine, cleanDirPhone: cleanDirPhone, cleanDirCustom: cleanDirCustom, emptyDirMine: emptyDirMine, dirKindMatch: dirKindMatch, searchDirectory: searchDirectory, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, routeUrls: routeUrls, navPoint: navPoint, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, leaveLineLabel: leaveLineLabel, regularPeriodExcusals: regularPeriodExcusals, formatRegularPeriodExcusalLine: formatRegularPeriodExcusalLine, calendarQuarter: calendarQuarter, quarterRange: quarterRange, shiftQuarter: shiftQuarter, otHoursSplitFromResult: otHoursSplitFromResult, otHoursSplit: otHoursSplit, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, stripBoroSuffix: stripBoroSuffix, splitPaidAddress: splitPaidAddress, joinPaidAddress: joinPaidAddress, mergePaidVendors: mergePaidVendors, rememberPaidVendor: rememberPaidVendor, paidVendorKey: paidVendorKey, textMatchKey: textMatchKey, titleCaseName: titleCaseName, canonicalLabel: canonicalLabel, previousDetailNames: previousDetailNames, previousDetailLocations: previousDetailLocations, vendorNameList: vendorNameList, unifyDuplicateLabels: unifyDuplicateLabels, parseIntersection: parseIntersection, isIntersectionQuery: isIntersectionQuery, normalizeIntersectionQuery: normalizeIntersectionQuery, parsePaidAmount: parsePaidAmount, paidDetailAmount: paidDetailAmount, paidDetailTaxDate: paidDetailTaxDate, daysBetweenISO: daysBetweenISO, paidDetailTiming: paidDetailTiming, paidDetailTimingCaptions: paidDetailTimingCaptions, paidVendorNames: paidVendorNames, cleanVendorGroups: cleanVendorGroups, vendorReportName: vendorReportName, addVendorToGroup: addVendorToGroup, removeVendorFromGroup: removeVendorFromGroup, renameVendorGroup: renameVendorGroup, ungroupVendor: ungroupVendor, suggestVendorGroups: suggestVendorGroups, paidDetailTaxReport: paidDetailTaxReport, buildPaidDetailXlsx: buildPaidDetailXlsx, buildPaidDetailCsv: buildPaidDetailCsv, parseXlsx: parseXlsx, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, addYearsISO: addYearsISO, retirementDateOf: retirementDateOf, retirementRemain: retirementRemain, retirementCountdown: retirementCountdown, endCompare: endCompare, parseTourCross: parseTourCross, inferTourOT: inferTourOT, syncEndOT: syncEndOT, syncWorkedOT: syncWorkedOT, syncEntryOT: syncEntryOT, leaveBalances: leaveBalances, parseBalanceHM: parseBalanceHM, bankDayMinutes: bankDayMinutes, fmtDayEquiv: fmtDayEquiv, fmtChart: fmtChart, chartTimeFromTour: chartTimeFromTour, isDetectiveRank: isDetectiveRank, isSergeantRank: isSergeantRank, isLieutenantRank: isLieutenantRank, isPoliceOfficerRank: isPoliceOfficerRank, chartKind: chartKind, rankStartDate: rankStartDate, yearsInRankAtLeast: yearsInRankAtLeast, chartTimeEligibility: chartTimeEligibility, chartTimeForDay: chartTimeForDay, chartTimeRange: chartTimeRange, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
+    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, fmtMDY: fmtMDY, defaultTourWindow: defaultTourWindow, tourSpanMinutes: tourSpanMinutes, suggestEndDate: suggestEndDate, workedVsScheduled: workedVsScheduled, cleanTourEntry: cleanTourEntry, tourEntries: tourEntries, isAssignmentEntry: isAssignmentEntry, cleanAssignmentEntry: cleanAssignmentEntry, assignmentEntries: assignmentEntries, mergeTourEntries: mergeTourEntries, writeAssignmentEntries: writeAssignmentEntries, assignmentTimeText: assignmentTimeText, assignmentReminderText: assignmentReminderText, paidDetailBrief: paidDetailBrief, dayAssignments: dayAssignments, assignmentEventWindow: assignmentEventWindow, dayTour: dayTour, tourDisplay: tourDisplay, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameIsReserved: usernameIsReserved, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, assignmentNavAddress: assignmentNavAddress, upcomingItems: upcomingItems, commandById: commandById, isPduCommand: isPduCommand, isFtuCommand: isFtuCommand, searchCommands: searchCommands, phoneDigits: phoneDigits, fmtPhone: fmtPhone, telHref: telHref, cleanDirMine: cleanDirMine, cleanDirPhone: cleanDirPhone, cleanDirCustom: cleanDirCustom, emptyDirMine: emptyDirMine, dirKindMatch: dirKindMatch, searchDirectory: searchDirectory, dirUnitCanon: dirUnitCanon, isDirPersonLine: isDirPersonLine, extractDirUnitLabel: extractDirUnitLabel, groupDirTextLines: groupDirTextLines, buildVerifiedDirectoryIndex: buildVerifiedDirectoryIndex, searchVerifiedDirectory: searchVerifiedDirectory, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, routeUrls: routeUrls, navPoint: navPoint, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, leaveLineLabel: leaveLineLabel, regularPeriodExcusals: regularPeriodExcusals, formatRegularPeriodExcusalLine: formatRegularPeriodExcusalLine, calendarQuarter: calendarQuarter, quarterRange: quarterRange, shiftQuarter: shiftQuarter, otHoursSplitFromResult: otHoursSplitFromResult, otHoursSplit: otHoursSplit, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, stripBoroSuffix: stripBoroSuffix, splitPaidAddress: splitPaidAddress, joinPaidAddress: joinPaidAddress, mergePaidVendors: mergePaidVendors, rememberPaidVendor: rememberPaidVendor, paidVendorKey: paidVendorKey, textMatchKey: textMatchKey, titleCaseName: titleCaseName, canonicalLabel: canonicalLabel, previousDetailNames: previousDetailNames, previousDetailLocations: previousDetailLocations, vendorNameList: vendorNameList, unifyDuplicateLabels: unifyDuplicateLabels, parseIntersection: parseIntersection, isIntersectionQuery: isIntersectionQuery, normalizeIntersectionQuery: normalizeIntersectionQuery, parsePaidAmount: parsePaidAmount, paidDetailAmount: paidDetailAmount, paidDetailTaxDate: paidDetailTaxDate, daysBetweenISO: daysBetweenISO, paidDetailTiming: paidDetailTiming, paidDetailTimingCaptions: paidDetailTimingCaptions, paidVendorNames: paidVendorNames, cleanVendorGroups: cleanVendorGroups, vendorReportName: vendorReportName, addVendorToGroup: addVendorToGroup, removeVendorFromGroup: removeVendorFromGroup, renameVendorGroup: renameVendorGroup, ungroupVendor: ungroupVendor, suggestVendorGroups: suggestVendorGroups, paidDetailTaxReport: paidDetailTaxReport, buildPaidDetailXlsx: buildPaidDetailXlsx, buildPaidDetailCsv: buildPaidDetailCsv, parseXlsx: parseXlsx, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, addYearsISO: addYearsISO, retirementDateOf: retirementDateOf, retirementRemain: retirementRemain, retirementCountdown: retirementCountdown, endCompare: endCompare, parseTourCross: parseTourCross, inferTourOT: inferTourOT, syncEndOT: syncEndOT, syncWorkedOT: syncWorkedOT, syncEntryOT: syncEntryOT, leaveBalances: leaveBalances, parseBalanceHM: parseBalanceHM, bankDayMinutes: bankDayMinutes, fmtDayEquiv: fmtDayEquiv, fmtChart: fmtChart, chartTimeFromTour: chartTimeFromTour, isDetectiveRank: isDetectiveRank, isSergeantRank: isSergeantRank, isLieutenantRank: isLieutenantRank, isPoliceOfficerRank: isPoliceOfficerRank, chartKind: chartKind, rankStartDate: rankStartDate, yearsInRankAtLeast: yearsInRankAtLeast, chartTimeEligibility: chartTimeEligibility, chartTimeForDay: chartTimeForDay, chartTimeRange: chartTimeRange, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
     steadyKey: steadyKey, parseChart: parseChart, validChartKey: validChartKey, chartInfo: chartInfo, sortCharts: sortCharts, chartAt: chartAt, chartChanges: chartChanges, nextOff: nextOff, nextOn: nextOn, reviewOverrides: reviewOverrides, DOW3: DOW3,
     stripAddrLabels: stripAddrLabels, paidAddressSuggestions: paidAddressSuggestions,
     rankAbbr: rankAbbr, rankLabel: rankLabel, displayName: displayName, formatFullName: formatFullName, normMiddleInitial: normMiddleInitial, migrateProfile: migrateProfile, validateProfile: validateProfile,
@@ -9965,7 +10216,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="btn sm chip' + (ui.dirHospLevel1 ? ' on' : '') + '" data-act="hospChip" data-filter="level1" aria-pressed="' + (ui.dirHospLevel1 ? 'true' : 'false') + '">Level 1 Trauma</button>' +
       '</div>' +
       '</div>' +
-      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r108 · patrol-test-b3c76bce29b5</p></div>' +
+      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r109 · patrol-test-5bef1a5b01ef</p></div>' +
       '</div>';
     var mapTools = '<div class="dir-map-chrome">' +
       '<div class="dir-map-search"><input id="dirQ" class="dirq acIn" data-ac="map" type="text" value="' + esc(q) + '" placeholder="Search an address or precinct" aria-label="Search an address or precinct" autocomplete="off"></div>' +
@@ -10081,6 +10332,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (CL.dirPdfUrl) { try { URL.revokeObjectURL(CL.dirPdfUrl); } catch (e) {} }
     CL.dirPdfUrl = null;
     CL.dirPdfBlob = null;
+    CL.dirPdfIndex = null;
+    CL.dirPdfHits = null;
+    CL.dirPdfHitAt = -1;
+    CL.dirPdfQuery = '';
+    if (CL.dirPdfHiliteT) { clearTimeout(CL.dirPdfHiliteT); CL.dirPdfHiliteT = 0; }
   }
   function openVerifiedDirectoryPdf() {
     if (!dirAccessReady() || !(CL.dirVerified || isDirectoryAdmin())) {
@@ -10094,6 +10350,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     wrap.innerHTML = '<div id="vdirPdfBar"><button type="button" class="btn sm" data-act="dirClosePdf" id="vdirPdfClose">Close</button>' +
       '<div id="vdirPdfTitle">Verified directory</div>' +
       '<div id="vdirPdfNav"><span id="vdirPdfPageNum">Loading\u2026</span></div></div>' +
+      '<div id="vdirPdfSearch"><input id="vdirPdfQ" type="search" enterkeyhint="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Preparing search\u2026" aria-label="Search units or commands" disabled>' +
+      '<div id="vdirPdfMatchNav" hidden><button type="button" class="btn sm" data-act="dirPdfPrevMatch" id="vdirPdfPrevMatch" aria-label="Previous match">&lsaquo;</button>' +
+      '<span id="vdirPdfMatchNum"></span>' +
+      '<button type="button" class="btn sm" data-act="dirPdfNextMatch" id="vdirPdfNextMatch" aria-label="Next match">&rsaquo;</button></div></div>' +
+      '<div id="vdirPdfResults" hidden></div>' +
       '<div id="vdirPdfStage"><div id="vdirPdfDoc"></div></div>';
     document.body.appendChild(wrap);
     return Promise.resolve(cloudClient().storage.from(VDIR_BUCKET).download(VDIR_OBJECT)).then(q).then(function (blob) {
@@ -10238,6 +10499,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     bindVerifiedPdfObserver();
     if (keepScroll) stage.scrollTop = frac * stage.scrollHeight;
     updateVerifiedPdfPageLabel();
+    if (CL.dirPdfHits && CL.dirPdfHitAt >= 0) paintVerifiedPdfHighlight(CL.dirPdfHits[CL.dirPdfHitAt]);
   }
   function bindVerifiedPdfZoom(stage) {
     if (!stage) return;
@@ -10282,6 +10544,148 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       stage.removeEventListener('scroll', onScroll);
     };
   }
+  function clearVerifiedPdfHighlight() {
+    document.querySelectorAll('.vdir-pdf-hilite').forEach(function (el) { if (el.parentNode) el.parentNode.removeChild(el); });
+    if (CL.dirPdfHiliteT) { clearTimeout(CL.dirPdfHiliteT); CL.dirPdfHiliteT = 0; }
+  }
+  function paintVerifiedPdfHighlight(hit) {
+    clearVerifiedPdfHighlight();
+    if (!hit) return;
+    var pageEl = document.getElementById('vdirPdfPage' + hit.page);
+    if (!pageEl) return;
+    var css = vdirPdfCssFor(hit.page), scale = css.scale || 1;
+    var base = (CL.dirPdfSizes && CL.dirPdfSizes[hit.page - 1]) || CL.dirPdfBase || { height: 1 };
+    var x = (hit.x || 0) * scale, w = Math.max(8, (hit.w || 0) * scale);
+    var h = Math.max(10, (hit.h || 0) * scale);
+    var top = ((base.height || 0) - (hit.y || 0) - (hit.h || 0)) * scale;
+    var pad = 3;
+    var mark = document.createElement('div');
+    mark.className = 'vdir-pdf-hilite';
+    mark.id = 'vdirPdfHilite';
+    mark.setAttribute('data-page', String(hit.page));
+    mark.setAttribute('data-label', hit.label || '');
+    mark.style.left = Math.max(0, x - pad) + 'px';
+    mark.style.top = Math.max(0, top - pad) + 'px';
+    mark.style.width = (w + pad * 2) + 'px';
+    mark.style.height = (h + pad * 2) + 'px';
+    pageEl.appendChild(mark);
+    CL.dirPdfHiliteT = setTimeout(function () {
+      CL.dirPdfHiliteT = 0;
+      if (mark.parentNode) mark.parentNode.removeChild(mark);
+    }, 2300);
+  }
+  function renderVerifiedPdfHits() {
+    var box = document.getElementById('vdirPdfResults'), nav = document.getElementById('vdirPdfMatchNav'), num = document.getElementById('vdirPdfMatchNum');
+    var hits = CL.dirPdfHits || [], q = String(CL.dirPdfQuery || '').trim(), i, html = '';
+    if (!box) return;
+    if (!q) { box.hidden = true; box.innerHTML = ''; if (nav) nav.hidden = true; return; }
+    if (!hits.length) {
+      box.hidden = false;
+      box.innerHTML = '<div class="vdir-pdf-empty">No matching units</div>';
+      if (nav) nav.hidden = true;
+      return;
+    }
+    box.hidden = false;
+    for (i = 0; i < hits.length; i++) {
+      html += '<button type="button" class="vdir-pdf-hit' + (i === CL.dirPdfHitAt ? ' on' : '') + '" data-act="dirPdfJump" data-i="' + i + '">' +
+        '<span class="t1">' + esc(hits[i].label) + '</span><span class="t2">page ' + hits[i].page + '</span></button>';
+    }
+    box.innerHTML = html;
+    if (nav) nav.hidden = false;
+    if (num) num.textContent = (CL.dirPdfHitAt >= 0 ? (CL.dirPdfHitAt + 1) : 0) + ' / ' + hits.length;
+  }
+  function applyVerifiedPdfQuery(q, keepList) {
+    CL.dirPdfQuery = String(q || '');
+    CL.dirPdfHits = E.searchVerifiedDirectory(CL.dirPdfIndex || [], CL.dirPdfQuery);
+    CL.dirPdfHitAt = -1;
+    if (!keepList && !String(q || '').trim()) clearVerifiedPdfHighlight();
+    renderVerifiedPdfHits();
+  }
+  function jumpVerifiedPdfMatch(i, hideList) {
+    var hits = CL.dirPdfHits || [], hit, stage, pageEl, css, base, scale, topPdf, dest;
+    if (!hits.length) return Promise.resolve();
+    i = ((i % hits.length) + hits.length) % hits.length;
+    CL.dirPdfHitAt = i;
+    hit = hits[i];
+    if (hideList) {
+      var box = document.getElementById('vdirPdfResults');
+      if (box) box.hidden = true;
+    }
+    renderVerifiedPdfHits();
+    if (hideList) {
+      box = document.getElementById('vdirPdfResults');
+      if (box) box.hidden = true;
+    }
+    return Promise.resolve(renderVerifiedPdfPageSlot(hit.page)).then(function () {
+      stage = document.getElementById('vdirPdfStage');
+      pageEl = document.getElementById('vdirPdfPage' + hit.page);
+      if (!stage || !pageEl) return;
+      css = vdirPdfCssFor(hit.page);
+      scale = css.scale || 1;
+      base = (CL.dirPdfSizes && CL.dirPdfSizes[hit.page - 1]) || CL.dirPdfBase || { height: 0 };
+      topPdf = ((base.height || 0) - (hit.y || 0) - (hit.h || 0)) * scale;
+      dest = pageEl.offsetTop + Math.max(0, topPdf - Math.max(24, stage.clientHeight * 0.22));
+      stage.scrollTop = dest;
+      paintVerifiedPdfHighlight(hit);
+    });
+  }
+  function bindVerifiedPdfSearch() {
+    var inp = document.getElementById('vdirPdfQ');
+    if (!inp || inp.dataset.bound) return;
+    inp.dataset.bound = '1';
+    inp.addEventListener('input', function () {
+      applyVerifiedPdfQuery(inp.value, true);
+    });
+    inp.addEventListener('focus', function () {
+      if (String(inp.value || '').trim()) renderVerifiedPdfHits();
+    });
+    inp.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Enter') {
+        ev.preventDefault();
+        if (!(CL.dirPdfHits || []).length) applyVerifiedPdfQuery(inp.value, true);
+        if (!(CL.dirPdfHits || []).length) return;
+        if (ev.shiftKey) {
+          jumpVerifiedPdfMatch(CL.dirPdfHitAt < 0 ? (CL.dirPdfHits.length - 1) : CL.dirPdfHitAt - 1, true);
+        } else {
+          jumpVerifiedPdfMatch(CL.dirPdfHitAt < 0 ? 0 : CL.dirPdfHitAt + 1, true);
+        }
+      } else if (ev.key === 'Escape') {
+        ev.preventDefault();
+        var box = document.getElementById('vdirPdfResults');
+        if (box && !box.hidden) box.hidden = true;
+        else { inp.value = ''; applyVerifiedPdfQuery('', true); inp.blur(); }
+      }
+    });
+  }
+  function buildVerifiedPdfIndex(pdf) {
+    var gen = CL.dirPdfGen || 0, jobs = [], i, inp;
+    if (!pdf || !E.buildVerifiedDirectoryIndex) return Promise.resolve();
+    function textPage(n) {
+      return pdf.getPage(n).then(function (page) {
+        return page.getTextContent().then(function (tc) {
+          var vp = page.getViewport({ scale: 1 });
+          return { page: n, width: vp.width, height: vp.height, items: (tc && tc.items) || [] };
+        });
+      });
+    }
+    for (i = 1; i <= pdf.numPages; i++) jobs.push(textPage(i));
+    return Promise.all(jobs).then(function (pages) {
+      if (!document.getElementById('vdirPdfWrap') || CL.dirPdfDoc !== pdf) return;
+      CL.dirPdfIndex = E.buildVerifiedDirectoryIndex(pages);
+      inp = document.getElementById('vdirPdfQ');
+      if (inp) {
+        inp.disabled = false;
+        inp.placeholder = 'Search units or commands';
+      }
+      bindVerifiedPdfSearch();
+    }).catch(function () {
+      inp = document.getElementById('vdirPdfQ');
+      if (inp && document.getElementById('vdirPdfWrap') && CL.dirPdfDoc === pdf) {
+        inp.disabled = false;
+        inp.placeholder = 'Search units or commands';
+      }
+    });
+  }
   function setupVerifiedPdfScroll(pdf) {
     var stage = document.getElementById('vdirPdfStage');
     if (!pdf || !stage) return Promise.resolve();
@@ -10306,6 +10710,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         t = setTimeout(function () { if (CL.dirPdfDoc) layoutVerifiedPdfPages(true); }, 160);
       };
       window.addEventListener('resize', CL.dirPdfOnResize);
+      return buildVerifiedPdfIndex(pdf);
     });
   }
 
@@ -13752,7 +14157,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="' + ((s.defaultCalendar || 'google') === 'apple' ? 'on' : '') + '" data-act="calDefault" data-v="apple">Apple</button></div>' +
       '<h3 style="margin-top:20px" data-sec="9m">Subscribe to calendar</h3>' + calendarSubscribeHtml() +
       '<button class="btn danger block" data-act="reset" data-sec="9k" style="margin-top:20px">Erase all data</button>' +
-      '<p class="build-tag muted" id="appBuildTag">Build r108 · patrol-test-b3c76bce29b5</p>');
+      '<p class="build-tag muted" id="appBuildTag">Build r109 · patrol-test-5bef1a5b01ef</p>');
   }
 
   // ---------- Day summary: what's saved on a date; tap an entry to view or change it ----------
@@ -14506,6 +14911,20 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       Promise.resolve(openVerifiedDirectoryPdf()).then(function () { if (t) t.disabled = false; }, function () { if (t) t.disabled = false; });
     },
     dirClosePdf: function () { closeVerifiedDirectoryPdf(); },
+    dirPdfJump: function (t) {
+      var i = t && t.dataset ? +t.dataset.i : -1;
+      if (i >= 0) jumpVerifiedPdfMatch(i, true);
+    },
+    dirPdfPrevMatch: function () {
+      var hits = CL.dirPdfHits || [];
+      if (!hits.length) return;
+      jumpVerifiedPdfMatch(CL.dirPdfHitAt < 0 ? hits.length - 1 : CL.dirPdfHitAt - 1, true);
+    },
+    dirPdfNextMatch: function () {
+      var hits = CL.dirPdfHits || [];
+      if (!hits.length) return;
+      jumpVerifiedPdfMatch(CL.dirPdfHitAt < 0 ? 0 : CL.dirPdfHitAt + 1, true);
+    },
     dirAccessApprove: function (t) {
       var id = t && t.dataset && t.dataset.id; if (!id) return; t.disabled = true;
       Promise.resolve(cloudClient().rpc('approve_directory_access', { request_id: id })).then(q).then(function () { toast('Approved'); dirAccessAdminSheet(); refreshDirAccess(true); }, function (e) { t.disabled = false; toast(errText(e)); });
