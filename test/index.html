@@ -710,6 +710,7 @@ a.vdir-pdf-link{position:absolute;display:block;z-index:2;background:rgba(37,99,
 .dir-map-opts .map-legend p{margin:0}
 .build-tag{margin:8px 0 0;font-size:11px;text-align:center;color:var(--muted,#64748b)}
 #appBuildTag{margin:16px 0 0}
+#vacRangeBox{margin:8px 0 2px}#vacRangeBox .row{align-items:flex-end}#vacRangeSummary{margin-top:6px}#vacRangeWarn{color:#9a3412;font-size:13px;margin-top:6px}
 .dir-map-card + #dirMapWrap,#dirMapWrap.dir-map-fill{margin:0 0 8px}
 .dir-map-fill #dirMap{height:calc(100dvh - var(--tabh) - 160px - env(safe-area-inset-bottom, 0px));min-height:48vh}
 #app.tab-map{height:100dvh;min-height:100dvh}
@@ -3354,7 +3355,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     leaveTypes: [
       { id: 'vacation',     label: 'Vacation Day',        short: 'V',   color: '#0E7490' },
       { id: 'vacationtime', label: 'Vacation Time',       short: 'VT',  color: '#155E75' },
-      { id: 'chart',        label: 'Chart Time',          short: 'CT',  color: '#B45309' },
+      { id: 'chart',        label: 'Chart day',           short: 'CT',  color: '#B45309' },
       { id: 'comp',         label: 'Comp Time',           short: 'C',   color: '#15803D' },
       { id: 'sick',         label: 'Sick Day',            short: 'S',   color: '#9D174D' },
       { id: 'military',     label: 'Military Day',        short: 'MIL', color: '#1D4ED8' },
@@ -3370,7 +3371,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       { id: 'rdo',          label: 'RDO' },
       { id: 'vacation',     label: 'Vacation Day' },
       { id: 'vacationtime', label: 'Vacation Time' },
-      { id: 'chart',        label: 'Chart Time' },
+      { id: 'chart',        label: 'Chart day' },
       { id: 'comp',         label: 'Comp Time' },
       { id: 'sick',         label: 'Sick Day' },
       { id: 'military',     label: 'Military Day' },
@@ -3882,7 +3883,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   // Whole-day excusals in a regular pay period (S.leave only). Partial-hour
   // usage of comp / vacation / chart time (tours[iso].short) is not counted.
   var LEAVE_LINE_LABELS = {
-    vacation: 'Vacation', vacationtime: 'Vacation Time', chart: 'Chart', comp: 'Comp',
+    vacation: 'Vacation', vacationtime: 'Vacation Time', chart: 'Chart day', comp: 'Comp',
     sick: 'Sick', military: 'Military', commanders: 'Commanders', bereavement: 'Bereavement',
     juryduty: 'Jury Duty', emprelations: 'Employee Relations', personal: 'Personal'
   };
@@ -4214,6 +4215,45 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function dayHasEntries(state, iso) {
     var s = state || {};
     return !!((s.leave || {})[iso] || (s.assignments || {})[iso] || (s.tours || {})[iso] || (s.slips || {})[iso] || (s.overtime || []).some(function (e) { return dayOT(e, iso); }));
+  }
+  var VACATION_RANGE_MAX = 60;
+  // Full-day 6b excusals (not Working / RDO). Working and RDO stay single-day only.
+  function isFullDayExcusal(id) {
+    return !!(id && id !== 'working' && id !== 'rdo' && (dayEntryOption(id) || leaveTypeOf(id)));
+  }
+  function leaveRangeIsos(startIso, throughIso) {
+    if (!isISODate(startIso) || !isISODate(throughIso)) return [];
+    var a = toDay(startIso), b = toDay(throughIso), out = [], d;
+    if (b < a) return [];
+    for (d = a; d <= b; d++) out.push(toISO(d));
+    return out;
+  }
+  function vacationRangeIsos(startIso, throughIso) { return leaveRangeIsos(startIso, throughIso); }
+  function leaveRangeConflicts(state, startIso, throughIso) {
+    var isos = leaveRangeIsos(startIso, throughIso), out = [], i, iso;
+    for (i = 0; i < isos.length; i++) {
+      iso = isos[i];
+      if (iso === startIso) continue;
+      if (dayHasEntries(state, iso)) out.push(iso);
+    }
+    return out;
+  }
+  function vacationRangeConflicts(state, startIso, throughIso) { return leaveRangeConflicts(state, startIso, throughIso); }
+  function applyLeaveRange(state, startIso, throughIso, type, note) {
+    var typ = String(type || '').trim(), s = copy(state || {}), isos, i, iso, prev, n;
+    if (!isFullDayExcusal(typ)) return s;
+    isos = leaveRangeIsos(startIso, throughIso);
+    s.leave = copy(s.leave || {});
+    for (i = 0; i < isos.length; i++) {
+      iso = isos[i];
+      prev = s.leave[iso] || {};
+      n = (note != null && String(note).trim()) ? String(note).trim() : (prev.note || '');
+      s.leave[iso] = { type: typ, note: n };
+    }
+    return s;
+  }
+  function applyVacationRange(state, startIso, throughIso, note) {
+    return applyLeaveRange(state, startIso, throughIso, 'vacation', note);
   }
   function deleteDay(state, iso) {
     var s = copy(state || {}), t = (s.tours || {})[iso];
@@ -5979,20 +6019,49 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     [/\bnorth\b/g, 'north'],
     [/\bsouth\b/g, 'south'],
     [/\bno\b/g, 'north'],
-    [/\bso\b/g, 'south']
+    [/\bso\b/g, 'south'],
+    [/\bess\b/g, 'esu']
   ];
   function dirUnitCanon(s) {
     var t = String(s == null ? '' : s).toLowerCase();
     t = t.replace(/[()]/g, ' ');
     t = t.replace(/(\d+)(?:st|nd|rd|th)\b/g, '$1');
+    // E.S.S. / I.A.B. -> ess / iab before punctuation is stripped
+    t = t.replace(/\b(?:([a-z])\.){1,}([a-z])\.?/g, function (m) { return m.replace(/\./g, ''); });
     t = t.replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim();
     if (!t) return '';
+    // E S S 1 -> ess 1 after leftover single-letter tokens
+    t = t.replace(/\b(?:[a-z]\s+){1,}[a-z]\b/g, function (m) { return m.replace(/\s+/g, ''); });
+    // ess1 / esu10 -> ess 1 / esu 10 so the number is a complete token
+    t = t.replace(/([a-z])(\d)/g, '$1 $2').replace(/(\d)([a-z])/g, '$1 $2');
     var i, pair;
     for (i = 0; i < VDIR_UNIT_PHRASES.length; i++) {
       pair = VDIR_UNIT_PHRASES[i];
       t = t.replace(pair[0], ' ' + pair[1] + ' ');
     }
     return t.replace(/\s+/g, ' ').trim();
+  }
+  function dirUnitCompact(s) {
+    return dirUnitCanon(s).replace(/\s+/g, '');
+  }
+  // True when compact hay contains compact q, but a query that ends (or starts)
+  // with a number must not also match a longer number (ess1 vs ess10).
+  function dirUnitCompactHit(hayC, qC) {
+    var pos, before, after, i;
+    if (!hayC || !qC) return 0;
+    if (hayC === qC) return 2;
+    i = 0;
+    while ((pos = hayC.indexOf(qC, i)) >= 0) {
+      before = pos === 0 ? '' : hayC.charAt(pos - 1);
+      after = hayC.charAt(pos + qC.length) || '';
+      if (/\d$/.test(qC) && /\d/.test(after)) { i = pos + 1; continue; }
+      if (/^\d/.test(qC) && /\d/.test(before)) { i = pos + 1; continue; }
+      return pos === 0 ? 1 : -1;
+    }
+    return 0;
+  }
+  function dirUnitWordHit(word, token) {
+    return dirUnitCompactHit(String(word || ''), String(token || ''));
   }
   // Extensible unit-abbreviation table. Keys are typed shortcuts (any case);
   // values are the full unit names they should find. Auto-derived initialisms
@@ -6001,9 +6070,16 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     ['nbbs', 'Narcotics Borough Brooklyn South'],
     ['detf', 'Drug Enforcement Task Force'],
     ['pss', 'Public Security Section'],
-    ['cis', 'Criminal Intelligence Section']
+    ['cis', 'Criminal Intelligence Section'],
+    ['pbxs', 'Patrol Borough Bronx South'],
+    ['nbxs', 'Narcotics Borough Bronx South'],
+    ['pbxn', 'Patrol Borough Bronx North'],
+    ['nbxn', 'Narcotics Borough Bronx North'],
+    ['esu', 'E.S.S.']
   ];
   var VDIR_INITIALISM_STOP = /^(a|an|and|of|the|for|to|in|at|on|or|by)$/;
+  // Bronx commands use X, not B, in official abbreviations (PBXS, NBXN, …).
+  var VDIR_INITIALISM_LETTER = { bronx: 'X' };
   function dirUnitAbbrevTable() {
     return VDIR_UNIT_ABBREVS.map(function (p) { return { abbr: p[0], name: p[1] }; });
   }
@@ -6014,7 +6090,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     for (i = 0; i < words.length; i++) {
       w = words[i];
       if (!w || /^\d+$/.test(w) || VDIR_INITIALISM_STOP.test(w.toLowerCase())) continue;
-      out += w.charAt(0).toUpperCase();
+      out += VDIR_INITIALISM_LETTER[w.toLowerCase()] || w.charAt(0).toUpperCase();
     }
     return out.length >= 2 ? out : '';
   }
@@ -6050,17 +6126,19 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var raw = String(label || '') + ' ' + (aliases || []).join(' ');
     var basic = raw.toLowerCase().replace(/[()]/g, ' ').replace(/(\d+)(?:st|nd|rd|th)\b/g, '$1')
       .replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim();
-    var canon = dirUnitCanon(raw), seen = {}, words = [], first = (basic.split(' ')[0] || '');
+    var canon = dirUnitCanon(raw), compact = dirUnitCompact(raw), seen = {}, words = [], first = (basic.split(' ')[0] || '');
     (basic + ' ' + canon).split(' ').forEach(function (w) {
       if (w && !seen[w]) { seen[w] = 1; words.push(w); }
     });
-    return { hay: (basic + ' ' + canon).replace(/\s+/g, ' ').trim(), canon: canon, words: words, first: first };
+    return { hay: (basic + ' ' + canon + ' ' + compact).replace(/\s+/g, ' ').trim(), canon: canon, compact: compact, words: words, first: first };
   }
-  var VDIR_UNIT_WORD = /\b(precinct|pct|psa|pdu|ftu|esu|iab|squad|sqd|unit|division|section|bureau|borough|boro|command|team|detail|district|platoon|company|homicide|detective|det|transit|housing|patrol|task\s+force|service\s+area)\b/i;
+  var VDIR_UNIT_WORD = /\b(precinct|pct|psa|pdu|ftu|esu|ess|e\.s\.s\.?|iab|squad|sqd|unit|division|section|bureau|borough|boro|command|team|detail|district|platoon|company|homicide|detective|det|transit|housing|patrol|task\s+force|service\s+area)\b/i;
   var VDIR_PCT_HEAD = /^(\d{1,3}(?:st|nd|rd|th)?\.?\s*(?:pct|precinct)\.?)\b/i;
   var VDIR_PSA_HEAD = /^(psa\s*\d{1,3}|police service area\s*\d{1,3})\b/i;
   var VDIR_TD_HEAD = /^(td\s*\d{1,3}|transit district\s*\d{1,3})\b/i;
-  var VDIR_PHONE = /(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}(?:\s*\/\s*\d+)*/g;
+  var VDIR_ESS_HEAD = /^(e\.\s*s\.\s*s\.?|ess|esu)\s*#?\s*\d{1,3}\b/i;
+  var VDIR_DOTTED_HEAD = /^((?:[A-Za-z]\.){1,8}[A-Za-z]\.?(?:\s+\d{1,3})?)\b/;
+  var VDIR_PHONE = /(?:\+1[-.\s]*|1[-.])?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}(?:\s*\/\s*\d+)*/g;
   var VDIR_EMAIL = /\b\S+@\S+\.\S+\b/g;
   var VDIR_STREET = /\b(street|st\.|avenue|ave\.?|boulevard|blvd\.?|road|rd\.?|place|pl\.?|plaza|drive|dr\.?|lane|ln\.?|parkway|pkwy\.?|terrace|court|ct\.?|highway|hwy\.?|way|expressway)\b/i;
   function isDirPersonLine(line) {
@@ -6079,7 +6157,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var s = String(line || '').replace(/\s+/g, ' ').trim();
     s = s.replace(VDIR_PHONE, ' ').replace(VDIR_EMAIL, ' ');
     s = s.replace(/\s*\.{2,}\s*/g, ' ');
-    s = s.replace(/\s+\d{1,3}\s*$/, ' '); // TOC page number
+    // Only drop a trailing page number when the line looks like a TOC entry
+    // (dotted leaders or a wide gap). Bare "E.S.S. 2" / "PSA 2" stay intact.
+    if (/\.{2,}\s*\d{1,3}\s*$/.test(String(line || '')) || /\s{2,}\d{1,3}\s*$/.test(String(line || ''))) {
+      s = s.replace(/\s+\d{1,3}\s*$/, ' ');
+    }
     return s.replace(/\s+/g, ' ').trim().replace(/[.\s]+$/, '').trim();
   }
   function isDirTocLine(raw) {
@@ -6114,7 +6196,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var toc = isDirTocLine(raw);
     var s = stripDirUnitTrail(raw);
     if (!s || isDirPersonLine(s)) return null;
-    var head = s.match(VDIR_PCT_HEAD) || s.match(VDIR_PSA_HEAD) || s.match(VDIR_TD_HEAD);
+    var head = s.match(VDIR_PCT_HEAD) || s.match(VDIR_PSA_HEAD) || s.match(VDIR_TD_HEAD) || s.match(VDIR_ESS_HEAD) || s.match(VDIR_DOTTED_HEAD);
     if (head) {
       var rest = s.slice(head[0].length).trim();
       if (!rest || VDIR_STREET.test(rest) || /^\d/.test(rest) || /^\d{5}(-\d{4})?$/.test(rest.replace(/.*,\s*/, ''))) {
@@ -6231,19 +6313,19 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (!hay && !words.length) continue;
       // Whole-query abbreviation or exact / prefix / word-start / contains.
       score = 0;
-      if (qExp && (info.canon === qExp || hay.indexOf(qExp) >= 0 || words.indexOf(qExp.replace(/\s+/g, '')) >= 0)) {
+      if (qExp && (dirUnitCompactHit(info.canon, qExp) || dirUnitCompactHit(hay, qExp) || dirUnitWordHit(info.compact, qExp.replace(/\s+/g, '')))) {
         // typed abbreviation maps to this unit
-        if (info.canon === qExp || (' ' + info.canon + ' ').indexOf(' ' + qExp + ' ') >= 0) score = 420;
-        else if (info.canon.indexOf(qExp) === 0 || first.indexOf(qExp.split(' ')[0]) === 0) score = 300;
-        else score = 200;
+        if (info.canon === qExp || dirUnitCompactHit(info.canon, qExp) === 2 || dirUnitCompactHit(' ' + info.canon + ' ', ' ' + qExp + ' ') === 2) score = 420;
+        else if (dirUnitCompactHit(info.canon, qExp) === 1 || dirUnitWordHit(first, qExp.split(' ')[0]) === 1) score = 300;
+        else if (dirUnitCompactHit(info.canon, qExp) || dirUnitCompactHit(hay, qExp)) score = 200;
       }
       if (!score && qt.length === 1) {
         if (words.indexOf(q) >= 0 || info.canon === q) score = (first === q || info.canon === q) ? 400 : 350;
-        else if (first.indexOf(q) === 0 || info.canon.indexOf(q) === 0 || hay.indexOf(q) === 0) score = 300;
+        else if (dirUnitWordHit(first, q) === 1 || dirUnitCompactHit(info.canon, q) === 1 || dirUnitCompactHit(hay, q) === 1) score = 300;
         else {
-          for (wi = 0; wi < words.length; wi++) if (words[wi].indexOf(q) === 0) { score = 200; break; }
-          if (!score && hay.indexOf(q) >= 0) {
-            for (wi = 0; wi < words.length; wi++) if (words[wi].indexOf(q) >= 0) { score = 100; break; }
+          for (wi = 0; wi < words.length; wi++) if (dirUnitWordHit(words[wi], q) === 1) { score = 200; break; }
+          if (!score) {
+            for (wi = 0; wi < words.length; wi++) if (dirUnitWordHit(words[wi], q) === -1) { score = 100; break; }
           }
         }
       }
@@ -6253,11 +6335,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         for (j = 0; j < qt.length; j++) {
           tokenScore = 0;
           if (info.canon === qt[j] || words.indexOf(qt[j]) >= 0) tokenScore = 350;
-          else if ((j === 0 && first.indexOf(qt[j]) === 0) || info.canon.indexOf(qt[j]) === 0) tokenScore = 300;
+          else if ((j === 0 && dirUnitWordHit(first, qt[j]) === 1) || dirUnitCompactHit(info.canon, qt[j]) === 1) tokenScore = 300;
           else {
-            for (wi = 0; wi < words.length; wi++) if (words[wi].indexOf(qt[j]) === 0) { tokenScore = 200; break; }
+            for (wi = 0; wi < words.length; wi++) if (dirUnitWordHit(words[wi], qt[j]) === 1) { tokenScore = 200; break; }
             if (!tokenScore) {
-              for (wi = 0; wi < words.length; wi++) if (words[wi].indexOf(qt[j]) >= 0) { tokenScore = 100; break; }
+              for (wi = 0; wi < words.length; wi++) if (dirUnitWordHit(words[wi], qt[j]) === -1) { tokenScore = 100; break; }
             }
           }
           if (!tokenScore) { ok = false; break; }
@@ -6265,9 +6347,16 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         }
         // full phrase prefix of the unit name ranks as prefix
         if (ok) {
-          if (info.canon === q || info.canon.indexOf(q) === 0 || hay.indexOf(q) === 0) score = 400;
+          if (info.canon === q || dirUnitCompactHit(info.canon, q) === 1 || dirUnitCompactHit(hay, q) === 1) score = 400;
+          else if (dirUnitCompactHit(info.canon, q) || dirUnitCompactHit(hay, q)) score = best;
           else score = best;
         }
+      }
+      if (!score || qt.length > 1) {
+        var qC = dirUnitCompact(qExp || q), hC = info.compact || dirUnitCompact(e.label);
+        var hit = /[a-z]/.test(qC) ? dirUnitCompactHit(hC, qC) : 0;
+        var cScore = hit === 2 ? 430 : hit === 1 ? 320 : hit === -1 ? 200 : 0;
+        if (cScore > score) score = cScore;
       }
       if (!score) continue;
       score += Math.max(0, 40 - Math.abs((info.canon || hay).length - ql));
@@ -7047,7 +7136,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     tour17Key: tour17Key, tour17Squad: tour17Squad, tour17Offset: tour17Offset, tour17WorkPhase: tour17WorkPhase, tour17WorkSquad: tour17WorkSquad, tour17IsOff: tour17IsOff, tour17SquadsOff: tour17SquadsOff, tour17SquadsWorking: tour17SquadsWorking, tour17OvertimeMin: tour17OvertimeMin,
     nextDayOff: nextDayOff, chartDayBlock: chartDayBlock, nextWorkday: nextWorkday, countRDOs: countRDOs, isTourChange: isTourChange, countTourChanges: countTourChanges, isPayday: isPayday, nextPayday: nextPayday,
     periodsForPayday: periodsForPayday, regularPaydayFor: regularPaydayFor, overtimePaydayFor: overtimePaydayFor, regularPeriodFor: regularPeriodFor, overtimePeriodFor: overtimePeriodFor, payPeriodsInYear: payPeriodsInYear, hoursBetween: hoursBetween, entryHours: entryHours,
-    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, fmtMDY: fmtMDY, defaultTourWindow: defaultTourWindow, tourSpanMinutes: tourSpanMinutes, suggestEndDate: suggestEndDate, workedVsScheduled: workedVsScheduled, cleanTourEntry: cleanTourEntry, tourEntries: tourEntries, isAssignmentEntry: isAssignmentEntry, cleanAssignmentEntry: cleanAssignmentEntry, assignmentEntries: assignmentEntries, mergeTourEntries: mergeTourEntries, writeAssignmentEntries: writeAssignmentEntries, assignmentTimeText: assignmentTimeText, assignmentReminderText: assignmentReminderText, paidDetailBrief: paidDetailBrief, dayAssignments: dayAssignments, assignmentEventWindow: assignmentEventWindow, dayTour: dayTour, tourDisplay: tourDisplay, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameIsReserved: usernameIsReserved, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, assignmentNavAddress: assignmentNavAddress, upcomingItems: upcomingItems, commandById: commandById, isPduCommand: isPduCommand, isFtuCommand: isFtuCommand, searchCommands: searchCommands, phoneDigits: phoneDigits, fmtPhone: fmtPhone, telHref: telHref, cleanDirMine: cleanDirMine, cleanDirPhone: cleanDirPhone, cleanDirCustom: cleanDirCustom, emptyDirMine: emptyDirMine, dirKindMatch: dirKindMatch, searchDirectory: searchDirectory, dirUnitCanon: dirUnitCanon, dirUnitAbbrevTable: dirUnitAbbrevTable, dirUnitInitialism: dirUnitInitialism, dirUnitExpandAbbrev: dirUnitExpandAbbrev, isDirPersonLine: isDirPersonLine, extractDirUnitLabel: extractDirUnitLabel, groupDirTextLines: groupDirTextLines, buildVerifiedDirectoryIndex: buildVerifiedDirectoryIndex, searchVerifiedDirectory: searchVerifiedDirectory, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, routeUrls: routeUrls, navPoint: navPoint, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, leaveLineLabel: leaveLineLabel, regularPeriodExcusals: regularPeriodExcusals, formatRegularPeriodExcusalLine: formatRegularPeriodExcusalLine, calendarQuarter: calendarQuarter, quarterRange: quarterRange, shiftQuarter: shiftQuarter, otHoursSplitFromResult: otHoursSplitFromResult, otHoursSplit: otHoursSplit, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, stripBoroSuffix: stripBoroSuffix, splitPaidAddress: splitPaidAddress, joinPaidAddress: joinPaidAddress, mergePaidVendors: mergePaidVendors, rememberPaidVendor: rememberPaidVendor, paidVendorKey: paidVendorKey, textMatchKey: textMatchKey, titleCaseName: titleCaseName, canonicalLabel: canonicalLabel, previousDetailNames: previousDetailNames, previousDetailLocations: previousDetailLocations, vendorNameList: vendorNameList, unifyDuplicateLabels: unifyDuplicateLabels, parseIntersection: parseIntersection, isIntersectionQuery: isIntersectionQuery, normalizeIntersectionQuery: normalizeIntersectionQuery, parsePaidAmount: parsePaidAmount, paidDetailAmount: paidDetailAmount, paidDetailTaxDate: paidDetailTaxDate, daysBetweenISO: daysBetweenISO, paidDetailTiming: paidDetailTiming, paidDetailTimingCaptions: paidDetailTimingCaptions, paidVendorNames: paidVendorNames, cleanVendorGroups: cleanVendorGroups, vendorReportName: vendorReportName, addVendorToGroup: addVendorToGroup, removeVendorFromGroup: removeVendorFromGroup, renameVendorGroup: renameVendorGroup, ungroupVendor: ungroupVendor, suggestVendorGroups: suggestVendorGroups, paidDetailTaxReport: paidDetailTaxReport, buildPaidDetailXlsx: buildPaidDetailXlsx, buildPaidDetailCsv: buildPaidDetailCsv, parseXlsx: parseXlsx, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, addYearsISO: addYearsISO, retirementDateOf: retirementDateOf, retirementRemain: retirementRemain, retirementCountdown: retirementCountdown, endCompare: endCompare, parseTourCross: parseTourCross, inferTourOT: inferTourOT, syncEndOT: syncEndOT, syncWorkedOT: syncWorkedOT, syncEntryOT: syncEntryOT, leaveBalances: leaveBalances, parseBalanceHM: parseBalanceHM, bankDayMinutes: bankDayMinutes, fmtDayEquiv: fmtDayEquiv, fmtChart: fmtChart, chartTimeFromTour: chartTimeFromTour, isDetectiveRank: isDetectiveRank, isSergeantRank: isSergeantRank, isLieutenantRank: isLieutenantRank, isPoliceOfficerRank: isPoliceOfficerRank, chartKind: chartKind, rankStartDate: rankStartDate, yearsInRankAtLeast: yearsInRankAtLeast, chartTimeEligibility: chartTimeEligibility, chartTimeForDay: chartTimeForDay, chartTimeRange: chartTimeRange, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
+    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, fmtMDY: fmtMDY, defaultTourWindow: defaultTourWindow, tourSpanMinutes: tourSpanMinutes, suggestEndDate: suggestEndDate, workedVsScheduled: workedVsScheduled, cleanTourEntry: cleanTourEntry, tourEntries: tourEntries, isAssignmentEntry: isAssignmentEntry, cleanAssignmentEntry: cleanAssignmentEntry, assignmentEntries: assignmentEntries, mergeTourEntries: mergeTourEntries, writeAssignmentEntries: writeAssignmentEntries, assignmentTimeText: assignmentTimeText, assignmentReminderText: assignmentReminderText, paidDetailBrief: paidDetailBrief, dayAssignments: dayAssignments, assignmentEventWindow: assignmentEventWindow, dayTour: dayTour, tourDisplay: tourDisplay, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameIsReserved: usernameIsReserved, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, assignmentNavAddress: assignmentNavAddress, upcomingItems: upcomingItems, commandById: commandById, isPduCommand: isPduCommand, isFtuCommand: isFtuCommand, searchCommands: searchCommands, phoneDigits: phoneDigits, fmtPhone: fmtPhone, telHref: telHref, cleanDirMine: cleanDirMine, cleanDirPhone: cleanDirPhone, cleanDirCustom: cleanDirCustom, emptyDirMine: emptyDirMine, dirKindMatch: dirKindMatch, searchDirectory: searchDirectory, dirUnitCanon: dirUnitCanon, dirUnitCompact: dirUnitCompact, dirUnitAbbrevTable: dirUnitAbbrevTable, dirUnitInitialism: dirUnitInitialism, dirUnitExpandAbbrev: dirUnitExpandAbbrev, isDirPersonLine: isDirPersonLine, extractDirUnitLabel: extractDirUnitLabel, groupDirTextLines: groupDirTextLines, buildVerifiedDirectoryIndex: buildVerifiedDirectoryIndex, searchVerifiedDirectory: searchVerifiedDirectory, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, routeUrls: routeUrls, navPoint: navPoint, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, leaveLineLabel: leaveLineLabel, regularPeriodExcusals: regularPeriodExcusals, formatRegularPeriodExcusalLine: formatRegularPeriodExcusalLine, calendarQuarter: calendarQuarter, quarterRange: quarterRange, shiftQuarter: shiftQuarter, otHoursSplitFromResult: otHoursSplitFromResult, otHoursSplit: otHoursSplit, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, stripBoroSuffix: stripBoroSuffix, splitPaidAddress: splitPaidAddress, joinPaidAddress: joinPaidAddress, mergePaidVendors: mergePaidVendors, rememberPaidVendor: rememberPaidVendor, paidVendorKey: paidVendorKey, textMatchKey: textMatchKey, titleCaseName: titleCaseName, canonicalLabel: canonicalLabel, previousDetailNames: previousDetailNames, previousDetailLocations: previousDetailLocations, vendorNameList: vendorNameList, unifyDuplicateLabels: unifyDuplicateLabels, parseIntersection: parseIntersection, isIntersectionQuery: isIntersectionQuery, normalizeIntersectionQuery: normalizeIntersectionQuery, parsePaidAmount: parsePaidAmount, paidDetailAmount: paidDetailAmount, paidDetailTaxDate: paidDetailTaxDate, daysBetweenISO: daysBetweenISO, paidDetailTiming: paidDetailTiming, paidDetailTimingCaptions: paidDetailTimingCaptions, paidVendorNames: paidVendorNames, cleanVendorGroups: cleanVendorGroups, vendorReportName: vendorReportName, addVendorToGroup: addVendorToGroup, removeVendorFromGroup: removeVendorFromGroup, renameVendorGroup: renameVendorGroup, ungroupVendor: ungroupVendor, suggestVendorGroups: suggestVendorGroups, paidDetailTaxReport: paidDetailTaxReport, buildPaidDetailXlsx: buildPaidDetailXlsx, buildPaidDetailCsv: buildPaidDetailCsv, parseXlsx: parseXlsx, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, addYearsISO: addYearsISO, retirementDateOf: retirementDateOf, retirementRemain: retirementRemain, retirementCountdown: retirementCountdown, endCompare: endCompare, parseTourCross: parseTourCross, inferTourOT: inferTourOT, syncEndOT: syncEndOT, syncWorkedOT: syncWorkedOT, syncEntryOT: syncEntryOT, leaveBalances: leaveBalances, parseBalanceHM: parseBalanceHM, bankDayMinutes: bankDayMinutes, fmtDayEquiv: fmtDayEquiv, fmtChart: fmtChart, chartTimeFromTour: chartTimeFromTour, isDetectiveRank: isDetectiveRank, isSergeantRank: isSergeantRank, isLieutenantRank: isLieutenantRank, isPoliceOfficerRank: isPoliceOfficerRank, chartKind: chartKind, rankStartDate: rankStartDate, yearsInRankAtLeast: yearsInRankAtLeast, chartTimeEligibility: chartTimeEligibility, chartTimeForDay: chartTimeForDay, chartTimeRange: chartTimeRange, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, isFullDayExcusal: isFullDayExcusal, leaveRangeIsos: leaveRangeIsos, leaveRangeConflicts: leaveRangeConflicts, applyLeaveRange: applyLeaveRange, vacationRangeIsos: vacationRangeIsos, vacationRangeConflicts: vacationRangeConflicts, applyVacationRange: applyVacationRange, deleteDay: deleteDay,
     steadyKey: steadyKey, parseChart: parseChart, validChartKey: validChartKey, chartInfo: chartInfo, sortCharts: sortCharts, chartAt: chartAt, chartChanges: chartChanges, nextOff: nextOff, nextOn: nextOn, reviewOverrides: reviewOverrides, DOW3: DOW3,
     stripAddrLabels: stripAddrLabels, paidAddressSuggestions: paidAddressSuggestions,
     rankAbbr: rankAbbr, rankLabel: rankLabel, displayName: displayName, formatFullName: formatFullName, normMiddleInitial: normMiddleInitial, migrateProfile: migrateProfile, validateProfile: validateProfile,
@@ -10319,7 +10408,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="btn sm chip' + (ui.dirHospLevel1 ? ' on' : '') + '" data-act="hospChip" data-filter="level1" aria-pressed="' + (ui.dirHospLevel1 ? 'true' : 'false') + '">Level 1 Trauma</button>' +
       '</div>' +
       '</div>' +
-      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r111 · patrol-test-921037c6daa2</p></div>' +
+      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r112 · patrol-test-eee788b31eb9</p></div>' +
       '</div>';
     var mapTools = '<div class="dir-map-chrome">' +
       '<div class="dir-map-search"><input id="dirQ" class="dirq acIn" data-ac="map" type="text" value="' + esc(q) + '" placeholder="Search an address or precinct" aria-label="Search an address or precinct" autocomplete="off"></div>' +
@@ -11028,7 +11117,14 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<span class="daysel-swatch" style="background:' + curOpt.color + '"></span><span class="daysel-label">' + esc(curOpt.label) + '</span><span class="daysel-caret" aria-hidden="true">&#9662;</span></button>' +
         '<div class="daysel-list" id="lvOptsList" role="listbox" hidden>' + opts + '</div></div>' +
       '<div class="hint" id="dayEntryHint"' + (entry.id === 'rdo' && mine ? '' : ' hidden') + '>This is your RDO. Change it above if you work, take leave or add a paid detail.</div>' +
-      '<div class="hint" id="dayLeaveHint"' + (entry.leaveType && mine ? '' : ' hidden') + '>This is an RDO; leave here won\'t change days worked.</div></div>' +
+      '<div class="hint" id="dayLeaveHint"' + (entry.leaveType && mine ? '' : ' hidden') + '>This is an RDO; leave here won\'t change days worked.</div>' +
+      '<div id="vacRangeBox"' + (E.isFullDayExcusal(entry.id) ? '' : ' hidden') + ' data-sec="6bv">' +
+        '<div class="row">' +
+          '<div class="field"><div class="dateframe"><span class="datecap-lbl" id="vacFromLbl">From</span><button type="button" class="datecap" id="vacFromDate" data-iso="' + esc(iso) + '" disabled>' + esc(E.fmtMDY(iso)) + '</button></div></div>' +
+          '<div class="field">' + dateFrame('vacThroughDate', iso, 'Through') + '</div></div>' +
+        '<div class="hint" id="vacRangeHint">To apply this to several days, pick a Through date. Leave it on this day for a single day.</div>' +
+        '<div class="hint" id="vacRangeSummary" hidden></div>' +
+        '<div class="hint" id="vacRangeWarn" hidden></div></div></div>' +
       tourSection(d, sheetOpts) +
       asgSection(iso, d, dt) +
       (sheetOpts.addEntry ? '' : asgEntryListHtml(iso, d)) +
@@ -11453,6 +11549,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function dateCapApply(id, iso) {
     if (!id || !E.isISODate(iso)) return;
+    if (id === 'vacThroughDate') {
+      var vs0 = dateIso('vacFromDate');
+      if (vs0 && E.toDay(iso) < E.toDay(vs0)) { toast('Through date must be on or after this day'); iso = vs0; }
+      else if (E.vacationRangeIsos(vs0 || iso, iso).length > 60) { toast('Pick a range of 60 days or less'); return; }
+    }
     setDateCap(id, iso, 'user');
     if (id === 'workedStartDate') autoEndFromStart('dayStart', 'dayEnd', 'workedStartDate', 'workedEndDate');
     if (id === 'schedStartDate') {
@@ -11463,6 +11564,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (id === 'otSchedStartDate') autoEndFromStart('otSchedStart', 'otSchedEnd', 'otSchedStartDate', 'otSchedEndDate');
     if (id === 'pdStartDate') { pdSyncDates(); moreDatesOnPrimaryChange(); }
     if (id === 'pdStartDate' || id === 'pdEndDate') { pdDateCheck(); pdRemind(); }
+    if (id === 'vacThroughDate') refreshVacRangeSummary();
     if (typeof updateEnd === 'function') updateEnd(false);
     if (document.getElementById('otForm')) otPreview();
   }
@@ -13136,6 +13238,28 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     toast(evs.length + ' events exported' + (kind === 'apple' && !isIOS() ? '; open the file to add to Calendar' : ''));
   }
 
+  function excusalRangeLabel() {
+    var typ = daySel(), o = E.dayEntryOption(typ);
+    return (o && o.label) || 'Excusal';
+  }
+  function refreshVacRangeSummary() {
+    var start = dateIso('vacFromDate'), through = dateIso('vacThroughDate') || start;
+    var sum = document.getElementById('vacRangeSummary'), warn = document.getElementById('vacRangeWarn');
+    var typLabel = excusalRangeLabel();
+    var fromLbl = document.getElementById('vacFromLbl'), hint = document.getElementById('vacRangeHint');
+    if (fromLbl) fromLbl.textContent = typLabel + ' from';
+    if (hint) hint.textContent = 'To apply ' + typLabel + ' to several days, pick a Through date. Leave it on this day for a single day.';
+    if (!sum) return;
+    var isos = (start && through) ? E.leaveRangeIsos(start, through) : [];
+    if (isos.length <= 1) { sum.hidden = true; if (warn) { warn.hidden = true; warn.textContent = ''; } return; }
+    sum.hidden = false;
+    sum.textContent = isos.length + ' days: ' + fmt(E.toDay(start)) + '–' + fmt(E.toDay(through)) + '. ' + typLabel + ' will be saved on each day.';
+    var conf = E.leaveRangeConflicts(S, start, through);
+    if (warn) {
+      warn.hidden = !conf.length;
+      warn.textContent = conf.length ? (conf.length === 1 ? '1 day already has entries: ' : conf.length + ' days already have entries: ') + conf.map(function (iso) { return fmt(E.toDay(iso)); }).join(', ') + '. You’ll be asked to confirm before saving. Existing overtime, assignments, and slips will be kept.' : '';
+    }
+  }
   function daySel() { var o = document.getElementById('lvOpts'); return o ? o.dataset.sel : ''; }
   function dayIsLeave(sel) { return !!(sel && sel !== 'working' && sel !== 'rdo'); }
   function closeDaySel() {
@@ -13209,6 +13333,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var hint = document.getElementById('dayEntryHint'), lh = document.getElementById('dayLeaveHint');
     if (hint) hint.hidden = !(rdo && sel === 'rdo');
     if (lh) lh.hidden = !(rdo && leave);
+    var vb = document.getElementById('vacRangeBox');
+    if (vb) { vb.hidden = !E.isFullDayExcusal(sel); if (E.isFullDayExcusal(sel)) refreshVacRangeSummary(); }
     var showPrompt = rdo && sel === 'working' && st !== 'dd' && st !== 'ddoff';
     if (wk) wk.hidden = !showPrompt;
     if (dp) dp.hidden = st !== 'ddnew' && st !== 'ddoffnew' && st !== 'rdootoff';
@@ -14267,7 +14393,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="' + ((s.defaultCalendar || 'google') === 'apple' ? 'on' : '') + '" data-act="calDefault" data-v="apple">Apple</button></div>' +
       '<h3 style="margin-top:20px" data-sec="9m">Subscribe to calendar</h3>' + calendarSubscribeHtml() +
       '<button class="btn danger block" data-act="reset" data-sec="9k" style="margin-top:20px">Erase all data</button>' +
-      '<p class="build-tag muted" id="appBuildTag">Build r111 · patrol-test-921037c6daa2</p>');
+      '<p class="build-tag muted" id="appBuildTag">Build r112 · patrol-test-eee788b31eb9</p>');
   }
 
   // ---------- Day summary: what's saved on a date; tap an entry to view or change it ----------
@@ -14787,6 +14913,24 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     },
     lvSave: function (t) {
       var iso = E.toISO(+t.dataset.d), rawType = document.getElementById('lvOpts').dataset.sel, note = document.getElementById('lvNote').value.trim();
+      var vacThrough = '', vacRange = [], vacExtras = [], vacConflicts = [], typLabel = (E.dayEntryOption(rawType) || {}).label || 'Excusal';
+      if (E.isFullDayExcusal(rawType)) {
+        vacThrough = dateIso('vacThroughDate') || iso;
+        if (vacThrough && E.toDay(vacThrough) < E.toDay(iso)) return toast('Through date must be on or after this day');
+        vacRange = E.leaveRangeIsos(iso, vacThrough);
+        if (vacRange.length > 60) return toast('Pick a range of 60 days or less');
+        vacExtras = vacRange.filter(function (x) { return x !== iso; });
+        vacConflicts = E.leaveRangeConflicts(S, iso, vacThrough);
+        if (vacExtras.length && vacConflicts.length && t.dataset.vacOk !== '1') {
+          confirmDlg({
+            title: 'Days already have entries',
+            body: '<p>' + esc(typLabel) + ' would also be saved on ' + vacExtras.length + ' other day' + (vacExtras.length === 1 ? '' : 's') + '. These already have leave, a tour, overtime, an assignment, or a slip: <b>' + vacConflicts.map(function (x) { return fmt(E.toDay(x)); }).join(', ') + '</b>.</p><p>' + esc(typLabel) + ' will be added to those days. Existing overtime, assignments, slips, and tour times will not be removed.</p>',
+            ok: 'Save ' + typLabel + ' on all ' + vacRange.length + ' days',
+            onOk: function () { t.dataset.vacOk = '1'; A.lvSave(t); }
+          });
+          return;
+        }
+      }
       var type = (rawType && rawType !== 'working' && rawType !== 'rdo') ? rawType : '';
       var asgSel = document.getElementById('asgBox').dataset.sel, asgDet = document.getElementById('asgDetail').value, asgAddr = document.getElementById('asgAddr').value;
       if (asgSel === 'detail') {
@@ -14924,6 +15068,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
 
       if (shortSel && tr.working) msg = E.fmtHM(shortSel.minutes) + ' charged to ' + C.shortLeaveLabels[shortSel.type];
       if (!type && !note) delete S.leave[iso]; else S.leave[iso] = { type: type, note: note };
+      if (E.isFullDayExcusal(rawType) && vacExtras.length) {
+        S.leave = E.applyLeaveRange({ leave: S.leave }, iso, vacThrough, rawType, note).leave;
+        msg = typLabel + ' saved on ' + vacRange.length + ' days';
+      }
       var hadAsg = !!S.assignments[iso], ca = E.cleanAssignment(asgIn);
       if (ca) { var prevA = S.assignments[iso]; if (!prevA || prevA.type !== ca.type || prevA.detail !== ca.detail || prevA.notes !== ca.notes || (prevA.address || '') !== (ca.address || '') || (prevA.place || '') !== (ca.place || '') || (prevA.boro || '') !== (ca.boro || '')) { ca.updated = new Date().toISOString(); S.assignments[iso] = ca; if (!msg) msg = (hadAsg ? 'Assignment updated: ' : 'Assignment saved: ') + E.assignmentLabel(ca); } }
       else if (hadAsg) { delete S.assignments[iso]; if (!msg) msg = 'Assignment removed'; }
