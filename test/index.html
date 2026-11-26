@@ -2555,7 +2555,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       { id: 'hospital',    label: 'Hospitalized prisoner', short: 'HOSP', color: '#9F1239', retired: true },
       { id: 'transport',   label: 'Prisoner transport',    short: 'TRNS', color: '#7C2D12', retired: true },
       { id: 'walkthrough', label: 'Prisoner walkthrough',  short: 'WALK', color: '#4D7C0F', retired: true },
-      { id: 'detail',      label: 'Detail',                short: 'DTL',  color: '#6D28D9' },
+      { id: 'detail',      label: 'Detail',                short: 'DTL',  color: '#6D28D9', detail: { label: 'Detail Name:', placeholder: 'e.g. Parade, concert, traffic post' }, suggest: true, address: true },
       { id: 'paiddetail',  label: 'Paid Detail',           short: 'PAID', color: '#A16207', paid: true }, // not offered in the assignment picker (Zee 2026-11-21); own section on the day page. Kept so older saved days still label correctly. fields: ID, date, time, duration, vendor, address (+ on-device OCR of the 'Selected Paid Details' screen)
       { id: 'training',    label: 'Training',              short: 'TRNG', color: '#0E7490', detail: { label: 'Training (what training)', placeholder: 'e.g. Firearms requalification' }, suggest: true, address: true, sites: true },
       { id: 'court',       label: 'Court',                 short: 'CRT',  color: '#374151', detail: { label: 'Court appearance (court, part, case)', placeholder: 'e.g. Kings Supreme, Part 30, Ind. 1234/26' }, suggest: true, address: true },
@@ -3946,6 +3946,43 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (r.kind === 'ot') r.otMin = delta; if (r.kind === 'early') r.shortMin = -delta;
     return r;
   }
+  // NYPD changed-tour shorthand: 1722x0137, 17:22x01:37, 0705X1520 (start x end, 24-hour).
+  function parseTourCross(s) {
+    var m = String(s || '').trim().match(/^(\d{3,4}|[0-2]?\d:[0-5]\d)\s*[xX]\s*(\d{3,4}|[0-2]?\d:[0-5]\d)$/);
+    if (!m) return null;
+    var a = normTime(m[1]), b = normTime(m[2]);
+    if (!a || !b) return null;
+    return { start: a, end: b };
+  }
+  // Auto OT for a logged tour. An explicit scheduled window the user entered is the baseline.
+  // Otherwise the entered/changed start + official tour length is the baseline (endCompare; midnight-safe).
+  // The original chart/default tour is never the baseline: a same-length shift such as 17:22-01:37 is not OT.
+  function inferTourOT(worked, opts) {
+    opts = opts || {}; worked = worked || {};
+    var sched = opts.sched, explicit = !!(sched && !sched.fromDefault && sched.start && sched.end);
+    if (explicit) return workedVsScheduled(worked, sched, opts.vsOpts || null);
+    if (!worked.start || !worked.end) return null;
+    var len = +opts.tourLen || 0;
+    if (!(len > 0)) return null;
+    var c = endCompare(worked.start, len, worked.end);
+    if (!c) return null;
+    var startDate = isISODate(worked.startDate) ? worked.startDate : '';
+    var endDate = isISODate(worked.endDate) ? worked.endDate : '';
+    if (startDate && !endDate) endDate = toISO(toDay(startDate) + (c.endDayOffset || 0));
+    var schedEndDate = startDate ? toISO(toDay(startDate) + (c.schedDayOffset || 0)) : endDate;
+    var r = {
+      kind: c.kind, otMin: c.otMin || 0, shortMin: c.shortMin || 0, delta: c.delta,
+      workedMin: c.worked, schedMin: len,
+      start: worked.start, end: worked.end, startDate: startDate, endDate: endDate,
+      sched: c.sched, schedStart: worked.start, schedEnd: c.sched,
+      schedStartDate: startDate, schedEndDate: schedEndDate
+    };
+    if (c.kind === 'ot') {
+      r.otStart = c.sched; r.otEnd = c.end;
+      r.otStartDate = schedEndDate; r.otEndDate = startDate ? toISO(toDay(startDate) + (c.endDayOffset || 0)) : endDate;
+    }
+    return r;
+  }
   // Keep the overtime log in step with a late tour end: one entry linked to the day (linkedEnd), counting for the same day
   // the tour counts for (a tour starting 20:00+ counts for the next day, and so does its tail).
   function syncEndOT(overtime, iso, start, lenMin, end, newId) {
@@ -4746,8 +4783,184 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     addr = joinPaidAddress(a1, a2);
     return { address: addr, address1: a1, address2: a2, boro: boro };
   }
+  // Case- and punctuation-insensitive match key for vendor names and 6d Detail presets.
+  // "Resort's World Casino", "Resorts World Casino", and "RESORTS WORLD CASINO" share a key.
+  // Apostrophes are stripped first; a trailing possessive/plural "s" on a token of 5+ letters is then folded
+  // so "Resort" and "Resorts" also match.
+  function textMatchKey(s) {
+    var t = String(s || '').toLowerCase().replace(/[\u2018\u2019\u201A\u201B'`]/g, '');
+    t = t.replace(/[^a-z0-9]+/g, ' ').trim().replace(/\s+/g, ' ');
+    if (!t) return '';
+    return t.split(' ').map(function (w) {
+      if (w.length >= 5 && /s$/.test(w) && !/ss$/.test(w)) return w.slice(0, -1);
+      return w;
+    }).join(' ');
+  }
+  function titleCaseWord(w) {
+    w = String(w || '');
+    var letters = w.replace(/[^A-Za-z]/g, '');
+    if (letters && letters !== letters.toUpperCase() && letters !== letters.toLowerCase()) return w;
+    var m = w.match(/^([^A-Za-z]*)([A-Za-z])(.*)$/);
+    if (!m) return w;
+    return m[1] + m[2].toUpperCase() + m[3].toLowerCase();
+  }
+  // Title Case each word. ALL CAPS becomes Title Case. Mixed-case tokens (McDonald) are kept as typed.
+  // opts.partial: on space-as-you-type, only completed words (everything before a trailing unfinished word) are cased.
+  function titleCaseName(s, opts) {
+    var raw = String(s == null ? '' : s).replace(/[ \t\r\n]+/g, ' ');
+    var trail = / $/.test(raw);
+    var body = raw.replace(/^ | $/g, '');
+    if (!body) return trail ? ' ' : '';
+    var words = body.split(' ');
+    var keepLast = !!(opts && opts.partial && !trail && words.length);
+    var out = words.map(function (w, i) { return (keepLast && i === words.length - 1) ? w : titleCaseWord(w); });
+    return out.join(' ') + (trail ? ' ' : '');
+  }
+  function lettersOnly(s) { return String(s || '').replace(/[^A-Za-z]/g, ''); }
+  function isPrettyLabel(s) {
+    var letters = lettersOnly(s);
+    return !!(letters && letters !== letters.toUpperCase() && letters !== letters.toLowerCase());
+  }
+  // candidates are preferred newest-first. Existing pretty spelling wins; otherwise Title Case.
+  function canonicalLabel(name, candidates, opts) {
+    var typed = String(name || '').replace(/\s+/g, ' ').trim();
+    if (!typed) return '';
+    var k = textMatchKey(typed);
+    if (!k) return titleCaseName(typed);
+    var i, c, pretty = '', any = '';
+    for (i = 0; i < (candidates || []).length; i++) {
+      c = String(candidates[i] || '').replace(/\s+/g, ' ').trim();
+      if (!c || textMatchKey(c) !== k) continue;
+      if (!any) any = c;
+      if (!pretty && isPrettyLabel(c)) pretty = c;
+    }
+    if (pretty) return pretty;
+    if (any) return (opts && opts.titlePlain) ? titleCaseName(any) : any;
+    return titleCaseName(typed);
+  }
+  function collectByKey(items) {
+    var groups = {}, i, it, k;
+    for (i = 0; i < (items || []).length; i++) {
+      it = items[i]; if (!it || !it.text) continue;
+      k = textMatchKey(it.text); if (!k) continue;
+      (groups[k] = groups[k] || []).push(it);
+    }
+    return groups;
+  }
+  function canonFromGroup(items) {
+    var list = (items || []).slice().sort(function (a, b) { return String(a.updated || '') < String(b.updated || '') ? 1 : -1; });
+    var texts = list.map(function (x) { return x.text; });
+    return canonicalLabel(texts[0] || '', texts, { titlePlain: true });
+  }
+  function eachDetailUse(assignments, tours, fn) {
+    Object.keys(assignments || {}).forEach(function (iso) {
+      var a = assignments[iso];
+      if (a && a.type === 'detail') fn(a, a.updated || iso, 'asg', iso);
+    });
+    Object.keys(tours || {}).forEach(function (iso) {
+      assignmentEntries(tours[iso]).forEach(function (e) {
+        if (e && e.type === 'detail') fn(e, e.updated || iso, 'ent', iso);
+      });
+    });
+  }
+  function previousDetailNames(assignments, tours, limit) {
+    var rows = [];
+    eachDetailUse(assignments, tours, function (a, when) {
+      var n = String(a.detail || '').replace(/\s+/g, ' ').trim();
+      if (n) rows.push({ text: n, updated: when });
+    });
+    var groups = collectByKey(rows), out = [], seen = {};
+    rows.slice().sort(function (a, b) { return String(a.updated || '') < String(b.updated || '') ? 1 : -1; }).forEach(function (r) {
+      var k = textMatchKey(r.text); if (!k || seen[k]) return;
+      seen[k] = 1; out.push(canonFromGroup(groups[k]));
+    });
+    return out.slice(0, limit || 30);
+  }
+  function previousDetailLocations(assignments, tours, limit) {
+    var rows = [];
+    eachDetailUse(assignments, tours, function (a, when) {
+      var n = String(a.address || '').replace(/\s+/g, ' ').trim();
+      if (n) rows.push({ text: n, updated: when });
+    });
+    var groups = collectByKey(rows), out = [], seen = {};
+    rows.slice().sort(function (a, b) { return String(a.updated || '') < String(b.updated || '') ? 1 : -1; }).forEach(function (r) {
+      var k = textMatchKey(r.text); if (!k || seen[k]) return;
+      seen[k] = 1; out.push(canonFromGroup(groups[k]));
+    });
+    return out.slice(0, limit || 30);
+  }
+  function vendorNameList(assignments, stored) {
+    var rows = [];
+    Object.keys(assignments || {}).forEach(function (iso) {
+      var a = assignments[iso];
+      if (a && hasPaidDetail(a) && a.pd && a.pd.vendor) rows.push({ text: String(a.pd.vendor).replace(/\s+/g, ' ').trim(), updated: a.updated || (a.pd && a.pd.date) || iso });
+    });
+    (stored || []).forEach(function (e) {
+      if (e && e.vendor) rows.push({ text: String(e.vendor).replace(/\s+/g, ' ').trim(), updated: e.updated || e.lastDate || e.when || '' });
+    });
+    rows.sort(function (a, b) { return String(a.updated || '') < String(b.updated || '') ? 1 : -1; });
+    return rows.map(function (r) { return r.text; });
+  }
+  function unifyDuplicateLabels(assignments, tours, settings) {
+    var asg = {}, changed = false;
+    Object.keys(assignments || {}).forEach(function (iso) { asg[iso] = assignments[iso]; });
+    var tr = {};
+    Object.keys(tours || {}).forEach(function (iso) { tr[iso] = tours[iso]; });
+    var st = Object.assign({}, settings || {});
+    var vNames = vendorNameList(asg, st.pdVendors);
+    Object.keys(asg).forEach(function (iso) {
+      var a = asg[iso], next, v;
+      if (!a) return;
+      next = a;
+      if (a.type === 'detail') {
+        if (a.detail) { v = canonicalLabel(a.detail, previousDetailNames(asg, tr)); if (v !== a.detail) { next = Object.assign({}, next, { detail: v }); } }
+        if (a.address) { v = canonicalLabel(a.address, previousDetailLocations(asg, tr)); if (v !== a.address) { next = Object.assign({}, next, { address: v }); } }
+      }
+      if (hasPaidDetail(a) && a.pd && a.pd.vendor) {
+        v = canonicalLabel(a.pd.vendor, vNames);
+        if (v !== a.pd.vendor) next = Object.assign({}, next, { pd: Object.assign({}, a.pd, { vendor: v }) });
+      }
+      if (next !== a) { asg[iso] = next; changed = true; }
+    });
+    Object.keys(tr).forEach(function (iso) {
+      var tour = tr[iso], list, i, e, v, rec, dirty = false;
+      if (!tour || !Array.isArray(tour.entries)) return;
+      list = tour.entries.slice();
+      for (i = 0; i < list.length; i++) {
+        e = list[i]; if (!e || e.type !== 'detail') continue;
+        rec = e;
+        if (e.detail) { v = canonicalLabel(e.detail, previousDetailNames(asg, tr)); if (v !== e.detail) rec = Object.assign({}, rec, { detail: v }); }
+        if (e.address) { v = canonicalLabel(e.address, previousDetailLocations(asg, tr)); if (v !== e.address) rec = Object.assign({}, rec, { address: v }); }
+        if (rec !== e) { list[i] = rec; dirty = true; }
+      }
+      if (dirty) { tr[iso] = Object.assign({}, tour, { entries: list }); changed = true; }
+    });
+    if (Array.isArray(st.pdVendors) && st.pdVendors.length) {
+      var seen = {}, out = [];
+      st.pdVendors.forEach(function (e) {
+        if (!e) return;
+        var vendor = e.vendor ? canonicalLabel(e.vendor, vNames) : String(e.vendor || '').trim();
+        var row = Object.assign({}, e, { vendor: vendor });
+        var k = paidVendorKey(row.vendor, row.address1, row.address2);
+        if (k && seen[k]) {
+          if ((row.lastDate || row.updated || '') > (seen[k].lastDate || seen[k].updated || '')) {
+            out[seen[k]._i] = row;
+            seen[k] = Object.assign({}, row, { _i: seen[k]._i });
+          }
+          changed = true;
+          return;
+        }
+        if (vendor !== (e.vendor || '')) changed = true;
+        if (k) seen[k] = Object.assign({}, row, { _i: out.length });
+        out.push(row);
+      });
+      st.pdVendors = out;
+    }
+    return { assignments: asg, tours: tr, settings: st, changed: changed };
+  }
+
   function paidVendorKey(v, a1, a2) {
-    return (String(v || '').trim().toLowerCase().replace(/\s+/g, ' ') + '|' + normAddr(joinPaidAddress(a1, a2))).replace(/^\||\|$/g, function (m, o, s) { return s === '|' ? '' : m; });
+    return (textMatchKey(v) + '|' + normAddr(joinPaidAddress(a1, a2))).replace(/^\||\|$/g, function (m, o, s) { return s === '|' ? '' : m; });
   }
   function mergePaidVendors(assignments, stored) {
     var rows = [];
@@ -4843,7 +5056,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var a = assignments[iso]; if (!hasPaidDetail(a)) return;
       var n = String((a.pd && a.pd.vendor) || '').replace(/\s+/g, ' ').trim();
       if (!n) n = 'Unknown vendor';
-      var k = n.toUpperCase(); if (seen[k]) return; seen[k] = 1; out.push(n);
+      var k = textMatchKey(n) || n.toUpperCase(); if (seen[k]) return; seen[k] = 1; out.push(canonicalLabel(n, [n]));
     });
     return out;
   }
@@ -4867,12 +5080,15 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function vendorReportName(raw, groups) {
     var n = String(raw || '').replace(/\s+/g, ' ').trim(); if (!n) n = 'Unknown vendor';
-    var k = n.toUpperCase();
-    var list = cleanVendorGroups(groups), i, g, j;
+    var k = textMatchKey(n) || n.toUpperCase();
+    var list = cleanVendorGroups(groups), i, g, j, nk;
     for (i = 0; i < list.length; i++) {
       g = list[i];
-      if (g.name.replace(/\s+/g, ' ').trim().toUpperCase() === k) return g.name;
-      for (j = 0; j < g.aliases.length; j++) if (g.aliases[j].toUpperCase() === k) return g.name;
+      nk = textMatchKey(g.name) || g.name.replace(/\s+/g, ' ').trim().toUpperCase();
+      if (nk === k) return g.name;
+      for (j = 0; j < g.aliases.length; j++) {
+        if ((textMatchKey(g.aliases[j]) || g.aliases[j].toUpperCase()) === k) return g.name;
+      }
     }
     return n;
   }
@@ -5844,8 +6060,16 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     addressSuggestions(map, '').forEach(function (x) { add(x.value, x.label); });
     return out;
   }
-  function addressSuggestions(map, type) {
-    var out = [], seen = {}, add = function (v, l) { var k = String(v || '').trim().toLowerCase(); if (!k || seen[k]) return; seen[k] = 1; out.push({ value: String(v).trim(), label: l || '' }); };
+  function addressSuggestions(map, type, tours) {
+    var out = [], seen = {}, add = function (v, l) {
+      var raw = String(v || '').replace(/\s+/g, ' ').trim();
+      var k = textMatchKey(raw) || raw.toLowerCase();
+      if (!k || seen[k]) return; seen[k] = 1; out.push({ value: raw, label: l || '' });
+    };
+    if (type === 'detail') {
+      previousDetailLocations(map, tours).forEach(function (v) { add(v, 'Previous report location'); });
+      return out;
+    }
     if (type === 'training') CONFIG.trainingSites.forEach(function (st) { add(st.address, st.name); });
     Object.keys(map || {}).map(function (iso) { return [iso, map[iso]]; }).filter(function (x) { return x[1] && x[1].address; })
       .sort(function (a, b) { var x = a[1].updated || a[0], y = b[1].updated || b[0]; return x < y ? 1 : x > y ? -1 : 0; })
@@ -5885,12 +6109,44 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var p = (f && f.properties) || {}; if (String(p.countrycode || '').toUpperCase() !== 'US' && p.country !== 'United States') return null;
     var st = US_STATES[String(p.state || '').toLowerCase()] || p.state || '', street = p.street ? (p.housenumber ? p.housenumber + ' ' + p.street : p.street) : '';
     var place = p.city || p.town || p.village || p.county || '';
-    if (!street && !p.name) return null;
-    var poi = p.name && p.name !== p.street ? p.name : '';
+    var name = String(p.name || '').trim();
+    var inter = looksLikeIntersectionName(name);
+    if (inter) {
+      var recI = { value: joinAddr(titleCase(name), place, st, p.postcode || ''), label: 'Intersection', source: 'photon', nyc: photonIsNyc(p), intersection: true };
+      var coordsI = f.geometry && f.geometry.coordinates;
+      if (coordsI && coordsI.length >= 2) { recI.lon = coordsI[0]; recI.lat = coordsI[1]; }
+      return recI;
+    }
+    if (!street && !name) return null;
+    var poi = name && name !== p.street ? name : '';
     var rec = { value: joinAddr(street || poi, place, st, p.postcode || ''), label: street ? poi : '', source: 'photon', nyc: photonIsNyc(p) };
     var coords = f.geometry && f.geometry.coordinates;
     if (coords && coords.length >= 2) { rec.lon = coords[0]; rec.lat = coords[1]; }
     return rec;
+  }
+  // Intersection queries: '&', 'and', '/', '@' between two street-like phrases (optional borough after a comma).
+  function looksLikeIntersectionName(s) {
+    return /\s+(&+|and|\/|@)\s+/i.test(String(s || '')) || /\S[&@]\S/.test(String(s || ''));
+  }
+  function looksLikeStreetPart(s) {
+    s = String(s || '').trim();
+    if (s.length < 2) return false;
+    return /\d/.test(s) || /\b(st|street|ave?|avenue|blvd|boulevard|rd|road|pl|place|dr|drive|ln|lane|ct|court|pkwy|parkway|hwy|highway|tpke|turnpike|expy|expressway|way|plaza|sq|square|concourse|broadway|walk|pier|park)\b/i.test(s);
+  }
+  function parseIntersection(q) {
+    var raw = String(q || '').replace(/\s+/g, ' ').trim();
+    if (!raw) return null;
+    var city = '', rest = raw, comma = raw.lastIndexOf(',');
+    if (comma > 0) { city = raw.slice(comma + 1).trim(); rest = raw.slice(0, comma).trim(); }
+    var parts = rest.split(/\s*(?:&+|\/|@)\s+|\s+and\s+/i).map(function (s) { return s.trim(); }).filter(Boolean);
+    if (parts.length < 2 || !parts.every(looksLikeStreetPart)) return null;
+    return { streets: parts, city: city, raw: raw };
+  }
+  function isIntersectionQuery(q) { return !!parseIntersection(q); }
+  function normalizeIntersectionQuery(q) {
+    var p = parseIntersection(q);
+    if (!p) return String(q || '').replace(/\s+/g, ' ').trim();
+    return p.streets.join(' & ') + (p.city ? (', ' + p.city) : '');
   }
   function googleIsNyc(d) { return /, (Manhattan|Brooklyn|Queens|Bronx|The Bronx|Staten Island|New York), NY\b/.test(d) || /, NY 1(0[0-4]|1[0-6])\d\d\b/.test(d); }
   function fmtGoogle(pr) { var d = String(pr && pr.description || '').replace(/, (USA|United States)$/, ''); if (!d) return null; return { value: d, label: '', source: 'google', nyc: googleIsNyc(d) }; }
@@ -5920,13 +6176,34 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (o.online === false || !o.fetch) { res.offline = o.online === false; return P.resolve(done()); }
     var aborted = function (e) { return e && (e.name === 'AbortError' || o.signal && o.signal.aborted); };
     var get = function (url) { return o.fetch(url, { signal: o.signal, headers: { Accept: 'application/json' } }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }); };
+    var inter = isIntersectionQuery(text);
+    var photonQ = inter ? normalizeIntersectionQuery(text) : text;
     return get(geoUrl('geosearch', text)).then(function (j) {
       res.nyc = ((j && j.features) || []).map(fmtGeoSearch).filter(Boolean);
     }, function (e) { if (aborted(e)) throw e; res.errors.push('geosearch'); })
       .then(function () {
-        if (res.nyc.length >= G.nycEnough) return; // enough NYC hits: don't call the fallback (keeps Photon usage fair)
-        if (o.google) return o.google(text).then(function (ps) { var g = (ps || []).map(fmtGoogle).filter(Boolean); res.nyc = res.nyc.concat(g.filter(function (x) { return x.nyc; })); res.other = g.filter(function (x) { return !x.nyc; }); }, function (e) { if (aborted(e)) throw e; res.errors.push('google'); });
-        return get(geoUrl('photon', text)).then(function (j) { res.other = ((j && j.features) || []).map(fmtPhoton).filter(function (x) { return x && !x.nyc; }); }, function (e) { if (aborted(e)) throw e; res.errors.push('photon'); });
+        // Enough non-intersection NYC hits: skip Photon to stay within its fair-use request. Intersections are an
+        // exception: NYC GeoSearch does not return them, so we ask Photon (OSM) and keep its NYC results.
+        var needPhoton = inter || (res.nyc.length < G.nycEnough && !o.google);
+        var gJob = (!o.google || (res.nyc.length >= G.nycEnough && !inter)) ? P.resolve() : o.google(text).then(function (ps) {
+          var g = (ps || []).map(fmtGoogle).filter(Boolean);
+          res.nyc = res.nyc.concat(g.filter(function (x) { return x.nyc; }));
+          res.other = res.other.concat(g.filter(function (x) { return !x.nyc; }));
+        }, function (e) { if (aborted(e)) throw e; res.errors.push('google'); });
+        return gJob.then(function () {
+          if (!needPhoton) return;
+          return get(geoUrl('photon', photonQ)).then(function (j) {
+            var feats = ((j && j.features) || []).map(fmtPhoton).filter(Boolean);
+            if (inter) {
+              var nycHits = feats.filter(function (x) { return x.nyc; });
+              var otherHits = feats.filter(function (x) { return !x.nyc; });
+              res.nyc = nycHits.concat(res.nyc);
+              res.other = otherHits.concat(res.other);
+            } else {
+              res.other = res.other.concat(feats.filter(function (x) { return x && !x.nyc; }));
+            }
+          }, function (e) { if (aborted(e)) throw e; res.errors.push('photon'); });
+        });
       })
       .then(function () { if (res.errors.length && !res.nyc.length && !res.other.length) res.failed = true; return done(); });
   }
@@ -6079,7 +6356,12 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var seen = {}, out = [];
     Object.keys(map || {}).map(function (iso) { return [iso, map[iso]]; }).filter(function (x) { return x[1] && x[1].type === type && x[1].detail; })
       .sort(function (a, b) { var x = a[1].updated || a[0], y = b[1].updated || b[0]; return x < y ? 1 : x > y ? -1 : 0; })
-      .forEach(function (x) { var k = x[1].detail.toLowerCase(); if (!seen[k]) { seen[k] = 1; out.push(x[1].detail); } });
+      .forEach(function (x) {
+        var raw = String(x[1].detail || '').replace(/\s+/g, ' ').trim();
+        var k = textMatchKey(raw) || raw.toLowerCase();
+        if (!k || seen[k]) return;
+        seen[k] = 1; out.push(raw);
+      });
     return out.slice(0, limit || 30);
   }
   function upcomingAssignments(map, fromDay, limit) {
@@ -6386,7 +6668,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     tour17Key: tour17Key, tour17Squad: tour17Squad, tour17Offset: tour17Offset, tour17WorkPhase: tour17WorkPhase, tour17WorkSquad: tour17WorkSquad, tour17IsOff: tour17IsOff, tour17SquadsOff: tour17SquadsOff, tour17SquadsWorking: tour17SquadsWorking, tour17OvertimeMin: tour17OvertimeMin,
     nextDayOff: nextDayOff, chartDayBlock: chartDayBlock, nextWorkday: nextWorkday, countRDOs: countRDOs, isTourChange: isTourChange, countTourChanges: countTourChanges, isPayday: isPayday, nextPayday: nextPayday,
     periodsForPayday: periodsForPayday, regularPaydayFor: regularPaydayFor, overtimePaydayFor: overtimePaydayFor, regularPeriodFor: regularPeriodFor, overtimePeriodFor: overtimePeriodFor, payPeriodsInYear: payPeriodsInYear, hoursBetween: hoursBetween, entryHours: entryHours,
-    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, fmtMDY: fmtMDY, defaultTourWindow: defaultTourWindow, tourSpanMinutes: tourSpanMinutes, suggestEndDate: suggestEndDate, workedVsScheduled: workedVsScheduled, cleanTourEntry: cleanTourEntry, tourEntries: tourEntries, isAssignmentEntry: isAssignmentEntry, cleanAssignmentEntry: cleanAssignmentEntry, assignmentEntries: assignmentEntries, mergeTourEntries: mergeTourEntries, writeAssignmentEntries: writeAssignmentEntries, assignmentTimeText: assignmentTimeText, assignmentReminderText: assignmentReminderText, paidDetailBrief: paidDetailBrief, dayAssignments: dayAssignments, assignmentEventWindow: assignmentEventWindow, dayTour: dayTour, tourDisplay: tourDisplay, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameIsReserved: usernameIsReserved, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, assignmentNavAddress: assignmentNavAddress, upcomingItems: upcomingItems, commandById: commandById, isPduCommand: isPduCommand, searchCommands: searchCommands, phoneDigits: phoneDigits, fmtPhone: fmtPhone, telHref: telHref, cleanDirMine: cleanDirMine, cleanDirPhone: cleanDirPhone, cleanDirCustom: cleanDirCustom, emptyDirMine: emptyDirMine, dirKindMatch: dirKindMatch, searchDirectory: searchDirectory, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, routeUrls: routeUrls, navPoint: navPoint, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, leaveLineLabel: leaveLineLabel, regularPeriodExcusals: regularPeriodExcusals, formatRegularPeriodExcusalLine: formatRegularPeriodExcusalLine, calendarQuarter: calendarQuarter, quarterRange: quarterRange, shiftQuarter: shiftQuarter, otHoursSplitFromResult: otHoursSplitFromResult, otHoursSplit: otHoursSplit, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, stripBoroSuffix: stripBoroSuffix, splitPaidAddress: splitPaidAddress, joinPaidAddress: joinPaidAddress, mergePaidVendors: mergePaidVendors, rememberPaidVendor: rememberPaidVendor, paidVendorKey: paidVendorKey, parsePaidAmount: parsePaidAmount, paidDetailAmount: paidDetailAmount, paidDetailTaxDate: paidDetailTaxDate, daysBetweenISO: daysBetweenISO, paidDetailTiming: paidDetailTiming, paidDetailTimingCaptions: paidDetailTimingCaptions, paidVendorNames: paidVendorNames, cleanVendorGroups: cleanVendorGroups, vendorReportName: vendorReportName, addVendorToGroup: addVendorToGroup, removeVendorFromGroup: removeVendorFromGroup, renameVendorGroup: renameVendorGroup, ungroupVendor: ungroupVendor, suggestVendorGroups: suggestVendorGroups, paidDetailTaxReport: paidDetailTaxReport, buildPaidDetailXlsx: buildPaidDetailXlsx, buildPaidDetailCsv: buildPaidDetailCsv, parseXlsx: parseXlsx, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, addYearsISO: addYearsISO, retirementDateOf: retirementDateOf, retirementRemain: retirementRemain, retirementCountdown: retirementCountdown, endCompare: endCompare, syncEndOT: syncEndOT, syncWorkedOT: syncWorkedOT, syncEntryOT: syncEntryOT, leaveBalances: leaveBalances, parseBalanceHM: parseBalanceHM, bankDayMinutes: bankDayMinutes, fmtDayEquiv: fmtDayEquiv, fmtChart: fmtChart, chartTimeFromTour: chartTimeFromTour, isDetectiveRank: isDetectiveRank, isSergeantRank: isSergeantRank, isLieutenantRank: isLieutenantRank, isPoliceOfficerRank: isPoliceOfficerRank, chartKind: chartKind, rankStartDate: rankStartDate, yearsInRankAtLeast: yearsInRankAtLeast, chartTimeEligibility: chartTimeEligibility, chartTimeForDay: chartTimeForDay, chartTimeRange: chartTimeRange, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
+    otPay: otPay, regularDaysWorked: regularDaysWorked, parseHM: parseHM, fmtHM: fmtHM, formatTourInput: formatTourInput, tourLenError: tourLenError, tourEnd: tourEnd, formatTimeInput: formatTimeInput, normTime: normTime, countsNextDay: countsNextDay, otDay: otDay, attrDay: attrDay, tourEndInfo: tourEndInfo, fmtMDY: fmtMDY, defaultTourWindow: defaultTourWindow, tourSpanMinutes: tourSpanMinutes, suggestEndDate: suggestEndDate, workedVsScheduled: workedVsScheduled, cleanTourEntry: cleanTourEntry, tourEntries: tourEntries, isAssignmentEntry: isAssignmentEntry, cleanAssignmentEntry: cleanAssignmentEntry, assignmentEntries: assignmentEntries, mergeTourEntries: mergeTourEntries, writeAssignmentEntries: writeAssignmentEntries, assignmentTimeText: assignmentTimeText, assignmentReminderText: assignmentReminderText, paidDetailBrief: paidDetailBrief, dayAssignments: dayAssignments, assignmentEventWindow: assignmentEventWindow, dayTour: dayTour, tourDisplay: tourDisplay, schedTour: schedTour, assignmentType: assignmentType, cleanAssignment: cleanAssignment, validateAssignment: validateAssignment, assignmentLabel: assignmentLabel, assignmentSuggestions: assignmentSuggestions, applySite: applySite, CLOUD_PRIVATE: CLOUD_PRIVATE, normUsername: normUsername, usernameIsReserved: usernameIsReserved, usernameError: usernameError, passwordError: passwordError, usernameEmail: usernameEmail, stableStr: stableStr, hashStr: hashStr, stripPrivate: stripPrivate, syncRecords: syncRecords, applyRecord: applyRecord, syncPlan: syncPlan, markPushed: markPushed, mergeRemote: mergeRemote, seedMeta: seedMeta, restampDirty: restampDirty, hasLocalData: hasLocalData, recId: recId, SLIP: SLIP, detectPaper: detectPaper, homography: homography, applyH: applyH, warpPerspective: warpPerspective, warpSize: warpSize, paperAspect: paperAspect, enhanceScan: enhanceScan, slipPdf: slipPdf, jpegSize: jpegSize, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, slipKind: slipKind, cleanSlipMeta: cleanSlipMeta, fmtBytes: fmtBytes, fullCorners: fullCorners, orderCorners: orderCorners, convexHull: convexHull, sameAddr: sameAddr, normAddr: normAddr, selectedCourts: selectedCourts, siteByName: siteByName, migrateAssignments: migrateAssignments, trainingLocations: trainingLocations, courtList: courtList, applyCourt: applyCourt, previousCourts: previousCourts, assignmentLocation: assignmentLocation, assignmentNavAddress: assignmentNavAddress, upcomingItems: upcomingItems, commandById: commandById, isPduCommand: isPduCommand, searchCommands: searchCommands, phoneDigits: phoneDigits, fmtPhone: fmtPhone, telHref: telHref, cleanDirMine: cleanDirMine, cleanDirPhone: cleanDirPhone, cleanDirCustom: cleanDirCustom, emptyDirMine: emptyDirMine, dirKindMatch: dirKindMatch, searchDirectory: searchDirectory, cleanCommand: cleanCommand, commandNeedsAddress: commandNeedsAddress, commandShort: commandShort, geoSuggest: geoSuggest, fmtGeoSearch: fmtGeoSearch, fmtPhoton: fmtPhoton, fmtGoogle: fmtGoogle, localAddrMatches: localAddrMatches, mergeSuggestions: mergeSuggestions, geoUrl: geoUrl, titleCase: titleCase, commandError: commandError, routeUrl: routeUrl, routeUrls: routeUrls, navPoint: navPoint, computeEta2: computeEta2, siteForAddress: siteForAddress, addressSuggestions: addressSuggestions, navUrls: navUrls, buildBackup: buildBackup, computeEta: computeEta, fmtClock: fmtClock, fmtDur: fmtDur, ETA_MSG: ETA_MSG, upcomingAssignments: upcomingAssignments, extra15Rule: extra15Rule, extra15On: extra15On, extra15Key: extra15Key, extra15Range: extra15Range, extra15RuleRange: extra15RuleRange, validateExtra15: validateExtra15, pduKey: pduKey, pduTeam: pduTeam, pduColor: pduColor, pduShift: pduShift, pduTeamsOn: pduTeamsOn, pduCycleDay: pduCycleDay, periodHours: periodHours, leaveLineLabel: leaveLineLabel, regularPeriodExcusals: regularPeriodExcusals, formatRegularPeriodExcusalLine: formatRegularPeriodExcusalLine, calendarQuarter: calendarQuarter, quarterRange: quarterRange, shiftQuarter: shiftQuarter, otHoursSplitFromResult: otHoursSplitFromResult, otHoursSplit: otHoursSplit, setDayForDay: setDayForDay, clearDayForDay: clearDayForDay, syncExtraOT: syncExtraOT, rdoOtSpan: rdoOtSpan, dayEntryOption: dayEntryOption, dayEntryOptions: dayEntryOptions, defaultDayEntry: defaultDayEntry, dayEntryOf: dayEntryOf, hasPaidDetail: hasPaidDetail, isISODate: isISODate, serviceLength: serviceLength, serviceInfo: serviceInfo, longevityBracket: longevityBracket, payRow: payRow, payPlacement: payPlacement, payNextChange: payNextChange, payInfo: payInfo, payStepLabel: payStepLabel, tourIsNight: tourIsNight, otEntryPay: otEntryPay, otPayList: otPayList, otCompOptions: otCompOptions, parsePaidDetail: parsePaidDetail, stripBoroSuffix: stripBoroSuffix, splitPaidAddress: splitPaidAddress, joinPaidAddress: joinPaidAddress, mergePaidVendors: mergePaidVendors, rememberPaidVendor: rememberPaidVendor, paidVendorKey: paidVendorKey, textMatchKey: textMatchKey, titleCaseName: titleCaseName, canonicalLabel: canonicalLabel, previousDetailNames: previousDetailNames, previousDetailLocations: previousDetailLocations, vendorNameList: vendorNameList, unifyDuplicateLabels: unifyDuplicateLabels, parseIntersection: parseIntersection, isIntersectionQuery: isIntersectionQuery, normalizeIntersectionQuery: normalizeIntersectionQuery, parsePaidAmount: parsePaidAmount, paidDetailAmount: paidDetailAmount, paidDetailTaxDate: paidDetailTaxDate, daysBetweenISO: daysBetweenISO, paidDetailTiming: paidDetailTiming, paidDetailTimingCaptions: paidDetailTimingCaptions, paidVendorNames: paidVendorNames, cleanVendorGroups: cleanVendorGroups, vendorReportName: vendorReportName, addVendorToGroup: addVendorToGroup, removeVendorFromGroup: removeVendorFromGroup, renameVendorGroup: renameVendorGroup, ungroupVendor: ungroupVendor, suggestVendorGroups: suggestVendorGroups, paidDetailTaxReport: paidDetailTaxReport, buildPaidDetailXlsx: buildPaidDetailXlsx, buildPaidDetailCsv: buildPaidDetailCsv, parseXlsx: parseXlsx, paidDetailRate: paidDetailRate, paidDetailMinutes: paidDetailMinutes, paidDetailPay: paidDetailPay, paidDetailTotals: paidDetailTotals, paidDetailWindow: paidDetailWindow, paidDetailConflict: paidDetailConflict, paidDetailNotes: paidDetailNotes, paidDetailDay: paidDetailDay, paidDetailDuration: paidDetailDuration, roundPaidMin: roundPaidMin, cleanPaidDetail: cleanPaidDetail, addMonthsISO: addMonthsISO, addYearsISO: addYearsISO, retirementDateOf: retirementDateOf, retirementRemain: retirementRemain, retirementCountdown: retirementCountdown, endCompare: endCompare, parseTourCross: parseTourCross, inferTourOT: inferTourOT, syncEndOT: syncEndOT, syncWorkedOT: syncWorkedOT, syncEntryOT: syncEntryOT, leaveBalances: leaveBalances, parseBalanceHM: parseBalanceHM, bankDayMinutes: bankDayMinutes, fmtDayEquiv: fmtDayEquiv, fmtChart: fmtChart, chartTimeFromTour: chartTimeFromTour, isDetectiveRank: isDetectiveRank, isSergeantRank: isSergeantRank, isLieutenantRank: isLieutenantRank, isPoliceOfficerRank: isPoliceOfficerRank, chartKind: chartKind, rankStartDate: rankStartDate, yearsInRankAtLeast: yearsInRankAtLeast, chartTimeEligibility: chartTimeEligibility, chartTimeForDay: chartTimeForDay, chartTimeRange: chartTimeRange, shortLeaveEntries: shortLeaveEntries, dayHasEntries: dayHasEntries, deleteDay: deleteDay,
     steadyKey: steadyKey, parseChart: parseChart, validChartKey: validChartKey, chartInfo: chartInfo, sortCharts: sortCharts, chartAt: chartAt, chartChanges: chartChanges, nextOff: nextOff, nextOn: nextOn, reviewOverrides: reviewOverrides, DOW3: DOW3,
     stripAddrLabels: stripAddrLabels, paidAddressSuggestions: paidAddressSuggestions,
     rankAbbr: rankAbbr, rankLabel: rankLabel, displayName: displayName, formatFullName: formatFullName, normMiddleInitial: normMiddleInitial, migrateProfile: migrateProfile, validateProfile: validateProfile,
@@ -6452,12 +6734,16 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var prof = d.profile ? E.migrateProfile(d.profile) : null; if (prof && !(prof.tourLen > 0)) prof.tourLen = 480; if (prof && prof.tourStart == null) prof.tourStart = '';
     if (prof) prof = E.migrateHist(prof, prof.hireDate || earliestEntry(d)); // rank / command / chart / tour history (one record for older profiles)
     var setIn = Object.assign({}, d.settings || {}); delete setIn.paydayAnchor; delete setIn.regularTargetMin; delete setIn.regularHours;
-    return { app: b.app, version: b.version, profile: prof, sync: d.sync && typeof d.sync === 'object' ? d.sync : {}, updatedAt: d.updatedAt || null, tours: d.tours && typeof d.tours === 'object' && !Array.isArray(d.tours) ? d.tours : {},
-      settings: (function () { var st = Object.assign({}, b.settings, setIn); st.fuelFilter = E.cleanFuelFilter(st.fuelFilter, true); ['mapEvOn','dirEvOn','evLayer','evChargers','evOn','showEv','evDefault'].forEach(function (k) { if (Object.prototype.hasOwnProperty.call(st, k)) delete st[k]; }); return st; })(),
+    var toursIn = d.tours && typeof d.tours === 'object' && !Array.isArray(d.tours) ? d.tours : {};
+    var asgIn = d.assignments && typeof d.assignments === 'object' && !Array.isArray(d.assignments) ? E.migrateAssignments(d.assignments).map : {};
+    var stIn = (function () { var st = Object.assign({}, b.settings, setIn); st.fuelFilter = E.cleanFuelFilter(st.fuelFilter, true); ['mapEvOn','dirEvOn','evLayer','evChargers','evOn','showEv','evDefault'].forEach(function (k) { if (Object.prototype.hasOwnProperty.call(st, k)) delete st[k]; }); return st; })();
+    var unified = E.unifyDuplicateLabels(asgIn, toursIn, stIn);
+    return { app: b.app, version: b.version, profile: prof, sync: d.sync && typeof d.sync === 'object' ? d.sync : {}, updatedAt: d.updatedAt || null, tours: unified.tours,
+      settings: unified.settings,
       overtime: Array.isArray(d.overtime) ? d.overtime : [],
       leave: d.leave && typeof d.leave === 'object' && !Array.isArray(d.leave) ? d.leave : {},
       extra15: d.extra15 && typeof d.extra15 === 'object' && !Array.isArray(d.extra15) ? d.extra15 : {}, // per-month +15 range overrides
-      assignments: d.assignments && typeof d.assignments === 'object' && !Array.isArray(d.assignments) ? E.migrateAssignments(d.assignments).map : {},
+      assignments: unified.assignments,
       slips: (function (m) { var o = {}; if (m && typeof m === 'object') Object.keys(m).forEach(function (k) { var c = /^\d{4}-\d{2}-\d{2}$/.test(k) && E.cleanSlipMeta(m[k]); if (c) o[k] = c; }); return o; })(d.slips), // slip metadata (files live in IndexedDB) // daily assignments by date (preset name in training text -> location)
       dirMine: E.cleanDirMine(d.dirMine) };
   }
@@ -6504,10 +6790,13 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function profNow() { return profAt(E.toISO(T)); }
   function syncProfileHist() { E.syncHist(S.profile, E.toISO(T)); }
   function tourOpts() { return { defaultLen: S.profile.tourLen, defaultStart: S.profile.tourStart || '', hist: S.profile.assignHist || null, tours: S.tours, leave: S.leave, unit: U(), extra15: S.extra15 || {} }; }
-  function workedVS(worked, sched, iso) {
+  function workedVSOpts(iso) {
     var day = iso == null ? T : (E.isISODate(iso) ? E.toDay(iso) : iso);
     var c = E.parseChart(E.chartAt(day, myWho()));
-    return E.workedVsScheduled(worked, sched, c.type === '12hr' ? { tour12: true } : c.type === '17hr' ? { tour17: true } : null);
+    return c.type === '12hr' ? { tour12: true } : c.type === '17hr' ? { tour17: true } : null;
+  }
+  function workedVS(worked, sched, iso) {
+    return E.workedVsScheduled(worked, sched, workedVSOpts(iso));
   }
   function tourText(t) {
     var a = E.tourDisplay ? E.tourDisplay(t) : t;
@@ -9651,7 +9940,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="btn sm chip' + (ui.dirHospLevel1 ? ' on' : '') + '" data-act="hospChip" data-filter="level1" aria-pressed="' + (ui.dirHospLevel1 ? 'true' : 'false') + '">Level 1 Trauma</button>' +
       '</div>' +
       '</div>' +
-      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r106 · patrol-test-f81d783ef082</p></div>' +
+      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r107 · patrol-test-5bd8f8a0d4b6</p></div>' +
       '</div>';
     var mapTools = '<div class="dir-map-chrome">' +
       '<div class="dir-map-search"><input id="dirQ" class="dirq acIn" data-ac="map" type="text" value="' + esc(q) + '" placeholder="Search an address or precinct" aria-label="Search an address or precinct" autocomplete="off"></div>' +
@@ -10696,7 +10985,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var g = function (id) { var e = document.getElementById(id); return e ? String(e.value || '').trim() : ''; }, dm = E.parseHM(g('pdDur'));
     var a1 = g('pdAddr'), a2 = g('pdAddr2'), sp = E.splitPaidAddress('', a1, a2);
     var paidBtn = document.getElementById('pdPaidBtn'), paidDateEl = document.getElementById('pdPaidDate'), checkDateEl = document.getElementById('pdCheckDate');
-    return { id: g('pdId'), date: dateIso('pdStartDate') || form.dataset.iso || '', endDate: dateIso('pdEndDate') || '', start: g('pdStart'), end: g('pdEnd'), durationMin: dm || 0, vendor: g('pdVendor'), address: sp.address, address1: sp.address1, address2: sp.address2, paid: g('pdPaidFlag') === '1' || !!(paidBtn && paidBtn.classList.contains('on')), paidDate: (paidDateEl && paidDateEl.dataset.iso) || '', checkDate: (checkDateEl && checkDateEl.dataset.iso) || '', amount: g('pdAmount') };
+    return { id: g('pdId'), date: dateIso('pdStartDate') || form.dataset.iso || '', endDate: dateIso('pdEndDate') || '', start: g('pdStart'), end: g('pdEnd'), durationMin: dm || 0, vendor: E.canonicalLabel(g('pdVendor'), E.vendorNameList(S.assignments, (S.settings && S.settings.pdVendors) || [])), address: sp.address, address1: sp.address1, address2: sp.address2, paid: g('pdPaidFlag') === '1' || !!(paidBtn && paidBtn.classList.contains('on')), paidDate: (paidDateEl && paidDateEl.dataset.iso) || '', checkDate: (checkDateEl && checkDateEl.dataset.iso) || '', amount: g('pdAmount') };
   }
   function pdSyncDates() {
     var sd = dateIso('pdStartDate');
@@ -10834,7 +11123,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div class="pdscan" data-sec="19j"><label class="btn sm pdup" for="pdFile">&#128247; Upload screenshot</label><input type="file" id="pdFile" accept="image/*" hidden>' +
       '<p class="pdcam-note" id="pdCamNote">For best results, use your device\'s camera app and upload the picture after.</p>' +
       '<div class="hint">Reads your &ldquo;Selected Paid Details&rdquo; screen on this phone and fills the fields below. The picture is not uploaded, saved or synced.</div><div class="pdstat" id="pdStat" role="status" aria-live="polite" hidden></div></div>' +
-      f('pdId', 'Paid Detail ID', pd.id, ' inputmode="numeric" autocomplete="off" placeholder="e.g. 4320372"', '19a') +
+      f('pdId', 'Paid Detail ID', pd.id, ' inputmode="numeric" autocomplete="off" placeholder="e.g. 1234567"', '19a') +
       '<div class="field" data-sec="19b"><div class="datepair">' + dateFrame('pdStartDate', pd.date, 'Date from') + dateFrame('pdEndDate', pd.endDate || pd.date, 'Date to') + '</div>' +
       '<div class="hint pdwarn" id="pdDateWarn" hidden></div>' +
       '<div class="pdmore" id="pdMoreWrap"><button type="button" class="btn sm" data-act="pdMoreDates" id="pdMoreDatesBtn">Also add on other dates</button>' +
@@ -10844,7 +11133,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div class="field otdur"><label for="pdDur">Hrs : Min</label><input id="pdDur" class="pddurout" inputmode="decimal" autocomplete="off" placeholder="auto" value="' + esc(pd.durationMin ? E.fmtHM(pd.durationMin) : '') + '"></div></div>' +
       '<div class="hint" id="pdDurHint">From the time range (may cross midnight). :59 rounds up to the hour. Overnight details move Date to to the next day.</div></div>' +
       '<div class="field" data-sec="19d"><div class="pdvendhd"><label for="pdVendor">Vendor</label><button type="button" class="btn sm" data-act="pdVendors" id="pdVendorsBtn">Previous vendors</button></div>' +
-      '<input id="pdVendor" value="' + esc(pd.vendor || '') + '" autocomplete="off" placeholder="e.g. Resort World Casino / Employee Parking Lot">' +
+      '<input id="pdVendor" value="' + esc(pd.vendor || '') + '" autocomplete="off" autocapitalize="words" placeholder="Please provide a vendor name">' +
       '<div class="pdvpick" id="pdVendorPicker" hidden><div' + (vendors.length < 6 ? ' hidden' : '') + '><input id="pdVendorQ" type="search" autocomplete="off" placeholder="Search vendors"></div><div id="pdVendorList"></div></div></div>' +
       f('pdAddr', 'Address Line 1', pd.address1, ' class="acIn" data-ac="pd" autocomplete="off" autocapitalize="words" enterkeyhint="next" placeholder="Street address"', '19e') +
       f('pdAddr2', 'Address Line 2', pd.address2, ' class="acIn" data-ac="pd" autocomplete="off" autocapitalize="characters" enterkeyhint="done" placeholder="City, State, ZIP"', '19f') +
@@ -10861,6 +11150,49 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var box = document.getElementById('asgPaid'); // none; pay/remind use form
   }
   // ---------- daily assignment (day sheet) ----------
+  function asgDetailCaption(t) {
+    if (!t || !t.detail) return '';
+    var lb = String(t.detail.label || '').trim();
+    if (!lb) return '';
+    if (/:$/.test(lb)) return lb; // Detail Name: / similar — use the caption exactly
+    return lb + (t.detail.required ? '' : ' (optional)');
+  }
+  function asgAddrCaption(sel) {
+    return sel === 'detail' ? 'Detail Report Location:' : 'Address (optional)';
+  }
+  function asgAddrHint(sel) {
+    if (sel === 'detail') return 'Type a street, place, or intersection (for example W 34th St & 7th Ave). Previously used report locations are the only presets. As you type: those saved locations first, then NYC addresses' + (mapsKey() ? ', then Google Places' : ', then places outside NYC') + '. Offline: saved only.';
+    return 'Suggestions as you type: ' + (sel === 'training' ? 'training sites and ' : sel === 'court' ? 'courts and ' : '') + 'your saved addresses first, then NYC addresses' + (mapsKey() ? ', then Google Places' : ', then places outside NYC') + '. Offline: saved only.';
+  }
+  function prevDetailNameHtml(sel, cur) {
+    if (sel !== 'detail') return '<div id="prevDetailNames" hidden></div>';
+    var names = E.previousDetailNames(S.assignments, S.tours);
+    ui.prevDetailNames = names;
+    if (!names.length) return '<div id="prevDetailNames" hidden></div>';
+    var chips = names.map(function (n, i) {
+      var on = E.textMatchKey(n) === E.textMatchKey(cur || '');
+      return '<button type="button" class="sitechip prevd' + (on ? ' on' : '') + '" aria-pressed="' + on + '" data-act="prevDetailName" data-i="' + i + '"><b>' + esc(n) + '</b></button>';
+    }).join('');
+    return '<div id="prevDetailNames"><div class="lbl2">Previous detail names</div><div class="sitechips">' + chips + '</div></div>';
+  }
+  function prevDetailLocHtml(sel, cur) {
+    if (sel !== 'detail') return '<div id="prevDetailLocs" hidden></div>';
+    var locs = E.previousDetailLocations(S.assignments, S.tours);
+    ui.prevDetailLocs = locs;
+    if (!locs.length) return '<div id="prevDetailLocs" hidden></div>';
+    var chips = locs.map(function (n, i) {
+      var on = E.textMatchKey(n) === E.textMatchKey(cur || '');
+      return '<button type="button" class="sitechip prevl' + (on ? ' on' : '') + '" aria-pressed="' + on + '" data-act="prevDetailLoc" data-i="' + i + '"><b>' + esc(n) + '</b></button>';
+    }).join('');
+    return '<div id="prevDetailLocs"><div class="lbl2">Previous report locations</div><div class="sitechips">' + chips + '</div></div>';
+  }
+  function asgDetailFieldHtml(a, sel) {
+    var t = E.assignmentType(sel);
+    return '<div class="field" id="asgDetailWrap" style="margin-top:10px"' + (t && t.detail ? '' : ' hidden') + '>' +
+      prevDetailNameHtml(sel, a && a.detail) +
+      '<label for="asgDetail" id="asgDetailLbl">' + esc(asgDetailCaption(t)) + '</label>' +
+      '<input id="asgDetail" list="asgSug" autocomplete="off" autocapitalize="words" placeholder="' + esc(t && t.detail ? t.detail.placeholder : '') + '" value="' + esc((a && a.detail) || '') + '"><datalist id="asgSug">' + asgSuggest(sel) + '</datalist><div class="err" id="asgDetail-err"></div></div>';
+  }
   function asgExpand() { var b = document.getElementById('asgBox'); if (b && b.classList.contains('rdomin')) b.classList.remove('rdomin'); }
   function asgSection(iso, d, dt) {
     var a = S.assignments[iso] || {}, raw = a.type || '', tRaw = E.assignmentType(raw);
@@ -10876,8 +11208,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var tb = S.tours[iso] || {}, rdoMin = !!(dt && dt.rdo) && !sel && !raw && !E.hasPaidDetail(a) && !tb.start && !tb.status;
     return '<div class="card asgbox' + (rdoMin ? ' rdomin' : '') + '" id="asgBox" data-sec="6d" data-sel="' + esc(sel) + '" data-orig="' + esc(sel) + '" data-odetail="' + esc(a.detail || '') + '"><h3 style="font-size:15px;margin-top:0">Assignment</h3>' + old +
       '<div class="hint rdominhint" id="asgRdoHint">RDO: no assignment. Type a tour start above if you\'re working, or add a paid detail.</div><div class="asgopts" id="asgOpts">' + opts + '</div>' +
-      '<div class="field" id="asgDetailWrap" style="margin-top:10px"' + (t && t.detail ? '' : ' hidden') + '><label for="asgDetail" id="asgDetailLbl">' + esc(t && t.detail ? t.detail.label + (t.detail.required ? '' : ' (optional)') : '') + '</label>' +
-      '<input id="asgDetail" list="asgSug" autocomplete="off" placeholder="' + esc(t && t.detail ? t.detail.placeholder : '') + '" value="' + esc(a.detail || '') + '"><datalist id="asgSug">' + asgSuggest(sel) + '</datalist><div class="err" id="asgDetail-err"></div></div>' +
+      asgDetailFieldHtml(a, sel) +
       addrBlock(a, sel, iso, st) +
       '<div id="asgSlipHost" data-iso="' + iso + '">' + (inPaidSlip ? '' : slipHtml(iso, sel)) + '</div>' +
       '<div class="field" id="asgNotesWrap" style="margin-top:10px"' + (sel ? '' : ' hidden') + '><label for="asgNotes">Assignment notes (optional)</label><textarea id="asgNotes" placeholder="e.g. report to 1 Police Plaza, bring vest">' + esc(a.notes || '') + '</textarea></div>' +
@@ -11779,7 +12110,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     return C.trainingSites.map(function (x, i) { return '<button type="button" class="sitechip' + (i === cur ? ' on' : '') + '" aria-pressed="' + (i === cur) + '" data-act="sitePick" data-i="' + i + '"><b>' + esc(x.name) + '</b><span>' + esc(x.address) + '</span></button>'; }).join('');
   }
   function trLocOptions() { return E.trainingLocations(S.assignments).map(function (x) { return '<option value="' + esc(x.name) + '"' + (x.address ? ' label="' + esc(x.address) + '"' : '') + '>'; }).join(''); }
-  function addrOptions(type) { return E.addressSuggestions(S.assignments, type).map(function (x) { return '<option value="' + esc(x.value) + '"' + (x.label ? ' label="' + esc(x.label) + '"' : '') + '>'; }).join(''); }
+  function addrOptions(type) { return E.addressSuggestions(S.assignments, type, S.tours).map(function (x) { return '<option value="' + esc(x.value) + '"' + (x.label ? ' label="' + esc(x.label) + '"' : '') + '>'; }).join(''); }
   var NAV_KEY = 'patrolSchedule.defaultNav'; // device-only; never written into S or synced
   var THEME_KEY = 'patrolSchedule.appearance'; // device-only; never written into S or synced
   function appearancePref() {
@@ -11902,10 +12233,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div class="field" style="margin-top:10px"><label for="asgTrLoc">Training location (optional)</label><input id="asgTrLoc" list="asgTrLocSug" autocomplete="off" placeholder="e.g. Police Academy-College Point" value="' + esc(sel === 'training' ? a.place || '' : '') + '"><datalist id="asgTrLocSug">' + trLocOptions() + '</datalist>' +
       '<div class="hint">Where the training is. Tap a site above or type your own; the training text above stays as you typed it.</div></div></div>' +
       courtBlock(a, sel) +
-      '<div class="field" style="margin-top:10px"><label for="asgAddr">Address (optional)</label><input id="asgAddr" class="acIn" data-ac="asg" autocomplete="off" autocapitalize="words" enterkeyhint="done" placeholder="Street, city or place name" value="' + esc(a.address || '') + '"><datalist id="asgAddrSug">' + addrOptions(sel) + '</datalist>' +
-      '<div class="hint">Suggestions as you type: ' + (sel === 'training' ? 'training sites and ' : sel === 'court' ? 'courts and ' : '') + 'your saved addresses first, then NYC addresses' + (mapsKey() ? ', then Google Places' : ', then places outside NYC') + '. Offline: saved only.</div></div>' +
-      '<div id="asgNav">' + navArea(a.address, sel === 'training' ? 'Training' : 'Court') + '</div>' +
-      '<button type="button" class="btn block" id="etaBtn" data-act="etaGo" style="margin-top:8px"' + (a.address ? '' : ' hidden') + '>Get arrival time</button><div id="etaOut" class="etaout" hidden></div></div>';
+      prevDetailLocHtml(sel, a.address) +
+      '<div class="field" style="margin-top:10px"><label for="asgAddr" id="asgAddrLbl">' + esc(asgAddrCaption(sel)) + '</label><input id="asgAddr" class="acIn" data-ac="asg" autocomplete="off" autocapitalize="words" enterkeyhint="done" placeholder="' + (sel === 'detail' ? 'Street, intersection, or place name' : 'Street, city or place name') + '" value="' + esc(a.address || '') + '"><datalist id="asgAddrSug">' + addrOptions(sel) + '</datalist>' +
+      '<div class="hint" id="asgAddrHint">' + asgAddrHint(sel) + '</div></div>' +
+      '<div id="asgNav">' + navArea(a.address, sel === 'training' ? 'Training' : sel === 'detail' ? 'report location' : 'Court') + '</div>' +
+      '<button type="button" class="btn block" id="etaBtn" data-act="etaGo" style="margin-top:8px"' + (a.address && sel !== 'detail' ? '' : ' hidden') + '>Get arrival time</button><div id="etaOut" class="etaout" hidden></div></div>';
   }
   function courtBlock(a, sel) {
     var pv = E.previousCourts(S.assignments, 6); ui.prevCourts = pv;
@@ -11921,7 +12253,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     return Object.keys(by).map(function (k) { return '<div class="ctype">' + esc(k) + '</div><div class="sitechips">' + by[k].map(function (c) { var on = keys.indexOf(c.boro + '|' + c.type + '|' + c.i) >= 0; return '<button type="button" class="sitechip court' + (on ? ' on' : '') + '" aria-pressed="' + on + '" data-act="courtPick" data-b="' + esc(boro) + '" data-t="' + c.type + '" data-i="' + c.i + '"><b>' + esc(c.name) + '</b><span>' + esc(c.address) + '</span></button>'; }).join('') + '</div>'; }).join('');
   }
   function curCommand(d) { var c = S.profile ? (d != null ? recAt(d).command : S.profile.command) : null; return c && c.address ? c : null; }
-  function destWord() { var b = document.getElementById('asgBox'); return b && b.dataset.sel === 'training' ? 'Training' : 'Court'; }
+  function destWord() { var b = document.getElementById('asgBox'); var sel = b && b.dataset.sel; return sel === 'training' ? 'Training' : sel === 'detail' ? 'report location' : 'Court'; }
   function navArea(addr, word) {
     if (!addr) return ''; var c = curCommand();
     return '<div class="navleg"><div class="lbl2">Navigate to ' + esc(word) + '</div>' + navLinks(addr, 'leg-dest') + '</div>' +
@@ -11942,7 +12274,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var v = (document.getElementById('asgAddr') || {}).value || '', n = document.getElementById('asgNav');
     if (n) {
       n.innerHTML = navArea(v.trim(), destWord());
-      var eta = document.getElementById('etaBtn'); if (eta) eta.hidden = !v.trim();
+      var box = document.getElementById('asgBox'), hideEta = !v.trim() || (box && box.dataset.sel === 'detail');
+      var eta = document.getElementById('etaBtn'); if (eta) eta.hidden = hideEta;
       var o = document.getElementById('etaOut'); if (o) { o.hidden = true; o.innerHTML = ''; }
       syncPicks();
     }
@@ -11966,6 +12299,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     Array.prototype.forEach.call(document.querySelectorAll('#boroChips .pick'), function (b) { setOn(b, b.dataset.b === be.value); });
     Array.prototype.forEach.call(document.querySelectorAll('#courtList .court'), function (b) { setOn(b, m.keys.indexOf(b.dataset.b + '|' + b.dataset.t + '|' + b.dataset.i) >= 0); });
     Array.prototype.forEach.call(document.querySelectorAll('#prevCourts .prevc'), function (b) { var c = (ui.prevCourts || [])[+b.dataset.i]; setOn(b, sel === 'court' && c && prevOn(c, { type: 'court', address: addr, place: place })); });
+    Array.prototype.forEach.call(document.querySelectorAll('#prevDetailLocs .prevl'), function (b) {
+      var loc = (ui.prevDetailLocs || [])[+b.dataset.i];
+      setOn(b, sel === 'detail' && loc && E.textMatchKey(loc) === E.textMatchKey(addr));
+    });
   }
   // Google Maps JS API (only when the user saved their own key; nothing is loaded otherwise)
   var mapsLoad = null, mapsLoadedKey = '';
@@ -12003,7 +12340,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       navigator.geolocation.getCurrentPosition(function (p) { res({ lat: p.coords.latitude, lng: p.coords.longitude }); }, function (e) { rej({ code: e && e.code }); }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
     });
   }
-  function asgSuggest(type) { var t = E.assignmentType(type); return t && t.suggest ? E.assignmentSuggestions(S.assignments, type).map(function (v) { return '<option value="' + esc(v) + '">'; }).join('') : ''; }
+  function asgSuggest(type) {
+    var t = E.assignmentType(type); if (!t || !t.suggest) return '';
+    var list = type === 'detail' ? E.previousDetailNames(S.assignments, S.tours) : E.assignmentSuggestions(S.assignments, type);
+    return list.map(function (v) { return '<option value="' + esc(v) + '">'; }).join('');
+  }
   // Per-item "Add to Google Calendar" links for one day (tour, overtime, leave, payday, D/D)
   function calendarFeedUrl(token, webcal) {
     var u = functionsUrl('calendar-feed') + '?t=' + encodeURIComponent(token || '');
@@ -12238,7 +12579,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<div id="pduKeep" style="font-weight:700;margin-top:6px"></div></div>' : '';
     var timePair = function (prefix, startId, endId, startVal, endVal, startDate, endDate, fillAct) {
       return '<div class="sebox"' + (prefix === 'worked' ? ' id="seBox" data-d="' + d + '" data-sl="' + (regLen || '') + '" data-ss="' + esc(defStart) + '"' : '') + '><div class="row">' +
-        '<div class="field">' + dateFrame(prefix + 'StartDate', startDate, 'Date from') + '<label for="' + startId + '">Tour start</label><input id="' + startId + '" class="timeIn" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="HH:MM" value="' + esc(startVal) + '"><div class="err" id="' + startId + '-err"></div>' +
+        '<div class="field">' + dateFrame(prefix + 'StartDate', startDate, 'Date from') + '<label for="' + startId + '">Tour start</label><input id="' + startId + '" class="timeIn" inputmode="numeric" enterkeyhint="next" maxlength="13" autocomplete="off" placeholder="HH:MM or 1722x0137" value="' + esc(startVal) + '"><div class="err" id="' + startId + '-err"></div>' +
         '<button type="button" class="btn sm schedfill" data-act="fillSched" data-for="' + prefix + '">Default Tour</button></div>' +
         '<div class="field">' + dateFrame(prefix + 'EndDate', endDate, 'Date to') + '<label for="' + endId + '">Tour end</label><input id="' + endId + '" class="timeIn" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="HH:MM" value="' + esc(endVal) + '"><div class="err" id="' + endId + '-err"></div></div></div></div>';
     };
@@ -12314,6 +12655,39 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (E.isISODate(iso) && S.tours[iso] && S.tours[iso].len) return +S.tours[iso].len;
     var rec = box ? recAt(+box.dataset.d) : (E.isISODate(iso) ? recAt(E.toDay(iso)) : recAt(T));
     return (rec && rec.tourLen) || (S.profile && S.profile.tourLen) || 0;
+  }
+  // If the start field holds a changed-tour code (1722x0137), fill start + end and adopt the span as the tour length when it differs.
+  function applyTourCross(startId, endId, startCapId, endCapId) {
+    var startEl = document.getElementById(startId); if (!startEl) return false;
+    var parsed = E.parseTourCross(startEl.value); if (!parsed) return false;
+    startEl.value = parsed.start;
+    var endEl = endId && document.getElementById(endId);
+    if (endEl) endEl.value = parsed.end;
+    var sd = (startCapId && dateIso(startCapId)) || '';
+    if (!sd) {
+      var box = document.getElementById('seBox');
+      if (box && box.dataset.d) sd = E.toISO(+box.dataset.d);
+      if (!sd) sd = ((document.getElementById('otDate') || {}).value || '');
+    }
+    if (endCapId && E.isISODate(sd)) {
+      var startDay = E.countsNextDay(parsed.start) ? E.toISO(E.toDay(sd) - 1) : sd;
+      if (startCapId) setDateCap(startCapId, startDay, 'auto');
+      var nd = E.suggestEndDate(startDay, parsed.start, startDay, parsed.end);
+      if (nd) setDateCap(endCapId, nd, 'auto');
+    }
+    var span = E.hoursBetween(parsed.start, parsed.end);
+    var spanMin = span != null ? Math.round(span * 60) : 0;
+    var curLen = (typeof tourLenMin === 'function') ? tourLenMin() : 0;
+    if (spanMin > 0 && spanMin !== curLen) {
+      var dl = document.getElementById('dayLen');
+      if (dl) {
+        dl.value = E.fmtHM(spanMin);
+        var boxLen = document.getElementById('dayLenBox'); if (boxLen) boxLen.hidden = false;
+        var tog = document.getElementById('lenToggle'); if (tog) { tog.textContent = 'Use my regular tour length'; tog.setAttribute('aria-expanded', 'true'); }
+        if (typeof tourPrev === 'function') tourPrev('dayLen');
+      }
+    }
+    return true;
   }
   // Live Tour end = start + default tour length. Only runs when start (or length) changes; a manual end is kept until the next start edit.
   function autoEndFromStart(startId, endId, startCapId, endCapId) {
@@ -12427,20 +12801,34 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
 
   // Typed tour end vs scheduled end: 1-14 min late = note only (no OT); 15+ = overtime; early = pick the balance to charge
+  function isAddEntryForm() {
+    var tb = document.getElementById('tourBox');
+    return !!(tb && tb.dataset.add === '1');
+  }
+  function dayScheduledWindow() {
+    var box = document.getElementById('seBox') || document.getElementById('tourBox');
+    if (!box || box.dataset.d == null || box.dataset.d === '') return null;
+    var rec = recAt(+box.dataset.d);
+    return E.defaultTourWindow(E.toISO(+box.dataset.d), box.dataset.ss || (rec && rec.tourStart), +box.dataset.sl || (rec && rec.tourLen) || 0);
+  }
   function endCheck(start, len) {
     var ei = document.getElementById('dayEnd'), note = document.getElementById('endNote'), sb = document.getElementById('shortBox'), er = document.getElementById('dayEnd-err'); if (!ei || !note || !sb) return null;
     var raw = ei.value.trim(), end = raw ? E.normTime(raw) : '', c = end && start && len ? E.endCompare(start, len, end) : null;
     if (er) er.textContent = raw && !end && raw.length >= 5 ? 'Use HH:MM, 24-hour (00:00–23:59)' : '';
-    sb.hidden = !(c && c.kind === 'early');
     var mm = function (m) { return m < 60 ? m + ' min' : E.fmtHM(m); };
-    var box = document.getElementById('seBox'), wr = readWorkedTimes(), sc = readSchedTimes(true);
-    if (sc) {
-      if (!wr.start && sc.start) wr.start = sc.start;
-      if (!wr.startDate && sc.startDate) wr.startDate = sc.startDate;
-      if (wr.start && wr.end && !wr.endDate) wr.endDate = E.suggestEndDate(wr.startDate, wr.start, '', wr.end);
+    var box = document.getElementById('seBox'), wr = readWorkedTimes(), sc = readSchedTimes(false);
+    if (wr.start && wr.end && !wr.endDate) wr.endDate = E.suggestEndDate(wr.startDate, wr.start, wr.endDate || '', wr.end);
+    var vs;
+    if (isAddEntryForm()) {
+      // Extra tour on an already-scheduled day: OT is time outside the day's scheduled window, not early/late vs official length from this entry's start.
+      var def = dayScheduledWindow();
+      vs = (wr.start && wr.end && def) ? workedVS(wr, def) : null;
+      c = vs;
+    } else {
+      vs = E.inferTourOT(wr, { sched: sc, tourLen: len, vsOpts: workedVSOpts() });
+      if (vs) c = vs;
     }
-    var vs = (wr.start && wr.end && sc && sc.start && sc.end) ? workedVS(wr, sc) : null;
-    if (vs) c = vs;
+    sb.hidden = !(c && c.kind === 'early');
     var noteCls = 'endnote' + (c ? ' ' + c.kind : '');
     if (c && c.kind === 'late') setEndNote('<b>Ended ' + mm(c.delta || (c.otMin || 0)) + ' late</b>' + (c.sched ? ' (scheduled ' + esc(c.sched) + ')' : '') + '. No overtime: OT starts at ' + C.otThresholdMin + ' minutes past the scheduled end.', noteCls);
     else if (c && c.kind === 'ot') setEndNote('<b>Overtime: ' + E.fmtHM(c.otMin) + '</b>' + (c.sched ? ' (' + esc(c.sched) + '&ndash;' + esc(c.end) + ')' : '') + '. Saved to your Overtime log for this day.' + (box ? otEditHtml(E.toISO(+box.dataset.d)) : ''), noteCls);
@@ -12729,13 +13117,13 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     return '<div class="otslip" id="' + box + '" data-sec="' + sec + '"><h4>' + title + '</h4>' +
       '<div class="row"><div class="field">' + dateFrame(ds, startDate || '', 'Date from') + '</div>' +
       '<div class="field">' + dateFrame(de, endDate || startDate || '', 'Date to') + '</div></div>' +
-      '<div class="row"><div class="field"><label for="' + sid + '">Time from</label><input id="' + sid + '" class="timeIn" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="HH:MM" value="' + esc(start || '') + '"></div>' +
+      '<div class="row"><div class="field"><label for="' + sid + '">Time from</label><input id="' + sid + '" class="timeIn" inputmode="numeric" enterkeyhint="next" maxlength="13" autocomplete="off" placeholder="HH:MM or 1722x0137" value="' + esc(start || '') + '"></div>' +
       '<div class="field"><label for="' + eid + '">Time to</label><input id="' + eid + '" class="timeIn" inputmode="numeric" pattern="[0-9:]*" maxlength="5" autocomplete="off" placeholder="HH:MM" value="' + esc(end || '') + '"></div>' +
       '<div class="field otdur"><label for="' + dur + '">Hrs : Min</label><input id="' + dur + '" class="durOut" readonly tabindex="-1" value="' + esc(otDurText(startDate, start, endDate, end)) + '"></div></div>' +
       '<button type="button" class="btn sm schedfill" data-act="otFillTour" data-for="' + kind + '">Default Tour</button>' +
       '<div class="hint entryhint">' + (isW
         ? 'Empty until you type a time or tap Default Tour (fills your default tour). 24-hour time: type digits (730 &rarr; 07:30, 2300 &rarr; 23:00).'
-        : 'Empty until you type a time or tap Default Tour. Overtime is worked time compared to this (or to your default tour, if you leave it blank).') + '</div></div>';
+        : 'Empty until you type a time or tap Default Tour. Overtime is worked time beyond this scheduled window. If you leave it blank, the tour you entered (a changed tour included) is the baseline — not your original default tour.') + '</div></div>';
   }
   function otResolveWindows(e) {
     var iso = e.date || E.toISO(T), tour = S.tours[iso] || {}, def = otDefaultWin(iso), src = tour;
@@ -12845,8 +13233,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       otMin = wm || 0;
       kind = otMin > 0 ? 'ot' : 'on';
     } else {
-      var sc = otReadSched(true);
-      if (wr.start && wr.end && sc && sc.start && sc.end) vs = workedVS(wr, sc);
+      var sc = otReadSched(false);
+      vs = E.inferTourOT(wr, { sched: sc, tourLen: tourLenMin() || ((S.profile && S.profile.tourLen) || 0), vsOpts: workedVSOpts(meta.iso) });
       if (vs) { otMin = vs.kind === 'ot' ? vs.otMin : 0; kind = vs.kind; }
       if (schedBox) schedBox.hidden = !(custom || kind === 'ot');
       var sEl = document.getElementById('otSchedDur');
@@ -13186,7 +13574,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="' + ((s.defaultCalendar || 'google') === 'apple' ? 'on' : '') + '" data-act="calDefault" data-v="apple">Apple</button></div>' +
       '<h3 style="margin-top:20px" data-sec="9m">Subscribe to calendar</h3>' + calendarSubscribeHtml() +
       '<button class="btn danger block" data-act="reset" data-sec="9k" style="margin-top:20px">Erase all data</button>' +
-      '<p class="build-tag muted" id="appBuildTag">Build r106 · patrol-test-f81d783ef082</p>');
+      '<p class="build-tag muted" id="appBuildTag">Build r107 · patrol-test-5bd8f8a0d4b6</p>');
   }
 
   // ---------- Day summary: what's saved on a date; tap an entry to view or change it ----------
@@ -13201,9 +13589,14 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var placeEl = document.getElementById(placeId), boroEl = document.getElementById('asgBoro');
     var addr = addrEl ? addrEl.value : '', place = placeEl ? placeEl.value : '', boro = boroEl ? boroEl.value : '';
     if (typ === 'court') boro = (E.selectedCourts(addr, place, boro).boro) || boro;
+    if (typ === 'detail') {
+      addr = E.canonicalLabel(addr, E.previousDetailLocations(S.assignments, S.tours));
+    }
+    var det = (document.getElementById('asgDetail') || {}).value || '';
+    if (typ === 'detail') det = E.canonicalLabel(det, E.previousDetailNames(S.assignments, S.tours));
     return {
       type: typ,
-      detail: (document.getElementById('asgDetail') || {}).value || '',
+      detail: det,
       notes: (document.getElementById('asgNotes') || {}).value || '',
       address: addr,
       place: place,
@@ -13231,8 +13624,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var html = '<div class="card asgbox" id="asgBox" data-sec="6k" data-sel="' + esc(sel) + '" data-orig="' + esc(sel) + '" data-odetail="' + esc(a.detail || '') + '" data-d="' + d + '" data-eid="' + esc(eid || '') + '"><h3 style="font-size:15px;margin-top:0">' + (eid ? 'Edit assignment' : 'Assignment') + '</h3>' +
       '<div class="hint">This is an assignment only — it does not add a tour or change hours, overtime, chart time, or the tour-change count.</div>' +
       '<div class="asgopts" id="asgOpts">' + opts + '</div>' +
-      '<div class="field" id="asgDetailWrap" style="margin-top:10px"' + (t && t.detail ? '' : ' hidden') + '><label for="asgDetail" id="asgDetailLbl">' + esc(t && t.detail ? t.detail.label + (t.detail.required ? '' : ' (optional)') : '') + '</label>' +
-      '<input id="asgDetail" list="asgSug" autocomplete="off" placeholder="' + esc(t && t.detail ? t.detail.placeholder : '') + '" value="' + esc(a.detail || '') + '"><datalist id="asgSug">' + asgSuggest(sel) + '</datalist><div class="err" id="asgDetail-err"></div></div>' +
+      asgDetailFieldHtml(a, sel) +
       addrBlock(a, sel, iso, st) +
       '<div id="asgSlipHost" hidden data-iso="' + iso + '"></div>' +
       '<div class="field" id="asgNotesWrap" style="margin-top:10px"' + (sel ? '' : ' hidden') + '><label for="asgNotes">Assignment notes (optional)</label><textarea id="asgNotes" placeholder="e.g. report to 1 Police Plaza, bring vest">' + esc(a.notes || '') + '</textarea></div>' +
@@ -13703,10 +14095,17 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     lvSave: function (t) {
       var iso = E.toISO(+t.dataset.d), rawType = document.getElementById('lvOpts').dataset.sel, note = document.getElementById('lvNote').value.trim();
       var type = (rawType && rawType !== 'working' && rawType !== 'rdo') ? rawType : '';
-      var asgIn = { pd: document.getElementById('pdForm') ? readPaid() : ((S.assignments[iso] || {}).pd || {}), type: document.getElementById('asgBox').dataset.sel, detail: document.getElementById('asgDetail').value, notes: document.getElementById('asgNotes').value, address: document.getElementById('asgAddr').value, place: document.getElementById(document.getElementById('asgBox').dataset.sel === 'training' ? 'asgTrLoc' : 'asgPlace').value, boro: (function () { var be = document.getElementById('asgBoro').value, sel = document.getElementById('asgBox').dataset.sel; return (sel === 'court' && E.selectedCourts(document.getElementById('asgAddr').value, document.getElementById('asgPlace').value, be).boro) || be; })() }, asgErr = E.validateAssignment(asgIn);
+      var asgSel = document.getElementById('asgBox').dataset.sel, asgDet = document.getElementById('asgDetail').value, asgAddr = document.getElementById('asgAddr').value;
+      if (asgSel === 'detail') {
+        asgDet = E.canonicalLabel(asgDet, E.previousDetailNames(S.assignments, S.tours));
+        asgAddr = E.canonicalLabel(asgAddr, E.previousDetailLocations(S.assignments, S.tours));
+        var _di = document.getElementById('asgDetail'); if (_di) _di.value = asgDet;
+        var _ai = document.getElementById('asgAddr'); if (_ai) _ai.value = asgAddr;
+      }
+      var asgIn = { pd: document.getElementById('pdForm') ? readPaid() : ((S.assignments[iso] || {}).pd || {}), type: asgSel, detail: asgDet, notes: document.getElementById('asgNotes').value, address: asgAddr, place: document.getElementById(asgSel === 'training' ? 'asgTrLoc' : 'asgPlace').value, boro: (function () { var be = document.getElementById('asgBoro').value; return (asgSel === 'court' && E.selectedCourts(asgAddr, document.getElementById('asgPlace').value, be).boro) || be; })() }, asgErr = E.validateAssignment(asgIn);
       if (asgErr) { var ae = document.getElementById('asgDetail-err'); ae.textContent = asgErr; document.getElementById('asgDetail').classList.add('bad'); document.getElementById('asgDetail').focus(); return toast(asgErr); }
       var box = document.getElementById('tourBox'), status = box.dataset.status, orig = box.dataset.orig, lenTxt = document.getElementById('dayLen').value.trim(), len = lenTxt ? E.parseHM(lenTxt) : null, start = document.getElementById('dayStart').value.trim();
-      var mine = box.dataset.rdo === '1', rdoOt = null;
+      var mine = box.dataset.rdo === '1', rdoOt = null, addEntry = box.dataset.add === '1';
       if (rawType === 'rdo') {
         if (status !== 'ddoffnew' && status !== 'rdootoff') status = (orig === 'ddoff' || orig === 'dd') ? orig : (mine ? '' : 'off');
       }
@@ -13742,12 +14141,12 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var defWin = E.defaultTourWindow(iso, sc.start || recAt(+t.dataset.d).tourStart, sc.len || recAt(+t.dataset.d).tourLen);
       var wr = { startDate: wStartDate || iso, start: start || effStart, endDate: wEndDate || '', end: end };
       if (!wr.endDate && wr.start) wr.endDate = E.suggestEndDate(wr.startDate, wr.start, '', wr.end || wr.start);
-      var sch = (schedStart && schedEnd) ? { startDate: sStartDate || iso, start: schedStart, endDate: sEndDate || sStartDate || iso, end: schedEnd } : defWin;
-      var vs = (!rdoOt && wr.start && wr.end) ? workedVS(wr, sch) : null;
+      var sch = (schedStart && schedEnd) ? { startDate: sStartDate || iso, start: schedStart, endDate: sEndDate || sStartDate || iso, end: schedEnd } : null;
+      var vs = (!rdoOt && wr.start && wr.end) ? E.inferTourOT(wr, { sched: sch, tourLen: effLen || (sc && sc.len) || recAt(+t.dataset.d).tourLen, vsOpts: workedVSOpts(+t.dataset.d) }) : null;
       var ec = vs || ((rdoOt || !end || !effStart) ? null : E.endCompare(effStart, effLen, end));
       if (ec && ec.kind === 'on') { if (!timesSet) end = ''; ec = null; } // the scheduled end isn't a change
       if (!rdoOt && end && !effStart) { document.getElementById('dayEnd-err').textContent = 'Set the tour start first'; return toast('Set a tour start to use a tour end'); }
-      if (ec && ec.kind === 'early') {
+      if (ec && ec.kind === 'early' && !addEntry) {
         var sbt = document.getElementById('shortBox').dataset.sel; if (!sbt) { var se2 = document.getElementById('shortErr'); se2.textContent = 'Pick Comp time, Chart time or Vacation time'; document.getElementById('shortBox').scrollIntoView({ block: 'center' }); return toast('Pick which balance to charge for leaving early'); }
         var typedMin = readShortHM(), chargeMin = typedMin || ec.shortMin;
         if (!(chargeMin > 0)) { document.getElementById('shortErr').textContent = 'Enter hours and minutes'; return toast('Enter the time used as hours and minutes'); }
@@ -13762,7 +14161,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         return o;
       };
       var endX = function (o) { if (end && !rdoOt) o.end = end; if (shortSel) o.short = shortSel; return stampTimes(o); };
-      var sq = mySquad(), d = +t.dataset.d, msg = '', addEntry = box.dataset.add === '1';
+      var sq = mySquad(), d = +t.dataset.d, msg = '';
       if (addEntry) {
         if (!start || !end) return toast('Enter the start and end times for this entry');
         var prevT = S.tours[iso] || {}, eid = box.dataset.eid || uid(), ent = E.cleanTourEntry({ id: eid, start: start, end: end, startDate: wStartDate || iso, endDate: wEndDate || wr.endDate, schedStart: schedStart, schedEnd: schedEnd, schedStartDate: sStartDate, schedEndDate: sEndDate });
@@ -13846,14 +14245,22 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       Array.prototype.forEach.call(t.parentNode.children, function (b) { var on = b === t; b.classList.toggle('on', on); b.style.background = on ? b.dataset.c : ''; });
       var w = document.getElementById('asgDetailWrap'), inp = document.getElementById('asgDetail');
       w.hidden = !(ty && ty.detail); document.getElementById('asgNotesWrap').hidden = !id;
-      if (ty && ty.detail) { document.getElementById('asgDetailLbl').textContent = ty.detail.label + (ty.detail.required ? '' : ' (optional)'); inp.placeholder = ty.detail.placeholder || ''; document.getElementById('asgSug').innerHTML = asgSuggest(id); }
+      if (ty && ty.detail) { document.getElementById('asgDetailLbl').textContent = asgDetailCaption(ty); inp.placeholder = ty.detail.placeholder || ''; document.getElementById('asgSug').innerHTML = asgSuggest(id); }
       inp.value = id === box.dataset.orig ? box.dataset.odetail : ''; inp.classList.remove('bad'); document.getElementById('asgDetail-err').textContent = '';
       var aw = document.getElementById('asgAddrWrap'), ai = document.getElementById('asgAddr');
       aw.hidden = !(ty && ty.address); document.getElementById('asgSites').hidden = id !== 'training';
       var cb = document.getElementById('asgCourt'); cb.hidden = id !== 'court'; var same = id === box.dataset.orig;
       document.getElementById('asgPlace').value = same ? cb.dataset.oplace : ''; document.getElementById('asgTrLoc').value = same ? document.getElementById('asgSites').dataset.oplace : ''; document.getElementById('asgBoro').value = same ? cb.dataset.oboro : '';
       document.getElementById('asgPlace').dataset.auto = '';
-      ai.value = id === box.dataset.orig ? aw.dataset.oaddr : ''; document.getElementById('asgAddrSug').innerHTML = addrOptions(id); refreshNav(); refreshSlip();
+      ai.value = id === box.dataset.orig ? aw.dataset.oaddr : ''; document.getElementById('asgAddrSug').innerHTML = addrOptions(id);
+      var al = document.getElementById('asgAddrLbl'); if (al) al.textContent = asgAddrCaption(id);
+      var ah = document.getElementById('asgAddrHint'); if (ah) ah.textContent = asgAddrHint(id);
+      var pn = document.getElementById('prevDetailNames');
+      if (pn) pn.outerHTML = prevDetailNameHtml(id, inp.value);
+      var pl = document.getElementById('prevDetailLocs');
+      if (pl) pl.outerHTML = prevDetailLocHtml(id, ai.value);
+      else if (ai && ai.parentNode) ai.parentNode.insertAdjacentHTML('beforebegin', prevDetailLocHtml(id, ai.value));
+      refreshNav(); refreshSlip();
     },
     boroPick: function (t) {
       // Browse another borough: shows its courts; the current court (name + address) stays until a new one is picked,
@@ -13867,6 +14274,18 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     prevCourt: function (t) {
       var c = (ui.prevCourts || [])[+t.dataset.i]; if (!c) return; var pe = document.getElementById('asgPlace'); pe.value = c.place; pe.dataset.auto = ''; document.getElementById('asgAddr').value = c.address; document.getElementById('asgBoro').value = c.boro;
       refreshNav(); // highlights the previous-appearance chip, its borough and the matching court in the list
+    },
+    prevDetailName: function (t) {
+      var n = (ui.prevDetailNames || [])[+t.dataset.i]; if (!n) return;
+      var inp = document.getElementById('asgDetail'); if (inp) { inp.value = n; inp.classList.remove('bad'); }
+      var err = document.getElementById('asgDetail-err'); if (err) err.textContent = '';
+      var pn = document.getElementById('prevDetailNames'); if (pn) pn.outerHTML = prevDetailNameHtml('detail', n);
+    },
+    prevDetailLoc: function (t) {
+      var n = (ui.prevDetailLocs || [])[+t.dataset.i]; if (!n) return;
+      var ai = document.getElementById('asgAddr'); if (ai) ai.value = n;
+      var pl = document.getElementById('prevDetailLocs'); if (pl) pl.outerHTML = prevDetailLocHtml('detail', n);
+      refreshNav();
     },
     authTab: function (t) { ui.authTab = t.dataset.t; render(); var f = document.getElementById(ui.authTab === 'request' ? 'rqUser' : 'siUser'); if (f && !f.value) f.focus(); },
     authSignIn: function () {
@@ -14894,8 +15313,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var kind = inp.dataset.ac, out = [], add = function (v, l) { if (v) out.push({ value: v, label: l || '' }); };
     if (kind === 'asg') {
       var bx = document.getElementById('asgBox'), ty = bx ? bx.dataset.sel : '';
-      E.addressSuggestions(S.assignments, ty).forEach(function (x) { add(x.value, x.label); });
+      E.addressSuggestions(S.assignments, ty, S.tours).forEach(function (x) { add(x.value, x.label); });
       if (ty === 'court') C.boroughs.forEach(function (b) { E.courtList(b).forEach(function (c) { add(c.address, c.name); }); });
+      if (ty === 'detail') return out; // previously used report locations only; no home/command/court presets
     } else if (kind === 'pd') {
       E.paidAddressSuggestions(S.assignments).forEach(function (x) { add(x.value, x.label); });
     } else if (kind === 'cmd') {
@@ -14922,10 +15342,14 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var d = acDrop(inp, true); AC.inp = inp; AC.items = items; AC.idx = -1;
     var src = { saved: 'Saved', geosearch: 'NYC', photon: 'Outside NYC', google: 'Google' };
     d.innerHTML = items.map(function (s, i) {
+      var origin = s.source === 'google' ? (s.nyc ? 'NYC · Google' : 'Outside NYC · Google')
+        : s.source === 'photon' ? (s.intersection && s.nyc ? 'Intersection · NYC' : s.nyc ? 'NYC' : 'Outside NYC')
+        : (src[s.source] || '');
       return '<div class="acopt" role="option" id="' + inp.id + '-ac' + i + '" data-i="' + i + '" aria-selected="false"><b>' + esc(s.value) + '</b>' +
-        '<span>' + (s.label ? esc(s.label) + ' · ' : '') + (s.source === 'google' ? (s.nyc ? 'NYC · Google' : 'Outside NYC · Google') : src[s.source] || '') + '</span></div>';
+        '<span>' + (s.label && s.label !== 'Intersection' ? esc(s.label) + ' · ' : '') + origin + '</span></div>';
     }).join('') + (status ? '<div class="acnote">' + esc(status) + '</div>' : '') +
-      (items.some(function (s) { return s.source === 'photon'; }) ? '<div class="acnote">Outside-NYC results © OpenStreetMap contributors</div>' : '');
+      (items.some(function (s) { return s.source === 'photon' && !s.nyc; }) ? '<div class="acnote">Outside-NYC results © OpenStreetMap contributors</div>' :
+        items.some(function (s) { return s.source === 'photon'; }) ? '<div class="acnote">Intersection results © OpenStreetMap contributors</div>' : '');
     d.hidden = !items.length && !status; inp.setAttribute('aria-expanded', d.hidden ? 'false' : 'true');
     if (!d.hidden) acReveal(inp, d);
   }
@@ -15006,6 +15430,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   document.addEventListener('focusin', function (ev) { if (isDirSearchInput(ev.target)) hideSearchTabs(); });
   document.addEventListener('focusout', function (ev) {
     var inp = ev.target;
+    if (inp && inp.id === 'pdVendor') {
+      var names = E.vendorNameList(S.assignments, (S.settings && S.settings.pdVendors) || []);
+      var next = E.canonicalLabel(inp.value, names);
+      if (next !== inp.value) inp.value = next;
+    }
     if (inp.classList && inp.classList.contains('acIn')) setTimeout(function () { if (document.activeElement !== inp) acClose(inp); }, 150);
     if (isDirSearchInput(inp)) setTimeout(function () {
       var a = document.activeElement;
@@ -15019,6 +15448,14 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (/^ot(Start|End|Hours|Date|CashH|SchedStart|SchedEnd|CashFrom|CashTo|TimeFrom|TimeTo|TimeDur|WorkedDur|Total)$/.test(ev.target.id)) otPreview();
     if (ev.target.id === 'pdStart' || ev.target.id === 'pdEnd') pdAutoDur();
     if (ev.target.id === 'pdVendorQ') pdRenderVendors(ev.target.value);
+    if (ev.target.id === 'pdVendor') {
+      var el = ev.target, cur = el.value, next = E.titleCaseName(cur, { partial: true });
+      if (next !== cur) {
+        var pos = el.selectionStart, diff = next.length - cur.length;
+        el.value = next;
+        try { if (pos != null) el.setSelectionRange(pos + diff, pos + diff); } catch (e) {}
+      }
+    }
     if (/^pd(Start|End|Dur)$/.test(ev.target.id)) pdRemind();
     if (ev.target.id === 'pdAmount') { pdAmtHint(); if (typeof pdPayFrom === 'function') { var form = document.getElementById('pdForm'); pdPayFrom(readPaid(), form && form.dataset.iso); } }
     if (ev.target.classList.contains('shortHmIn')) ev.target.dataset.touched = '1';
@@ -15045,7 +15482,20 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var form = document.getElementById('otForm'); if (form) form.dataset.splitSrc = ev.target.id === 'otTimeDur' ? 'time-h' : 'cash-h';
       otPreview();
     }
-    if (ev.target.classList.contains('timeIn')) { var tv = ev.target.value, tf = E.formatTimeInput(tv, /^delete/.test(ev.inputType || '')); if (tf !== tv) ev.target.value = tf; if (ev.target.id === 'otStart') autoEndFromStart('otStart', 'otEnd', 'otWorkedStartDate', 'otWorkedEndDate'); if (ev.target.id === 'otSchedStart') autoEndFromStart('otSchedStart', 'otSchedEnd', 'otSchedStartDate', 'otSchedEndDate'); if (/^ot(Start|End|SchedStart|SchedEnd)$/.test(ev.target.id)) otPreview(); if (/^ot(CashFrom|CashTo|TimeFrom|TimeTo)$/.test(ev.target.id)) { var form2 = document.getElementById('otForm'); if (form2) form2.dataset.splitSrc = /^otTime/.test(ev.target.id) ? 'time-times' : 'cash-times'; otPreview(); } if (ev.target.id === 'otTravAmt') { var tw = document.getElementById('otTravWrap'); if (tw) tw.dataset.touched = '1'; otPreview(); } }
+    if (ev.target.classList.contains('timeIn')) {
+      var tv = ev.target.value;
+      if (/[xX]/.test(tv) && (ev.target.id === 'dayStart' || ev.target.id === 'otStart' || ev.target.id === 'schedStart' || ev.target.id === 'otSchedStart')) {
+        if (E.parseTourCross(tv)) {
+          if (ev.target.id === 'dayStart') applyTourCross('dayStart', 'dayEnd', 'workedStartDate', 'workedEndDate');
+          else if (ev.target.id === 'otStart') applyTourCross('otStart', 'otEnd', 'otWorkedStartDate', 'otWorkedEndDate');
+          else if (ev.target.id === 'schedStart') applyTourCross('schedStart', 'schedEnd', 'schedStartDate', 'schedEndDate');
+          else applyTourCross('otSchedStart', 'otSchedEnd', 'otSchedStartDate', 'otSchedEndDate');
+          updateEnd(false); if (typeof refreshTourNow === 'function') refreshTourNow(); if (typeof otSyncSlip === 'function' && ev.target.id.indexOf('ot') === 0) otSyncSlip();
+          return;
+        }
+      } else {
+        var tf = E.formatTimeInput(tv, /^delete/.test(ev.inputType || '')); if (tf !== tv) ev.target.value = tf;
+      } if (ev.target.id === 'otStart') autoEndFromStart('otStart', 'otEnd', 'otWorkedStartDate', 'otWorkedEndDate'); if (ev.target.id === 'otSchedStart') autoEndFromStart('otSchedStart', 'otSchedEnd', 'otSchedStartDate', 'otSchedEndDate'); if (/^ot(Start|End|SchedStart|SchedEnd)$/.test(ev.target.id)) otPreview(); if (/^ot(CashFrom|CashTo|TimeFrom|TimeTo)$/.test(ev.target.id)) { var form2 = document.getElementById('otForm'); if (form2) form2.dataset.splitSrc = /^otTime/.test(ev.target.id) ? 'time-times' : 'cash-times'; otPreview(); } if (ev.target.id === 'otTravAmt') { var tw = document.getElementById('otTravWrap'); if (tw) tw.dataset.touched = '1'; otPreview(); } }
     if (ev.target.id === 'dayStart' || ev.target.id === 'dayEnd') {
       if (String(ev.target.value || '').trim()) { openRdoKindPrompt(); if (ev.target.id === 'dayStart') asgExpand(); }
     }
@@ -15076,7 +15526,17 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (/^(onbStart|stStart|heStart|dayStart)$/.test(ev.target.id)) { var ti = document.querySelector('.tourIn[data-start="' + ev.target.id + '"]'); if (ti) tourPrev(ti.id); }
   });
   document.addEventListener('change', function (ev) {
-    if (ev.target.classList && ev.target.classList.contains('timeIn')) { var fv = E.finishTimeInput(ev.target.value); if (fv !== ev.target.value) { ev.target.value = fv; if (ev.target.id === 'dayStart' || ev.target.id === 'dayEnd') updateEnd(false); } if (/^ot(Start|End|TravAmt)$/.test(ev.target.id)) otPreview(); }
+    if (ev.target.classList && ev.target.classList.contains('timeIn')) {
+      if (E.parseTourCross(ev.target.value) && (ev.target.id === 'dayStart' || ev.target.id === 'otStart' || ev.target.id === 'schedStart' || ev.target.id === 'otSchedStart')) {
+        if (ev.target.id === 'dayStart') applyTourCross('dayStart', 'dayEnd', 'workedStartDate', 'workedEndDate');
+        else if (ev.target.id === 'otStart') applyTourCross('otStart', 'otEnd', 'otWorkedStartDate', 'otWorkedEndDate');
+        else if (ev.target.id === 'schedStart') applyTourCross('schedStart', 'schedEnd', 'schedStartDate', 'schedEndDate');
+        else applyTourCross('otSchedStart', 'otSchedEnd', 'otSchedStartDate', 'otSchedEndDate');
+        updateEnd(false); if (typeof otSyncSlip === 'function' && ev.target.id.indexOf('ot') === 0) otSyncSlip();
+      } else {
+        var fv = E.finishTimeInput(ev.target.value); if (fv !== ev.target.value) { ev.target.value = fv; if (ev.target.id === 'dayStart' || ev.target.id === 'dayEnd') updateEnd(false); } if (/^ot(Start|End|TravAmt)$/.test(ev.target.id)) otPreview();
+      }
+    }
     if (/^st(Rank|Hire|Promo|Override)$/.test(ev.target.id)) refreshPay();
     if (ev.target.id === 'heEff' || ev.target.id === 'heRank') { histDiffLine(); if (ev.target.id === 'heRank') heInvSync(); }
     if (ev.target.id === 'otDate') { otSyncDateFrames(); otPreview(); otTravResolve(); moreDatesOnPrimaryChange(); }
