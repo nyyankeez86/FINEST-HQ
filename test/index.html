@@ -471,10 +471,12 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after,body.beta #
 .tot b{font-size:20px;display:block}
 .tot span{font-size:13px;font-weight:700;color:var(--pay)}
 .tot em{font-style:normal;font-size:11px;color:var(--muted);display:block}
-.status-line{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0 12px;align-items:center}
-.status-line .daypos{font-size:12.5px;font-weight:700;color:var(--muted,#4b5a70);letter-spacing:.01em;white-space:nowrap;line-height:1.2;padding:3px 4px;margin:0}
-.sumdaypos{display:block;margin:0 0 10px;padding:0;font-size:13px;font-weight:700;color:var(--muted,#4b5a70);letter-spacing:.01em;line-height:1.3}
-.status-line .btn.sm.othersquads-btn{margin:2px 4px 2px 0;min-height:0;height:auto;padding:3px 9px;border-radius:999px;font-size:12.5px;font-weight:700;line-height:normal;gap:0;display:inline-block;font-family:inherit;box-sizing:border-box;vertical-align:baseline}
+.status-line{display:flex;flex-wrap:wrap;gap:3px;margin:4px 0 12px;align-items:center;font-size:14px}
+.status-line>.chip,.status-line>.daypos,.status-line>.othersquads-btn{font-size:14px;font-weight:700;line-height:1.2;white-space:nowrap}
+.status-line>.chip{margin:0;padding:3px 8px}
+.status-line .daypos{color:var(--muted,#4b5a70);letter-spacing:.01em;padding:3px 4px;margin:0}
+.sumdaypos{display:block;margin:0 0 10px;padding:0;font-size:14px;font-weight:700;color:var(--muted,#4b5a70);letter-spacing:.01em;line-height:1.3}
+.status-line .btn.sm.othersquads-btn{margin:0;min-height:0;height:auto;padding:3px 8px;border-radius:999px;gap:0;display:inline-block;font-family:inherit;box-sizing:border-box;vertical-align:baseline}
 .othersquads-box{display:flex;flex-wrap:wrap;gap:4px;flex:1 0 100%;margin-top:2px}
 .othersquads-box[hidden]{display:none !important}
 .lbl2{font-size:13px;font-weight:700;color:var(--muted,#64748b);margin:10px 0 6px}
@@ -3516,7 +3518,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     while (same(end + 1) && guard++ < lim) end++;
     var pos = day - start + 1, len = end - start + 1;
     return { rdo: rdo, pos: pos, len: len, start: start, end: end, startIso: toISO(start), endIso: toISO(end),
-      label: (rdo ? 'RDO ' : 'Day ') + pos + ' of ' + len };
+      label: (rdo ? 'RDO ' : 'Day ') + pos };
   }
   function nextWorkday(fromDay, squadId, unitId) { var d = fromDay; for (var i = 0; i < 60; i++, d++) if (!isRDO(d, squadId, unitId)) return d; return null; }
   function countRDOs(year, squadId, unitId) { var n = 0; for (var d = fromYMD(year, 1, 1), e = fromYMD(year, 12, 31); d <= e; d++) if (isRDO(d, squadId, unitId)) n++; return n; }
@@ -10216,7 +10218,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="btn sm chip' + (ui.dirHospLevel1 ? ' on' : '') + '" data-act="hospChip" data-filter="level1" aria-pressed="' + (ui.dirHospLevel1 ? 'true' : 'false') + '">Level 1 Trauma</button>' +
       '</div>' +
       '</div>' +
-      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r109 · patrol-test-5bef1a5b01ef</p></div>' +
+      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r110 · patrol-test-b3d7d7883c9a</p></div>' +
       '</div>';
     var mapTools = '<div class="dir-map-chrome">' +
       '<div class="dir-map-search"><input id="dirQ" class="dirq acIn" data-ac="map" type="text" value="' + esc(q) + '" placeholder="Search an address or precinct" aria-label="Search an address or precinct" autocomplete="off"></div>' +
@@ -14157,7 +14159,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="' + ((s.defaultCalendar || 'google') === 'apple' ? 'on' : '') + '" data-act="calDefault" data-v="apple">Apple</button></div>' +
       '<h3 style="margin-top:20px" data-sec="9m">Subscribe to calendar</h3>' + calendarSubscribeHtml() +
       '<button class="btn danger block" data-act="reset" data-sec="9k" style="margin-top:20px">Erase all data</button>' +
-      '<p class="build-tag muted" id="appBuildTag">Build r109 · patrol-test-5bef1a5b01ef</p>');
+      '<p class="build-tag muted" id="appBuildTag">Build r110 · patrol-test-b3d7d7883c9a</p>');
   }
 
   // ---------- Day summary: what's saved on a date; tap an entry to view or change it ----------
