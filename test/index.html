@@ -36,9 +36,7 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 -apple-sy
 button,input,select,textarea{font:inherit;color:inherit}
 #app{max-width:560px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
 .topstack{position:sticky;top:0;z-index:20;flex:none}.payban-host[hidden]{display:none!important}.payban-host{background:var(--bg);min-width:0}header.top{position:relative;top:auto;z-index:auto;background:var(--navy);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 6px rgba(0,0,0,.25)}
-header.top .brand{display:flex;align-items:center;gap:10px;min-width:0}header.top .hdrlogo{width:36px;height:36px;border-radius:8px;background:#0b1f3a;flex-shrink:0;display:block;object-fit:cover}header.top h1{margin:0;font-size:20px;letter-spacing:.2px}
-header.top .sub{font-size:13px;color:#c7d3e6;margin-top:2px}
-.badge-sq{display:inline-block;padding:1px 8px;border-radius:999px;font-weight:700;font-size:12px;margin-left:4px;border:1px solid rgba(255,255,255,.35)}
+header.top .brand{display:flex;align-items:center;gap:10px;min-width:0}header.top .hdrlogo{width:36px;height:36px;border-radius:8px;background:#0b1f3a;flex-shrink:0;display:block;object-fit:cover}header.top h1{margin:0;font-size:20px;letter-spacing:.2px;line-height:1;align-self:center}
 .iconbtn{background:transparent;border:0;color:#fff;width:48px;height:48px;border-radius:12px;display:grid;place-items:center;cursor:pointer}
 .iconbtn:active{background:var(--navy2)}
 .headacts{display:flex;align-items:center;gap:4px}
@@ -314,9 +312,9 @@ h3{font-size:17px;margin:0 0 6px}
 .sheet{background:var(--sheet-bg,#fff);color:var(--ink);width:100%;max-width:560px;max-height:92vh;overflow:auto;-webkit-overflow-scrolling:touch;border-radius:18px 18px 0 0;padding:0 16px calc(18px + env(safe-area-inset-bottom));scroll-padding-top:96px;animation:up .18s ease-out}
 .sheet .sbar{position:sticky;top:0;z-index:8;background:var(--sheet-bg,#fff);margin:0 -16px 8px;padding:8px 16px 10px;border-bottom:1px solid var(--line,#cfd6e2);box-shadow:0 8px 0 var(--sheet-bg,#fff)}
 .sheet .grab{width:44px;height:5px;border-radius:5px;background:#c8cfdb;margin:4px auto 8px}
-.sheet .shead{display:flex;justify-content:space-between;align-items:center;margin-bottom:0;background:var(--sheet-bg,#fff)}
+.sheet .sbar .shead{display:flex;justify-content:space-between;align-items:center;margin-bottom:0;background:var(--sheet-bg,#fff)}
 .sheet .sback{min-height:40px;padding:0 12px 0 8px;margin-right:8px;border-radius:10px;border:0;background:var(--soft,#eef1f6);font-weight:800;font-size:15px;color:var(--ink,#0f172a);cursor:pointer;flex-shrink:0}
-.sheet .shead h3{flex:1;min-width:0}
+.sheet .sbar .shead h3{flex:1;min-width:0}
 .travsum{display:block;font-size:11.5px;color:#0f766e;font-weight:600}.travchip{background:#ecfdf5;border:1px solid #99f6e4;color:#0f766e}
 .travbox{border:1.5px solid var(--line);border-radius:12px;padding:10px 12px 2px;margin-bottom:12px;background:#fbfcfe}
 .travsug{font-size:13px;margin:2px 0 4px}.cmdpct{color:#0f766e;font-weight:700}.travline{margin-top:4px}
@@ -364,7 +362,9 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after,body.beta #
 .pdadd{margin-top:10px}
 .pdadd[hidden], .paidbox[hidden]{display:none !important}
 .paidbox .pdrm{margin-top:8px}
-.asgbox{background:#f8fafc;padding:12px}
+.daycard{background:var(--soft2,#f5f7fb);padding:12px}.tourtimes-tog{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:44px;margin:0 0 12px;padding:10px 14px;border:1px solid var(--line,#cfd6e2);border-radius:12px;background:var(--soft2,#f5f7fb);color:var(--ink,#0f172a);font:inherit;font-weight:700;font-size:15px;cursor:pointer;text-align:left}
+.tourtimes-tog[hidden]{display:none!important}
+.tourtimes-tog .ttchev{margin-left:auto;font-size:13px;line-height:1}.asgbox{background:#f8fafc;padding:12px}
 .pdsec{background:#f8fafc;padding:12px;margin-top:12px}
 .pdsec .shead{display:flex;justify-content:space-between;align-items:center;margin:0 0 8px;padding-right:28px}
 .pdsec .pdadd{margin-top:4px}
@@ -865,7 +865,7 @@ html[data-theme="dark"] input,html[data-theme="dark"] select,html[data-theme="da
 html[data-theme="dark"] nav.tabs button.on,html[data-theme="dark"] nav.tabs button.on .tablbl,html[data-theme="dark"] nav.tabs button.on svg{color:var(--accent);stroke:currentColor}
 html[data-theme="dark"] .pick.on,html[data-theme="dark"] .navdefchips .chip.on,html[data-theme="dark"] .appearchips .chip.on,html[data-theme="dark"] .dirchips .chip.on,html[data-theme="dark"] .navdefchips .chip.on,html[data-theme="dark"] .map-toolbar .btn.on,html[data-theme="dark"] .otviewseg .btn.on{background:var(--navy);border-color:var(--navy);color:#fff}
 html[data-theme="dark"] .btn.primary{background:var(--btn-primary,#2563eb);border-color:var(--btn-primary,#2563eb);color:#fff}
-html[data-theme="dark"] .btn.danger{background:var(--danger);border-color:var(--danger);color:#fff}
+html[data-theme="dark"] .btn.danger{background:#dc2626;border-color:#dc2626;color:#fff}
 html[data-theme="dark"] .seg{background:var(--soft)}
 html[data-theme="dark"] .seg button{background:transparent;color:var(--ink)}
 html[data-theme="dark"] .seg button.on{background:var(--card);color:var(--accent);box-shadow:0 1px 2px rgba(0,0,0,.4)}
@@ -906,15 +906,168 @@ html[data-theme="dark"] .authtabs{background:var(--soft)}
 html[data-theme="dark"] .authtabs button.on{background:var(--card);color:var(--ink)}
 html[data-theme="dark"] .onb .hero{background:var(--navy);color:#fff}
 html[data-theme="dark"] .suggestbtn{background:var(--card);color:var(--ink);border-color:var(--line)}
-html[data-theme="dark"] header.top .sub{color:#b6c3d6}
 html[data-theme="dark"] .payban-host{background:var(--bg)}
 html[data-theme="dark"] .travsum,.travchip{color:#5eead4;border-color:#115e59;background:#042f2e}
 html[data-theme="dark"] .nowtag{background:#1e3a5f;color:#93c5fd}
-html[data-theme="dark"] [style*="background:#fff"],html[data-theme="dark"] [style*="background: #fff"]{background:var(--card)}
-html[data-theme="dark"] [style*="background:#f8fafc"],html[data-theme="dark"] [style*="background:#f5f7fb"],html[data-theme="dark"] [style*="background:#eef1f6"]{background:var(--soft)}
-html[data-theme="dark"] [style*="color:#0f172a"],html[data-theme="dark"] [style*="color:#334155"]{color:var(--ink)}
+html[data-theme="dark"] [style*="background:#fff"],html[data-theme="dark"] [style*="background: #fff"]{background:var(--card)!important}
+html[data-theme="dark"] [style*="background:#f8fafc"],html[data-theme="dark"] [style*="background:#f5f7fb"],html[data-theme="dark"] [style*="background:#eef1f6"]{background:var(--soft)!important}
+html[data-theme="dark"] [style*="color:#0f172a"],html[data-theme="dark"] [style*="color:#334155"]{color:var(--ink)!important}
 html[data-theme="dark"] [style*="color:#0000FF"]{color:var(--accent)}
 html[data-theme="dark"] .pdcam-note{color:var(--note-red)}
+
+/* r114: dark-mode contrast — chips, day cards, dialogs, nav/map buttons, links */
+html[data-theme="dark"]{--link:#5eead4}
+html[data-theme="dark"] .navdefchips .chip,
+html[data-theme="dark"] .dirchips .chip,
+html[data-theme="dark"] .appearchips .chip,
+html[data-theme="dark"] .msgpresets .chip,
+html[data-theme="dark"] .fuelchips .chip,
+html[data-theme="dark"] .borochips .pick,
+html[data-theme="dark"] .chip{
+  background:var(--chip-bg);color:var(--ink);border-color:var(--line)
+}
+html[data-theme="dark"] .navdefchips .chip.on,
+html[data-theme="dark"] .dirchips .chip.on,
+html[data-theme="dark"] .appearchips .chip.on,
+html[data-theme="dark"] .fuelchips .chip.on,
+html[data-theme="dark"] .chip.on{
+  background:var(--navy);color:#fff;border-color:var(--navy)
+}
+html[data-theme="dark"] .pick{
+  background:var(--btn-bg);color:var(--ink);border-color:var(--line)
+}
+html[data-theme="dark"] .pick.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+html[data-theme="dark"] .btn{
+  background:var(--btn-bg);color:var(--ink);border-color:var(--line)
+}
+html[data-theme="dark"] .btn.primary{background:var(--btn-primary,#2563eb);border-color:var(--btn-primary,#2563eb);color:#fff}
+html[data-theme="dark"] .btn.danger{background:#dc2626;border-color:#dc2626;color:#fff}
+html[data-theme="dark"] .btn.delbtn{background:#dc2626;border-color:#dc2626;color:#fff}
+html[data-theme="dark"] .linkbtn,html[data-theme="dark"] button.linkbtn{
+  background:transparent;border-color:transparent;color:var(--link,#5eead4)
+}
+html[data-theme="dark"] .asgbox,
+html[data-theme="dark"] .pdsec,
+html[data-theme="dark"] .daycard,
+html[data-theme="dark"] #tourBox,
+html[data-theme="dark"] .otpaycard{
+  background:var(--soft);color:var(--ink);border-color:var(--line)
+}
+html[data-theme="dark"] .pdsec .shead,
+html[data-theme="dark"] .asgbox .shead,
+html[data-theme="dark"] .daycard .shead,
+html[data-theme="dark"] .card .shead,
+html[data-theme="dark"] #tourBox h3,
+html[data-theme="dark"] .pdsec h3,
+html[data-theme="dark"] .asgbox h3{
+  background:transparent;color:var(--ink)
+}
+html[data-theme="dark"] .cfmwrap{background:rgba(0,0,0,.72)}
+html[data-theme="dark"] .cfm{background:var(--sheet-bg);color:var(--ink)}
+html[data-theme="dark"] .cfm h3,html[data-theme="dark"] .cfmbody,html[data-theme="dark"] .cfmbody p{color:var(--ink)}
+html[data-theme="dark"] .cfm .muted,html[data-theme="dark"] .cfm .hint{color:var(--muted)}
+html[data-theme="dark"] .cfm .btn{background:var(--btn-bg);color:var(--ink);border-color:var(--line)}
+html[data-theme="dark"] .cfm .btn.primary{background:var(--btn-primary,#2563eb);border-color:var(--btn-primary,#2563eb);color:#fff}
+html[data-theme="dark"] .cfm .btn.delbtn,html[data-theme="dark"] .cfm .btn.danger{background:#dc2626;border-color:#dc2626;color:#fff}
+html[data-theme="dark"] .navbtns.nav-split,
+html[data-theme="dark"] #sumList .navbtns.nav-split,
+html[data-theme="dark"] #upcomingAsg .navbtns.inrow.nav-split{
+  background:var(--btn-bg);border-color:var(--line)
+}
+html[data-theme="dark"] .navbtns.nav-split .nav-main,
+html[data-theme="dark"] .navbtns.nav-split .nav-more,
+html[data-theme="dark"] #sumList .navbtns.nav-split .nav-main,
+html[data-theme="dark"] #sumList .navbtns.nav-split .nav-more,
+html[data-theme="dark"] #upcomingAsg .navbtns.inrow .nav-main,
+html[data-theme="dark"] #upcomingAsg .navbtns.inrow .btn,
+html[data-theme="dark"] #upcomingAsg .navbtns.inrow .nav-more{
+  background:var(--btn-bg);color:var(--ink);border-color:var(--line)
+}
+html[data-theme="dark"] .navbtns.nav-split .nav-main.btn.primary,
+html[data-theme="dark"] #sumList .navbtns.nav-split .nav-main.btn.primary{
+  background:var(--btn-primary,#2563eb);border-color:var(--btn-primary,#2563eb);color:#fff
+}
+html[data-theme="dark"] .navbtns.nav-split .nav-more[aria-expanded="true"],
+html[data-theme="dark"] #sumList .navbtns.nav-split .nav-more[aria-expanded="true"]{
+  background:var(--soft);color:var(--ink)
+}
+html[data-theme="dark"] .nav-menu{background:var(--sheet-bg);color:var(--ink);border-color:var(--line)}
+html[data-theme="dark"] .nav-menu a{color:var(--ink)}
+html[data-theme="dark"] .nav-menu a.is-default{background:var(--soft);color:var(--ink)}
+html[data-theme="dark"] .dir-map-opts{background:var(--sheet-bg);color:var(--ink);border-color:var(--line)}
+html[data-theme="dark"] .dir-map-opts .map-opts-x{color:var(--ink)}
+html[data-theme="dark"] .dir-map-opts .map-toolbar .btn,
+html[data-theme="dark"] .dir-map-opts .map-toolbar .chip,
+html[data-theme="dark"] .dir-map-opts #fuelFilterWrap .btn,
+html[data-theme="dark"] .dir-map-opts #fuelFilterWrap .chip,
+html[data-theme="dark"] .dir-map-opts #hospFilterWrap .btn,
+html[data-theme="dark"] .dir-map-opts #hospFilterWrap .chip,
+html[data-theme="dark"] .dir-map-opts #evFilterWrap .btn,
+html[data-theme="dark"] .dir-map-opts #evFilterWrap .chip,
+html[data-theme="dark"] .dir-map-opts #nearestFilterWrap .btn{
+  background:var(--btn-bg);color:var(--ink);border-color:var(--line)
+}
+html[data-theme="dark"] .dir-map-opts .map-toolbar .btn.on,
+html[data-theme="dark"] .dir-map-opts .map-toolbar .chip.on,
+html[data-theme="dark"] .dir-map-opts #fuelFilterWrap .btn.on,
+html[data-theme="dark"] .dir-map-opts #fuelFilterWrap .chip.on,
+html[data-theme="dark"] .dir-map-opts #hospFilterWrap .btn.on,
+html[data-theme="dark"] .dir-map-opts #hospFilterWrap .chip.on,
+html[data-theme="dark"] .dir-map-opts #evFilterWrap .btn.on,
+html[data-theme="dark"] .dir-map-opts #evFilterWrap .chip.on,
+html[data-theme="dark"] .dir-map-opts #nearestFilterWrap .btn.on{
+  background:var(--navy);color:#fff;border-color:var(--navy)
+}
+html[data-theme="dark"] .histcard{background:var(--card);color:var(--ink);border-color:var(--line)}
+html[data-theme="dark"] .histcard.justsaved{background:var(--ok-bg);color:var(--ok-fg)}
+html[data-theme="dark"] .htag{background:var(--soft);color:var(--ink)}
+html[data-theme="dark"] .htag-rank{background:#3a2a0a;color:#fde68a}
+html[data-theme="dark"] .htag-command{background:#1e3a5f;color:#93c5fd}
+html[data-theme="dark"] .htag-chart{background:#042f2e;color:#5eead4}
+html[data-theme="dark"] .htag-tour{background:#2e1065;color:#ddd6fe}
+html[data-theme="dark"] .pblock.on .grid3 .pay-ot-tile,
+html[data-theme="dark"] .pblock.on .pay-days,
+html[data-theme="dark"] .pblock.on .grid3 div{background:var(--card);color:var(--ink)}
+html[data-theme="dark"] .savedban{background:var(--ok-bg);color:var(--ok-fg);border-color:var(--ok-line)}
+html[data-theme="dark"] .lenbox{border-left-color:var(--link,#5eead4)}
+html[data-theme="dark"] .sitechip{background:var(--card);color:var(--ink);border-color:var(--line)}
+html[data-theme="dark"] .sitechip.on{background:#0E7490;color:#fff;border-color:#0E7490}
+html[data-theme="dark"] .chev,
+html[data-theme="dark"] .sfoldchev,
+html[data-theme="dark"] .period .pay-sum .chev,
+html[data-theme="dark"] .otyhd .chev,
+html[data-theme="dark"] .otmhd .chev,
+html[data-theme="dark"] .home-strip .chev,
+html[data-theme="dark"] .leavehome .leavehd .chev,
+html[data-theme="dark"] .legbtn .chev{color:#cbd5e1}
+html[data-theme="dark"] .home-strip .hstat.open .chev,
+html[data-theme="dark"] .leavehome.open .leavehd .chev{color:var(--ink)}
+html[data-theme="dark"] .pblock .ph em{background:#1d4ed8;color:#fff}
+html[data-theme="dark"] .calbox{background:var(--card);color:var(--ink);border-color:var(--line)}
+html[data-theme="dark"] .tourtimes-tog{background:var(--soft);color:var(--ink);border-color:var(--line)}
+html[data-theme="dark"] .sebox,
+html[data-theme="dark"] .tourblock,
+html[data-theme="dark"] .otslip{
+  background:var(--card);color:var(--ink);border-color:var(--line)
+}
+html[data-theme="dark"] .period,
+html[data-theme="dark"] .period.current,
+html[data-theme="dark"] #curPeriod{
+  background:var(--card);color:var(--ink)
+}
+html[data-theme="dark"] .pblock{
+  background:var(--card);color:var(--ink);border-color:var(--line)
+}
+html[data-theme="dark"] .pblock.on{
+  background:var(--soft);color:var(--ink);border-color:var(--accent)
+}
+html[data-theme="dark"] #vdirPdfClose,
+html[data-theme="dark"] #vdirPdfBar .btn,
+html[data-theme="dark"] #vdirPdfTools .btn,
+html[data-theme="dark"] #vdirPdfMatchNav .btn,
+html[data-theme="dark"] #vdirPdfQ{
+  background:#fff;color:#0b1f3a
+}
 
 </style>
 <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
@@ -924,7 +1077,7 @@ html[data-theme="dark"] .pdcam-note{color:var(--note-red)}
 <div id="app">
   <div id="topStack" class="topstack">
   <header class="top">
-    <div class="brand"><img class="hdrlogo" src="icons/icon-192.png" alt="FINEST HQ"><div><h1>FINEST HQ</h1><div class="sub" id="hdrSub"></div></div></div>
+    <div class="brand"><img class="hdrlogo" src="icons/icon-192.png" alt="FINEST HQ"><h1>FINEST HQ</h1></div>
     <div class="headacts" id="headActs" hidden>
       <button type="button" class="hdrchip" id="btnSuggest" data-act="suggestOpen">Suggest</button>
       <button type="button" class="iconbtn inboxbtn" id="btnInbox" data-act="inboxOpen" hidden aria-label="Inbox">
@@ -7339,9 +7492,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var onb = !S.profile;
     document.getElementById('tabs').hidden = onb;
     var ha = document.getElementById('headActs'); if (ha) ha.hidden = onb;
-    if (onb) { stopRetireTick(); var appOnb = document.getElementById('app'); if (appOnb) appOnb.classList.remove('tab-map'); document.getElementById('hdrSub').textContent = 'Set up your schedule'; view.innerHTML = viewOnboarding(); chartHint('onb'); return; }
-    var sq = mySquad();
-    document.getElementById('hdrSub').innerHTML = esc(E.displayName(S.profile)) + ' &middot; <button class="badge-sq" data-act="chartOpen" aria-label="My chart: ' + esc(sq.name) + '" style="background:' + sq.color + ';color:' + sq.ink + ';cursor:pointer;font:inherit;font-weight:700;font-size:12px">' + esc(sq.name) + ' &#9662;</button>';
+    if (onb) { stopRetireTick(); var appOnb = document.getElementById('app'); if (appOnb) appOnb.classList.remove('tab-map'); view.innerHTML = viewOnboarding(); chartHint('onb'); return; }
     if (ui.tab === 'leave') { ui.tab = 'schedule'; ui.leaveOpen = true; }
     if (ui.tab === 'lookup') { ui.tab = 'schedule'; }
     Array.prototype.forEach.call(document.querySelectorAll('nav.tabs button'), function (b) { b.classList.toggle('on', b.dataset.tab === ui.tab); b.setAttribute('aria-current', b.dataset.tab === ui.tab ? 'page' : 'false'); });
@@ -10409,7 +10560,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="btn sm chip' + (ui.dirHospLevel1 ? ' on' : '') + '" data-act="hospChip" data-filter="level1" aria-pressed="' + (ui.dirHospLevel1 ? 'true' : 'false') + '">Level 1 Trauma</button>' +
       '</div>' +
       '</div>' +
-      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r113 · patrol-test-7628eaf53143</p></div>' +
+      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r114 · patrol-test-0ec2224ffc56</p></div>' +
       '</div>';
     var mapTools = '<div class="dir-map-chrome">' +
       '<div class="dir-map-search"><input id="dirQ" class="dirq acIn" data-ac="map" type="text" value="' + esc(q) + '" placeholder="Search an address or precinct" aria-label="Search an address or precinct" autocomplete="off"></div>' +
@@ -12056,7 +12207,6 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var blocked = !CS.uid || CS.status !== 'approved';
     document.getElementById('tabs').hidden = blocked || !S.profile; var _ha = document.getElementById('headActs'); if (_ha) _ha.hidden = blocked || !S.profile; refreshInboxChrome();
     if (!blocked) return false;
-    document.getElementById('hdrSub').textContent = !CS.uid ? 'Beta: sign in to continue' : CS.status === 'pending' ? 'Waiting for approval' : 'Access not approved';
     view.innerHTML = !CS.uid ? (ui.authTab === 'request' ? viewRequest() : viewSignIn()) : CS.status === 'pending' ? viewPending() : viewDenied();
     if (ui.authTab === 'request' && !CS.uid) { var cp = document.getElementById('reqCmdQ'); if (cp) cmdResults('req', ''); }
     return true;
@@ -13336,6 +13486,23 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var sb = document.getElementById('shortBox'); if (sb) sb.hidden = true;
     fillScheduled('worked');
   }
+  function resetTourTimesToggle() {
+    var box = document.getElementById('tourBox'), tog = document.getElementById('tourTimesToggle');
+    if (box) { box.dataset.tourOpen = '0'; box.dataset.tourTouched = '0'; }
+    if (tog) { tog.setAttribute('aria-expanded', 'false'); tog.innerHTML = 'Show tour times <span class="ttchev" aria-hidden="true">&#9662;</span>'; }
+  }
+  function bindTourTimesTouch() {
+    var box = document.getElementById('tourBox');
+    if (!box || box.dataset.touchBound === '1') return;
+    box.dataset.touchBound = '1';
+    var mark = function () { box.dataset.tourTouched = '1'; };
+    box.addEventListener('input', mark);
+    box.addEventListener('change', mark);
+    box.addEventListener('click', function (e) {
+      var t = e.target && e.target.closest && e.target.closest('[data-act]');
+      if (t && /^(tourPick|startPick|pduStart|lenToggle|tourStatus)$/.test(t.getAttribute('data-act') || '')) mark();
+    });
+  }
   function syncDayEntry() {
     var sel = daySel(), box = document.getElementById('tourBox'), rdo = !!(box && box.dataset.rdo === '1'), st = box ? box.dataset.status : '';
     var leave = dayIsLeave(sel), wk = document.getElementById('workKind'), lw = document.getElementById('tourLenWrap'), dp = document.getElementById('ddPicker');
@@ -13352,11 +13519,22 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (dph) dph.textContent = (st === 'ddoffnew' || st === 'rdootoff') ? 'Must be one of your scheduled RDOs.' : 'Must be one of your scheduled workdays.';
     if (lw) lw.hidden = false;
     if (box && box.dataset.add !== '1') {
-      var hideTour = E.isFullDayExcusal(sel);
+      var leaveExcusal = E.isFullDayExcusal(sel);
+      var tog = document.getElementById('tourTimesToggle');
+      var open = !leaveExcusal || box.dataset.tourOpen === '1';
       var wasHidden = !!box.hidden;
-      box.hidden = hideTour;
-      if (wasHidden && !hideTour && sel === 'working') restoreDefaultTourFields();
+      box.hidden = leaveExcusal && !open;
+      if (tog) {
+        tog.hidden = !leaveExcusal;
+        tog.setAttribute('aria-expanded', String(!!(leaveExcusal && open)));
+        tog.innerHTML = (leaveExcusal && open) ? 'Hide tour times <span class="ttchev" aria-hidden="true">&#9652;</span>' : 'Show tour times <span class="ttchev" aria-hidden="true">&#9662;</span>';
+      }
+      if (wasHidden && !box.hidden) {
+        if (sel === 'working') restoreDefaultTourFields();
+        else if (leaveExcusal && box.dataset.tourTouched !== '1') restoreDefaultTourFields();
+      }
     }
+    bindTourTimesTouch();
     syncSchedBoxVisibility();
     var th = document.getElementById('tourTimeHint');
     if (th && !th.dataset.def) th.dataset.def = th.innerHTML;
@@ -13407,7 +13585,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var sStartDate = src.schedStartDate || defWin.startDate, sEndDate = src.schedEndDate || defWin.endDate;
     var leaveNow = E.dayEntryOf(d, sq.id, tourOpts());
     var hideTour = !addEntry && E.isFullDayExcusal(leaveNow && leaveNow.id);
-    var html = '<div class="card" style="background:#f5f7fb;padding:12px" id="tourBox" data-sec="6c" data-status="' + st + '" data-orig="' + st + '" data-rdo="' + (t.rdo ? '1' : '0') + '" data-add="' + (addEntry ? '1' : '') + '" data-eid="' + esc(editingId) + '"' + (hideTour ? ' hidden' : '') + '><h3 style="font-size:15px">' + (addEntry ? 'Additional entry' : 'Tour this day') + (t.modified && !addEntry ? ' <span class="chip" style="background:#0f172a;color:#fff;border-color:transparent">Modified</span>' : '') + '</h3>';
+    var hasSavedTour = !addEntry && !!(src.timesSet || src.start || src.end || src.len);
+    var openLeave = hideTour && hasSavedTour;
+    var togHtml = addEntry ? '' : '<button type="button" class="tourtimes-tog" id="tourTimesToggle" data-act="tourTimesToggle" aria-expanded="' + (openLeave ? 'true' : 'false') + '" aria-controls="tourBox"' + (hideTour ? '' : ' hidden') + '>' + (openLeave ? 'Hide tour times <span class="ttchev" aria-hidden="true">&#9652;</span>' : 'Show tour times <span class="ttchev" aria-hidden="true">&#9662;</span>') + '</button>';
+    var html = togHtml + '<div class="card daycard" id="tourBox" data-sec="6c" data-status="' + st + '" data-orig="' + st + '" data-rdo="' + (t.rdo ? '1' : '0') + '" data-add="' + (addEntry ? '1' : '') + '" data-eid="' + esc(editingId) + '" data-tour-open="' + (openLeave ? '1' : '0') + '" data-tour-touched="' + (openLeave ? '1' : '0') + '"' + (hideTour && !openLeave ? ' hidden' : '') + '><h3 style="font-size:15px">' + (addEntry ? 'Additional entry' : 'Tour this day') + (t.modified && !addEntry ? ' <span class="chip" style="background:#0f172a;color:#fff;border-color:transparent">Modified</span>' : '') + '</h3>';
     if (addEntry) html += '<div class="hint">Add another overtime tour on ' + esc(E.fmtMDY(iso)) + '. Your earlier entries for this day are kept.</div>';
     var pduWork = t.pdu && (t.shift === 'pm' || t.shift === 'am');
     var pduBox = pduWork && !addEntry ? '<div class="pduinfo" id="pduSched" data-sl="' + t.schedLen + '" data-ss="' + t.schedStart + '" data-lbl="' + PDU.shifts[t.shift].label + '"><b>Scheduled ' + PDU.shifts[t.shift].label + ' tour</b> &middot; ' + t.schedStart + '–' + E.tourEnd(t.schedStart, t.schedLen).end + ' &middot; counts <b>' + E.fmtHM(t.schedLen) + '</b>' + (t.plus15 || (t.schedLen !== PDU.shifts[t.shift].len) ? ' <i class="m-p15" style="font-style:normal;font-size:11px;font-weight:800;padding:1px 5px;border-radius:4px">+15</i><div style="font-size:12.5px">Includes the extra 15 minutes (Detective Duty Schedule). <button type="button" class="btn sm" data-act="x15Open" data-y="' + E.parts(d).y + '" style="min-height:28px;padding:0 8px">Ranges</button></div>' : '') +
@@ -14152,7 +14333,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div class="field" id="otHoursWrap"' + (times ? ' hidden' : '') + '><label for="otHours">Hours (H:MM)</label><input id="otHours" inputmode="decimal" autocomplete="off" placeholder="e.g. 4:30" value="' + esc(e.hours && !times ? E.fmtHM(Math.round(parseFloat(e.hours) * 60)) : '') + '"' + (lk && !times ? ro : '') + '></div>' +
       '<div class="ottotal" data-sec="8j"><div><b>Total overtime performed</b><div class="muted" style="font-size:12.5px">Worked time minus scheduled time. You can\'t edit this.</div></div><input id="otTotal" class="durOut otTotalIn" readonly tabindex="-1" value="0:00" aria-label="Total overtime performed"></div>' +
       otCompField(e) + travelField(e) +
-      '<div class="card otpaycard" data-sec="8g" style="background:#f5f7fb;margin-bottom:12px"><b id="otPreview">0 h &middot; $0.00</b><div class="muted otrate" id="otRateLine"></div><div class="muted otnxnote" id="otNxNote" hidden></div></div>' +
+      '<div class="card otpaycard daycard" data-sec="8g" style="margin-bottom:12px"><b id="otPreview">0 h &middot; $0.00</b><div class="muted otrate" id="otRateLine"></div><div class="muted otnxnote" id="otNxNote" hidden></div></div>' +
       '<div class="field" data-sec="8h"><label for="otNotes">Notes</label><textarea id="otNotes" placeholder="Case #, location, approving supervisor...">' + esc(e.notes || '') + '</textarea></div>' +
       (entry ? (otIsPaid(e)
         ? '<button type="button" class="btn block" data-act="otUnmarkPaidOne" data-id="' + esc(e.id) + '" id="otUnmarkPaidOne" style="margin-top:8px">Unmark paid</button>'
@@ -14410,7 +14591,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="' + ((s.defaultCalendar || 'google') === 'apple' ? 'on' : '') + '" data-act="calDefault" data-v="apple">Apple</button></div>' +
       '<h3 style="margin-top:20px" data-sec="9m">Subscribe to calendar</h3>' + calendarSubscribeHtml() +
       '<button class="btn danger block" data-act="reset" data-sec="9k" style="margin-top:20px">Erase all data</button>' +
-      '<p class="build-tag muted" id="appBuildTag">Build r113 · patrol-test-7628eaf53143</p>');
+      '<p class="build-tag muted" id="appBuildTag">Build r114 · patrol-test-0ec2224ffc56</p>');
   }
 
   // ---------- Day summary: what's saved on a date; tap an entry to view or change it ----------
@@ -14926,6 +15107,14 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         } else if (rdo && (tb.dataset.status === 'work' || tb.dataset.status === 'ddnew' || tb.dataset.status === 'paid')) tb.dataset.status = '';
       }
       closeDaySel();
+      if (id !== prev) resetTourTimesToggle();
+      syncDayEntry();
+    },
+    tourTimesToggle: function () {
+      var box = document.getElementById('tourBox');
+      if (!box || box.dataset.add === '1') return;
+      var open = box.dataset.tourOpen === '1';
+      box.dataset.tourOpen = open ? '0' : '1';
       syncDayEntry();
     },
     lvSave: function (t) {
@@ -14960,7 +15149,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (asgErr) { var ae = document.getElementById('asgDetail-err'); ae.textContent = asgErr; document.getElementById('asgDetail').classList.add('bad'); document.getElementById('asgDetail').focus(); return toast(asgErr); }
       var box = document.getElementById('tourBox'), status = box.dataset.status, orig = box.dataset.orig, lenTxt = document.getElementById('dayLen').value.trim(), len = lenTxt ? E.parseHM(lenTxt) : null, start = document.getElementById('dayStart').value.trim();
       var mine = box.dataset.rdo === '1', rdoOt = null, addEntry = box.dataset.add === '1';
-      var ignoreTour = !addEntry && E.isFullDayExcusal(rawType);
+      var ignoreTour = !addEntry && E.isFullDayExcusal(rawType) && !(box && box.dataset.tourTouched === '1');
       if (ignoreTour) { start = ''; len = null; lenTxt = ''; }
       if (rawType === 'rdo') {
         if (status !== 'ddoffnew' && status !== 'rdootoff') status = (orig === 'ddoff' || orig === 'dd') ? orig : (mine ? '' : 'off');
