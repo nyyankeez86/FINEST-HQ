@@ -962,6 +962,9 @@ html[data-theme="dark"] .pdsec h3,
 html[data-theme="dark"] .asgbox h3{
   background:transparent;color:var(--ink)
 }
+html[data-theme="dark"] .asgopts button{background:var(--chip-bg,var(--input-bg));color:var(--ink);border-color:var(--line)}
+html[data-theme="dark"] .asgopts button.on{color:#fff;border-color:transparent}
+html[data-theme="dark"] .field label{color:var(--ink)}
 html[data-theme="dark"] .cfmwrap{background:rgba(0,0,0,.72)}
 html[data-theme="dark"] .cfm{background:var(--sheet-bg);color:var(--ink)}
 html[data-theme="dark"] .cfm h3,html[data-theme="dark"] .cfmbody,html[data-theme="dark"] .cfmbody p{color:var(--ink)}
@@ -2737,6 +2740,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       { id: 'paiddetail',  label: 'Paid Detail',           short: 'PAID', color: '#A16207', paid: true }, // not offered in the assignment picker (Zee 2026-11-21); own section on the day page. Kept so older saved days still label correctly. fields: ID, date, time, duration, vendor, address (+ on-device OCR of the 'Selected Paid Details' screen)
       { id: 'training',    label: 'Training',              short: 'TRNG', color: '#0E7490', detail: { label: 'Training (what training)', placeholder: 'e.g. Firearms requalification' }, suggest: true, address: true, sites: true },
       { id: 'court',       label: 'Court',                 short: 'CRT',  color: '#374151', detail: { label: 'Court appearance (court, part, case)', placeholder: 'e.g. Kings Supreme, Part 30, Ind. 1234/26' }, suggest: true, address: true },
+      { id: 'meeting',     label: 'Meeting',               short: 'MTG',  color: '#1E40AF', detail: { label: 'Meeting (what / with whom)', placeholder: 'e.g. Command staff, 1 PP' }, suggest: true, address: true },
       { id: 'other',       label: 'Other',                 short: 'OTH',  color: '#57534E', detail: { label: 'Assignment', placeholder: 'Describe the assignment', required: true }, suggest: true }
     ],
     // Predefined training locations (quick picks fill ONLY the location name and the address; the training text stays as typed). Add more here.
@@ -3859,7 +3863,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (!isAssignmentEntry(e)) return null;
     var typ = e.type, t = assignmentType(typ);
     if (!t || t.paid) return null;
-    if (typ !== 'court' && typ !== 'training' && typ !== 'detail' && typ !== 'other') return null;
+    if (typ !== 'court' && typ !== 'training' && typ !== 'detail' && typ !== 'meeting' && typ !== 'other') return null;
     var r = { id: String(e.id || ''), kind: 'assignment', type: typ };
     var st = normTime(e.start || '') || '', en = normTime(e.end || '') || '';
     if (st) r.start = st;
@@ -7817,7 +7821,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function reminderParts(d, sq) {
     var iso = E.toISO(d), tt = E.dayTour(d, sq.id, tourOpts()), parts = [], asg = S.assignments[iso], asgT = asg && E.assignmentType(asg.type);
     if (tt.extra) parts.push('RDO OT');
-    if (asgT && !asgT.paid && (asgT.id === 'detail' || asgT.id === 'court' || asgT.id === 'training' || asgT.id === 'other')) {
+    if (asgT && !asgT.paid && (asgT.id === 'detail' || asgT.id === 'court' || asgT.id === 'training' || asgT.id === 'meeting' || asgT.id === 'other')) {
       parts.push(E.assignmentReminderText(asg) || asgT.label);
     }
     E.assignmentEntries((S.tours || {})[iso]).forEach(function (e) { var lb = E.assignmentReminderText(e); if (lb) parts.push(lb); });
@@ -10560,7 +10564,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="btn sm chip' + (ui.dirHospLevel1 ? ' on' : '') + '" data-act="hospChip" data-filter="level1" aria-pressed="' + (ui.dirHospLevel1 ? 'true' : 'false') + '">Level 1 Trauma</button>' +
       '</div>' +
       '</div>' +
-      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r114 · patrol-test-0ec2224ffc56</p></div>' +
+      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r115 · patrol-test-fdf227658c71</p></div>' +
       '</div>';
     var mapTools = '<div class="dir-map-chrome">' +
       '<div class="dir-map-search"><input id="dirQ" class="dirq acIn" data-ac="map" type="text" value="' + esc(q) + '" placeholder="Search an address or precinct" aria-label="Search an address or precinct" autocomplete="off"></div>' +
@@ -11279,7 +11283,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<div class="hint" id="vacRangeWarn" hidden></div></div></div>' +
       tourSection(d, sheetOpts) +
       asgSection(iso, d, dt) +
-      (sheetOpts.addEntry ? '' : asgEntryListHtml(iso, d)) +
+      (sheetOpts.addEntry ? '' : asgEntryListHtml(iso, d) + asgEntryAddBtn(d)) +
       '<div class="field" data-sec="6f"><label for="lvNote">Note (optional)</label><textarea id="lvNote" placeholder="e.g. Approved by Sgt. Zee">' + esc(lv.note || '') + '</textarea></div>' +
             '<button class="btn primary block" data-act="lvSave" data-d="' + d + '">Save day</button>' +
       '<h3 style="margin-top:18px" data-sec="6g">Overtime this day</h3>' + (ots.length ? '<div class="list">' + ots.map(otRow).join('') + '</div>' : '<div class="muted" style="margin-bottom:8px">None logged. Log overtime from the Overtime tab.</div>') +
@@ -13200,7 +13204,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     return Object.keys(by).map(function (k) { return '<div class="ctype">' + esc(k) + '</div><div class="sitechips">' + by[k].map(function (c) { var on = keys.indexOf(c.boro + '|' + c.type + '|' + c.i) >= 0; return '<button type="button" class="sitechip court' + (on ? ' on' : '') + '" aria-pressed="' + on + '" data-act="courtPick" data-b="' + esc(boro) + '" data-t="' + c.type + '" data-i="' + c.i + '"><b>' + esc(c.name) + '</b><span>' + esc(c.address) + '</span></button>'; }).join('') + '</div>'; }).join('');
   }
   function curCommand(d) { var c = S.profile ? (d != null ? recAt(d).command : S.profile.command) : null; return c && c.address ? c : null; }
-  function destWord() { var b = document.getElementById('asgBox'); var sel = b && b.dataset.sel; return sel === 'training' ? 'Training' : sel === 'detail' ? 'report location' : 'Court'; }
+  function destWord() { var b = document.getElementById('asgBox'); var sel = b && b.dataset.sel; return sel === 'training' ? 'Training' : sel === 'detail' ? 'report location' : sel === 'meeting' ? 'Meeting' : sel === 'court' ? 'Court' : 'location'; }
   function navArea(addr, word) {
     if (!addr) return ''; var c = curCommand();
     return '<div class="navleg"><div class="lbl2">Navigate to ' + esc(word) + '</div>' + navLinks(addr, 'leg-dest') + '</div>' +
@@ -14591,7 +14595,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="' + ((s.defaultCalendar || 'google') === 'apple' ? 'on' : '') + '" data-act="calDefault" data-v="apple">Apple</button></div>' +
       '<h3 style="margin-top:20px" data-sec="9m">Subscribe to calendar</h3>' + calendarSubscribeHtml() +
       '<button class="btn danger block" data-act="reset" data-sec="9k" style="margin-top:20px">Erase all data</button>' +
-      '<p class="build-tag muted" id="appBuildTag">Build r114 · patrol-test-0ec2224ffc56</p>');
+      '<p class="build-tag muted" id="appBuildTag">Build r115 · patrol-test-fdf227658c71</p>');
   }
 
   // ---------- Day summary: what's saved on a date; tap an entry to view or change it ----------
@@ -14629,6 +14633,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     }).join('');
     return '<div class="card" id="asgEntryList" style="padding:10px 12px"><h3 style="font-size:15px;margin:0 0 8px">Additional assignments</h3><div class="list">' + rows + '</div></div>';
   }
+  function asgEntryAddBtn(d) {
+    return '<div data-sec="6k" style="margin:8px 0 10px"><button type="button" class="btn block" data-act="asgEntryAdd" data-d="' + d + '" id="asgEntryAdd">Add assignment</button><div class="muted" style="font-size:12.5px;margin-top:6px">Add a court, meeting, training, detail, or other assignment without entering tour times. This does not change hours or overtime.</div></div>';
+  }
   function asgEntrySheet(d, eid) {
     var iso = E.toISO(d), list = E.assignmentEntries((S.tours || {})[iso]), a = { type: '' }, i;
     if (eid) { for (i = 0; i < list.length; i++) if (list[i].id === eid) a = list[i]; }
@@ -14654,9 +14661,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     openSheet((eid ? 'Edit assignment' : 'Add assignment'), html, 'Assignment');
   }
   function asgEntrySave(d, eid) {
-    var iso = E.toISO(d), prevT = S.tours[iso];
-    if (!dayHasLoggedTour(iso) && !prevT) return toast('Save a tour for this day first');
-    if (!prevT) return toast('Save a tour for this day first');
+    var iso = E.toISO(d), prevT = S.tours[iso] || {};
     var fields = readAsgEntryFields();
     if (!fields.type) return toast('Pick an assignment type');
     var startEl = document.getElementById('asgEntStart'), endEl = document.getElementById('asgEntEnd');
@@ -14792,7 +14797,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div class="muted" style="font-size:12.5px;margin:8px 0">Tap an entry to view or change it.</div>' +
       '<div data-sec="7c"><button class="btn primary block" data-act="dayEdit" data-d="' + d + '" data-focus="day" id="sumEdit">Edit this day</button>' +
       '<button class="btn block" data-act="closeSheet" style="margin-top:8px" id="sumDone">Done</button></div>' +
-      '<div data-sec="7e" style="margin-top:10px"><button type="button" class="btn block" data-act="dayAddEntry" data-d="' + d + '" id="sumAddEntry">Add another entry</button><div class="muted" style="font-size:12.5px;margin-top:6px">Add another overtime tour, or an assignment without a tour time (Court, Training, Detail, or Other). Your earlier entries stay saved.</div></div>' +
+      '<div data-sec="7e" style="margin-top:10px"><button type="button" class="btn block" data-act="dayAddEntry" data-d="' + d + '" id="sumAddEntry">Add another entry</button><div class="muted" style="font-size:12.5px;margin-top:6px">Add another overtime tour, or an assignment without a tour time (Court, Meeting, Training, Detail, or Other). Your earlier entries stay saved.</div></div>' +
       '<div class="daydel" data-sec="7d"><button type="button" class="btn block delbtn" id="dayDelBtn" data-act="dayDelAsk" data-d="' + d + '">Delete this entry</button></div></div>', 'Day summary');
   }
 
@@ -16026,12 +16031,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     msgVerifiedTip: function (t, ev) { msgVerifiedTip(t, ev); },
     pushToggle: function (t) { setPushEnabled(!!t.checked); },
     dayAddEntry: function (t) {
-      var d = +t.dataset.d, iso = E.toISO(d), tr = S.tours[iso] || {};
-      var hasTour = !!(tr.start || tr.end || tr.len || tr.status === 'work' || tr.status === 'dd' || tr.timesSet);
-      if (!hasTour) { daySheet(d, { addEntry: true }); return; }
+      var d = +t.dataset.d;
       choiceDlg({
         title: 'Add another entry',
-        body: '<p>Add an overtime tour, or an assignment without a tour time (Court, Training, Detail, or Other).</p>',
+        body: '<p>Add an overtime tour, or an assignment without a tour time (Court, Meeting, Training, Detail, or Other). An assignment does not require a tour.</p>',
         choices: [
           { id: 'tour', label: 'Overtime tour' },
           { id: 'asg', label: 'Assignment' }
@@ -16044,6 +16047,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     },
     todayToggle: function () { ui.todayOpen = !ui.todayOpen; render(); },
     glanceToggle: function () { ui.glanceOpen = !ui.glanceOpen; render(); },
+    asgEntryAdd: function (t) { asgEntrySheet(+t.dataset.d); },
     asgEntryEdit: function (t) { asgEntrySheet(+t.dataset.d, t.dataset.eid || ''); },
     asgEntrySave: function (t) { asgEntrySave(+t.dataset.d, t.dataset.eid || ''); },
     asgEntryDel: function (t) { asgEntryDel(+t.dataset.d, t.dataset.eid || ''); },
