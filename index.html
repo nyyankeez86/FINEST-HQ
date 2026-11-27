@@ -361,13 +361,13 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after,body.beta #
 .pdadd{margin-top:10px}
 .pdadd[hidden], .paidbox[hidden]{display:none !important}
 .paidbox .pdrm{margin-top:8px}
-.daycard{background:var(--soft2,#f5f7fb);padding:12px}.tourtimes-tog{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:44px;margin:0 0 12px;padding:10px 14px;border:1px solid var(--line,#cfd6e2);border-radius:12px;background:var(--soft2,#f5f7fb);color:var(--ink,#0f172a);font:inherit;font-weight:700;font-size:15px;cursor:pointer;text-align:left}
-.tourtimes-tog[hidden]{display:none!important}
-.tourtimes-tog .ttchev{margin-left:auto;font-size:13px;line-height:1}.asgbox{background:#f8fafc;padding:12px}
+.daycard{background:var(--soft2,#f5f7fb);padding:12px}.tourtimes-tog,.dirbox-tog{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:44px;margin:0 0 12px;padding:10px 14px;border:1px solid var(--line,#cfd6e2);border-radius:12px;background:var(--soft2,#f5f7fb);color:var(--ink,#0f172a);font:inherit;font-weight:700;font-size:15px;cursor:pointer;text-align:left}
+.tourtimes-tog[hidden],.dirbox-tog[hidden]{display:none!important}
+.tourtimes-tog .ttchev,.dirbox-tog .ttchev{margin-left:auto;font-size:13px;line-height:1}.dirbox{margin-top:8px}.asgbox{background:#f8fafc;padding:12px}
 .pdsec{background:#f8fafc;padding:12px;margin-top:12px}
 .pdsec .shead{display:flex;justify-content:space-between;align-items:center;margin:0 0 8px;padding-right:28px}
 .pdsec .pdadd{margin-top:4px}
-.pdsum{margin:0 0 10px;padding:10px 12px;border:1.5px solid #e2e8f0;border-radius:12px;background:#fff;text-align:left}
+.pdsum{display:block;width:100%;max-width:100%;box-sizing:border-box;margin:0 0 10px;padding:10px 12px;border:1.5px solid #e2e8f0;border-radius:12px;background:#fff;text-align:left}
 .pdsum b{display:block;font-size:15px;margin:0 0 2px}
 .pdsum .pdsummeta{font-size:13px;color:#334155}
 .pdsum .pdsumaddr{font-size:12.5px;color:#64748b;margin-top:4px}
@@ -486,6 +486,8 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after,body.beta #
 .sitechip.on{background:#0E7490;color:#fff;border-color:#0E7490}
 .navbtns{display:flex;gap:6px;margin-top:8px;position:relative}.navbtns .btn{flex:1;text-align:center;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 6px;font-size:13px}
 .navbtns.inrow{margin:0;padding:0 10px 10px}
+.pdsec .navbtns.inrow,.pdsec .navbtns.nav-split{margin:0 0 10px;padding:0;width:100%;max-width:100%;min-width:0;box-sizing:border-box}
+.pdsec #pdEditBtn{display:block;width:100%;max-width:100%;box-sizing:border-box}
 #sumList .sumnav{min-width:0;max-width:100%;box-sizing:border-box}
 #sumList .navbtns.inrow,#sumList .navbtns.nav-7a{margin:0 0 10px;padding:0;width:100%;max-width:100%;min-width:0;box-sizing:border-box}
 #sumList .navbtns.nav-split{gap:0;border:1px solid var(--line);border-radius:12px;overflow:visible;background:#fff;align-items:stretch;min-height:48px}
@@ -961,9 +963,12 @@ html[data-theme="dark"] .pdsec h3,
 html[data-theme="dark"] .asgbox h3{
   background:transparent;color:var(--ink)
 }
+html[data-theme="dark"] .asgopts button{background:var(--chip-bg,var(--input-bg));color:var(--ink);border-color:var(--line)}
+html[data-theme="dark"] .asgopts button.on{color:#fff;border-color:transparent}
+html[data-theme="dark"] .field label{color:var(--ink)}
 html[data-theme="dark"] .cfmwrap{background:rgba(0,0,0,.72)}
 html[data-theme="dark"] .cfm{background:var(--sheet-bg);color:var(--ink)}
-html[data-theme="dark"] .cfm h3,html[data-theme="dark"] .cfmbody,html[data-theme="dark"] .cfmbody p{color:var(--ink)}
+html[data-theme="dark"] .cfm h3,html[data-theme="dark"] .cfmbody,html[data-theme="dark"] .cfmbody p,html[data-theme="dark"] .cfmlist,html[data-theme="dark"] .cfmlist li{color:var(--ink)}
 html[data-theme="dark"] .cfm .muted,html[data-theme="dark"] .cfm .hint{color:var(--muted)}
 html[data-theme="dark"] .cfm .btn{background:var(--btn-bg);color:var(--ink);border-color:var(--line)}
 html[data-theme="dark"] .cfm .btn.primary{background:var(--btn-primary,#2563eb);border-color:var(--btn-primary,#2563eb);color:#fff}
@@ -1043,7 +1048,7 @@ html[data-theme="dark"] .home-strip .hstat.open .chev,
 html[data-theme="dark"] .leavehome.open .leavehd .chev{color:var(--ink)}
 html[data-theme="dark"] .pblock .ph em{background:#1d4ed8;color:#fff}
 html[data-theme="dark"] .calbox{background:var(--card);color:var(--ink);border-color:var(--line)}
-html[data-theme="dark"] .tourtimes-tog{background:var(--soft);color:var(--ink);border-color:var(--line)}
+html[data-theme="dark"] .tourtimes-tog,html[data-theme="dark"] .dirbox-tog{background:var(--soft);color:var(--ink);border-color:var(--line)}
 html[data-theme="dark"] .sebox,
 html[data-theme="dark"] .tourblock,
 html[data-theme="dark"] .otslip{
@@ -2735,6 +2740,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       { id: 'paiddetail',  label: 'Paid Detail',           short: 'PAID', color: '#A16207', paid: true }, // not offered in the assignment picker (Zee 2026-11-21); own section on the day page. Kept so older saved days still label correctly. fields: ID, date, time, duration, vendor, address (+ on-device OCR of the 'Selected Paid Details' screen)
       { id: 'training',    label: 'Training',              short: 'TRNG', color: '#0E7490', detail: { label: 'Training (what training)', placeholder: 'e.g. Firearms requalification' }, suggest: true, address: true, sites: true },
       { id: 'court',       label: 'Court',                 short: 'CRT',  color: '#374151', detail: { label: 'Court appearance (court, part, case)', placeholder: 'e.g. Kings Supreme, Part 30, Ind. 1234/26' }, suggest: true, address: true },
+      { id: 'meeting',     label: 'Meeting',               short: 'MTG',  color: '#1E40AF', detail: { label: 'Meeting (what / with whom)', placeholder: 'e.g. Command staff, 1 PP' }, suggest: true, address: true },
       { id: 'other',       label: 'Other',                 short: 'OTH',  color: '#57534E', detail: { label: 'Assignment', placeholder: 'Describe the assignment', required: true }, suggest: true }
     ],
     // Predefined training locations (quick picks fill ONLY the location name and the address; the training text stays as typed). Add more here.
@@ -3857,7 +3863,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (!isAssignmentEntry(e)) return null;
     var typ = e.type, t = assignmentType(typ);
     if (!t || t.paid) return null;
-    if (typ !== 'court' && typ !== 'training' && typ !== 'detail' && typ !== 'other') return null;
+    if (typ !== 'court' && typ !== 'training' && typ !== 'detail' && typ !== 'meeting' && typ !== 'other') return null;
     var r = { id: String(e.id || ''), kind: 'assignment', type: typ };
     var st = normTime(e.start || '') || '', en = normTime(e.end || '') || '';
     if (st) r.start = st;
@@ -7815,7 +7821,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function reminderParts(d, sq) {
     var iso = E.toISO(d), tt = E.dayTour(d, sq.id, tourOpts()), parts = [], asg = S.assignments[iso], asgT = asg && E.assignmentType(asg.type);
     if (tt.extra) parts.push('RDO OT');
-    if (asgT && !asgT.paid && (asgT.id === 'detail' || asgT.id === 'court' || asgT.id === 'training' || asgT.id === 'other')) {
+    if (asgT && !asgT.paid && (asgT.id === 'detail' || asgT.id === 'court' || asgT.id === 'training' || asgT.id === 'meeting' || asgT.id === 'other')) {
       parts.push(E.assignmentReminderText(asg) || asgT.label);
     }
     E.assignmentEntries((S.tours || {})[iso]).forEach(function (e) { var lb = E.assignmentReminderText(e); if (lb) parts.push(lb); });
@@ -7838,9 +7844,12 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function dayExpandHtml(d) {
     var iso = E.toISO(d), sq = mySquad(d), o = tourOpts(), tt = E.dayTour(d, sq.id, o), ov = (S.tours || {})[iso] || {}, a = S.assignments[iso], rows = [];
-    var status = tt.working ? (tt.onLeave ? 'On leave' : 'Working') + (tt.extra ? ' · OT' : tt.ddWork ? ' · D/D' : '') : (tt.dropped ? 'Not working' : 'RDO' + (tt.ddOff ? ' · D/D' : ''));
-    rows.push('<div class="dlbl">Tour</div><div class="drow">' + esc(status) + (tt.working && !tt.onLeave ? ' · ' + tourText(tt) : '') + '</div>');
-    if (ov.schedStart || ov.schedEnd) rows.push('<div class="dsub">Scheduled ' + esc((ov.schedStart || '') + (ov.schedEnd ? '\u2013' + ov.schedEnd : '')) + '</div>');
+    var logged = dayHasLoggedStatus(iso), hasRec = E.dayHasEntries(S, iso);
+    if (logged || !hasRec) {
+      var status = tt.working ? (tt.onLeave ? 'On leave' : 'Working') + (tt.extra ? ' · OT' : tt.ddWork ? ' · D/D' : '') : (tt.dropped ? 'Not working' : 'RDO' + (tt.ddOff ? ' · D/D' : ''));
+      rows.push('<div class="dlbl">Tour</div><div class="drow">' + esc(status) + (tt.working && !tt.onLeave ? ' · ' + tourText(tt) : '') + '</div>');
+      if (ov.schedStart || ov.schedEnd) rows.push('<div class="dsub">Scheduled ' + esc((ov.schedStart || '') + (ov.schedEnd ? '\u2013' + ov.schedEnd : '')) + '</div>');
+    }
     var asgs = E.dayAssignments(S, iso);
     if (asgs.length) {
       rows.push('<div class="dlbl">Assignments</div>');
@@ -7908,14 +7917,19 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var np = E.nextPayday(T, po);
     var payGlance = (np || np === 0) ? (fmt(np) + ' (' + glanceWhen(np - T) + ')') : '—';
     var tt = E.dayTour(T, sq.id, tourOpts());
-    var todayStatus = tt.working ? (tt.onLeave ? 'On leave' : 'Working') + (tt.extra ? ' · OT' : tt.ddWork ? ' · D/D' : '') : (tt.dropped ? 'Not working' : 'RDO' + (tt.ddOff ? ' · D/D' : ''));
+    var todayIso = E.toISO(T), loggedToday = dayHasLoggedStatus(todayIso), hasTodayRec = E.dayHasEntries(S, todayIso);
+    var showChartWork = loggedToday || !hasTodayRec;
+    var todayStatus = !tt.working ? (tt.dropped ? 'Not working' : 'RDO' + (tt.ddOff ? ' · D/D' : ''))
+      : (tt.onLeave ? 'On leave' : showChartWork ? ('Working' + (tt.extra ? ' · OT' : tt.ddWork ? ' · D/D' : '')) : '');
     var remDay = T, remParts = reminderParts(T, sq), remPrefix = '';
+    if (!todayStatus && remParts.length) todayStatus = remParts[0];
+    if (!todayStatus) todayStatus = 'Saved';
     if (!remParts.length) {
       var rd, nxtParts;
       for (rd = 1; rd <= 7; rd++) { nxtParts = reminderParts(T + rd, sq); if (nxtParts.length) { remDay = T + rd; remParts = nxtParts; remPrefix = reminderWhen(remDay, T); break; } }
     }
     var todaySmallParts = [];
-    if (tt.regular && !tt.onLeave && !tt.rdo) todaySmallParts.push('<div class="tourline">' + tourText(tt) + '</div>');
+    if (tt.regular && !tt.onLeave && !tt.rdo && showChartWork) todaySmallParts.push('<div class="tourline">' + tourText(tt) + '</div>');
     remParts.forEach(function (p, i) { todaySmallParts.push('<div class="remline">' + esc((i === 0 ? remPrefix : remPrefix) + p) + '</div>'); });
     var todaySmall = todaySmallParts.join('');
     var todayLine = '<div class="home-strip" id="homeStrip">' +
@@ -10558,7 +10572,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="btn sm chip' + (ui.dirHospLevel1 ? ' on' : '') + '" data-act="hospChip" data-filter="level1" aria-pressed="' + (ui.dirHospLevel1 ? 'true' : 'false') + '">Level 1 Trauma</button>' +
       '</div>' +
       '</div>' +
-      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r114 · patrol-0ec2224ffc56</p></div>' +
+      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r117 · patrol-930f13008be7</p></div>' +
       '</div>';
     var mapTools = '<div class="dir-map-chrome">' +
       '<div class="dir-map-search"><input id="dirQ" class="dirq acIn" data-ac="map" type="text" value="' + esc(q) + '" placeholder="Search an address or precinct" aria-label="Search an address or precinct" autocomplete="off"></div>' +
@@ -11277,7 +11291,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<div class="hint" id="vacRangeWarn" hidden></div></div></div>' +
       tourSection(d, sheetOpts) +
       asgSection(iso, d, dt) +
-      (sheetOpts.addEntry ? '' : asgEntryListHtml(iso, d)) +
+      (sheetOpts.addEntry ? '' : asgEntryListHtml(iso, d) + asgEntryAddBtn(d)) +
       '<div class="field" data-sec="6f"><label for="lvNote">Note (optional)</label><textarea id="lvNote" placeholder="e.g. Approved by Sgt. Zee">' + esc(lv.note || '') + '</textarea></div>' +
             '<button class="btn primary block" data-act="lvSave" data-d="' + d + '">Save day</button>' +
       '<h3 style="margin-top:18px" data-sec="6g">Overtime this day</h3>' + (ots.length ? '<div class="list">' + ots.map(otRow).join('') + '</div>' : '<div class="muted" style="margin-bottom:8px">None logged. Log overtime from the Overtime tab.</div>') +
@@ -12640,10 +12654,35 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function msgMarkRead(ids) {
     ids = (ids || []).filter(Boolean);
-    if (!ids.length) return Promise.resolve();
-    return Promise.all(ids.map(function (id) {
+    ui.readPending = ui.readPending || {};
+    var now = new Date().toISOString(), fresh = [];
+    ids.forEach(function (id) {
+      if (!id || ui.readPending[id]) return;
+      var cached = null;
+      (ui.inboxMsgs || []).forEach(function (m) { if (m.id === id) cached = m; });
+      if (cached && cached.read_at) { ui.readPending[id] = true; return; }
+      ui.readPending[id] = true;
+      if (cached) cached.read_at = now;
+      fresh.push(id);
+    });
+    if (!fresh.length) return Promise.resolve();
+    ui.inboxUnread = Math.max(0, (ui.inboxUnread || 0) - fresh.length);
+    refreshInboxChrome();
+    return Promise.all(fresh.map(function (id) {
       return Promise.resolve(cloudClient().from('messages').update({ read_at: new Date().toISOString() }).eq('id', id).then(q));
-    })).then(function () { return inboxCount(); }).catch(function () {});
+    })).then(function () { return inboxCount(); }).catch(function () {
+      fresh.forEach(function (id) { delete ui.readPending[id]; });
+      return inboxCount();
+    });
+  }
+  function markThreadRead(key, opts) {
+    if (!key) return Promise.resolve();
+    var thread = (groupMsgs(ui.inboxMsgs || [])[key]) || [];
+    var ids = thread.filter(function (m) { return m.recipient_id === CS.uid && !m.read_at; }).map(function (m) { return m.id; });
+    var jobs = [];
+    if (ids.length) jobs.push(msgMarkRead(ids));
+    if (CS.role === 'admin' && key.indexOf('_u:') !== 0) jobs.push(sugMark(key, { reload: false }));
+    return jobs.length ? Promise.all(jobs) : Promise.resolve();
   }
   function msgSend(t) {
     if (!cloudReady()) return toast('Sign in with an approved account to reply');
@@ -12656,6 +12695,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     t.disabled = true;
     return Promise.resolve(cloudClient().from('messages').insert({ recipient_id: to, suggestion_id: sid, body: body }).then(q)).then(function () {
       toast('Reply sent');
+      var key = sid || ui.msgOpenKey;
+      if (CS.role === 'admin' && sid) sugMark(sid, { reload: false });
+      markThreadRead(key);
       if (CS.role === 'admin') inboxSheet();
       else userInboxSheet(sid || ui.msgOpenKey);
     }).catch(function (e) {
@@ -12682,6 +12724,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var el = document.getElementById('inboxList'); if (!el) return;
       ui.inboxRows = both[0] || [];
       var msgs = both[1] || [], by = groupMsgs(msgs);
+      ui.inboxMsgs = msgs;
       var profBy = {};
       (both[2] || []).forEach(function (p) { if (p && p.id) profBy[p.id] = p; });
       el.classList.remove('muted');
@@ -12694,10 +12737,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         var unreadMsgs = thread.filter(function (m) { return m.recipient_id === CS.uid && !m.read_at; });
         return '<div class="item' + (r.read_at ? '' : ' sugunread') + '" data-id="' + esc(r.id) + '">' +
           (r.screenshot_path ? '<img class="sugthumb" data-path="' + esc(r.screenshot_path) + '" alt="">' : '<div class="sugthumb" aria-hidden="true"></div>') +
-          '<div class="main"><div class="t1 sugitem-head">' + ((r.read_at && !unreadMsgs.length) ? '' : msgNewIconHtml()) +
+          '<div class="main"><div data-act="sugOpen" data-id="' + esc(r.id) + '" style="cursor:pointer">' +
+          '<div class="t1 sugitem-head">' + ((r.read_at && !unreadMsgs.length) ? '' : msgNewIconHtml()) +
           '<span>' + esc(r.section || '') + ' \u00b7 ' + esc(r.username || '') + '</span></div>' +
           '<div class="t2">' + esc(fmtInboxTime(r.created_at)) + (r.read_at ? '' : ' \u00b7 unread') + '</div>' +
-          '<div style="font-size:14px;margin-top:4px;white-space:pre-wrap;overflow-wrap:anywhere">' + esc(r.message || '') + '</div>' +
+          '<div style="font-size:14px;margin-top:4px;white-space:pre-wrap;overflow-wrap:anywhere">' + esc(r.message || '') + '</div></div>' +
           (r.read_at ? '' : '<button type="button" class="btn sm" data-act="sugMark" data-id="' + esc(r.id) + '" style="margin-top:8px">Mark read</button>') +
           (thread.length ? '<div class="msgthread">' + thread.map(msgRowHtml).join('') + '</div>' : '') +
           msgComposeHtml(r.id, r.user_id, 'adm', firstNameForReply(profBy[r.user_id], r.username)) +
@@ -12706,8 +12750,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       noticeKeys.forEach(function (k) {
         var thread = by[k] || [], last = thread[thread.length - 1], other = msgOtherId(thread);
         var unread = thread.some(function (m) { return m.recipient_id === CS.uid && !m.read_at; });
-        html += '<div class="item' + (unread ? ' sugunread' : '') + '"><div class="main"><div class="t1 sugitem-head">' +
-          (unread ? msgNewIconHtml() : '') + '<span>Notice' + (last && last.sender_username && last.sender_id !== CS.uid ? ' \u00b7 ' + esc(last.sender_username) : '') + '</span></div>' +
+        html += '<div class="item' + (unread ? ' sugunread' : '') + '"><div class="main"><div data-act="msgMarkThread" data-key="' + esc(k) + '" style="cursor:pointer"><div class="t1 sugitem-head">' +
+          (unread ? msgNewIconHtml() : '') + '<span>Notice' + (last && last.sender_username && last.sender_id !== CS.uid ? ' \u00b7 ' + esc(last.sender_username) : '') + '</span></div></div>' +
           '<div class="msgthread">' + thread.map(msgRowHtml).join('') + '</div>' +
           (other ? msgComposeHtml('', other, 'admN', firstNameForReply(profBy[other], (profBy[other] && profBy[other].username) || '')) : '') +
           '</div></div>';
@@ -12715,8 +12759,6 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       html += '</div>';
       el.innerHTML = html;
       ui.inboxRows.forEach(function (r) { if (r.screenshot_path) inboxThumb(r.screenshot_path); });
-      var mark = msgs.filter(function (m) { return m.recipient_id === CS.uid && !m.read_at; }).map(function (m) { return m.id; });
-      if (mark.length) msgMarkRead(mark);
     }).catch(function (e) { var el = document.getElementById('inboxList'); if (el) el.textContent = 'Couldn\'t load suggestions: ' + errText(e); });
   }
   function userInboxSheet(openKey) {
@@ -12732,6 +12774,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     ]).then(function (both) {
       var el = document.getElementById('msgList'); if (!el) return;
       var msgs = both[0] || [], sugs = both[1] || [], sugBy = {};
+      ui.inboxMsgs = msgs;
       sugs.forEach(function (s) { sugBy[s.id] = s; });
       var by = groupMsgs(msgs);
       el.classList.remove('muted');
@@ -12785,10 +12828,34 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       Array.prototype.forEach.call(document.querySelectorAll('.sugthumb[data-path="' + CSS.escape(path) + '"]'), function (img) { img.src = url; });
     }).catch(function () {});
   }
-  function sugMark(id) {
-    Promise.resolve(cloudClient().from('suggestions').update({ read_at: new Date().toISOString() }).eq('id', id).then(q)).then(function () {
-      inboxCount(); inboxSheet();
-    }).catch(function (e) { toast('Couldn\'t mark read: ' + errText(e)); });
+  function sugMark(id, opts) {
+    if (!id) return Promise.resolve();
+    ui.sugReadPending = ui.sugReadPending || {};
+    var row = null;
+    (ui.inboxRows || []).forEach(function (r) { if (r.id === id) row = r; });
+    var already = ui.sugReadPending[id] || (row && row.read_at);
+    if (!already) {
+      ui.sugReadPending[id] = true;
+      if (row) row.read_at = new Date().toISOString();
+      ui.inboxUnread = Math.max(0, (ui.inboxUnread || 0) - 1);
+      refreshInboxChrome();
+      var item = document.querySelector('#inboxList .item[data-id="' + CSS.escape(id) + '"]');
+      if (item) {
+        item.classList.remove('sugunread');
+        var btn = item.querySelector('[data-act="sugMark"]'); if (btn) btn.remove();
+        var t2 = item.querySelector('.t2'); if (t2) t2.textContent = (t2.textContent || '').replace(/\s*\u00b7\s*unread/, '');
+        var dots = item.querySelectorAll('.t1 .msgunread-dot');
+        Array.prototype.forEach.call(dots, function (d) { d.parentNode.removeChild(d); });
+      }
+    }
+    return Promise.resolve(cloudClient().from('suggestions').update({ read_at: new Date().toISOString() }).eq('id', id).then(q)).then(function () {
+      inboxCount();
+      if (!(opts && opts.reload === false) && document.getElementById('inboxList')) inboxSheet();
+    }).catch(function (e) {
+      delete ui.sugReadPending[id];
+      toast('Couldn\'t mark read: ' + errText(e));
+      return inboxCount();
+    });
   }
   function urlB64ToU8(s) {
     var p = (s || '').replace(/-/g, '+').replace(/_/g, '/');
@@ -13181,8 +13248,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       prevDetailLocHtml(sel, a.address) +
       '<div class="field" style="margin-top:10px"><label for="asgAddr" id="asgAddrLbl">' + esc(asgAddrCaption(sel)) + '</label><input id="asgAddr" class="acIn" data-ac="asg" autocomplete="off" autocapitalize="words" enterkeyhint="done" placeholder="' + (sel === 'detail' ? 'Street, intersection, or place name' : 'Street, city or place name') + '" value="' + esc(a.address || '') + '"><datalist id="asgAddrSug">' + addrOptions(sel) + '</datalist>' +
       '<div class="hint" id="asgAddrHint">' + asgAddrHint(sel) + '</div></div>' +
-      '<div id="asgNav">' + navArea(a.address, sel === 'training' ? 'Training' : sel === 'detail' ? 'report location' : 'Court') + '</div>' +
-      '<button type="button" class="btn block" id="etaBtn" data-act="etaGo" style="margin-top:8px"' + (a.address && sel !== 'detail' ? '' : ' hidden') + '>Get arrival time</button><div id="etaOut" class="etaout" hidden></div></div>';
+      '<div id="asgNav">' + navArea(a.address, sel === 'training' ? 'Training' : sel === 'detail' ? 'report location' : sel === 'meeting' ? 'Meeting' : 'Court') + '</div></div>';
   }
   function courtBlock(a, sel) {
     var pv = E.previousCourts(S.assignments, 6); ui.prevCourts = pv;
@@ -13198,12 +13264,35 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     return Object.keys(by).map(function (k) { return '<div class="ctype">' + esc(k) + '</div><div class="sitechips">' + by[k].map(function (c) { var on = keys.indexOf(c.boro + '|' + c.type + '|' + c.i) >= 0; return '<button type="button" class="sitechip court' + (on ? ' on' : '') + '" aria-pressed="' + on + '" data-act="courtPick" data-b="' + esc(boro) + '" data-t="' + c.type + '" data-i="' + c.i + '"><b>' + esc(c.name) + '</b><span>' + esc(c.address) + '</span></button>'; }).join('') + '</div>'; }).join('');
   }
   function curCommand(d) { var c = S.profile ? (d != null ? recAt(d).command : S.profile.command) : null; return c && c.address ? c : null; }
-  function destWord() { var b = document.getElementById('asgBox'); var sel = b && b.dataset.sel; return sel === 'training' ? 'Training' : sel === 'detail' ? 'report location' : 'Court'; }
+  function destWord() { var b = document.getElementById('asgBox'); var sel = b && b.dataset.sel; return sel === 'training' ? 'Training' : sel === 'detail' ? 'report location' : sel === 'meeting' ? 'Meeting' : sel === 'court' ? 'Court' : 'location'; }
+  function dirBoxIsOpen() {
+    var box = document.getElementById('dirBox');
+    return !!(box && box.dataset.dirOpen === '1');
+  }
+  function dirBoxHtml(inner) {
+    if (!inner) return '';
+    var open = dirBoxIsOpen();
+    return '<div class="dirbox" id="dirBox" data-dir-open="' + (open ? '1' : '0') + '">' +
+      '<button type="button" class="dirbox-tog" id="dirBoxToggle" data-act="dirBoxToggle" aria-expanded="' + (open ? 'true' : 'false') + '" aria-controls="dirBoxLegs">' +
+        (open ? 'Hide directions <span class="ttchev" aria-hidden="true">&#9652;</span>' : 'Show directions <span class="ttchev" aria-hidden="true">&#9662;</span>') +
+      '</button>' +
+      '<div id="dirBoxLegs"' + (open ? '' : ' hidden') + '>' + inner + '</div></div>';
+  }
+  function setDirBoxOpen(open) {
+    var box = document.getElementById('dirBox'), legs = document.getElementById('dirBoxLegs'), tog = document.getElementById('dirBoxToggle');
+    if (!box) return;
+    box.dataset.dirOpen = open ? '1' : '0';
+    if (legs) legs.hidden = !open;
+    if (tog) {
+      tog.setAttribute('aria-expanded', open ? 'true' : 'false');
+      tog.innerHTML = open ? 'Hide directions <span class="ttchev" aria-hidden="true">&#9652;</span>' : 'Show directions <span class="ttchev" aria-hidden="true">&#9662;</span>';
+    }
+  }
   function navArea(addr, word) {
     if (!addr) return ''; var c = curCommand();
-    return '<div class="navleg"><div class="lbl2">Navigate to ' + esc(word) + '</div>' + navLinks(addr, 'leg-dest') + '</div>' +
+    return dirBoxHtml('<div class="navleg"><div class="lbl2">Navigate to ' + esc(word) + '</div>' + navLinks(addr, 'leg-dest') + '</div>' +
       (c ? '<div class="navleg"><div class="lbl2">Navigate to Command (' + esc(E.commandShort(c)) + ')</div>' + navLinks(c, 'leg-cmd') +
-        '<div class="lbl2" style="margin-top:8px">Route: Command &rarr; ' + esc(word) + '</div>' + routeLinks(c, addr, 'leg-route') + '</div>' : '');
+        '<div class="lbl2" style="margin-top:8px">Route: Command &rarr; ' + esc(word) + '</div>' + routeLinks(c, addr, 'leg-route') + '</div>' : ''));
   }
   function pdFormAddress() {
     if (!document.getElementById('pdForm')) return '';
@@ -13219,9 +13308,6 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var v = (document.getElementById('asgAddr') || {}).value || '', n = document.getElementById('asgNav');
     if (n) {
       n.innerHTML = navArea(v.trim(), destWord());
-      var box = document.getElementById('asgBox'), hideEta = !v.trim() || (box && box.dataset.sel === 'detail');
-      var eta = document.getElementById('etaBtn'); if (eta) eta.hidden = hideEta;
-      var o = document.getElementById('etaOut'); if (o) { o.hidden = true; o.innerHTML = ''; }
       syncPicks();
     }
     refreshPdNav();
@@ -13885,26 +13971,67 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var fin = function () { save(); closeAll(); render(); toast('Deleted everything for ' + fmt(d, 'md')); };
     slipDel(iso).then(function () { if (r.removed.slip) slipQueue(iso, 'del'); }, function () {}).then(fin, fin); // slip PDF: this device (IndexedDB) and the cloud bucket
   }
+  function dayOtOnIso(e, iso) {
+    return e && (e.linkedEnd ? e.linkedEnd === iso : e.linkedTour ? e.linkedTour === iso : e.date === iso);
+  }
+  function dayHasOtherThanPaid(iso) {
+    var a = (S.assignments || {})[iso] || {}, lv = (S.leave || {})[iso] || {}, tr = (S.tours || {})[iso] || {};
+    if (a.type && a.type !== 'paiddetail' && !(E.assignmentType(a.type) || {}).paid) return true;
+    if (lv.type || lv.note) return true;
+    if ((S.slips || {})[iso]) return true;
+    if (tr.start || tr.end || tr.len || tr.timesSet || tr.status || tr.short || tr.schedStart || tr.schedEnd) return true;
+    if (E.tourEntries(tr).length || E.assignmentEntries(tr).length) return true;
+    return (S.overtime || []).some(function (e) { return dayOtOnIso(e, iso); });
+  }
+  function reopenDayAfterPartialDelete(d) {
+    var iso = E.toISO(d);
+    closeAll(); render();
+    if (E.dayHasEntries(S, iso)) daySummary(d);
+  }
+  function deleteDayKeepPaid(d) {
+    var iso = E.toISO(d), t = (S.tours || {})[iso], hadSlip = !!(S.slips || {})[iso], a = (S.assignments || {})[iso], pd = a && a.pd;
+    S.leave = Object.assign({}, S.leave || {}); delete S.leave[iso];
+    S.slips = Object.assign({}, S.slips || {}); delete S.slips[iso];
+    if (t && (t.status === 'dd' || t.status === 'ddoff')) S.tours = E.clearDayForDay(S.tours, iso);
+    else { S.tours = Object.assign({}, S.tours || {}); delete S.tours[iso]; }
+    S.overtime = (S.overtime || []).filter(function (e) { return !dayOtOnIso(e, iso); });
+    S.assignments = Object.assign({}, S.assignments || {});
+    if (E.hasPaidDetail({ pd: pd })) {
+      var kept = E.cleanAssignment({ type: 'paiddetail', pd: pd }) || { type: 'paiddetail', pd: pd };
+      S.assignments[iso] = Object.assign(kept, { updated: new Date().toISOString() });
+    } else delete S.assignments[iso];
+    var fin = function () { save(); reopenDayAfterPartialDelete(d); toast('Tour and other entries deleted. Paid detail kept.'); };
+    if (!hadSlip) { fin(); return; }
+    slipDel(iso).then(function () { slipQueue(iso, 'del'); }, function () {}).then(fin, fin);
+  }
+  function deletePaidDetailOnly(d) {
+    var iso = E.toISO(d);
+    commitPaidDetailDelete(iso);
+    reopenDayAfterPartialDelete(d);
+  }
   // Small in-app confirm (native confirm() can't be styled and blocks the page)
   function choiceDlg(o) {
     var old = document.getElementById('cfmDlg'); if (old) old.remove();
     var w = document.createElement('div'); w.id = 'cfmDlg'; w.className = 'cfmwrap';
     var choices = (o.choices || []).map(function (c) {
-      return '<button type="button" class="btn primary choice" data-choice="' + esc(c.id) + '">' + esc(c.label) + '</button>';
+      var cls = c.danger ? 'delbtn' : 'primary';
+      return '<button type="button" class="btn ' + cls + ' choice" data-choice="' + esc(c.id) + '"' + (c.danger ? ' id="cfmDelAll"' : '') + '>' + esc(c.label) + '</button>';
     }).join('');
     w.innerHTML = '<div class="cfm" role="dialog" aria-modal="true" aria-labelledby="cfmT"><h3 id="cfmT">' + esc(o.title) + '</h3><div class="cfmbody">' + o.body + '</div><div class="cfmbtns cfmchoices">' + choices + '<button type="button" class="btn" id="cfmNo">Cancel</button></div></div>';
     document.body.appendChild(w);
     var close = function () { w.remove(); document.removeEventListener('keydown', key, true); }, key = function (e) { if (e.key === 'Escape') { e.stopPropagation(); if (o.onCancel) o.onCancel(); close(); } };
     document.addEventListener('keydown', key, true);
     w.addEventListener('click', function (e) {
+      var btn = e.target && e.target.closest ? e.target.closest('[data-choice]') : null;
       if (e.target === w || e.target.id === 'cfmNo') { if (o.onCancel) o.onCancel(); close(); }
-      else if (e.target && e.target.getAttribute && e.target.getAttribute('data-choice')) {
-        var id = e.target.getAttribute('data-choice');
+      else if (btn) {
+        var id = btn.getAttribute('data-choice');
         close();
         if (o.onChoice) o.onChoice(id);
       }
     });
-    var first = w.querySelector('[data-choice]'); if (first) first.focus();
+    if (o.focusCancel) { var no = document.getElementById('cfmNo'); if (no) no.focus(); }
+    else { var first = w.querySelector('[data-choice]'); if (first) first.focus(); }
   }
   function confirmDlg(o) {
     var old = document.getElementById('cfmDlg'); if (old) old.remove();
@@ -14566,7 +14693,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       balancesHtml() +
       '<button class="btn primary block" data-act="stSave">Save settings</button>' +
       settingsFold('mapsHead', '9f', 'Google Maps API key (optional)',
-        '<div class="muted" style="font-size:13px;margin-bottom:8px">Navigate buttons and address suggestions work without a key. Add your own key to get Google Places suggestions and arrival times with live traffic. The key needs the Maps JavaScript API, Places API and Distance Matrix API enabled; restrict it to this site in Google Cloud.</div>' +
+        '<div class="muted" style="font-size:13px;margin-bottom:8px">Navigate buttons and address suggestions work without a key. Add your own key to get Google Places suggestions. The key needs the Maps JavaScript API and Places API enabled; restrict it to this site in Google Cloud.</div>' +
         '<div class="field"><label for="stMapsKey">Google Maps API key (optional)</label><input id="stMapsKey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Paste your key" value="' + esc(mapsKey()) + '"><div class="hint">Stored only in this browser (localStorage), never in the code, and never synced to your account.' + (mapsKey() ? ' A key is saved.' : ' No key saved.') + '</div></div>' +
         '<label class="chk" style="display:flex;gap:8px;align-items:center;min-height:44px;font-size:14px"><input type="checkbox" id="stMapsInBk"' + (S.settings.mapsKeyInBackup ? ' checked' : '') + '> Include the key in backups</label>' +
         '<div class="row"><button class="btn sm" data-act="mapsSave">Save key</button><button class="btn sm" data-act="mapsShow">Show</button>' + (mapsKey() ? '<button class="btn sm danger" data-act="mapsClear">Remove key</button>' : '') + '</div>',
@@ -14589,7 +14716,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="' + ((s.defaultCalendar || 'google') === 'apple' ? 'on' : '') + '" data-act="calDefault" data-v="apple">Apple</button></div>' +
       '<h3 style="margin-top:20px" data-sec="9m">Subscribe to calendar</h3>' + calendarSubscribeHtml() +
       '<button class="btn danger block" data-act="reset" data-sec="9k" style="margin-top:20px">Erase all data</button>' +
-      '<p class="build-tag muted" id="appBuildTag">Build r114 · patrol-0ec2224ffc56</p>');
+      '<p class="build-tag muted" id="appBuildTag">Build r117 · patrol-930f13008be7</p>');
   }
 
   // ---------- Day summary: what's saved on a date; tap an entry to view or change it ----------
@@ -14597,6 +14724,13 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function dayHasLoggedTour(iso) {
     var tr = S.tours[iso] || {};
     return !!(tr.start || tr.end || tr.len || tr.status === 'work' || tr.status === 'dd' || tr.timesSet);
+  }
+  // User-logged tour, leave, or status (off / D/D). A paid detail, note, slip, or
+  // assignment-only entry is not a logged working day — do not infer Working from the chart.
+  function dayHasLoggedStatus(iso) {
+    if (dayHasLoggedTour(iso)) return true;
+    var tr = (S.tours || {})[iso] || {}, lv = (S.leave || {})[iso];
+    return tr.status === 'off' || tr.status === 'ddoff' || !!(lv && lv.type);
   }
   function readAsgEntryFields() {
     var box = document.getElementById('asgBox'), typ = box ? box.dataset.sel : '';
@@ -14627,6 +14761,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     }).join('');
     return '<div class="card" id="asgEntryList" style="padding:10px 12px"><h3 style="font-size:15px;margin:0 0 8px">Additional assignments</h3><div class="list">' + rows + '</div></div>';
   }
+  function asgEntryAddBtn(d) {
+    return '<div data-sec="6k" style="margin:8px 0 10px"><button type="button" class="btn block" data-act="asgEntryAdd" data-d="' + d + '" id="asgEntryAdd">Add assignment</button><div class="muted" style="font-size:12.5px;margin-top:6px">Add a court, meeting, training, detail, or other assignment without entering tour times. This does not change hours or overtime.</div></div>';
+  }
   function asgEntrySheet(d, eid) {
     var iso = E.toISO(d), list = E.assignmentEntries((S.tours || {})[iso]), a = { type: '' }, i;
     if (eid) { for (i = 0; i < list.length; i++) if (list[i].id === eid) a = list[i]; }
@@ -14652,9 +14789,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     openSheet((eid ? 'Edit assignment' : 'Add assignment'), html, 'Assignment');
   }
   function asgEntrySave(d, eid) {
-    var iso = E.toISO(d), prevT = S.tours[iso];
-    if (!dayHasLoggedTour(iso) && !prevT) return toast('Save a tour for this day first');
-    if (!prevT) return toast('Save a tour for this day first');
+    var iso = E.toISO(d), prevT = S.tours[iso] || {};
     var fields = readAsgEntryFields();
     if (!fields.type) return toast('Pick an assignment type');
     var startEl = document.getElementById('asgEntStart'), endEl = document.getElementById('asgEntEnd');
@@ -14755,10 +14890,16 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var sw = function (c, txt) { return '<span class="sw" style="width:30px;height:30px;border-radius:8px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:12px;background:' + c + '">' + (txt || '') + '</span>'; };
     var item = function (focus, icon, t1, t2, id) { return '<button type="button" class="item sumrow" data-act="dayEdit" data-d="' + d + '" data-focus="' + focus + '" id="' + id + '">' + icon + '<div class="main"><div class="t1">' + t1 + '</div>' + (t2 ? '<div class="t2">' + t2 + '</div>' : '') + '</div><div class="right sumgo">View / edit &rsaquo;</div></button>'; };
     var kind = dt.extra ? 'Overtime tour on RDO' : dt.ddWork ? 'Day for day &middot; working this RDO' : dt.ddOff ? 'Day for day &middot; off' : esc(opt.label);
-    var sub = dt.working && !lv.type ? 'Tour ' + tourText(dt) + (ov.len && !dt.extra ? '</div><div class="t2"><b>Tour length changed for this day only</b>' : '') + (ov.short ? ' &middot; left early: ' + E.fmtHM(ov.short.minutes) + ' ' + esc(C.shortLeaveLabels[ov.short.type] || '') : '') : lv.type ? (en.leaveType && E.isRDO(d, sq.id, U()) ? 'On an RDO' : 'Leave day') : 'Day off';
+    var loggedTour = dayHasLoggedTour(iso);
+    var loggedStatus = dayHasLoggedStatus(iso);
+    var sub = dt.working && !lv.type ? (loggedTour ? ('Tour ' + tourText(dt) + (ov.len && !dt.extra ? '</div><div class="t2"><b>Tour length changed for this day only</b>' : '') + (ov.short ? ' &middot; left early: ' + E.fmtHM(ov.short.minutes) + ' ' + esc(C.shortLeaveLabels[ov.short.type] || '') : '')) : 'No tour entered') : lv.type ? (en.leaveType && E.isRDO(d, sq.id, U()) ? 'On an RDO' : 'Leave day') : 'Day off';
     var dayRow = item('day', sw(dt.extra ? '#B45309' : opt.color), kind, sub, 'sumDay');
-    if (dayHasLoggedTour(iso)) rows.push('<div class="swrow" data-swipe="sumTour" data-d="' + d + '" data-iso="' + iso + '" id="sumTourRow">' + dayRow + '</div>');
-    else rows.push(dayRow);
+    // Only show a Working / RDO / leave row when the user actually logged a tour or status.
+    // A paid detail (or other non-tour entry) must not infer Working from the chart default.
+    if (loggedStatus) {
+      if (loggedTour) rows.push('<div class="swrow" data-swipe="sumTour" data-d="' + d + '" data-iso="' + iso + '" id="sumTourRow">' + dayRow + '</div>');
+      else rows.push(dayRow);
+    }
     if (lv.note) rows.push(item('note', sw('#475569', '&#9998;'), 'Note', esc(lv.note), 'sumNote'));
     if (a && a.type && !(E.assignmentType(a.type) || {}).paid) rows.push(sumNavWrap(item('asg', (function (t) { return sw(t.color, esc(t.short)); })(E.assignmentType(a.type) || { short: '?', color: '#64748b' }), esc(E.assignmentLabel(a)), esc(E.assignmentLocation(a) || ''), 'sumAsg'), E.assignmentNavAddress(a)));
     if (E.hasPaidDetail(a)) { var pd = a.pd; rows.push(sumNavWrap(item('paid', sw('#047857', 'PD'), 'Paid Detail' + (pd.vendor ? ': ' + esc(pd.vendor) : ''), [pd.start ? esc(pd.start) + (pd.end ? '–' + esc(pd.end) : '') : '', pd.durationMin ? E.fmtHM(pd.durationMin) : '', pd.id ? 'ID ' + esc(pd.id) : pdIdNeededMark()].filter(Boolean).join(' &middot; '), 'sumPaid'), E.assignmentNavAddress({ pd: pd }))); }
@@ -14790,7 +14931,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       '<div class="muted" style="font-size:12.5px;margin:8px 0">Tap an entry to view or change it.</div>' +
       '<div data-sec="7c"><button class="btn primary block" data-act="dayEdit" data-d="' + d + '" data-focus="day" id="sumEdit">Edit this day</button>' +
       '<button class="btn block" data-act="closeSheet" style="margin-top:8px" id="sumDone">Done</button></div>' +
-      '<div data-sec="7e" style="margin-top:10px"><button type="button" class="btn block" data-act="dayAddEntry" data-d="' + d + '" id="sumAddEntry">Add another entry</button><div class="muted" style="font-size:12.5px;margin-top:6px">Add another overtime tour, or an assignment without a tour time (Court, Training, Detail, or Other). Your earlier entries stay saved.</div></div>' +
+      '<div data-sec="7e" style="margin-top:10px"><button type="button" class="btn block" data-act="dayAddEntry" data-d="' + d + '" id="sumAddEntry">Add another entry</button><div class="muted" style="font-size:12.5px;margin-top:6px">Add another overtime tour, or an assignment without a tour time (Court, Meeting, Training, Detail, or Other). Your earlier entries stay saved.</div></div>' +
       '<div class="daydel" data-sec="7d"><button type="button" class="btn block delbtn" id="dayDelBtn" data-act="dayDelAsk" data-d="' + d + '">Delete this entry</button></div></div>', 'Day summary');
   }
 
@@ -15459,22 +15600,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var r = E.applySite({ type: 'training' }, +t.dataset.i); // location + address only; never the training text (#asgDetail)
       document.getElementById('asgTrLoc').value = r.place; document.getElementById('asgAddr').value = r.address; refreshNav();
     },
-    etaGo: function () {
-      var w = document.getElementById('asgAddrWrap'), addr = document.getElementById('asgAddr').value.trim(), out = document.getElementById('etaOut'), btn = document.getElementById('etaBtn');
-      var day = E.toDay(w.dataset.iso), st = w.dataset.start, tourStart = null;
-      if (st) { var pp = E.parts(day), hm = st.split(':'); tourStart = new Date(pp.y, pp.m - 1, pp.d, +hm[0], +hm[1]); }
-      out.hidden = false; out.className = 'etaout'; out.innerHTML = '<span class="muted">' + (mapsKey() ? 'Getting your location and traffic&hellip;' : '') + '</span>'; btn.disabled = true;
-      var word = destWord(), cmd = curCommand();
-      E.computeEta2({ key: mapsKey(), online: navigator.onLine, destination: addr, command: cmd, getPosition: getPosition, loadMaps: loadMaps, now: new Date(), tourStart: tourStart, home: S.profile && S.profile.homeAddress }).then(function (r) {
-        btn.disabled = false;
-        if (!r.ok) { out.className = 'etaout bad'; out.innerHTML = '<div class="etamsg">' + esc(r.message) + '</div>' + (r.code === 'nokey' ? '<button type="button" class="btn sm" data-act="mapsSettings" style="margin-top:6px">Add a key in Settings</button>' : '') + (r.code !== 'noaddr' ? navArea(addr, word) : ''); out.dataset.code = r.code; return; }
-        out.dataset.code = 'ok';
-        var row = function (k, label, x) { return x ? '<div class="etarow" data-k="' + k + '"><div class="etalbl">' + esc(label) + '</div><div class="etabig">' + esc(x.text) + '</div>' + (x.legs ? '<div class="muted" style="font-size:12px">' + esc(x.legs) + '</div>' : '') + (x.leaveBy ? '<div class="etaleave">Leave by ' + esc(x.leaveBy) + ' to arrive by ' + esc(r.arriveBy) + '</div>' : '') + '</div>' : ''; };
-        out.innerHTML = row('here', r.fromHome ? '(a) From home' : '(a) From your location', r.fromHere) + row('cmd', '(b) From your command' + (cmd ? ' (' + E.commandShort(cmd) + ')' : ''), r.fromCommand) + row('via', 'Home → Command → ' + word, r.viaCommand) +
-          (r.homeNote ? '<div class="etamsg warn">' + esc(r.homeNote) + '</div>' : '') + (r.warning ? '<div class="etamsg warn">' + esc(r.warning) + ' Showing the command route only.</div>' : '') + (r.noCommand ? '<div class="muted" style="font-size:12.5px">Add your command in Settings to also see times from the command.</div>' : '') +
-          '<div class="muted" style="font-size:12px;margin-top:4px">' + esc(r.note) + (r.leaveNote ? ' ' + esc(r.leaveNote) : '') + '</div>';
-      });
-    },
+    dirBoxToggle: function () { setDirBoxOpen(!(document.getElementById('dirBox') && document.getElementById('dirBox').dataset.dirOpen === '1')); },
     leaveGo: function () { var v = document.getElementById('lnDate').value; if (v) daySheet(E.toDay(v)); },
     tourPick: function (t) { var i = document.getElementById(t.dataset.for); i.value = t.dataset.v; tourPrev(i.id); if (i.id === 'dayLen') { autoEndFromStart('dayStart', 'dayEnd', 'workedStartDate', 'workedEndDate'); pduKeep(); updateEnd(true); } },
     x15Open: function (t) { x15Sheet(t && t.dataset && t.dataset.y ? +t.dataset.y : ui.x15Year); },
@@ -15493,13 +15619,34 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     shortPick: function (t) { var b = document.getElementById('shortBox'); b.dataset.sel = t.dataset.t; Array.prototype.forEach.call(b.querySelectorAll('[data-act="shortPick"]'), function (x) { setOn(x, x === t); }); document.getElementById('shortErr').textContent = ''; },
     dayDelAsk: function (t) {
       var d = +t.dataset.d, iso = E.toISO(d); if (!E.dayHasEntries(S, iso)) return toast('Nothing saved for this day');
-      var a = S.assignments[iso], lv = S.leave[iso], tr = S.tours[iso], ots = S.overtime.filter(function (e) { return e.linkedEnd ? e.linkedEnd === iso : e.linkedTour ? e.linkedTour === iso : e.date === iso; }), items = [];
-      if (a) items.push('Assignment: ' + E.assignmentLabel(a));
+      var a = S.assignments[iso], lv = S.leave[iso], tr = S.tours[iso], ots = S.overtime.filter(function (e) { return dayOtOnIso(e, iso); }), items = [];
+      if (E.hasPaidDetail(a)) items.push('Paid detail' + (a.pd && a.pd.vendor ? ': ' + a.pd.vendor : ''));
+      if (a && a.type && a.type !== 'paiddetail' && !(E.assignmentType(a.type) || {}).paid) items.push('Assignment: ' + E.assignmentLabel(a));
       if (lv && lv.type) items.push('Leave: ' + lvType(lv.type).label); if (lv && lv.note) items.push('Note');
-      if (tr) items.push(tr.status === 'dd' || tr.status === 'ddoff' ? 'Day-for-day swap (also clears ' + fmt(E.toDay(tr.swap), 'md') + ')' : 'Tour changes' + (tr.short ? ' (refunds ' + E.fmtHM(tr.short.minutes) + ' ' + C.shortLeaveLabels[tr.short.type] + ')' : ''));
+      if (tr && (tr.start || tr.end || tr.len || tr.timesSet || tr.status || tr.short || E.tourEntries(tr).length || E.assignmentEntries(tr).length)) items.push(tr.status === 'dd' || tr.status === 'ddoff' ? 'Day-for-day swap (also clears ' + fmt(E.toDay(tr.swap), 'md') + ')' : 'Tour changes' + (tr.short ? ' (refunds ' + E.fmtHM(tr.short.minutes) + ' ' + C.shortLeaveLabels[tr.short.type] + ')' : ''));
       if (ots.length) items.push(ots.length + ' overtime entr' + (ots.length === 1 ? 'y' : 'ies'));
       if ((S.slips || {})[iso]) items.push(slipKindOf(iso) + ' (PDF)');
-      confirmDlg({ title: 'Delete this entry?', body: '<p>Everything you entered for <b>' + esc(fmt(d, 'long')) + '</b> will be deleted' + (CL.enabled && CS.uid ? ', on all your devices' : '') + ':</p><ul class="cfmlist">' + items.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul><p class="muted">Your regular chart and RDOs don\'t change. This can\'t be undone.</p>', ok: 'Delete', danger: true, onOk: function () { deleteDayNow(d); } });
+      var list = '<ul class="cfmlist">' + items.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>';
+      var footnote = '<p class="muted">Your regular chart and RDOs don\'t change. This can\'t be undone.</p>';
+      if (E.hasPaidDetail(a) && dayHasOtherThanPaid(iso)) {
+        choiceDlg({
+          title: 'Delete this entry?',
+          body: '<p>This day has a paid detail and other saved data for <b>' + esc(fmt(d, 'long')) + '</b>. Choose what to delete' + (CL.enabled && CS.uid ? ' (on all your devices)' : '') + ':</p>' + list + footnote,
+          focusCancel: true,
+          choices: [
+            { id: 'tour', label: 'Delete tour / working only' },
+            { id: 'pd', label: 'Delete paid detail only' },
+            { id: 'all', label: 'Delete entire day', danger: true }
+          ],
+          onChoice: function (id) {
+            if (id === 'tour') deleteDayKeepPaid(d);
+            else if (id === 'pd') deletePaidDetailOnly(d);
+            else if (id === 'all') deleteDayNow(d);
+          }
+        });
+        return;
+      }
+      confirmDlg({ title: 'Delete this entry?', body: '<p>Everything you entered for <b>' + esc(fmt(d, 'long')) + '</b> will be deleted' + (CL.enabled && CS.uid ? ', on all your devices' : '') + ':</p>' + list + footnote, ok: 'Delete', danger: true, onOk: function () { deleteDayNow(d); } });
     },
     pduStart: function (t) { document.getElementById('dayStart').value = t.dataset.v; document.getElementById('dayLen').value = ''; tourPrev('dayLen'); pduKeep(); updateEnd(true); },
     tourStatus: function (t) {
@@ -16018,18 +16165,18 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     inboxOpen: function () { openInbox(); },
     sugPopDismiss: function () { hideSugPop(); },
     sugMark: function (t) { sugMark(t.dataset.id); },
+    sugOpen: function (t) { markThreadRead(t.dataset.id); },
     msgSend: function (t) { msgSend(t); },
     msgPreset: function (t) { msgPreset(t); },
-    msgOpen: function (t) { userInboxSheet(t.dataset.key); },
+    msgOpen: function (t) { markThreadRead(t.dataset.key); userInboxSheet(t.dataset.key); },
+    msgMarkThread: function (t) { markThreadRead(t.dataset.key); },
     msgVerifiedTip: function (t, ev) { msgVerifiedTip(t, ev); },
     pushToggle: function (t) { setPushEnabled(!!t.checked); },
     dayAddEntry: function (t) {
-      var d = +t.dataset.d, iso = E.toISO(d), tr = S.tours[iso] || {};
-      var hasTour = !!(tr.start || tr.end || tr.len || tr.status === 'work' || tr.status === 'dd' || tr.timesSet);
-      if (!hasTour) { daySheet(d, { addEntry: true }); return; }
+      var d = +t.dataset.d;
       choiceDlg({
         title: 'Add another entry',
-        body: '<p>Add an overtime tour, or an assignment without a tour time (Court, Training, Detail, or Other).</p>',
+        body: '<p>Add an overtime tour, or an assignment without a tour time (Court, Meeting, Training, Detail, or Other). An assignment does not require a tour.</p>',
         choices: [
           { id: 'tour', label: 'Overtime tour' },
           { id: 'asg', label: 'Assignment' }
@@ -16042,6 +16189,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     },
     todayToggle: function () { ui.todayOpen = !ui.todayOpen; render(); },
     glanceToggle: function () { ui.glanceOpen = !ui.glanceOpen; render(); },
+    asgEntryAdd: function (t) { asgEntrySheet(+t.dataset.d); },
     asgEntryEdit: function (t) { asgEntrySheet(+t.dataset.d, t.dataset.eid || ''); },
     asgEntrySave: function (t) { asgEntrySave(+t.dataset.d, t.dataset.eid || ''); },
     asgEntryDel: function (t) { asgEntryDel(+t.dataset.d, t.dataset.eid || ''); },
@@ -16498,7 +16646,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   // pointerdown + preventDefault keeps focus in the field, so blur doesn't close the list before the tap lands
   document.addEventListener('pointerdown', function (ev) { var o = ev.target.closest && ev.target.closest('.acopt'); if (!o) return; ev.preventDefault(); var inp = document.getElementById(o.parentNode.id.replace(/-ac$/, '')); if (inp) acPick(inp, +o.dataset.i); });
   document.addEventListener('mousedown', function (ev) { if (ev.target.closest && ev.target.closest('.acdrop')) ev.preventDefault(); });
-  document.addEventListener('focusin', function (ev) { if (isDirSearchInput(ev.target)) hideSearchTabs(); });
+  document.addEventListener('focusin', function (ev) {
+    if (ev.target && ev.target.classList && ev.target.classList.contains('timeIn')) ev.target.dataset.timeDigits = String(timeInputDigits(ev.target).length);
+    if (isDirSearchInput(ev.target)) hideSearchTabs();
+  });
   document.addEventListener('focusout', function (ev) {
     var inp = ev.target;
     if (inp && inp.id === 'pdVendor') {
@@ -16515,6 +16666,37 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       showSearchTabs();
     }, 150);
   });
+  function timePairEndId(id) {
+    id = String(id || '');
+    if (/Start$/.test(id)) return id.replace(/Start$/, 'End');
+    if (/From$/.test(id)) return id.replace(/From$/, 'To');
+    return '';
+  }
+  function timePairStartId(id) {
+    id = String(id || '');
+    if (/End$/.test(id)) return id.replace(/End$/, 'Start');
+    if (/To$/.test(id)) return id.replace(/To$/, 'From');
+    return '';
+  }
+  function timeInputDigits(el) { return String((el && el.value) || '').replace(/\D/g, ''); }
+  function maybeAdvanceTimePair(el, ev) {
+    if (!el || !el.classList || !el.classList.contains('timeIn')) return;
+    var typ = (ev && ev.inputType) || '', deleting = /^delete/.test(typ);
+    var digits = timeInputDigits(el), n = digits.length, prev = el.dataset.timeDigits;
+    el.dataset.timeDigits = String(n);
+    if (deleting || n !== 4 || prev === '4') return;
+    if (typ === 'insertFromPaste' || typ === 'insertFromDrop') {
+      var pasted = String((ev && ev.data) || '').replace(/\D/g, '');
+      if (pasted.length < 4) return;
+    }
+    var endId = timePairEndId(el.id);
+    if (endId) {
+      var end = document.getElementById(endId);
+      if (end) { try { end.focus(); if (typeof end.select === 'function') end.select(); } catch (e) {} }
+      return;
+    }
+    if (timePairStartId(el.id)) { try { el.blur(); } catch (e) {} }
+  }
   document.addEventListener('input', function (ev) {
     if (/^ot(Start|End|Hours|Date|CashH|SchedStart|SchedEnd|CashFrom|CashTo|TimeFrom|TimeTo|TimeDur|WorkedDur|Total)$/.test(ev.target.id)) otPreview();
     if (ev.target.id === 'pdStart' || ev.target.id === 'pdEnd') pdAutoDur();
@@ -16567,6 +16749,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       } else {
         var tf = E.formatTimeInput(tv, /^delete/.test(ev.inputType || '')); if (tf !== tv) ev.target.value = tf;
       } if (ev.target.id === 'otStart') autoEndFromStart('otStart', 'otEnd', 'otWorkedStartDate', 'otWorkedEndDate'); if (ev.target.id === 'otSchedStart') autoEndFromStart('otSchedStart', 'otSchedEnd', 'otSchedStartDate', 'otSchedEndDate'); if (/^ot(Start|End|SchedStart|SchedEnd)$/.test(ev.target.id)) otPreview(); if (/^ot(CashFrom|CashTo|TimeFrom|TimeTo)$/.test(ev.target.id)) { var form2 = document.getElementById('otForm'); if (form2) form2.dataset.splitSrc = /^otTime/.test(ev.target.id) ? 'time-times' : 'cash-times'; otPreview(); } if (ev.target.id === 'otTravAmt') { var tw = document.getElementById('otTravWrap'); if (tw) tw.dataset.touched = '1'; otPreview(); } }
+    if (ev.target.classList.contains('timeIn')) maybeAdvanceTimePair(ev.target, ev);
     if (ev.target.id === 'dayStart' || ev.target.id === 'dayEnd') {
       if (String(ev.target.value || '').trim()) { openRdoKindPrompt(); if (ev.target.id === 'dayStart') asgExpand(); }
     }
