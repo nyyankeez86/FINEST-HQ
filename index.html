@@ -151,8 +151,8 @@ main#view{transition:padding-bottom .22s ease}
 .stat .lbl{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700}
 .stat .big{font-size:24px;font-weight:800;margin-top:2px;line-height:1.15}
 .stat .small{font-size:13px;color:var(--muted);margin-top:2px}
-.home-strip{display:flex;gap:6px;margin:0 0 10px}
-.home-strip .hstat{flex:1;min-width:0;background:var(--card);border:1px solid #e1e6ee;border-radius:12px;padding:6px 8px;margin:0;box-shadow:0 1px 2px rgba(15,23,42,.06)}
+.home-strip{display:flex;align-items:stretch;gap:6px;margin:0 0 10px}
+.home-strip .hstat{flex:1;min-width:0;display:flex;flex-direction:column;align-self:stretch;background:var(--card);border:1px solid #e1e6ee;border-radius:12px;padding:6px 8px;margin:0;box-shadow:0 1px 2px rgba(15,23,42,.06)}
 .home-strip .hstat-today{flex:1.1}
 .home-strip .hstat-glance{flex:1.5}
 .home-strip .lbl{font-size:9px;letter-spacing:.4px;margin:0;line-height:1.2}
@@ -209,6 +209,7 @@ h3{font-size:17px;margin:0 0 6px}
 .cell .marks i.m-asg-lg,.legend i.m-asg-lg{font-size:8px;font-weight:800;letter-spacing:-.03em;padding:0 2px;line-height:1.05;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;white-space:nowrap;max-width:100%}
 .cell .marks i.m-asg-lg span,.legend i.m-asg-lg span{display:block;line-height:1.05}
 .m-ot{background:var(--ot);color:#fff}
+.m-pay{background:var(--pay);color:#fff}
 .m-lv{color:#fff;border:1px solid rgba(255,255,255,.7)}
 .m-chg{background:#7c2d12;color:#fff}
 .chgline{margin-top:8px;font-size:13.5px;display:flex;gap:6px;align-items:center}
@@ -998,6 +999,21 @@ html[data-theme="dark"] #sumList .navbtns.nav-split .nav-more[aria-expanded="tru
 html[data-theme="dark"] .nav-menu{background:var(--sheet-bg);color:var(--ink);border-color:var(--line)}
 html[data-theme="dark"] .nav-menu a{color:var(--ink)}
 html[data-theme="dark"] .nav-menu a.is-default{background:var(--soft);color:var(--ink)}
+/* r118 t390u: 7a Navigate with — darker blue, white text, 4.5:1 in both themes */
+#sumList .navbtns.nav-split .nav-main,
+#sumList .navbtns .nav-main{background:#1E40AF;border-color:#1E40AF;color:#fff}
+#sumList .navbtns.nav-split .nav-more,
+#sumList .navbtns .nav-more,
+#sumList .navbtns.nav-split .nav-more[aria-expanded="true"]{background:#1E3A8A;border-color:#1E3A8A;color:#fff}
+html[data-theme="dark"] #sumList .navbtns.nav-split .nav-main,
+html[data-theme="dark"] #sumList .navbtns .nav-main{background:#1E40AF;border-color:#1E40AF;color:#fff}
+html[data-theme="dark"] #sumList .navbtns.nav-split .nav-more,
+html[data-theme="dark"] #sumList .navbtns .nav-more,
+html[data-theme="dark"] #sumList .navbtns.nav-split .nav-more[aria-expanded="true"]{background:#1E3A8A;border-color:#1E3A8A;color:#fff}
+/* r118 t391u: calendar OT/PAY chips keep deep backgrounds in dark so white text stays >=4.5:1.
+   --ot / --pay tokens stay light because they are also used as text accents. */
+html[data-theme="dark"] .m-ot{background:#6D28D9;color:#fff}
+html[data-theme="dark"] .m-pay,html[data-theme="dark"] .cell .marks i.m-pay{background:#047857;color:#fff}
 html[data-theme="dark"] .dir-map-opts{background:var(--sheet-bg);color:var(--ink);border-color:var(--line)}
 html[data-theme="dark"] .dir-map-opts .map-opts-x{color:var(--ink)}
 html[data-theme="dark"] .dir-map-opts .map-toolbar .btn,
@@ -8010,8 +8026,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
            : all ? E.unit(u).squads.map(function (s) { return '<span><i class="sw" style="background:' + s.color + '"></i>' + esc(s.name) + ' RDO</span>'; }).join('')
            : pdView ? '<span><i class="sw" style="background:' + PDU.shifts.pm.color + '"></i>PM 4p–1a (9:00)</span><span><i class="sw" style="background:#fff"></i>AM 8a–4p (8:00)</span><span><i class="sw" style="background:' + calSq.color + '"></i>' + (peeking ? esc(calSq.name) + ' RDO' : 'Your RDO') + ' (' + esc(calSq.colorName) + ')</span><span><i class="sw" style="background:#fff;box-shadow:inset 0 5px 0 ' + PDU.colors.blue.color + '"></i>Top stripe = chart color</span><span><i class="m-p15" style="font-style:normal;font-size:10px;font-weight:800;padding:1px 4px;border-radius:4px">+15</i>Extra 15 min (PM 9:15, AM 8:15)</span>'
            : '<span><i class="sw" style="background:' + calSq.color + '"></i>' + (peeking ? esc(calSq.name) + ' RDO' : 'Your RDO') + '</span><span><i class="sw" style="background:#f7f9fc"></i>Workday</span>') +
-      '<span><i class="m-ot" style="font-style:normal;font-size:10px;font-weight:800;padding:1px 4px;border-radius:4px;background:var(--ot);color:#fff">OT</i>Overtime</span>' +
-      '<span><i style="font-style:normal;font-size:10px;font-weight:800;padding:1px 4px;border-radius:4px;background:var(--pay);color:#fff">PAY</i>Payday</span>' +
+      '<span><i class="m-ot" style="font-style:normal;font-size:10px;font-weight:800;padding:1px 4px;border-radius:4px">OT</i>Overtime</span>' +
+      '<span><i class="m-pay" style="font-style:normal;font-size:10px;font-weight:800;padding:1px 4px;border-radius:4px">PAY</i>Payday</span>' +
       '<span><i class="m-nx" style="font-style:normal;font-size:10px;font-weight:800;padding:1px 4px;border-radius:4px">22&rarr;+1</i>Starts 20:00+ (counts next day)</span>' +
       '<span><i class="m-dd" style="font-style:normal;font-size:10px;font-weight:800;padding:0 4px;border-radius:4px">D/D</i>Day for day swap</span>' +
       '<span><i class="m-chg" style="font-style:normal;font-size:10px;font-weight:800;padding:0 4px;border-radius:4px">&#8644;</i>Chart change</span>' +
@@ -8287,17 +8303,21 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         : '<p>Clear the paid and check dates and mark this paid detail unpaid?</p>',
       ok: 'Remove paid',
       onOk: function () {
+        var keep = daySummaryIsOpen();
+        var sumIso = kind === 'ot' ? ((overtimeById(key) || {}).date || '') : key;
         if (kind === 'ot') {
           var ids = {}; ids[key] = true;
           var snap = snapshotOtPaid(ids);
           applyOtPaidDate('', ids);
           render(); refreshPayOtSheetIfOpen();
+          reopenDaySummaryIf(keep, sumIso);
           toastPaidUndo('Marked unpaid', function () { restoreOtPaid(snap); });
         } else {
           var isos = {}; isos[key] = true;
           var snap = snapshotPdPaid(isos);
           applyPdPaid('', '', isos);
           render();
+          reopenDaySummaryIf(keep, sumIso);
           toastPaidUndo('Marked unpaid', function () { restorePdPaid(snap); });
         }
       }
@@ -10572,7 +10592,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="btn sm chip' + (ui.dirHospLevel1 ? ' on' : '') + '" data-act="hospChip" data-filter="level1" aria-pressed="' + (ui.dirHospLevel1 ? 'true' : 'false') + '">Level 1 Trauma</button>' +
       '</div>' +
       '</div>' +
-      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r117 · patrol-930f13008be7</p></div>' +
+      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r118 · patrol-8034b92b9e8f</p></div>' +
       '</div>';
     var mapTools = '<div class="dir-map-chrome">' +
       '<div class="dir-map-search"><input id="dirQ" class="dirq acIn" data-ac="map" type="text" value="' + esc(q) + '" placeholder="Search an address or precinct" aria-label="Search an address or precinct" autocomplete="off"></div>' +
@@ -13984,10 +14004,13 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     return (S.overtime || []).some(function (e) { return dayOtOnIso(e, iso); });
   }
   function reopenDayAfterPartialDelete(d) {
-    var iso = E.toISO(d);
+    var iso = (typeof d === 'string' && E.isISODate(d)) ? d : E.toISO(d);
+    var day = E.toDay(iso);
     closeAll(); render();
-    if (E.dayHasEntries(S, iso)) daySummary(d);
+    if (E.dayHasEntries(S, iso)) daySummary(day);
   }
+  function daySummaryIsOpen() { return !!(document.getElementById('daySum') || document.getElementById('sumList') || document.getElementById('sumOT')); }
+  function reopenDaySummaryIf(flag, iso) { if (flag && iso) reopenDayAfterPartialDelete(iso); }
   function deleteDayKeepPaid(d) {
     var iso = E.toISO(d), t = (S.tours || {})[iso], hadSlip = !!(S.slips || {})[iso], a = (S.assignments || {})[iso], pd = a && a.pd;
     S.leave = Object.assign({}, S.leave || {}); delete S.leave[iso];
@@ -14055,10 +14078,13 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function commitOvertimeDelete(id, closeForm) {
     var e = overtimeById(id) || {}, lk = e.linkedTour || e.linkedEnd || '', le = !!e.linkedEnd;
+    var keepOt = daySummaryIsOpen();
+    var otIso = e.date || '';
     S.overtime = (S.overtime || []).filter(function (o) { return String(o.id) !== String(id); });
     if (le && S.tours[lk]) { var tt = copy(S.tours[lk]); delete tt.end; delete tt.short; if (!tt.status && !tt.len && !tt.start) delete S.tours[lk]; else S.tours[lk] = tt; }
     else if (lk && S.tours[lk] && S.tours[lk].status === 'work') delete S.tours[lk];
     save(); if (closeForm) closeSheet(); render(); toast('Entry deleted');
+    reopenDaySummaryIf(keepOt, otIso);
   }
   function commitPaidDetailDelete(iso) {
     if (!iso || !S.assignments[iso]) return;
@@ -14088,6 +14114,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       body: body,
       ok: 'Mark paid',
       onOk: function () {
+        var keep = daySummaryIsOpen();
         var p = document.getElementById('swipePaidDate'), c = document.getElementById('swipeCheckDate');
         var paid = (p && p.dataset.iso) || '', check = (c && c.dataset.iso) || '';
         if (!E.isISODate(paid)) { toast('Pick the date you were paid'); return false; }
@@ -14095,7 +14122,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
           var ids = {}; ids[key] = true;
           var snapOt = snapshotOtPaid(ids);
           var n = applyOtPaidDate(paid, ids);
+          var otIso = ((overtimeById(key) || {}).date || '');
           render(); refreshPayOtSheetIfOpen();
+          reopenDaySummaryIf(keep, otIso);
           if (n) toastPaidUndo('Marked paid ' + E.fmtMDY(paid), function () { restoreOtPaid(snapOt); });
           else toast('Couldn\'t mark paid');
         } else {
@@ -14109,6 +14138,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
           var asg = E.cleanAssignment(rec);
           if (asg) S.assignments[key] = Object.assign(asg, { updated: new Date().toISOString() });
           save(); render();
+          reopenDaySummaryIf(keep, key);
           toastPaidUndo('Marked paid ' + E.fmtMDY(paid) + (check ? ' \u00b7 check ' + E.fmtMDY(check) : ''), function () { restorePdPaid(snapPd); });
         }
       }
@@ -14119,7 +14149,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var e = overtimeById(key); if (!e) return;
       confirmDlg({ title: 'Delete overtime', body: '<p>' + esc(overtimeDeleteMessage(e)) + '</p>', ok: 'Delete', danger: true, onOk: function () { commitOvertimeDelete(key, false); } });
     } else if (kind === 'pd') {
-      confirmDlg({ title: 'Delete paid detail', body: '<p>Remove this paid detail from the day?</p>', ok: 'Delete', danger: true, onOk: function () { commitPaidDetailDelete(key); } });
+      var keepPd = daySummaryIsOpen();
+      confirmDlg({ title: 'Delete paid detail', body: '<p>Remove this paid detail from the day?</p>', ok: 'Delete', danger: true, onOk: function () { commitPaidDetailDelete(key); reopenDaySummaryIf(keepPd, key); } });
     } else if (kind === 'sumAsg') {
       var dA = +((row && row.dataset.d) || 0), eidA = (row && (row.dataset.eid || row.dataset.id)) || key;
       if (!eidA) return;
@@ -14135,6 +14166,47 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       if (tr.status === 'dd' || tr.status === 'ddoff') bodyT = '<p>Remove this tour from the day. The day-for-day swap' + (tr.swap ? ' with ' + esc(fmt(E.toDay(tr.swap), 'md')) : '') + ' is also cleared. Assignments and other entries stay saved. Linked overtime is removed.</p>';
       else if (tr.short) bodyT = '<p>Remove this tour from the day. Linked overtime is also removed, and the early leave is refunded. Assignments and other entries stay saved.</p>';
       confirmDlg({ title: 'Delete this tour?', body: bodyT, ok: 'Delete', danger: true, onOk: function () { commitSumTourDelete(dT); } });
+    } else if (kind === 'sumDayAsg') {
+      var isoA = (row && row.dataset.iso) || key;
+      if (!isoA) return;
+      confirmDlg({ title: 'Delete this assignment?', body: '<p>Remove this assignment from the day. Other entries stay saved.</p>', ok: 'Delete', danger: true, onOk: function () {
+        var cur = Object.assign({}, S.assignments[isoA] || {});
+        var pdKeep = E.hasPaidDetail(cur) ? cur.pd : null;
+        if (pdKeep) {
+          var kept = E.cleanAssignment({ type: 'paiddetail', pd: pdKeep }) || { type: 'paiddetail', pd: pdKeep };
+          S.assignments[isoA] = Object.assign(kept, { updated: new Date().toISOString() });
+        } else delete S.assignments[isoA];
+        afterSumEntryDelete(E.toDay(isoA), 'Assignment deleted');
+      } });
+    } else if (kind === 'sumNote') {
+      var isoN = (row && row.dataset.iso) || key;
+      if (!isoN || !S.leave[isoN]) return;
+      confirmDlg({ title: 'Delete this note?', body: '<p>Remove this note from the day. Other entries stay saved.</p>', ok: 'Delete', danger: true, onOk: function () {
+        var next = Object.assign({}, S.leave[isoN]);
+        delete next.note;
+        if (!next.type) delete S.leave[isoN];
+        else S.leave[isoN] = next;
+        afterSumEntryDelete(E.toDay(isoN), 'Note deleted');
+      } });
+    } else if (kind === 'sumLeave') {
+      var isoL = (row && row.dataset.iso) || key;
+      if (!isoL || !S.leave[isoL]) return;
+      confirmDlg({ title: 'Delete this leave?', body: '<p>Remove this leave from the day. Other entries stay saved.</p>', ok: 'Delete', danger: true, onOk: function () {
+        var nextL = Object.assign({}, S.leave[isoL]);
+        delete nextL.type;
+        if (!nextL.note) delete S.leave[isoL];
+        else S.leave[isoL] = nextL;
+        afterSumEntryDelete(E.toDay(isoL), 'Leave deleted');
+      } });
+    } else if (kind === 'sumSlip') {
+      var isoS = (row && row.dataset.iso) || key;
+      if (!isoS) return;
+      confirmDlg({ title: 'Delete this slip?', body: '<p>Remove the saved slip from this day. Other entries stay saved.</p>', ok: 'Delete', danger: true, onOk: function () {
+        slipDel(isoS).then(function () {
+          delete S.slips[isoS]; slipQueue(isoS, 'del');
+          afterSumEntryDelete(E.toDay(isoS), 'Slip deleted');
+        }, function () { toast('Couldn\'t delete the slip'); });
+      } });
     }
   }
   var SW = { row: null, id: 0, x0: 0, y0: 0, dx: 0, axis: '', locked: false, suppressClick: false, suppressRow: null };
@@ -14716,7 +14788,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="' + ((s.defaultCalendar || 'google') === 'apple' ? 'on' : '') + '" data-act="calDefault" data-v="apple">Apple</button></div>' +
       '<h3 style="margin-top:20px" data-sec="9m">Subscribe to calendar</h3>' + calendarSubscribeHtml() +
       '<button class="btn danger block" data-act="reset" data-sec="9k" style="margin-top:20px">Erase all data</button>' +
-      '<p class="build-tag muted" id="appBuildTag">Build r117 · patrol-930f13008be7</p>');
+      '<p class="build-tag muted" id="appBuildTag">Build r118 · patrol-8034b92b9e8f</p>');
   }
 
   // ---------- Day summary: what's saved on a date; tap an entry to view or change it ----------
@@ -14897,13 +14969,21 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     // Only show a Working / RDO / leave row when the user actually logged a tour or status.
     // A paid detail (or other non-tour entry) must not infer Working from the chart default.
     if (loggedStatus) {
-      if (loggedTour) rows.push('<div class="swrow" data-swipe="sumTour" data-d="' + d + '" data-iso="' + iso + '" id="sumTourRow">' + dayRow + '</div>');
-      else rows.push(dayRow);
+      var daySwipe = (lv.type && !loggedTour) ? 'sumLeave' : 'sumTour';
+      rows.push('<div class="swrow" data-swipe="' + daySwipe + '" data-d="' + d + '" data-iso="' + iso + '" id="sumTourRow">' + dayRow + '</div>');
     }
-    if (lv.note) rows.push(item('note', sw('#475569', '&#9998;'), 'Note', esc(lv.note), 'sumNote'));
-    if (a && a.type && !(E.assignmentType(a.type) || {}).paid) rows.push(sumNavWrap(item('asg', (function (t) { return sw(t.color, esc(t.short)); })(E.assignmentType(a.type) || { short: '?', color: '#64748b' }), esc(E.assignmentLabel(a)), esc(E.assignmentLocation(a) || ''), 'sumAsg'), E.assignmentNavAddress(a)));
-    if (E.hasPaidDetail(a)) { var pd = a.pd; rows.push(sumNavWrap(item('paid', sw('#047857', 'PD'), 'Paid Detail' + (pd.vendor ? ': ' + esc(pd.vendor) : ''), [pd.start ? esc(pd.start) + (pd.end ? '–' + esc(pd.end) : '') : '', pd.durationMin ? E.fmtHM(pd.durationMin) : '', pd.id ? 'ID ' + esc(pd.id) : pdIdNeededMark()].filter(Boolean).join(' &middot; '), 'sumPaid'), E.assignmentNavAddress({ pd: pd }))); }
-    if (sm) rows.push(item('asg', sw('#334155', '&#128206;'), esc(slipKindOf(iso)), 'Saved on this device', 'sumSlip'));
+    if (lv.note) rows.push('<div class="swrow" data-swipe="sumNote" data-d="' + d + '" data-iso="' + iso + '">' + item('note', sw('#475569', '&#9998;'), 'Note', esc(lv.note), 'sumNote') + '</div>');
+    if (a && a.type && !(E.assignmentType(a.type) || {}).paid) rows.push(sumNavWrap('<div class="swrow" data-swipe="sumDayAsg" data-d="' + d + '" data-iso="' + iso + '">' + item('asg', (function (t) { return sw(t.color, esc(t.short)); })(E.assignmentType(a.type) || { short: '?', color: '#64748b' }), esc(E.assignmentLabel(a)), esc(E.assignmentLocation(a) || ''), 'sumAsg') + '</div>', E.assignmentNavAddress(a)));
+    if (E.hasPaidDetail(a)) {
+      var pd = a.pd;
+      var pPaid = pdIsPaid(pd), pPaidIso = E.isISODate(pd.paidDate) ? pd.paidDate : '';
+      var pLbl = pPaid ? ('Paid' + (pPaidIso ? ' ' + E.fmtMDY(pPaidIso) : '')) : 'Unpaid';
+      var pBadge = pPaid
+        ? '<span class="otbadge paid" data-act="otPaidChip" data-kind="pd" data-id="' + esc(iso) + '" role="button" aria-label="Remove paid">' + pLbl + '</span>'
+        : '<span class="otbadge unpaid">' + pLbl + '</span>';
+      rows.push(sumNavWrap('<div class="swrow" data-swipe="pd" data-iso="' + iso + '">' + item('paid', sw('#047857', 'PD'), 'Paid Detail' + (pd.vendor ? ': ' + esc(pd.vendor) : '') + pBadge, [pd.start ? esc(pd.start) + (pd.end ? '–' + esc(pd.end) : '') : '', pd.durationMin ? E.fmtHM(pd.durationMin) : '', pd.id ? 'ID ' + esc(pd.id) : pdIdNeededMark()].filter(Boolean).join(' &middot; '), 'sumPaid') + '</div>', E.assignmentNavAddress({ pd: pd })));
+    }
+    if (sm) rows.push('<div class="swrow" data-swipe="sumSlip" data-d="' + d + '" data-iso="' + iso + '">' + item('asg', sw('#334155', '&#128206;'), esc(slipKindOf(iso)), 'Saved on this device', 'sumSlip') + '</div>');
     var extras = [];
     E.tourEntries(ov).forEach(function (ent) {
       var sort = E.timeToMin(ent.start); if (sort === null) sort = 9999;
@@ -16187,8 +16267,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         }
       });
     },
-    todayToggle: function () { ui.todayOpen = !ui.todayOpen; render(); },
-    glanceToggle: function () { ui.glanceOpen = !ui.glanceOpen; render(); },
+    todayToggle: function () { var on = !(ui.todayOpen || ui.glanceOpen); ui.todayOpen = ui.glanceOpen = on; render(); },
+    glanceToggle: function () { var on = !(ui.todayOpen || ui.glanceOpen); ui.todayOpen = ui.glanceOpen = on; render(); },
     asgEntryAdd: function (t) { asgEntrySheet(+t.dataset.d); },
     asgEntryEdit: function (t) { asgEntrySheet(+t.dataset.d, t.dataset.eid || ''); },
     asgEntrySave: function (t) { asgEntrySave(+t.dataset.d, t.dataset.eid || ''); },
