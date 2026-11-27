@@ -368,7 +368,7 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after,body.beta #
 .pdsec{background:#f8fafc;padding:12px;margin-top:12px}
 .pdsec .shead{display:flex;justify-content:space-between;align-items:center;margin:0 0 8px;padding-right:28px}
 .pdsec .pdadd{margin-top:4px}
-.pdsum{margin:0 0 10px;padding:10px 12px;border:1.5px solid #e2e8f0;border-radius:12px;background:#fff;text-align:left}
+.pdsum{display:block;width:100%;max-width:100%;box-sizing:border-box;margin:0 0 10px;padding:10px 12px;border:1.5px solid #e2e8f0;border-radius:12px;background:#fff;text-align:left}
 .pdsum b{display:block;font-size:15px;margin:0 0 2px}
 .pdsum .pdsummeta{font-size:13px;color:#334155}
 .pdsum .pdsumaddr{font-size:12.5px;color:#64748b;margin-top:4px}
@@ -487,6 +487,8 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after,body.beta #
 .sitechip.on{background:#0E7490;color:#fff;border-color:#0E7490}
 .navbtns{display:flex;gap:6px;margin-top:8px;position:relative}.navbtns .btn{flex:1;text-align:center;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 6px;font-size:13px}
 .navbtns.inrow{margin:0;padding:0 10px 10px}
+.pdsec .navbtns.inrow,.pdsec .navbtns.nav-split{margin:0 0 10px;padding:0;width:100%;max-width:100%;min-width:0;box-sizing:border-box}
+.pdsec #pdEditBtn{display:block;width:100%;max-width:100%;box-sizing:border-box}
 #sumList .sumnav{min-width:0;max-width:100%;box-sizing:border-box}
 #sumList .navbtns.inrow,#sumList .navbtns.nav-7a{margin:0 0 10px;padding:0;width:100%;max-width:100%;min-width:0;box-sizing:border-box}
 #sumList .navbtns.nav-split{gap:0;border:1px solid var(--line);border-radius:12px;overflow:visible;background:#fff;align-items:stretch;min-height:48px}
@@ -967,7 +969,7 @@ html[data-theme="dark"] .asgopts button.on{color:#fff;border-color:transparent}
 html[data-theme="dark"] .field label{color:var(--ink)}
 html[data-theme="dark"] .cfmwrap{background:rgba(0,0,0,.72)}
 html[data-theme="dark"] .cfm{background:var(--sheet-bg);color:var(--ink)}
-html[data-theme="dark"] .cfm h3,html[data-theme="dark"] .cfmbody,html[data-theme="dark"] .cfmbody p{color:var(--ink)}
+html[data-theme="dark"] .cfm h3,html[data-theme="dark"] .cfmbody,html[data-theme="dark"] .cfmbody p,html[data-theme="dark"] .cfmlist,html[data-theme="dark"] .cfmlist li{color:var(--ink)}
 html[data-theme="dark"] .cfm .muted,html[data-theme="dark"] .cfm .hint{color:var(--muted)}
 html[data-theme="dark"] .cfm .btn{background:var(--btn-bg);color:var(--ink);border-color:var(--line)}
 html[data-theme="dark"] .cfm .btn.primary{background:var(--btn-primary,#2563eb);border-color:var(--btn-primary,#2563eb);color:#fff}
@@ -7844,9 +7846,12 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function dayExpandHtml(d) {
     var iso = E.toISO(d), sq = mySquad(d), o = tourOpts(), tt = E.dayTour(d, sq.id, o), ov = (S.tours || {})[iso] || {}, a = S.assignments[iso], rows = [];
-    var status = tt.working ? (tt.onLeave ? 'On leave' : 'Working') + (tt.extra ? ' · OT' : tt.ddWork ? ' · D/D' : '') : (tt.dropped ? 'Not working' : 'RDO' + (tt.ddOff ? ' · D/D' : ''));
-    rows.push('<div class="dlbl">Tour</div><div class="drow">' + esc(status) + (tt.working && !tt.onLeave ? ' · ' + tourText(tt) : '') + '</div>');
-    if (ov.schedStart || ov.schedEnd) rows.push('<div class="dsub">Scheduled ' + esc((ov.schedStart || '') + (ov.schedEnd ? '\u2013' + ov.schedEnd : '')) + '</div>');
+    var logged = dayHasLoggedStatus(iso), hasRec = E.dayHasEntries(S, iso);
+    if (logged || !hasRec) {
+      var status = tt.working ? (tt.onLeave ? 'On leave' : 'Working') + (tt.extra ? ' · OT' : tt.ddWork ? ' · D/D' : '') : (tt.dropped ? 'Not working' : 'RDO' + (tt.ddOff ? ' · D/D' : ''));
+      rows.push('<div class="dlbl">Tour</div><div class="drow">' + esc(status) + (tt.working && !tt.onLeave ? ' · ' + tourText(tt) : '') + '</div>');
+      if (ov.schedStart || ov.schedEnd) rows.push('<div class="dsub">Scheduled ' + esc((ov.schedStart || '') + (ov.schedEnd ? '\u2013' + ov.schedEnd : '')) + '</div>');
+    }
     var asgs = E.dayAssignments(S, iso);
     if (asgs.length) {
       rows.push('<div class="dlbl">Assignments</div>');
@@ -7914,14 +7919,19 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var np = E.nextPayday(T, po);
     var payGlance = (np || np === 0) ? (fmt(np) + ' (' + glanceWhen(np - T) + ')') : '—';
     var tt = E.dayTour(T, sq.id, tourOpts());
-    var todayStatus = tt.working ? (tt.onLeave ? 'On leave' : 'Working') + (tt.extra ? ' · OT' : tt.ddWork ? ' · D/D' : '') : (tt.dropped ? 'Not working' : 'RDO' + (tt.ddOff ? ' · D/D' : ''));
+    var todayIso = E.toISO(T), loggedToday = dayHasLoggedStatus(todayIso), hasTodayRec = E.dayHasEntries(S, todayIso);
+    var showChartWork = loggedToday || !hasTodayRec;
+    var todayStatus = !tt.working ? (tt.dropped ? 'Not working' : 'RDO' + (tt.ddOff ? ' · D/D' : ''))
+      : (tt.onLeave ? 'On leave' : showChartWork ? ('Working' + (tt.extra ? ' · OT' : tt.ddWork ? ' · D/D' : '')) : '');
     var remDay = T, remParts = reminderParts(T, sq), remPrefix = '';
+    if (!todayStatus && remParts.length) todayStatus = remParts[0];
+    if (!todayStatus) todayStatus = 'Saved';
     if (!remParts.length) {
       var rd, nxtParts;
       for (rd = 1; rd <= 7; rd++) { nxtParts = reminderParts(T + rd, sq); if (nxtParts.length) { remDay = T + rd; remParts = nxtParts; remPrefix = reminderWhen(remDay, T); break; } }
     }
     var todaySmallParts = [];
-    if (tt.regular && !tt.onLeave && !tt.rdo) todaySmallParts.push('<div class="tourline">' + tourText(tt) + '</div>');
+    if (tt.regular && !tt.onLeave && !tt.rdo && showChartWork) todaySmallParts.push('<div class="tourline">' + tourText(tt) + '</div>');
     remParts.forEach(function (p, i) { todaySmallParts.push('<div class="remline">' + esc((i === 0 ? remPrefix : remPrefix) + p) + '</div>'); });
     var todaySmall = todaySmallParts.join('');
     var todayLine = '<div class="home-strip" id="homeStrip">' +
@@ -10564,7 +10574,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="btn sm chip' + (ui.dirHospLevel1 ? ' on' : '') + '" data-act="hospChip" data-filter="level1" aria-pressed="' + (ui.dirHospLevel1 ? 'true' : 'false') + '">Level 1 Trauma</button>' +
       '</div>' +
       '</div>' +
-      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r116 · patrol-test-84703ec37236</p></div>' +
+      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r117 · patrol-test-930f13008be7</p></div>' +
       '</div>';
     var mapTools = '<div class="dir-map-chrome">' +
       '<div class="dir-map-search"><input id="dirQ" class="dirq acIn" data-ac="map" type="text" value="' + esc(q) + '" placeholder="Search an address or precinct" aria-label="Search an address or precinct" autocomplete="off"></div>' +
@@ -12646,10 +12656,35 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function msgMarkRead(ids) {
     ids = (ids || []).filter(Boolean);
-    if (!ids.length) return Promise.resolve();
-    return Promise.all(ids.map(function (id) {
+    ui.readPending = ui.readPending || {};
+    var now = new Date().toISOString(), fresh = [];
+    ids.forEach(function (id) {
+      if (!id || ui.readPending[id]) return;
+      var cached = null;
+      (ui.inboxMsgs || []).forEach(function (m) { if (m.id === id) cached = m; });
+      if (cached && cached.read_at) { ui.readPending[id] = true; return; }
+      ui.readPending[id] = true;
+      if (cached) cached.read_at = now;
+      fresh.push(id);
+    });
+    if (!fresh.length) return Promise.resolve();
+    ui.inboxUnread = Math.max(0, (ui.inboxUnread || 0) - fresh.length);
+    refreshInboxChrome();
+    return Promise.all(fresh.map(function (id) {
       return Promise.resolve(cloudClient().from('messages').update({ read_at: new Date().toISOString() }).eq('id', id).then(q));
-    })).then(function () { return inboxCount(); }).catch(function () {});
+    })).then(function () { return inboxCount(); }).catch(function () {
+      fresh.forEach(function (id) { delete ui.readPending[id]; });
+      return inboxCount();
+    });
+  }
+  function markThreadRead(key, opts) {
+    if (!key) return Promise.resolve();
+    var thread = (groupMsgs(ui.inboxMsgs || [])[key]) || [];
+    var ids = thread.filter(function (m) { return m.recipient_id === CS.uid && !m.read_at; }).map(function (m) { return m.id; });
+    var jobs = [];
+    if (ids.length) jobs.push(msgMarkRead(ids));
+    if (CS.role === 'admin' && key.indexOf('_u:') !== 0) jobs.push(sugMark(key, { reload: false }));
+    return jobs.length ? Promise.all(jobs) : Promise.resolve();
   }
   function msgSend(t) {
     if (!cloudReady()) return toast('Sign in with an approved account to reply');
@@ -12662,6 +12697,9 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     t.disabled = true;
     return Promise.resolve(cloudClient().from('messages').insert({ recipient_id: to, suggestion_id: sid, body: body }).then(q)).then(function () {
       toast('Reply sent');
+      var key = sid || ui.msgOpenKey;
+      if (CS.role === 'admin' && sid) sugMark(sid, { reload: false });
+      markThreadRead(key);
       if (CS.role === 'admin') inboxSheet();
       else userInboxSheet(sid || ui.msgOpenKey);
     }).catch(function (e) {
@@ -12688,6 +12726,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var el = document.getElementById('inboxList'); if (!el) return;
       ui.inboxRows = both[0] || [];
       var msgs = both[1] || [], by = groupMsgs(msgs);
+      ui.inboxMsgs = msgs;
       var profBy = {};
       (both[2] || []).forEach(function (p) { if (p && p.id) profBy[p.id] = p; });
       el.classList.remove('muted');
@@ -12700,10 +12739,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         var unreadMsgs = thread.filter(function (m) { return m.recipient_id === CS.uid && !m.read_at; });
         return '<div class="item' + (r.read_at ? '' : ' sugunread') + '" data-id="' + esc(r.id) + '">' +
           (r.screenshot_path ? '<img class="sugthumb" data-path="' + esc(r.screenshot_path) + '" alt="">' : '<div class="sugthumb" aria-hidden="true"></div>') +
-          '<div class="main"><div class="t1 sugitem-head">' + ((r.read_at && !unreadMsgs.length) ? '' : msgNewIconHtml()) +
+          '<div class="main"><div data-act="sugOpen" data-id="' + esc(r.id) + '" style="cursor:pointer">' +
+          '<div class="t1 sugitem-head">' + ((r.read_at && !unreadMsgs.length) ? '' : msgNewIconHtml()) +
           '<span>' + esc(r.section || '') + ' \u00b7 ' + esc(r.username || '') + '</span></div>' +
           '<div class="t2">' + esc(fmtInboxTime(r.created_at)) + (r.read_at ? '' : ' \u00b7 unread') + '</div>' +
-          '<div style="font-size:14px;margin-top:4px;white-space:pre-wrap;overflow-wrap:anywhere">' + esc(r.message || '') + '</div>' +
+          '<div style="font-size:14px;margin-top:4px;white-space:pre-wrap;overflow-wrap:anywhere">' + esc(r.message || '') + '</div></div>' +
           (r.read_at ? '' : '<button type="button" class="btn sm" data-act="sugMark" data-id="' + esc(r.id) + '" style="margin-top:8px">Mark read</button>') +
           (thread.length ? '<div class="msgthread">' + thread.map(msgRowHtml).join('') + '</div>' : '') +
           msgComposeHtml(r.id, r.user_id, 'adm', firstNameForReply(profBy[r.user_id], r.username)) +
@@ -12712,8 +12752,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       noticeKeys.forEach(function (k) {
         var thread = by[k] || [], last = thread[thread.length - 1], other = msgOtherId(thread);
         var unread = thread.some(function (m) { return m.recipient_id === CS.uid && !m.read_at; });
-        html += '<div class="item' + (unread ? ' sugunread' : '') + '"><div class="main"><div class="t1 sugitem-head">' +
-          (unread ? msgNewIconHtml() : '') + '<span>Notice' + (last && last.sender_username && last.sender_id !== CS.uid ? ' \u00b7 ' + esc(last.sender_username) : '') + '</span></div>' +
+        html += '<div class="item' + (unread ? ' sugunread' : '') + '"><div class="main"><div data-act="msgMarkThread" data-key="' + esc(k) + '" style="cursor:pointer"><div class="t1 sugitem-head">' +
+          (unread ? msgNewIconHtml() : '') + '<span>Notice' + (last && last.sender_username && last.sender_id !== CS.uid ? ' \u00b7 ' + esc(last.sender_username) : '') + '</span></div></div>' +
           '<div class="msgthread">' + thread.map(msgRowHtml).join('') + '</div>' +
           (other ? msgComposeHtml('', other, 'admN', firstNameForReply(profBy[other], (profBy[other] && profBy[other].username) || '')) : '') +
           '</div></div>';
@@ -12721,8 +12761,6 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       html += '</div>';
       el.innerHTML = html;
       ui.inboxRows.forEach(function (r) { if (r.screenshot_path) inboxThumb(r.screenshot_path); });
-      var mark = msgs.filter(function (m) { return m.recipient_id === CS.uid && !m.read_at; }).map(function (m) { return m.id; });
-      if (mark.length) msgMarkRead(mark);
     }).catch(function (e) { var el = document.getElementById('inboxList'); if (el) el.textContent = 'Couldn\'t load suggestions: ' + errText(e); });
   }
   function userInboxSheet(openKey) {
@@ -12738,6 +12776,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     ]).then(function (both) {
       var el = document.getElementById('msgList'); if (!el) return;
       var msgs = both[0] || [], sugs = both[1] || [], sugBy = {};
+      ui.inboxMsgs = msgs;
       sugs.forEach(function (s) { sugBy[s.id] = s; });
       var by = groupMsgs(msgs);
       el.classList.remove('muted');
@@ -12791,10 +12830,34 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       Array.prototype.forEach.call(document.querySelectorAll('.sugthumb[data-path="' + CSS.escape(path) + '"]'), function (img) { img.src = url; });
     }).catch(function () {});
   }
-  function sugMark(id) {
-    Promise.resolve(cloudClient().from('suggestions').update({ read_at: new Date().toISOString() }).eq('id', id).then(q)).then(function () {
-      inboxCount(); inboxSheet();
-    }).catch(function (e) { toast('Couldn\'t mark read: ' + errText(e)); });
+  function sugMark(id, opts) {
+    if (!id) return Promise.resolve();
+    ui.sugReadPending = ui.sugReadPending || {};
+    var row = null;
+    (ui.inboxRows || []).forEach(function (r) { if (r.id === id) row = r; });
+    var already = ui.sugReadPending[id] || (row && row.read_at);
+    if (!already) {
+      ui.sugReadPending[id] = true;
+      if (row) row.read_at = new Date().toISOString();
+      ui.inboxUnread = Math.max(0, (ui.inboxUnread || 0) - 1);
+      refreshInboxChrome();
+      var item = document.querySelector('#inboxList .item[data-id="' + CSS.escape(id) + '"]');
+      if (item) {
+        item.classList.remove('sugunread');
+        var btn = item.querySelector('[data-act="sugMark"]'); if (btn) btn.remove();
+        var t2 = item.querySelector('.t2'); if (t2) t2.textContent = (t2.textContent || '').replace(/\s*\u00b7\s*unread/, '');
+        var dots = item.querySelectorAll('.t1 .msgunread-dot');
+        Array.prototype.forEach.call(dots, function (d) { d.parentNode.removeChild(d); });
+      }
+    }
+    return Promise.resolve(cloudClient().from('suggestions').update({ read_at: new Date().toISOString() }).eq('id', id).then(q)).then(function () {
+      inboxCount();
+      if (!(opts && opts.reload === false) && document.getElementById('inboxList')) inboxSheet();
+    }).catch(function (e) {
+      delete ui.sugReadPending[id];
+      toast('Couldn\'t mark read: ' + errText(e));
+      return inboxCount();
+    });
   }
   function urlB64ToU8(s) {
     var p = (s || '').replace(/-/g, '+').replace(/_/g, '/');
@@ -13910,26 +13973,67 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var fin = function () { save(); closeAll(); render(); toast('Deleted everything for ' + fmt(d, 'md')); };
     slipDel(iso).then(function () { if (r.removed.slip) slipQueue(iso, 'del'); }, function () {}).then(fin, fin); // slip PDF: this device (IndexedDB) and the cloud bucket
   }
+  function dayOtOnIso(e, iso) {
+    return e && (e.linkedEnd ? e.linkedEnd === iso : e.linkedTour ? e.linkedTour === iso : e.date === iso);
+  }
+  function dayHasOtherThanPaid(iso) {
+    var a = (S.assignments || {})[iso] || {}, lv = (S.leave || {})[iso] || {}, tr = (S.tours || {})[iso] || {};
+    if (a.type && a.type !== 'paiddetail' && !(E.assignmentType(a.type) || {}).paid) return true;
+    if (lv.type || lv.note) return true;
+    if ((S.slips || {})[iso]) return true;
+    if (tr.start || tr.end || tr.len || tr.timesSet || tr.status || tr.short || tr.schedStart || tr.schedEnd) return true;
+    if (E.tourEntries(tr).length || E.assignmentEntries(tr).length) return true;
+    return (S.overtime || []).some(function (e) { return dayOtOnIso(e, iso); });
+  }
+  function reopenDayAfterPartialDelete(d) {
+    var iso = E.toISO(d);
+    closeAll(); render();
+    if (E.dayHasEntries(S, iso)) daySummary(d);
+  }
+  function deleteDayKeepPaid(d) {
+    var iso = E.toISO(d), t = (S.tours || {})[iso], hadSlip = !!(S.slips || {})[iso], a = (S.assignments || {})[iso], pd = a && a.pd;
+    S.leave = Object.assign({}, S.leave || {}); delete S.leave[iso];
+    S.slips = Object.assign({}, S.slips || {}); delete S.slips[iso];
+    if (t && (t.status === 'dd' || t.status === 'ddoff')) S.tours = E.clearDayForDay(S.tours, iso);
+    else { S.tours = Object.assign({}, S.tours || {}); delete S.tours[iso]; }
+    S.overtime = (S.overtime || []).filter(function (e) { return !dayOtOnIso(e, iso); });
+    S.assignments = Object.assign({}, S.assignments || {});
+    if (E.hasPaidDetail({ pd: pd })) {
+      var kept = E.cleanAssignment({ type: 'paiddetail', pd: pd }) || { type: 'paiddetail', pd: pd };
+      S.assignments[iso] = Object.assign(kept, { updated: new Date().toISOString() });
+    } else delete S.assignments[iso];
+    var fin = function () { save(); reopenDayAfterPartialDelete(d); toast('Tour and other entries deleted. Paid detail kept.'); };
+    if (!hadSlip) { fin(); return; }
+    slipDel(iso).then(function () { slipQueue(iso, 'del'); }, function () {}).then(fin, fin);
+  }
+  function deletePaidDetailOnly(d) {
+    var iso = E.toISO(d);
+    commitPaidDetailDelete(iso);
+    reopenDayAfterPartialDelete(d);
+  }
   // Small in-app confirm (native confirm() can't be styled and blocks the page)
   function choiceDlg(o) {
     var old = document.getElementById('cfmDlg'); if (old) old.remove();
     var w = document.createElement('div'); w.id = 'cfmDlg'; w.className = 'cfmwrap';
     var choices = (o.choices || []).map(function (c) {
-      return '<button type="button" class="btn primary choice" data-choice="' + esc(c.id) + '">' + esc(c.label) + '</button>';
+      var cls = c.danger ? 'delbtn' : 'primary';
+      return '<button type="button" class="btn ' + cls + ' choice" data-choice="' + esc(c.id) + '"' + (c.danger ? ' id="cfmDelAll"' : '') + '>' + esc(c.label) + '</button>';
     }).join('');
     w.innerHTML = '<div class="cfm" role="dialog" aria-modal="true" aria-labelledby="cfmT"><h3 id="cfmT">' + esc(o.title) + '</h3><div class="cfmbody">' + o.body + '</div><div class="cfmbtns cfmchoices">' + choices + '<button type="button" class="btn" id="cfmNo">Cancel</button></div></div>';
     document.body.appendChild(w);
     var close = function () { w.remove(); document.removeEventListener('keydown', key, true); }, key = function (e) { if (e.key === 'Escape') { e.stopPropagation(); if (o.onCancel) o.onCancel(); close(); } };
     document.addEventListener('keydown', key, true);
     w.addEventListener('click', function (e) {
+      var btn = e.target && e.target.closest ? e.target.closest('[data-choice]') : null;
       if (e.target === w || e.target.id === 'cfmNo') { if (o.onCancel) o.onCancel(); close(); }
-      else if (e.target && e.target.getAttribute && e.target.getAttribute('data-choice')) {
-        var id = e.target.getAttribute('data-choice');
+      else if (btn) {
+        var id = btn.getAttribute('data-choice');
         close();
         if (o.onChoice) o.onChoice(id);
       }
     });
-    var first = w.querySelector('[data-choice]'); if (first) first.focus();
+    if (o.focusCancel) { var no = document.getElementById('cfmNo'); if (no) no.focus(); }
+    else { var first = w.querySelector('[data-choice]'); if (first) first.focus(); }
   }
   function confirmDlg(o) {
     var old = document.getElementById('cfmDlg'); if (old) old.remove();
@@ -14614,7 +14718,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="' + ((s.defaultCalendar || 'google') === 'apple' ? 'on' : '') + '" data-act="calDefault" data-v="apple">Apple</button></div>' +
       '<h3 style="margin-top:20px" data-sec="9m">Subscribe to calendar</h3>' + calendarSubscribeHtml() +
       '<button class="btn danger block" data-act="reset" data-sec="9k" style="margin-top:20px">Erase all data</button>' +
-      '<p class="build-tag muted" id="appBuildTag">Build r116 · patrol-test-84703ec37236</p>');
+      '<p class="build-tag muted" id="appBuildTag">Build r117 · patrol-test-930f13008be7</p>');
   }
 
   // ---------- Day summary: what's saved on a date; tap an entry to view or change it ----------
@@ -14622,6 +14726,13 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function dayHasLoggedTour(iso) {
     var tr = S.tours[iso] || {};
     return !!(tr.start || tr.end || tr.len || tr.status === 'work' || tr.status === 'dd' || tr.timesSet);
+  }
+  // User-logged tour, leave, or status (off / D/D). A paid detail, note, slip, or
+  // assignment-only entry is not a logged working day — do not infer Working from the chart.
+  function dayHasLoggedStatus(iso) {
+    if (dayHasLoggedTour(iso)) return true;
+    var tr = (S.tours || {})[iso] || {}, lv = (S.leave || {})[iso];
+    return tr.status === 'off' || tr.status === 'ddoff' || !!(lv && lv.type);
   }
   function readAsgEntryFields() {
     var box = document.getElementById('asgBox'), typ = box ? box.dataset.sel : '';
@@ -14782,10 +14893,15 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var item = function (focus, icon, t1, t2, id) { return '<button type="button" class="item sumrow" data-act="dayEdit" data-d="' + d + '" data-focus="' + focus + '" id="' + id + '">' + icon + '<div class="main"><div class="t1">' + t1 + '</div>' + (t2 ? '<div class="t2">' + t2 + '</div>' : '') + '</div><div class="right sumgo">View / edit &rsaquo;</div></button>'; };
     var kind = dt.extra ? 'Overtime tour on RDO' : dt.ddWork ? 'Day for day &middot; working this RDO' : dt.ddOff ? 'Day for day &middot; off' : esc(opt.label);
     var loggedTour = dayHasLoggedTour(iso);
+    var loggedStatus = dayHasLoggedStatus(iso);
     var sub = dt.working && !lv.type ? (loggedTour ? ('Tour ' + tourText(dt) + (ov.len && !dt.extra ? '</div><div class="t2"><b>Tour length changed for this day only</b>' : '') + (ov.short ? ' &middot; left early: ' + E.fmtHM(ov.short.minutes) + ' ' + esc(C.shortLeaveLabels[ov.short.type] || '') : '')) : 'No tour entered') : lv.type ? (en.leaveType && E.isRDO(d, sq.id, U()) ? 'On an RDO' : 'Leave day') : 'Day off';
     var dayRow = item('day', sw(dt.extra ? '#B45309' : opt.color), kind, sub, 'sumDay');
-    if (dayHasLoggedTour(iso)) rows.push('<div class="swrow" data-swipe="sumTour" data-d="' + d + '" data-iso="' + iso + '" id="sumTourRow">' + dayRow + '</div>');
-    else rows.push(dayRow);
+    // Only show a Working / RDO / leave row when the user actually logged a tour or status.
+    // A paid detail (or other non-tour entry) must not infer Working from the chart default.
+    if (loggedStatus) {
+      if (loggedTour) rows.push('<div class="swrow" data-swipe="sumTour" data-d="' + d + '" data-iso="' + iso + '" id="sumTourRow">' + dayRow + '</div>');
+      else rows.push(dayRow);
+    }
     if (lv.note) rows.push(item('note', sw('#475569', '&#9998;'), 'Note', esc(lv.note), 'sumNote'));
     if (a && a.type && !(E.assignmentType(a.type) || {}).paid) rows.push(sumNavWrap(item('asg', (function (t) { return sw(t.color, esc(t.short)); })(E.assignmentType(a.type) || { short: '?', color: '#64748b' }), esc(E.assignmentLabel(a)), esc(E.assignmentLocation(a) || ''), 'sumAsg'), E.assignmentNavAddress(a)));
     if (E.hasPaidDetail(a)) { var pd = a.pd; rows.push(sumNavWrap(item('paid', sw('#047857', 'PD'), 'Paid Detail' + (pd.vendor ? ': ' + esc(pd.vendor) : ''), [pd.start ? esc(pd.start) + (pd.end ? '–' + esc(pd.end) : '') : '', pd.durationMin ? E.fmtHM(pd.durationMin) : '', pd.id ? 'ID ' + esc(pd.id) : pdIdNeededMark()].filter(Boolean).join(' &middot; '), 'sumPaid'), E.assignmentNavAddress({ pd: pd }))); }
@@ -15505,13 +15621,34 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     shortPick: function (t) { var b = document.getElementById('shortBox'); b.dataset.sel = t.dataset.t; Array.prototype.forEach.call(b.querySelectorAll('[data-act="shortPick"]'), function (x) { setOn(x, x === t); }); document.getElementById('shortErr').textContent = ''; },
     dayDelAsk: function (t) {
       var d = +t.dataset.d, iso = E.toISO(d); if (!E.dayHasEntries(S, iso)) return toast('Nothing saved for this day');
-      var a = S.assignments[iso], lv = S.leave[iso], tr = S.tours[iso], ots = S.overtime.filter(function (e) { return e.linkedEnd ? e.linkedEnd === iso : e.linkedTour ? e.linkedTour === iso : e.date === iso; }), items = [];
-      if (a) items.push('Assignment: ' + E.assignmentLabel(a));
+      var a = S.assignments[iso], lv = S.leave[iso], tr = S.tours[iso], ots = S.overtime.filter(function (e) { return dayOtOnIso(e, iso); }), items = [];
+      if (E.hasPaidDetail(a)) items.push('Paid detail' + (a.pd && a.pd.vendor ? ': ' + a.pd.vendor : ''));
+      if (a && a.type && a.type !== 'paiddetail' && !(E.assignmentType(a.type) || {}).paid) items.push('Assignment: ' + E.assignmentLabel(a));
       if (lv && lv.type) items.push('Leave: ' + lvType(lv.type).label); if (lv && lv.note) items.push('Note');
-      if (tr) items.push(tr.status === 'dd' || tr.status === 'ddoff' ? 'Day-for-day swap (also clears ' + fmt(E.toDay(tr.swap), 'md') + ')' : 'Tour changes' + (tr.short ? ' (refunds ' + E.fmtHM(tr.short.minutes) + ' ' + C.shortLeaveLabels[tr.short.type] + ')' : ''));
+      if (tr && (tr.start || tr.end || tr.len || tr.timesSet || tr.status || tr.short || E.tourEntries(tr).length || E.assignmentEntries(tr).length)) items.push(tr.status === 'dd' || tr.status === 'ddoff' ? 'Day-for-day swap (also clears ' + fmt(E.toDay(tr.swap), 'md') + ')' : 'Tour changes' + (tr.short ? ' (refunds ' + E.fmtHM(tr.short.minutes) + ' ' + C.shortLeaveLabels[tr.short.type] + ')' : ''));
       if (ots.length) items.push(ots.length + ' overtime entr' + (ots.length === 1 ? 'y' : 'ies'));
       if ((S.slips || {})[iso]) items.push(slipKindOf(iso) + ' (PDF)');
-      confirmDlg({ title: 'Delete this entry?', body: '<p>Everything you entered for <b>' + esc(fmt(d, 'long')) + '</b> will be deleted' + (CL.enabled && CS.uid ? ', on all your devices' : '') + ':</p><ul class="cfmlist">' + items.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul><p class="muted">Your regular chart and RDOs don\'t change. This can\'t be undone.</p>', ok: 'Delete', danger: true, onOk: function () { deleteDayNow(d); } });
+      var list = '<ul class="cfmlist">' + items.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>';
+      var footnote = '<p class="muted">Your regular chart and RDOs don\'t change. This can\'t be undone.</p>';
+      if (E.hasPaidDetail(a) && dayHasOtherThanPaid(iso)) {
+        choiceDlg({
+          title: 'Delete this entry?',
+          body: '<p>This day has a paid detail and other saved data for <b>' + esc(fmt(d, 'long')) + '</b>. Choose what to delete' + (CL.enabled && CS.uid ? ' (on all your devices)' : '') + ':</p>' + list + footnote,
+          focusCancel: true,
+          choices: [
+            { id: 'tour', label: 'Delete tour / working only' },
+            { id: 'pd', label: 'Delete paid detail only' },
+            { id: 'all', label: 'Delete entire day', danger: true }
+          ],
+          onChoice: function (id) {
+            if (id === 'tour') deleteDayKeepPaid(d);
+            else if (id === 'pd') deletePaidDetailOnly(d);
+            else if (id === 'all') deleteDayNow(d);
+          }
+        });
+        return;
+      }
+      confirmDlg({ title: 'Delete this entry?', body: '<p>Everything you entered for <b>' + esc(fmt(d, 'long')) + '</b> will be deleted' + (CL.enabled && CS.uid ? ', on all your devices' : '') + ':</p>' + list + footnote, ok: 'Delete', danger: true, onOk: function () { deleteDayNow(d); } });
     },
     pduStart: function (t) { document.getElementById('dayStart').value = t.dataset.v; document.getElementById('dayLen').value = ''; tourPrev('dayLen'); pduKeep(); updateEnd(true); },
     tourStatus: function (t) {
@@ -16030,9 +16167,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     inboxOpen: function () { openInbox(); },
     sugPopDismiss: function () { hideSugPop(); },
     sugMark: function (t) { sugMark(t.dataset.id); },
+    sugOpen: function (t) { markThreadRead(t.dataset.id); },
     msgSend: function (t) { msgSend(t); },
     msgPreset: function (t) { msgPreset(t); },
-    msgOpen: function (t) { userInboxSheet(t.dataset.key); },
+    msgOpen: function (t) { markThreadRead(t.dataset.key); userInboxSheet(t.dataset.key); },
+    msgMarkThread: function (t) { markThreadRead(t.dataset.key); },
     msgVerifiedTip: function (t, ev) { msgVerifiedTip(t, ev); },
     pushToggle: function (t) { setPushEnabled(!!t.checked); },
     dayAddEntry: function (t) {
@@ -16509,7 +16648,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   // pointerdown + preventDefault keeps focus in the field, so blur doesn't close the list before the tap lands
   document.addEventListener('pointerdown', function (ev) { var o = ev.target.closest && ev.target.closest('.acopt'); if (!o) return; ev.preventDefault(); var inp = document.getElementById(o.parentNode.id.replace(/-ac$/, '')); if (inp) acPick(inp, +o.dataset.i); });
   document.addEventListener('mousedown', function (ev) { if (ev.target.closest && ev.target.closest('.acdrop')) ev.preventDefault(); });
-  document.addEventListener('focusin', function (ev) { if (isDirSearchInput(ev.target)) hideSearchTabs(); });
+  document.addEventListener('focusin', function (ev) {
+    if (ev.target && ev.target.classList && ev.target.classList.contains('timeIn')) ev.target.dataset.timeDigits = String(timeInputDigits(ev.target).length);
+    if (isDirSearchInput(ev.target)) hideSearchTabs();
+  });
   document.addEventListener('focusout', function (ev) {
     var inp = ev.target;
     if (inp && inp.id === 'pdVendor') {
@@ -16526,6 +16668,37 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       showSearchTabs();
     }, 150);
   });
+  function timePairEndId(id) {
+    id = String(id || '');
+    if (/Start$/.test(id)) return id.replace(/Start$/, 'End');
+    if (/From$/.test(id)) return id.replace(/From$/, 'To');
+    return '';
+  }
+  function timePairStartId(id) {
+    id = String(id || '');
+    if (/End$/.test(id)) return id.replace(/End$/, 'Start');
+    if (/To$/.test(id)) return id.replace(/To$/, 'From');
+    return '';
+  }
+  function timeInputDigits(el) { return String((el && el.value) || '').replace(/\D/g, ''); }
+  function maybeAdvanceTimePair(el, ev) {
+    if (!el || !el.classList || !el.classList.contains('timeIn')) return;
+    var typ = (ev && ev.inputType) || '', deleting = /^delete/.test(typ);
+    var digits = timeInputDigits(el), n = digits.length, prev = el.dataset.timeDigits;
+    el.dataset.timeDigits = String(n);
+    if (deleting || n !== 4 || prev === '4') return;
+    if (typ === 'insertFromPaste' || typ === 'insertFromDrop') {
+      var pasted = String((ev && ev.data) || '').replace(/\D/g, '');
+      if (pasted.length < 4) return;
+    }
+    var endId = timePairEndId(el.id);
+    if (endId) {
+      var end = document.getElementById(endId);
+      if (end) { try { end.focus(); if (typeof end.select === 'function') end.select(); } catch (e) {} }
+      return;
+    }
+    if (timePairStartId(el.id)) { try { el.blur(); } catch (e) {} }
+  }
   document.addEventListener('input', function (ev) {
     if (/^ot(Start|End|Hours|Date|CashH|SchedStart|SchedEnd|CashFrom|CashTo|TimeFrom|TimeTo|TimeDur|WorkedDur|Total)$/.test(ev.target.id)) otPreview();
     if (ev.target.id === 'pdStart' || ev.target.id === 'pdEnd') pdAutoDur();
@@ -16578,6 +16751,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       } else {
         var tf = E.formatTimeInput(tv, /^delete/.test(ev.inputType || '')); if (tf !== tv) ev.target.value = tf;
       } if (ev.target.id === 'otStart') autoEndFromStart('otStart', 'otEnd', 'otWorkedStartDate', 'otWorkedEndDate'); if (ev.target.id === 'otSchedStart') autoEndFromStart('otSchedStart', 'otSchedEnd', 'otSchedStartDate', 'otSchedEndDate'); if (/^ot(Start|End|SchedStart|SchedEnd)$/.test(ev.target.id)) otPreview(); if (/^ot(CashFrom|CashTo|TimeFrom|TimeTo)$/.test(ev.target.id)) { var form2 = document.getElementById('otForm'); if (form2) form2.dataset.splitSrc = /^otTime/.test(ev.target.id) ? 'time-times' : 'cash-times'; otPreview(); } if (ev.target.id === 'otTravAmt') { var tw = document.getElementById('otTravWrap'); if (tw) tw.dataset.touched = '1'; otPreview(); } }
+    if (ev.target.classList.contains('timeIn')) maybeAdvanceTimePair(ev.target, ev);
     if (ev.target.id === 'dayStart' || ev.target.id === 'dayEnd') {
       if (String(ev.target.value || '').trim()) { openRdoKindPrompt(); if (ev.target.id === 'dayStart') asgExpand(); }
     }
