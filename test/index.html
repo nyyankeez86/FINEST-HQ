@@ -362,9 +362,9 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after,body.beta #
 .pdadd{margin-top:10px}
 .pdadd[hidden], .paidbox[hidden]{display:none !important}
 .paidbox .pdrm{margin-top:8px}
-.daycard{background:var(--soft2,#f5f7fb);padding:12px}.tourtimes-tog{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:44px;margin:0 0 12px;padding:10px 14px;border:1px solid var(--line,#cfd6e2);border-radius:12px;background:var(--soft2,#f5f7fb);color:var(--ink,#0f172a);font:inherit;font-weight:700;font-size:15px;cursor:pointer;text-align:left}
-.tourtimes-tog[hidden]{display:none!important}
-.tourtimes-tog .ttchev{margin-left:auto;font-size:13px;line-height:1}.asgbox{background:#f8fafc;padding:12px}
+.daycard{background:var(--soft2,#f5f7fb);padding:12px}.tourtimes-tog,.dirbox-tog{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:44px;margin:0 0 12px;padding:10px 14px;border:1px solid var(--line,#cfd6e2);border-radius:12px;background:var(--soft2,#f5f7fb);color:var(--ink,#0f172a);font:inherit;font-weight:700;font-size:15px;cursor:pointer;text-align:left}
+.tourtimes-tog[hidden],.dirbox-tog[hidden]{display:none!important}
+.tourtimes-tog .ttchev,.dirbox-tog .ttchev{margin-left:auto;font-size:13px;line-height:1}.dirbox{margin-top:8px}.asgbox{background:#f8fafc;padding:12px}
 .pdsec{background:#f8fafc;padding:12px;margin-top:12px}
 .pdsec .shead{display:flex;justify-content:space-between;align-items:center;margin:0 0 8px;padding-right:28px}
 .pdsec .pdadd{margin-top:4px}
@@ -1047,7 +1047,7 @@ html[data-theme="dark"] .home-strip .hstat.open .chev,
 html[data-theme="dark"] .leavehome.open .leavehd .chev{color:var(--ink)}
 html[data-theme="dark"] .pblock .ph em{background:#1d4ed8;color:#fff}
 html[data-theme="dark"] .calbox{background:var(--card);color:var(--ink);border-color:var(--line)}
-html[data-theme="dark"] .tourtimes-tog{background:var(--soft);color:var(--ink);border-color:var(--line)}
+html[data-theme="dark"] .tourtimes-tog,html[data-theme="dark"] .dirbox-tog{background:var(--soft);color:var(--ink);border-color:var(--line)}
 html[data-theme="dark"] .sebox,
 html[data-theme="dark"] .tourblock,
 html[data-theme="dark"] .otslip{
@@ -10564,7 +10564,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="btn sm chip' + (ui.dirHospLevel1 ? ' on' : '') + '" data-act="hospChip" data-filter="level1" aria-pressed="' + (ui.dirHospLevel1 ? 'true' : 'false') + '">Level 1 Trauma</button>' +
       '</div>' +
       '</div>' +
-      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r115 · patrol-test-fdf227658c71</p></div>' +
+      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r116 · patrol-test-84703ec37236</p></div>' +
       '</div>';
     var mapTools = '<div class="dir-map-chrome">' +
       '<div class="dir-map-search"><input id="dirQ" class="dirq acIn" data-ac="map" type="text" value="' + esc(q) + '" placeholder="Search an address or precinct" aria-label="Search an address or precinct" autocomplete="off"></div>' +
@@ -13187,8 +13187,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       prevDetailLocHtml(sel, a.address) +
       '<div class="field" style="margin-top:10px"><label for="asgAddr" id="asgAddrLbl">' + esc(asgAddrCaption(sel)) + '</label><input id="asgAddr" class="acIn" data-ac="asg" autocomplete="off" autocapitalize="words" enterkeyhint="done" placeholder="' + (sel === 'detail' ? 'Street, intersection, or place name' : 'Street, city or place name') + '" value="' + esc(a.address || '') + '"><datalist id="asgAddrSug">' + addrOptions(sel) + '</datalist>' +
       '<div class="hint" id="asgAddrHint">' + asgAddrHint(sel) + '</div></div>' +
-      '<div id="asgNav">' + navArea(a.address, sel === 'training' ? 'Training' : sel === 'detail' ? 'report location' : 'Court') + '</div>' +
-      '<button type="button" class="btn block" id="etaBtn" data-act="etaGo" style="margin-top:8px"' + (a.address && sel !== 'detail' ? '' : ' hidden') + '>Get arrival time</button><div id="etaOut" class="etaout" hidden></div></div>';
+      '<div id="asgNav">' + navArea(a.address, sel === 'training' ? 'Training' : sel === 'detail' ? 'report location' : sel === 'meeting' ? 'Meeting' : 'Court') + '</div></div>';
   }
   function courtBlock(a, sel) {
     var pv = E.previousCourts(S.assignments, 6); ui.prevCourts = pv;
@@ -13205,11 +13204,34 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   }
   function curCommand(d) { var c = S.profile ? (d != null ? recAt(d).command : S.profile.command) : null; return c && c.address ? c : null; }
   function destWord() { var b = document.getElementById('asgBox'); var sel = b && b.dataset.sel; return sel === 'training' ? 'Training' : sel === 'detail' ? 'report location' : sel === 'meeting' ? 'Meeting' : sel === 'court' ? 'Court' : 'location'; }
+  function dirBoxIsOpen() {
+    var box = document.getElementById('dirBox');
+    return !!(box && box.dataset.dirOpen === '1');
+  }
+  function dirBoxHtml(inner) {
+    if (!inner) return '';
+    var open = dirBoxIsOpen();
+    return '<div class="dirbox" id="dirBox" data-dir-open="' + (open ? '1' : '0') + '">' +
+      '<button type="button" class="dirbox-tog" id="dirBoxToggle" data-act="dirBoxToggle" aria-expanded="' + (open ? 'true' : 'false') + '" aria-controls="dirBoxLegs">' +
+        (open ? 'Hide directions <span class="ttchev" aria-hidden="true">&#9652;</span>' : 'Show directions <span class="ttchev" aria-hidden="true">&#9662;</span>') +
+      '</button>' +
+      '<div id="dirBoxLegs"' + (open ? '' : ' hidden') + '>' + inner + '</div></div>';
+  }
+  function setDirBoxOpen(open) {
+    var box = document.getElementById('dirBox'), legs = document.getElementById('dirBoxLegs'), tog = document.getElementById('dirBoxToggle');
+    if (!box) return;
+    box.dataset.dirOpen = open ? '1' : '0';
+    if (legs) legs.hidden = !open;
+    if (tog) {
+      tog.setAttribute('aria-expanded', open ? 'true' : 'false');
+      tog.innerHTML = open ? 'Hide directions <span class="ttchev" aria-hidden="true">&#9652;</span>' : 'Show directions <span class="ttchev" aria-hidden="true">&#9662;</span>';
+    }
+  }
   function navArea(addr, word) {
     if (!addr) return ''; var c = curCommand();
-    return '<div class="navleg"><div class="lbl2">Navigate to ' + esc(word) + '</div>' + navLinks(addr, 'leg-dest') + '</div>' +
+    return dirBoxHtml('<div class="navleg"><div class="lbl2">Navigate to ' + esc(word) + '</div>' + navLinks(addr, 'leg-dest') + '</div>' +
       (c ? '<div class="navleg"><div class="lbl2">Navigate to Command (' + esc(E.commandShort(c)) + ')</div>' + navLinks(c, 'leg-cmd') +
-        '<div class="lbl2" style="margin-top:8px">Route: Command &rarr; ' + esc(word) + '</div>' + routeLinks(c, addr, 'leg-route') + '</div>' : '');
+        '<div class="lbl2" style="margin-top:8px">Route: Command &rarr; ' + esc(word) + '</div>' + routeLinks(c, addr, 'leg-route') + '</div>' : ''));
   }
   function pdFormAddress() {
     if (!document.getElementById('pdForm')) return '';
@@ -13225,9 +13247,6 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var v = (document.getElementById('asgAddr') || {}).value || '', n = document.getElementById('asgNav');
     if (n) {
       n.innerHTML = navArea(v.trim(), destWord());
-      var box = document.getElementById('asgBox'), hideEta = !v.trim() || (box && box.dataset.sel === 'detail');
-      var eta = document.getElementById('etaBtn'); if (eta) eta.hidden = hideEta;
-      var o = document.getElementById('etaOut'); if (o) { o.hidden = true; o.innerHTML = ''; }
       syncPicks();
     }
     refreshPdNav();
@@ -14572,7 +14591,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       balancesHtml() +
       '<button class="btn primary block" data-act="stSave">Save settings</button>' +
       settingsFold('mapsHead', '9f', 'Google Maps API key (optional)',
-        '<div class="muted" style="font-size:13px;margin-bottom:8px">Navigate buttons and address suggestions work without a key. Add your own key to get Google Places suggestions and arrival times with live traffic. The key needs the Maps JavaScript API, Places API and Distance Matrix API enabled; restrict it to this site in Google Cloud.</div>' +
+        '<div class="muted" style="font-size:13px;margin-bottom:8px">Navigate buttons and address suggestions work without a key. Add your own key to get Google Places suggestions. The key needs the Maps JavaScript API and Places API enabled; restrict it to this site in Google Cloud.</div>' +
         '<div class="field"><label for="stMapsKey">Google Maps API key (optional)</label><input id="stMapsKey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Paste your key" value="' + esc(mapsKey()) + '"><div class="hint">Stored only in this browser (localStorage), never in the code, and never synced to your account.' + (mapsKey() ? ' A key is saved.' : ' No key saved.') + '</div></div>' +
         '<label class="chk" style="display:flex;gap:8px;align-items:center;min-height:44px;font-size:14px"><input type="checkbox" id="stMapsInBk"' + (S.settings.mapsKeyInBackup ? ' checked' : '') + '> Include the key in backups</label>' +
         '<div class="row"><button class="btn sm" data-act="mapsSave">Save key</button><button class="btn sm" data-act="mapsShow">Show</button>' + (mapsKey() ? '<button class="btn sm danger" data-act="mapsClear">Remove key</button>' : '') + '</div>',
@@ -14595,7 +14614,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="' + ((s.defaultCalendar || 'google') === 'apple' ? 'on' : '') + '" data-act="calDefault" data-v="apple">Apple</button></div>' +
       '<h3 style="margin-top:20px" data-sec="9m">Subscribe to calendar</h3>' + calendarSubscribeHtml() +
       '<button class="btn danger block" data-act="reset" data-sec="9k" style="margin-top:20px">Erase all data</button>' +
-      '<p class="build-tag muted" id="appBuildTag">Build r115 · patrol-test-fdf227658c71</p>');
+      '<p class="build-tag muted" id="appBuildTag">Build r116 · patrol-test-84703ec37236</p>');
   }
 
   // ---------- Day summary: what's saved on a date; tap an entry to view or change it ----------
@@ -14762,7 +14781,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var sw = function (c, txt) { return '<span class="sw" style="width:30px;height:30px;border-radius:8px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:12px;background:' + c + '">' + (txt || '') + '</span>'; };
     var item = function (focus, icon, t1, t2, id) { return '<button type="button" class="item sumrow" data-act="dayEdit" data-d="' + d + '" data-focus="' + focus + '" id="' + id + '">' + icon + '<div class="main"><div class="t1">' + t1 + '</div>' + (t2 ? '<div class="t2">' + t2 + '</div>' : '') + '</div><div class="right sumgo">View / edit &rsaquo;</div></button>'; };
     var kind = dt.extra ? 'Overtime tour on RDO' : dt.ddWork ? 'Day for day &middot; working this RDO' : dt.ddOff ? 'Day for day &middot; off' : esc(opt.label);
-    var sub = dt.working && !lv.type ? 'Tour ' + tourText(dt) + (ov.len && !dt.extra ? '</div><div class="t2"><b>Tour length changed for this day only</b>' : '') + (ov.short ? ' &middot; left early: ' + E.fmtHM(ov.short.minutes) + ' ' + esc(C.shortLeaveLabels[ov.short.type] || '') : '') : lv.type ? (en.leaveType && E.isRDO(d, sq.id, U()) ? 'On an RDO' : 'Leave day') : 'Day off';
+    var loggedTour = dayHasLoggedTour(iso);
+    var sub = dt.working && !lv.type ? (loggedTour ? ('Tour ' + tourText(dt) + (ov.len && !dt.extra ? '</div><div class="t2"><b>Tour length changed for this day only</b>' : '') + (ov.short ? ' &middot; left early: ' + E.fmtHM(ov.short.minutes) + ' ' + esc(C.shortLeaveLabels[ov.short.type] || '') : '')) : 'No tour entered') : lv.type ? (en.leaveType && E.isRDO(d, sq.id, U()) ? 'On an RDO' : 'Leave day') : 'Day off';
     var dayRow = item('day', sw(dt.extra ? '#B45309' : opt.color), kind, sub, 'sumDay');
     if (dayHasLoggedTour(iso)) rows.push('<div class="swrow" data-swipe="sumTour" data-d="' + d + '" data-iso="' + iso + '" id="sumTourRow">' + dayRow + '</div>');
     else rows.push(dayRow);
@@ -15466,22 +15486,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var r = E.applySite({ type: 'training' }, +t.dataset.i); // location + address only; never the training text (#asgDetail)
       document.getElementById('asgTrLoc').value = r.place; document.getElementById('asgAddr').value = r.address; refreshNav();
     },
-    etaGo: function () {
-      var w = document.getElementById('asgAddrWrap'), addr = document.getElementById('asgAddr').value.trim(), out = document.getElementById('etaOut'), btn = document.getElementById('etaBtn');
-      var day = E.toDay(w.dataset.iso), st = w.dataset.start, tourStart = null;
-      if (st) { var pp = E.parts(day), hm = st.split(':'); tourStart = new Date(pp.y, pp.m - 1, pp.d, +hm[0], +hm[1]); }
-      out.hidden = false; out.className = 'etaout'; out.innerHTML = '<span class="muted">' + (mapsKey() ? 'Getting your location and traffic&hellip;' : '') + '</span>'; btn.disabled = true;
-      var word = destWord(), cmd = curCommand();
-      E.computeEta2({ key: mapsKey(), online: navigator.onLine, destination: addr, command: cmd, getPosition: getPosition, loadMaps: loadMaps, now: new Date(), tourStart: tourStart, home: S.profile && S.profile.homeAddress }).then(function (r) {
-        btn.disabled = false;
-        if (!r.ok) { out.className = 'etaout bad'; out.innerHTML = '<div class="etamsg">' + esc(r.message) + '</div>' + (r.code === 'nokey' ? '<button type="button" class="btn sm" data-act="mapsSettings" style="margin-top:6px">Add a key in Settings</button>' : '') + (r.code !== 'noaddr' ? navArea(addr, word) : ''); out.dataset.code = r.code; return; }
-        out.dataset.code = 'ok';
-        var row = function (k, label, x) { return x ? '<div class="etarow" data-k="' + k + '"><div class="etalbl">' + esc(label) + '</div><div class="etabig">' + esc(x.text) + '</div>' + (x.legs ? '<div class="muted" style="font-size:12px">' + esc(x.legs) + '</div>' : '') + (x.leaveBy ? '<div class="etaleave">Leave by ' + esc(x.leaveBy) + ' to arrive by ' + esc(r.arriveBy) + '</div>' : '') + '</div>' : ''; };
-        out.innerHTML = row('here', r.fromHome ? '(a) From home' : '(a) From your location', r.fromHere) + row('cmd', '(b) From your command' + (cmd ? ' (' + E.commandShort(cmd) + ')' : ''), r.fromCommand) + row('via', 'Home → Command → ' + word, r.viaCommand) +
-          (r.homeNote ? '<div class="etamsg warn">' + esc(r.homeNote) + '</div>' : '') + (r.warning ? '<div class="etamsg warn">' + esc(r.warning) + ' Showing the command route only.</div>' : '') + (r.noCommand ? '<div class="muted" style="font-size:12.5px">Add your command in Settings to also see times from the command.</div>' : '') +
-          '<div class="muted" style="font-size:12px;margin-top:4px">' + esc(r.note) + (r.leaveNote ? ' ' + esc(r.leaveNote) : '') + '</div>';
-      });
-    },
+    dirBoxToggle: function () { setDirBoxOpen(!(document.getElementById('dirBox') && document.getElementById('dirBox').dataset.dirOpen === '1')); },
     leaveGo: function () { var v = document.getElementById('lnDate').value; if (v) daySheet(E.toDay(v)); },
     tourPick: function (t) { var i = document.getElementById(t.dataset.for); i.value = t.dataset.v; tourPrev(i.id); if (i.id === 'dayLen') { autoEndFromStart('dayStart', 'dayEnd', 'workedStartDate', 'workedEndDate'); pduKeep(); updateEnd(true); } },
     x15Open: function (t) { x15Sheet(t && t.dataset && t.dataset.y ? +t.dataset.y : ui.x15Year); },
