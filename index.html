@@ -534,7 +534,7 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after,body.beta #
 .privnote{font-size:12.5px;color:#334155;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:8px 10px;margin:6px 0 10px}.privsec .privnote p{margin:0 0 8px}.privsec .privnote p:last-child{margin:0}
 .privbanner{background:#fefce8;border:1px solid #fde68a;border-radius:12px;padding:10px 12px;margin:0 0 10px;font-size:13.5px}
 .acct{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-.admrow{display:flex;gap:8px;align-items:center}.admrow .main{flex:1;min-width:0}.admbtns{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.admh{margin:14px 0 6px;font-size:15px}.dirstat{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.02em;border-radius:6px;padding:2px 6px;margin-left:6px;vertical-align:middle;line-height:1.3}.dirstat-on{background:#dcfce7;color:#166534}.dirstat-pending{background:#fef3c7;color:#92400e}.dirstat-off{background:#e2e8f0;color:#334155}#sugPickBanner{position:fixed;top:0;left:0;right:0;z-index:55;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:calc(10px + env(safe-area-inset-top,0px)) 12px 10px;background:#f5f3ff;color:#4c1d95;border-bottom:2px solid #c4b5fd;font-weight:800;font-size:14px;line-height:1.3}
+.admrow{display:flex;flex-direction:column;align-items:stretch;gap:4px;min-width:0}.admrow .main{flex:0 0 auto;width:100%;min-width:0}.admrow .admhead{display:flex;align-items:flex-start;gap:8px;width:100%;min-width:0}.admrow .t1{display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-width:0;flex:1 1 auto}.admrow .admname{min-width:0;overflow-wrap:anywhere;word-break:break-word}.admrow .dirstat,.admrow .betatag,.admrow .admyou{flex:0 0 auto;white-space:nowrap;max-width:100%;margin-left:0}.admrow .t2{white-space:normal;overflow:visible;text-overflow:unset;overflow-wrap:anywhere;word-break:break-word}.admbtns{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-start;width:100%;flex:0 0 auto}.admrow .admbtns .btn{min-height:44px;flex:0 1 auto;white-space:nowrap;max-width:100%}.admopts{position:relative;flex:0 0 auto}.admopts-btn.btn.sm{min-height:44px;padding:0 12px;white-space:nowrap}.admopts-menu{position:absolute;right:0;top:calc(100% + 4px);z-index:80;min-width:220px;max-width:min(280px,calc(100vw - 16px));padding:4px;display:flex;flex-direction:column;gap:0;background:var(--card,#fff);color:var(--ink);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.18)}.admopts-menu[hidden]{display:none!important}.admopts-menu button{display:block;width:100%;text-align:left;min-height:44px;padding:8px 12px;border:0;border-radius:8px;background:transparent;color:var(--ink);font:inherit;font-weight:700;font-size:14px;cursor:pointer}.admopts-menu button.primary{color:#1d4ed8}.admopts-menu button.danger{color:#b91c1c}.admopts-menu button:hover,.admopts-menu button:focus{background:var(--soft);outline:none}.admh{margin:14px 0 6px;font-size:15px}.dirstat{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.02em;border-radius:6px;padding:2px 6px;margin-left:6px;vertical-align:middle;line-height:1.3}.dirstat-on{background:#dcfce7;color:#166534}.dirstat-pending{background:#fef3c7;color:#92400e}.dirstat-off{background:#e2e8f0;color:#334155}#sugPickBanner{position:fixed;top:0;left:0;right:0;z-index:55;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:calc(10px + env(safe-area-inset-top,0px)) 12px 10px;background:#f5f3ff;color:#4c1d95;border-bottom:2px solid #c4b5fd;font-weight:800;font-size:14px;line-height:1.3}
 #sugPickBanner .btn{flex:none;background:#fff;color:#4c1d95;border-color:#c4b5fd}
 body.sugpick [data-sec]{position:relative;outline:2px solid #7c3aed;outline-offset:2px;border-radius:10px;cursor:pointer}
 body.sugpick [data-sec]::after{content:attr(data-sec);position:absolute;top:2px;right:2px;z-index:6;font:800 9.5px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.02em;color:#5b21b6;background:#ede9fe;border:1px solid #c4b5fd;border-radius:5px;padding:2px 4px;pointer-events:none}
@@ -576,8 +576,9 @@ body.sugpick #app{padding-top:56px}
 .field{position:relative}.acdrop{position:absolute;left:0;right:0;z-index:60;margin-top:2px;background:#fff;color:#0f172a;border:1px solid #cbd5e1;border-radius:10px;box-shadow:0 10px 24px rgba(15,23,42,.18);max-height:300px;overflow:auto;-webkit-overflow-scrolling:touch}.acdrop[hidden]{display:none}.acopt{padding:10px 12px;min-height:44px;border-bottom:1px solid #eef2f7;cursor:pointer;touch-action:manipulation}.acopt b{display:block;font-size:14px;font-weight:600}.acopt span{display:block;font-size:12px;color:#64748b;margin-top:2px}.acopt.on,.acopt:hover{background:#e0f2fe}.acnote{padding:8px 12px;font-size:12px;color:#64748b}.cmdua{margin-top:8px}.cmdua .btn{margin-top:6px}.cmdcard{min-width:0;max-width:100%;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border-radius:12px;background:#ecfeff;border:1px solid #a5f3fc}.cmdcard span{display:block;font-size:12.5px;opacity:.8}
 .sebox{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:10px 10px 4px;margin-bottom:10px}
 .roIn{background:#f1f5f9!important;color:#0f172a;font-weight:800}
-.dateIn,input[type="date"]{display:block;width:100%;min-width:0;max-width:100%;box-sizing:border-box;-webkit-appearance:none;appearance:none}
-input[type="date"]::-webkit-date-and-time-value,input[type="date"]::-webkit-datetime-edit{min-width:0;max-width:100%;width:100%}
+.dateIn,input[type="date"]{display:block;width:100%;min-width:0;max-width:100%;box-sizing:border-box;-webkit-appearance:none;appearance:none;text-align:center}
+input[type="date"]::-webkit-date-and-time-value,input[type="date"]::-webkit-datetime-edit{min-width:0;max-width:100%;width:100%;text-align:center}
+#stShield,#onbShield{text-align:center}
 .field{min-width:0;max-width:100%}
 .sebox .hint{font-size:12.5px;line-height:1.35}.startpicks{margin:2px 0 6px}.startpicks .pick{min-height:36px;font-size:13px}
 .dateframe{position:relative;display:block;width:100%;margin:0 0 4px}
@@ -987,7 +988,7 @@ html[data-theme="dark"] .cfm .btn.primary{background:var(--btn-primary,#2563eb);
 html[data-theme="dark"] .cfm .btn.delbtn,html[data-theme="dark"] .cfm .btn.danger{background:#dc2626;border-color:#dc2626;color:#fff}
 html[data-theme="dark"] .dirstat-on{background:#0c2f24;color:#6ee7b7}
 html[data-theme="dark"] .dirstat-pending{background:#3a2a0a;color:#fde68a}
-html[data-theme="dark"] .dirstat-off{background:#232b38;color:#e8eef6;border:1px solid #2c394c}
+html[data-theme="dark"] .dirstat-off{background:#232b38;color:#e8eef6;border:1px solid #2c394c}html[data-theme="dark"] .admopts-menu{background:var(--sheet-bg,#1e293b);color:var(--ink);border-color:var(--line);box-shadow:0 8px 24px rgba(0,0,0,.5)}html[data-theme="dark"] .admopts-menu button{color:var(--ink);background:transparent}html[data-theme="dark"] .admopts-menu button.primary{color:#93c5fd}html[data-theme="dark"] .admopts-menu button.danger{color:#fca5a5}html[data-theme="dark"] .admopts-menu button:hover,html[data-theme="dark"] .admopts-menu button:focus{background:var(--soft)}
 html[data-theme="dark"] #sugPickBanner{background:#2a1f4a;color:#e9d5ff;border-bottom-color:#6d28d9}
 html[data-theme="dark"] #sugPickBanner .btn{background:#1e1533;color:#e9d5ff;border-color:#6d28d9}
 html[data-theme="dark"] body.sugpick [data-sec]{outline-color:#c4b5fd}
@@ -6215,7 +6216,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     [/\bsouth\b/g, 'south'],
     [/\bno\b/g, 'north'],
     [/\bso\b/g, 'south'],
-    [/\bess\b/g, 'esu']
+    [/\bess\b/g, 'esu'],
+    [/special ops/g, 'special operations']
   ];
   function dirUnitCanon(s) {
     var t = String(s == null ? '' : s).toLowerCase();
@@ -6270,7 +6272,16 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     ['nbxs', 'Narcotics Borough Bronx South'],
     ['pbxn', 'Patrol Borough Bronx North'],
     ['nbxn', 'Narcotics Borough Bronx North'],
-    ['esu', 'E.S.S.']
+    ['esu', 'E.S.S.'],
+    ['sod', 'Chief of Special Operations'],
+    ['special ops', 'Chief of Special Operations'],
+    ['transit sod', 'Special Operations Division'],
+    ['srg', 'Strategic Response Group']
+  ];
+  // Query-only expansions (do not attach these phrases as aliases on the target
+  // unit, so a more specific shortcut like "transit sod" stays on Transit).
+  var VDIR_QUERY_EXPAND = [
+    ['special operations division', 'Chief of Special Operations']
   ];
   var VDIR_INITIALISM_STOP = /^(a|an|and|of|the|for|to|in|at|on|or|by)$/;
   // Bronx commands use X, not B, in official abbreviations (PBXS, NBXN, …).
@@ -6290,11 +6301,14 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     return out.length >= 2 ? out : '';
   }
   function dirUnitExpandAbbrev(q) {
-    var k = dirUnitCanon(q).replace(/\s+/g, ''), i, pair;
+    var k = dirUnitCanon(q).replace(/\s+/g, ''), i, pair, tables, t;
     if (!k) return '';
-    for (i = 0; i < VDIR_UNIT_ABBREVS.length; i++) {
-      pair = VDIR_UNIT_ABBREVS[i];
-      if (dirUnitCanon(pair[0]).replace(/\s+/g, '') === k) return dirUnitCanon(pair[1]);
+    tables = [VDIR_UNIT_ABBREVS, VDIR_QUERY_EXPAND];
+    for (t = 0; t < tables.length; t++) {
+      for (i = 0; i < tables[t].length; i++) {
+        pair = tables[t][i];
+        if (dirUnitCanon(pair[0]).replace(/\s+/g, '') === k) return dirUnitCanon(pair[1]);
+      }
     }
     return '';
   }
@@ -6327,7 +6341,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     });
     return { hay: (basic + ' ' + canon + ' ' + compact).replace(/\s+/g, ' ').trim(), canon: canon, compact: compact, words: words, first: first };
   }
-  var VDIR_UNIT_WORD = /\b(precinct|pct|psa|pdu|ftu|esu|ess|e\.s\.s\.?|iab|squad|sqd|unit|division|section|bureau|borough|boro|command|team|detail|district|platoon|company|homicide|detective|det|transit|housing|patrol|task\s+force|service\s+area)\b/i;
+  var VDIR_UNIT_WORD = /\b(precinct|pct|psa|pdu|ftu|esu|ess|e\.s\.s\.?|iab|squad|sqd|unit|division|section|bureau|borough|boro|command|team|detail|district|platoon|company|homicide|detective|det|transit|housing|patrol|task\s+force|service\s+area|sod|srg|operations|group)\b/i;
   var VDIR_PCT_HEAD = /^(\d{1,3}(?:st|nd|rd|th)?\.?\s*(?:pct|precinct)\.?)\b/i;
   var VDIR_PSA_HEAD = /^(psa\s*\d{1,3}|police service area\s*\d{1,3})\b/i;
   var VDIR_TD_HEAD = /^(td\s*\d{1,3}|transit district\s*\d{1,3})\b/i;
@@ -6345,12 +6359,22 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (/,\s*m\.d\./i.test(s)) return true;
     if (/^[A-Z][A-Z'’.\-]+,\s+[A-Z]/.test(s)) return true;
     if (/^[A-Z][A-Z'’.\-]+(?:\s+[A-Z]\.)(?:\s+[A-Z][A-Z'’.\-]+){1,2}$/.test(s)) return true;
-    if (/^(adjutant|administrator|personnel admin\.? mgr\.?|borough captains?|supervisor of patrol|special projects|exec\.?\s*officer)\s*-?\s*$/i.test(s)) return true;
+    if (/^(adjutant|administrator|personnel admin\.? mgr\.?|borough captains?|supervisor of patrol|special projects|special operations|exec\.?\s*officer)\s*-?\s*$/i.test(s)) return true;
     return false;
+  }
+  function stripDirUnitPersonTail(s) {
+    var m = String(s || '').match(/^(.*\S)\s+[-–—]\s+(.+)$/);
+    if (!m) return s;
+    var left = m[1], right = m[2].trim();
+    if (/^(manhattan|bronx|brooklyn|queens|staten island|bklyn|qns|s\.?i\.?)\b/i.test(right)) return s;
+    if (/\b(insp\.|inspector|capt\.|captain|lt\.|lieut\.|sgt\.|sergeant|p\.o\.|police officer|det\.|d\.i\.|d\.c\.|dy\.?\s*insp\.?|dep\.?\s*insp\.?|chief)\s+[A-Z]/.test(right)) return left;
+    if (/^[A-Z][A-Za-z'’.\-]+(?:\s+[A-Z]\.)?(?:\s+[A-Z][A-Za-z'’.\-]+){1,2}$/.test(right)) return left;
+    return s;
   }
   function stripDirUnitTrail(line) {
     var s = String(line || '').replace(/\s+/g, ' ').trim();
     s = s.replace(VDIR_PHONE, ' ').replace(VDIR_EMAIL, ' ');
+    s = stripDirUnitPersonTail(s);
     s = s.replace(/\s*\.{2,}\s*/g, ' ');
     // Only drop a trailing page number when the line looks like a TOC entry
     // (dotted leaders or a wide gap). Bare "E.S.S. 2" / "PSA 2" stay intact.
@@ -10613,7 +10637,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="btn sm chip' + (ui.dirHospLevel1 ? ' on' : '') + '" data-act="hospChip" data-filter="level1" aria-pressed="' + (ui.dirHospLevel1 ? 'true' : 'false') + '">Level 1 Trauma</button>' +
       '</div>' +
       '</div>' +
-      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r119 · patrol-fc6612a3eb6e</p></div>' +
+      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r120 · patrol-e986bc812991</p></div>' +
       '</div>';
     var mapTools = '<div class="dir-map-chrome">' +
       '<div class="dir-map-search"><input id="dirQ" class="dirq acIn" data-ac="map" type="text" value="' + esc(q) + '" placeholder="Search an address or precinct" aria-label="Search an address or precinct" autocomplete="off"></div>' +
@@ -13204,23 +13228,30 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       el.innerHTML = groups.map(function (g) {
         var list = ui.adminRows.filter(function (r) { return r.status === g[0]; });
         return '<h3 class="admh" data-g="' + g[0] + '">' + g[1] + ' <span class="muted">(' + list.length + ')</span></h3>' + (list.length ? '<div class="list">' + list.map(function (r) {
-          var bt = g[0] === 'approved' ? '<button class="btn sm' + (r.beta ? ' on' : '') + '" data-act="adminBeta" data-id="' + r.id + '" aria-pressed="' + !!r.beta + '">Beta tags ' + (r.beta ? 'on' : 'off') + '</button>' : '';
-          var me = r.id === CS.uid, b = me ? bt + '<span class="muted" style="font-size:12px">you</span>' : bt + (
-            g[0] === 'pending' ? '<button class="btn sm primary" data-act="adminSet" data-id="' + r.id + '" data-s="approved">Approve</button><button class="btn sm danger" data-act="adminSet" data-id="' + r.id + '" data-s="denied">Deny</button>' :
-            g[0] === 'approved' ? '<button class="btn sm danger" data-act="adminSet" data-id="' + r.id + '" data-s="revoked">Revoke</button>' :
-            '<button class="btn sm" data-act="adminSet" data-id="' + r.id + '" data-s="approved">Approve</button>');
-          var dirChip = '', dirBtns = '';
+          var me = r.id === CS.uid;
+          var dirChip = '', st = '';
           if (showDir && g[0] === 'approved') {
-            var st = verified[r.id] ? 'verified' : (pendingBy[r.id] ? 'pending' : 'none');
+            st = verified[r.id] ? 'verified' : (pendingBy[r.id] ? 'pending' : 'none');
             dirChip = st === 'verified' ? '<span class="dirstat dirstat-on" data-dirstat="verified">Verified</span>'
               : st === 'pending' ? '<span class="dirstat dirstat-pending" data-dirstat="pending">Pending request</span>'
               : '<span class="dirstat dirstat-off" data-dirstat="none">Not verified</span>';
-            if (!me && r.username !== 'admin' && r.username !== 'zee') {
-              if (st === 'verified') dirBtns = '<button class="btn sm danger" data-act="adminDirRevoke" data-id="' + r.id + '" data-user="' + esc(r.username) + '">Revoke verified access</button>';
-              else dirBtns = '<button class="btn sm primary" data-act="adminDirGrant" data-id="' + r.id + '" data-user="' + esc(r.username) + '">Grant verified access</button>';
-            }
           }
-          return '<div class="item admrow" data-u="' + esc(r.username) + '"' + (showDir && g[0] === 'approved' ? ' data-dirstat="' + (verified[r.id] ? 'verified' : (pendingBy[r.id] ? 'pending' : 'none')) + '"' : '') + '><div class="main"><div class="t1">' + esc(r.username) + (r.role === 'admin' ? ' <span class="betatag">admin</span>' : '') + dirChip + '</div><div class="t2">' + esc([r.full_name, r.command].filter(Boolean).join(' \u00b7 ') || 'No name given') + '</div><div class="t2">Requested ' + esc(fmtStamp(r.created_at)) + (r.decided_at && g[0] !== 'pending' ? ' \u00b7 ' + g[1].toLowerCase() + ' ' + esc(fmtStamp(r.decided_at)) : '') + '</div></div><div class="admbtns">' + b + dirBtns + '</div></div>';
+          var items = [];
+          if (g[0] === 'approved') {
+            items.push('<button type="button" role="menuitem" data-act="adminBeta" data-id="' + r.id + '" aria-pressed="' + !!r.beta + '"' + (r.beta ? ' class="on"' : '') + '>Beta tags ' + (r.beta ? 'on' : 'off') + '</button>');
+            if (showDir && !me && r.username !== 'admin' && r.username !== 'zee') {
+              if (st === 'verified') items.push('<button type="button" role="menuitem" class="danger" data-act="adminDirRevoke" data-id="' + r.id + '" data-user="' + esc(r.username) + '">Revoke verified access</button>');
+              else items.push('<button type="button" role="menuitem" class="primary" data-act="adminDirGrant" data-id="' + r.id + '" data-user="' + esc(r.username) + '">Grant verified access</button>');
+            }
+            if (!me) items.push('<button type="button" role="menuitem" class="danger" data-act="adminSet" data-id="' + r.id + '" data-s="revoked">Revoke beta</button>');
+          } else if (g[0] === 'pending') {
+            items.push('<button type="button" role="menuitem" class="primary" data-act="adminSet" data-id="' + r.id + '" data-s="approved">Approve</button>');
+            items.push('<button type="button" role="menuitem" class="danger" data-act="adminSet" data-id="' + r.id + '" data-s="denied">Deny</button>');
+          } else {
+            items.push('<button type="button" role="menuitem" data-act="adminSet" data-id="' + r.id + '" data-s="approved">Approve</button>');
+          }
+          var opts = items.length ? ('<div class="admopts"><button type="button" class="btn sm admopts-btn" data-act="adminOpts" aria-expanded="false" aria-haspopup="menu" aria-label="Options for ' + esc(r.username) + '">Options ▾</button><div class="admopts-menu" hidden role="menu">' + items.join('') + '</div></div>') : '';
+          return '<div class="item admrow" data-u="' + esc(r.username) + '"' + (showDir && g[0] === 'approved' ? ' data-dirstat="' + st + '"' : '') + '><div class="admhead"><div class="t1"><span class="admname">' + esc(r.username) + '</span>' + (r.role === 'admin' ? '<span class="betatag">admin</span>' : '') + dirChip + (me ? '<span class="muted admyou">you</span>' : '') + '</div>' + opts + '</div><div class="t2">' + esc([r.full_name, r.command].filter(Boolean).join(' \u00b7 ') || 'No name given') + '</div><div class="t2">Requested ' + esc(fmtStamp(r.created_at)) + (r.decided_at && g[0] !== 'pending' ? ' \u00b7 ' + g[1].toLowerCase() + ' ' + esc(fmtStamp(r.decided_at)) : '') + '</div></div>';
         }).join('') + '</div>' : '<div class="empty">None</div>');
       }).join('') + '<div class="hint">Approving lets the person sign in and sync their own data. Revoke stops their access (their device keeps its local copy). Nobody can see anyone else\'s data, including the admin.' + (showDir ? ' Grant or revoke verified directory access from this list the same way as the Verified Access queue; it does not add anyone to the directory.' : '') + '</div>';
     }).catch(function (e) { var el = document.getElementById('adminList'); if (el) el.textContent = 'Couldn\'t load users: ' + errText(e); });
@@ -13481,6 +13512,28 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function closeNavMenus() {
     Array.prototype.forEach.call(document.querySelectorAll('.nav-menu'), function (m) { m.hidden = true; });
     Array.prototype.forEach.call(document.querySelectorAll('[data-act="navMore"]'), function (b) { b.setAttribute('aria-expanded', 'false'); });
+  }
+  function closeAdminOpts() {
+    Array.prototype.forEach.call(document.querySelectorAll('.admopts-menu'), function (m) {
+      m.hidden = true;
+      m.style.position = '';
+      m.style.top = '';
+      m.style.left = '';
+      m.style.right = '';
+      m.style.width = '';
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-act="adminOpts"]'), function (b) { b.setAttribute('aria-expanded', 'false'); });
+  }
+  function placeAdminOpts(btn, menu) {
+    var r = btn.getBoundingClientRect(), mw = Math.max(220, menu.offsetWidth), mh = menu.offsetHeight;
+    var top = r.bottom + 4;
+    if (top + mh > window.innerHeight - 8 && r.top - 4 - mh > 8) top = r.top - 4 - mh;
+    var left = Math.min(Math.max(8, r.right - mw), window.innerWidth - mw - 8);
+    menu.style.position = 'fixed';
+    menu.style.top = Math.max(8, top) + 'px';
+    menu.style.left = left + 'px';
+    menu.style.right = 'auto';
+    menu.style.width = mw + 'px';
   }
   function navLinksHtml(u, cls, routeId) {
     if (!u || (!u.google && !u.apple && !u.waze)) return '';
@@ -15040,7 +15093,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="' + ((s.defaultCalendar || 'google') === 'apple' ? 'on' : '') + '" data-act="calDefault" data-v="apple">Apple</button></div>' +
       '<h3 style="margin-top:20px" data-sec="9m">Subscribe to calendar</h3>' + calendarSubscribeHtml() +
       '<button class="btn danger block" data-act="reset" data-sec="9k" style="margin-top:20px">Erase all data</button>' +
-      '<p class="build-tag muted" id="appBuildTag">Build r119 · patrol-fc6612a3eb6e</p>');
+      '<p class="build-tag muted" id="appBuildTag">Build r120 · patrol-e986bc812991</p>');
   }
 
   // ---------- Day summary: what's saved on a date; tap an entry to view or change it ----------
@@ -15890,6 +15943,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       } });
     },
     adminDirGrant: function (t) {
+      closeAdminOpts();
       if (!isDirectoryAdmin()) return;
       var id = t && t.dataset && t.dataset.id, name = (t && t.dataset && t.dataset.user) || 'this member';
       if (!id) return;
@@ -15898,6 +15952,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       } });
     },
     adminDirRevoke: function (t) {
+      closeAdminOpts();
       if (!isDirectoryAdmin()) return;
       var id = t && t.dataset && t.dataset.id, name = (t && t.dataset && t.dataset.user) || 'this member';
       if (!id) return;
@@ -15907,12 +15962,14 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     },
 
     adminBeta: function (t) {
+      closeAdminOpts();
       var r = (ui.adminRows || []).filter(function (x) { return x.id === t.dataset.id; })[0]; if (!r) return; t.disabled = true;
       Promise.resolve(cloudClient().rpc('set_user_beta', { target_id: r.id, beta_on: !r.beta })).then(q).then(function () {
         toast(r.username + ': beta tags ' + (r.beta ? 'off' : 'on')); if (r.id === CS.uid) { CS.beta = !r.beta; saveCS(); render(); } adminSheet();
       }, function (e) { t.disabled = false; toast('Couldn\'t update: ' + errText(e)); });
     },
     adminSet: function (t) {
+      closeAdminOpts();
       var r = (ui.adminRows || []).filter(function (x) { return x.id === t.dataset.id; })[0], s = t.dataset.s; if (!r) return;
       if (s === 'revoked' && !confirm('Revoke access for ' + r.username + '? They will be signed out of the cloud; their device keeps its local copy.')) return;
       t.disabled = true;
@@ -16626,7 +16683,15 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       var wrap = t.closest && t.closest('.navbtns'), menu = wrap && wrap.querySelector('.nav-menu');
       var open = menu && !menu.hidden;
       closeNavMenus();
+      closeAdminOpts();
       if (menu && !open) { menu.hidden = false; t.setAttribute('aria-expanded', 'true'); }
+    },
+    adminOpts: function (t) {
+      var wrap = t.closest && t.closest('.admopts'), menu = wrap && wrap.querySelector('.admopts-menu');
+      var open = menu && !menu.hidden;
+      closeNavMenus();
+      closeAdminOpts();
+      if (menu && !open) { menu.hidden = false; t.setAttribute('aria-expanded', 'true'); placeAdminOpts(t, menu); }
     },
     calToken: function (t) {
       if (t) { t.disabled = true; t.textContent = 'Getting URL…'; }
@@ -16869,6 +16934,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     var box = document.getElementById('lvOpts');
     if (box && box.classList.contains('open') && !box.contains(ev.target)) closeDaySel();
     if (!(ev.target.closest && ev.target.closest('[data-act="navMore"], .nav-menu'))) closeNavMenus();
+    if (!(ev.target.closest && ev.target.closest('[data-act="adminOpts"], .admopts-menu'))) closeAdminOpts();
     if (!(ev.target.closest && ev.target.closest('#payBanner .payban-pick'))) closePayPick();
     var t = ev.target.closest('[data-act]'); if (!t) return;
     if (t.dataset.act === 'otEditDetails' && Date.now() - otEditArmed < 1000) { ev.preventDefault(); ev.stopPropagation(); return; }
@@ -17179,6 +17245,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (box && box.classList.contains('open')) { closeDaySel(); ev.preventDefault(); return; }
     if (document.body.classList.contains('sugpick')) { ev.preventDefault(); sugPickCancel(); return; }
     if (document.getElementById('cfmDlg')) return; // the confirm box handles its own Escape
+    if (document.querySelector('.admopts-menu:not([hidden])')) { closeAdminOpts(); ev.preventDefault(); return; }
     var pick = document.getElementById('payPickList');
     if (pick && !pick.hidden) { closePayPick(); ev.preventDefault(); return; }
     if (document.getElementById('slipFlow')) slipClose(); else if (sheetRoot.firstElementChild) navBack();
