@@ -75,7 +75,7 @@ header.top .brand{display:flex;align-items:center;gap:10px;min-width:0}header.to
 .pushhint{font-size:12.5px;color:var(--muted);margin:6px 0 10px}
 .chkline{display:flex;gap:10px;align-items:center;min-height:44px;font-weight:700}
 main{flex:1;padding:14px 14px calc(var(--tabh) + 24px + env(safe-area-inset-bottom))}
-nav.tabs[hidden],#headActs[hidden],#btnSettings[hidden],#btnInbox[hidden],#inboxBadge[hidden],#inboxBadgeSheet[hidden],#sugPop[hidden],#sugPreview[hidden]{display:none!important}nav.tabs{position:fixed;bottom:0;left:0;right:0;z-index:20;background:var(--tab-bg,#fff);border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs[hidden],#headActs[hidden],#btnSettings[hidden],#btnInbox[hidden],#inboxBadge[hidden],#inboxBadgeSheet[hidden],#sugPop[hidden],#sugPreview[hidden],#sugClear[hidden]{display:none!important}nav.tabs{position:fixed;bottom:0;left:0;right:0;z-index:20;background:var(--tab-bg,#fff);border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom)}
 nav.tabs .wrap{display:flex;width:100%;max-width:560px}
 nav.tabs button{flex:1;height:var(--tabh);border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:1px;font-size:12px;font-weight:600;color:var(--tab-fg,#5b6678);cursor:pointer;padding:5px 2px 2px;position:relative}
 nav.tabs button svg{width:22px;height:22px;flex:0 0 22px;display:block}
@@ -535,7 +535,18 @@ body.beta .shead[data-sec]::after,body.beta .sugbar[data-sec]::after,body.beta #
 .privnote{font-size:12.5px;color:#334155;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:8px 10px;margin:6px 0 10px}.privsec .privnote p{margin:0 0 8px}.privsec .privnote p:last-child{margin:0}
 .privbanner{background:#fefce8;border:1px solid #fde68a;border-radius:12px;padding:10px 12px;margin:0 0 10px;font-size:13.5px}
 .acct{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-.admrow{display:flex;gap:8px;align-items:center}.admrow .main{flex:1;min-width:0}.admbtns{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.admh{margin:14px 0 6px;font-size:15px}
+.admrow{display:flex;gap:8px;align-items:center}.admrow .main{flex:1;min-width:0}.admbtns{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.admh{margin:14px 0 6px;font-size:15px}.dirstat{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.02em;border-radius:6px;padding:2px 6px;margin-left:6px;vertical-align:middle;line-height:1.3}.dirstat-on{background:#dcfce7;color:#166534}.dirstat-pending{background:#fef3c7;color:#92400e}.dirstat-off{background:#e2e8f0;color:#334155}#sugPickBanner{position:fixed;top:0;left:0;right:0;z-index:55;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:calc(10px + env(safe-area-inset-top,0px)) 12px 10px;background:#f5f3ff;color:#4c1d95;border-bottom:2px solid #c4b5fd;font-weight:800;font-size:14px;line-height:1.3}
+#sugPickBanner .btn{flex:none;background:#fff;color:#4c1d95;border-color:#c4b5fd}
+body.sugpick [data-sec]{position:relative;outline:2px solid #7c3aed;outline-offset:2px;border-radius:10px;cursor:pointer}
+body.sugpick [data-sec]::after{content:attr(data-sec);position:absolute;top:2px;right:2px;z-index:6;font:800 9.5px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.02em;color:#5b21b6;background:#ede9fe;border:1px solid #c4b5fd;border-radius:5px;padding:2px 4px;pointer-events:none}
+body.sugpick .shead[data-sec]::after{top:-4px;left:0;right:auto}
+body.sugpick #sheetRoot .sheet-bg{padding-top:calc(56px + env(safe-area-inset-top,0px))}
+body.sugpick #app{padding-top:56px}
+.sugsecrow{margin:0 0 12px}
+.sugsecchip{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:5px 8px 5px 10px;border-radius:999px;background:#ede9fe;color:#4c1d95;border:1px solid #c4b5fd;font-weight:800;font-size:13px;line-height:1.3}
+.sugsecx{appearance:none;border:0;background:transparent;color:inherit;font-size:18px;line-height:1;padding:0 2px;min-width:24px;min-height:24px;cursor:pointer;font-weight:800}
+.sugsectag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.02em;border-radius:6px;padding:2px 6px;margin-right:4px;vertical-align:middle;background:#ede9fe;color:#5b21b6;border:1px solid #c4b5fd;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+
 .slipbox{margin-top:12px}.slipbox[hidden],.slipchoose[hidden]{display:none}.slipadd .muted{font-weight:500;font-size:13px}
 .slipchoose{display:flex;flex-direction:column;gap:8px;margin-top:8px;padding:10px;border:1px dashed var(--line,#cbd5e1);border-radius:12px}.slipchoose .btn{text-align:center}
 .slipcard{display:flex;gap:12px;align-items:center;padding:8px;border:1px solid var(--line,#cbd5e1);border-radius:12px;background:var(--card,#fff)}
@@ -975,6 +986,16 @@ html[data-theme="dark"] .cfm .muted,html[data-theme="dark"] .cfm .hint{color:var
 html[data-theme="dark"] .cfm .btn{background:var(--btn-bg);color:var(--ink);border-color:var(--line)}
 html[data-theme="dark"] .cfm .btn.primary{background:var(--btn-primary,#2563eb);border-color:var(--btn-primary,#2563eb);color:#fff}
 html[data-theme="dark"] .cfm .btn.delbtn,html[data-theme="dark"] .cfm .btn.danger{background:#dc2626;border-color:#dc2626;color:#fff}
+html[data-theme="dark"] .dirstat-on{background:#0c2f24;color:#6ee7b7}
+html[data-theme="dark"] .dirstat-pending{background:#3a2a0a;color:#fde68a}
+html[data-theme="dark"] .dirstat-off{background:#232b38;color:#e8eef6;border:1px solid #2c394c}
+html[data-theme="dark"] #sugPickBanner{background:#2a1f4a;color:#e9d5ff;border-bottom-color:#6d28d9}
+html[data-theme="dark"] #sugPickBanner .btn{background:#1e1533;color:#e9d5ff;border-color:#6d28d9}
+html[data-theme="dark"] body.sugpick [data-sec]{outline-color:#c4b5fd}
+html[data-theme="dark"] body.sugpick [data-sec]::after{color:#e9d5ff;background:#2a1f4a;border-color:#6d28d9}
+html[data-theme="dark"] .sugsecchip{background:#2a1f4a;color:#e9d5ff;border-color:#6d28d9}
+html[data-theme="dark"] .sugsectag{background:#2a1f4a;color:#e9d5ff;border-color:#6d28d9}
+
 html[data-theme="dark"] .navbtns.nav-split,
 html[data-theme="dark"] #sumList .navbtns.nav-split,
 html[data-theme="dark"] #upcomingAsg .navbtns.inrow.nav-split{
@@ -10594,7 +10615,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="btn sm chip' + (ui.dirHospLevel1 ? ' on' : '') + '" data-act="hospChip" data-filter="level1" aria-pressed="' + (ui.dirHospLevel1 ? 'true' : 'false') + '">Level 1 Trauma</button>' +
       '</div>' +
       '</div>' +
-      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r118 · patrol-test-8034b92b9e8f</p></div>' +
+      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r119 · patrol-test-fc6612a3eb6e</p></div>' +
       '</div>';
     var mapTools = '<div class="dir-map-chrome">' +
       '<div class="dir-map-search"><input id="dirQ" class="dirq acIn" data-ac="map" type="text" value="' + esc(q) + '" placeholder="Search an address or precinct" aria-label="Search an address or precinct" autocomplete="off"></div>' +
@@ -12456,12 +12477,217 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       document.head.appendChild(s);
     });
   }
+  var SEC_TITLES = {
+    '1a': 'Today',
+    '1b': 'At a Glance',
+    '1c': 'Next Payday',
+    '1d': 'Calendar',
+    '1e': 'Upcoming assignments',
+    '1f': 'Retirement',
+    '1g': 'Calendar sync',
+    '1h': 'Finish your profile',
+    '1i': 'Leave balances',
+    '2a': 'Compact OT accrual filter on the',
+    '2b': '+ Log overtime',
+    '2c': 'Overtime entries grouped by year',
+    '2d': 'Paid Detail monthly summary',
+    '2e': 'Overtime',
+    '2f': 'Select mode, Unpaid / Paid filter,',
+    '2g': 'Paid Detail list',
+    '3a': 'Year summary card',
+    '3b': 'Each payday / pay-period card, collapsed',
+    '3c': 'Pay toolbar always visible at the',
+    '4e': 'Map search bar',
+    '4i': 'Vacated',
+    '4j': 'Street map',
+    '4k': 'Filter: Fuel',
+    '4l': 'Nearest fuel/EV',
+    '4m': 'Map legend, in the Filter panel:',
+    '4n': 'Locate-me control',
+    '4o': 'Filter: Police facilities',
+    '4p': 'Fleet EV charger markers, precinct badges,',
+    '4q': 'Fast Charger Only chip',
+    '4r': 'Filter: EV charger locations',
+    '5f': 'Directory search: name, command number such',
+    '5g': 'Directory category filter chips: All, Patrol,',
+    '5h': 'Directory results: official name, category, public',
+    '5i': 'Add or edit a personal number,',
+    '5j': 'Verified directory access: unverified signed-in members',
+    '5k': 'Verified directory button',
+    '5l': 'In-app PDF viewer for the verified',
+    '6a': 'Status',
+    '6b': 'This day',
+    '6c': 'Tour this day',
+    '6d': 'Assignment',
+    '6e': 'Paid detail',
+    '6f': 'Note',
+    '6g': 'Overtime this day',
+    '6h': 'Delete this entry',
+    '6i': 'Add to calendar',
+    '6j': 'Other squads',
+    '6k': 'Assignment',
+    '6l': 'Chart position',
+    '7a': 'When the date has any saved',
+    '7b': 'Overtime list',
+    '7c': 'Edit / Done buttons',
+    '7d': 'Delete this entry',
+    '7e': 'Add another entry',
+    '8a': 'Date',
+    '8b': 'Type',
+    '8c': 'Overtime location',
+    '8d': 'Time actually worked',
+    '8e': 'Paid as',
+    '8f': 'Travel time',
+    '8g': 'Pay estimate card',
+    '8h': 'Notes',
+    '8i': 'Time scheduled to work',
+    '8j': 'Total overtime performed',
+    '8k': 'Compensation option',
+    '9a': 'Account',
+    '9b': 'Profile',
+    '9c': 'Rank & assignment history',
+    '9d': 'Pay',
+    '9e': 'Leave balances',
+    '9f': 'Google Maps API key',
+    '9g': 'Backup',
+    '9h': 'Extra 15 minutes',
+    '9i': 'Removed from the Settings UI',
+    '9j': 'Calendar sync',
+    '9k': 'Erase all data',
+    '9l': 'Default calendar',
+    '9m': 'Subscribe to calendar',
+    '9n': 'Privacy & Security',
+    '9o': 'Default navigation app, shown in Settings',
+    '9p': 'Appearance',
+    '10a': 'What changes',
+    '10b': 'Effective date',
+    '10c': 'Rank',
+    '10d': 'Command',
+    '10e': 'Chart',
+    '10f': 'Tour',
+    '10g': 'Date promoted to rank',
+    '10h': 'Investigative assignment',
+    '11a': 'Section',
+    '11b': 'Your suggestion',
+    '11c': 'Screenshot',
+    '12a': 'Enable notifications checkbox',
+    '12b': 'Suggestion list with reply history/thread and',
+    '13a': 'User list',
+    '23a': 'Pending verified-directory requests',
+    '23b': 'Verified members',
+    '14a': 'Date',
+    '15a': 'Sync options',
+    '19a': 'Paid Detail ID',
+    '19b': 'Date from / Date to',
+    '19c': 'Start time, End time, and computed',
+    '19d': 'Vendor',
+    '19e': 'Address Line 1',
+    '19f': 'Address Line 2',
+    '19g': 'Payment: Mark paid / Unmark paid,',
+    '19h': 'Timing captions at the bottom of',
+    '19i': 'Amount',
+    '19j': 'Upload screenshot on the paid-detail sheet',
+    '20a': 'Tax year picker',
+    '20b': 'Vendor consolidation: suggested groups of likely-same',
+    '20c': 'Report preview: per-vendor totals',
+    '20d': 'Export: real',
+    '21a': 'Per-user inbox',
+    '21b': 'Opened thread: original suggestion',
+    '22': 'Sheet opened from the OT entries,',
+    '11d': 'Pick a section'
+  };
+  function sectionPickTitle(el, tag) {
+    if (tag && SEC_TITLES[tag]) return SEC_TITLES[tag];
+    if (el) {
+      var h = el.querySelector('h3, .lbl, .big');
+      if (h && h.textContent) return String(h.textContent).trim().replace(/\s+/g, ' ').slice(0, 60);
+    }
+    return '';
+  }
+  function sugSectionValue(pageName, pageTag, pick) {
+    if (pick && pick.tag) return (pick.tag + ' \u00b7 ' + (pick.title || pageName || 'Section')).slice(0, 80);
+    if (pageTag && isBeta()) return (pageTag + ' \u00b7 ' + pageName).slice(0, 80);
+    return pageName;
+  }
+  function sugSecChipHtml(pick) {
+    if (!pick || !pick.tag) return '<button type="button" class="btn sm" data-act="sugPickSection" id="sugPickBtn">Pick a section</button>';
+    var lab = 'Section ' + pick.tag + (pick.title ? ' \u00b7 ' + pick.title : '');
+    return '<span class="sugsecchip" id="sugSecChip" data-tag="' + esc(pick.tag) + '">' + esc(lab) + '<button type="button" class="sugsecx" data-act="sugPickClear" aria-label="Remove section">&times;</button></span>';
+  }
+  function sugSectionHeadHtml(section) {
+    var s = String(section || ''), m = s.match(/^(\d+[a-z]?)\s*·\s*([\s\S]*)$/);
+    if (m) return '<span class="sugsectag" data-sectag="' + esc(m[1]) + '">' + esc(m[1]) + '</span> ' + esc(m[2]);
+    return esc(s);
+  }
+  function endSugPick() {
+    document.body.classList.remove('sugpick');
+    var b = document.getElementById('sugPickBanner');
+    if (b) b.remove();
+  }
+  function startSugPick() {
+    var msgEl = document.getElementById('sugMsg');
+    ui.sugDraft = {
+      pageName: ui.sugPageName || sectionName(),
+      pageTag: ui.sugPageTag || '',
+      message: msgEl ? msgEl.value : '',
+      file: ui.sugFile, url: ui.sugUrl,
+      pick: ui.sugPick || null
+    };
+    if (NAV.stack && NAV.stack.length) navBack();
+    else closeAll();
+    document.body.classList.add('sugpick');
+    if (!document.getElementById('sugPickBanner')) {
+      var b = document.createElement('div');
+      b.id = 'sugPickBanner';
+      b.setAttribute('role', 'status');
+      b.innerHTML = '<span>Tap a section to suggest about it</span><button type="button" class="btn sm" data-act="sugPickCancel">Cancel</button>';
+      document.body.appendChild(b);
+    }
+  }
+  function resumeSuggestSheet() {
+    ui.sugResume = true;
+    var d = ui.sugDraft || {};
+    suggestSheet(d.pageName, d.pageTag);
+  }
+  function finishSugPick(tag, el) {
+    var title = sectionPickTitle(el, tag);
+    ui.sugPick = { tag: tag, title: title };
+    if (ui.sugDraft) ui.sugDraft.pick = ui.sugPick;
+    endSugPick();
+    resumeSuggestSheet();
+  }
+  function sugPickCancel() {
+    endSugPick();
+    resumeSuggestSheet();
+  }
+  function sugPickClear() {
+    ui.sugPick = null;
+    if (ui.sugDraft) ui.sugDraft.pick = null;
+    var sectionVal = sugSectionValue(ui.sugPageName || sectionName(), ui.sugPageTag || '', null);
+    ui.sugSection = sectionVal;
+    var inp = document.getElementById('sugSection'); if (inp) inp.value = sectionVal;
+    var row = document.getElementById('sugSecRow');
+    if (row) row.innerHTML = sugSecChipHtml(null) + '<div class="hint">Optional. Narrows your suggestion to a section on the page you were looking at.</div>';
+  }
   function suggestSheet(section, secTag) {
-    section = sectionName(section); if (secTag && isBeta()) section = (secTag + ' \u00b7 ' + section).slice(0, 80); // beta: which numbered section it came from
-    ui.sugSection = section; setSugFile(null, '');
+    var resume = !!ui.sugResume;
+    ui.sugResume = false;
+    var pageName = sectionName(section);
+    if (resume && ui.sugDraft && ui.sugDraft.pageName) pageName = ui.sugDraft.pageName;
+    ui.sugPageName = pageName;
+    ui.sugPageTag = resume && ui.sugDraft ? (ui.sugDraft.pageTag || '') : (secTag || '');
+    if (!resume) {
+      ui.sugPick = null;
+      setSugFile(null, '');
+    } else if (ui.sugDraft && ui.sugDraft.pick) {
+      ui.sugPick = ui.sugDraft.pick;
+    }
+    var sectionVal = sugSectionValue(pageName, ui.sugPageTag, ui.sugPick);
+    ui.sugSection = sectionVal;
     var signedIn = cloudReady();
     openSheet('Send a suggestion',
-      '<div class="field" data-sec="11a"><label for="sugSection">Section</label><input id="sugSection" value="' + esc(section) + '" readonly></div>' +
+      '<div class="field" data-sec="11a"><label for="sugSection">Section</label><input id="sugSection" value="' + esc(sectionVal) + '" readonly></div>' +
+      '<div class="sugsecrow" id="sugSecRow" data-sec="11d">' + sugSecChipHtml(ui.sugPick) + '<div class="hint">Optional. Narrows your suggestion to a section on the page you were looking at.</div></div>' +
       '<div class="field" data-sec="11b"><label for="sugMsg">Your suggestion</label><textarea id="sugMsg" maxlength="4000" placeholder="What should we add or change?"></textarea></div>' +
       '<div class="field" data-sec="11c"><label>Screenshot (optional)</label>' +
         '<div class="row" style="margin-bottom:6px"><label class="btn sm" for="sugLib">Photo library</label><label class="btn sm" for="sugCam">Camera</label>' +
@@ -12474,6 +12700,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       false);
     var bind = function (id) { var el = document.getElementById(id); if (el) el.addEventListener('change', onSugFile); };
     bind('sugLib'); bind('sugCam');
+    if (resume && ui.sugDraft) {
+      var m = document.getElementById('sugMsg'); if (m) m.value = ui.sugDraft.message || '';
+      if (ui.sugDraft.file || ui.sugDraft.url) setSugFile(ui.sugDraft.file, ui.sugDraft.url);
+    }
   }
   function onSugFile(ev) {
     var f = ev.target.files && ev.target.files[0]; ev.target.value = '';
@@ -12589,7 +12819,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   function showSugPop(rec) {
     var el = document.getElementById('sugPop'); if (!el) return;
     el.hidden = false;
-    el.innerHTML = '<div class="sugcard"><h3>New suggestion</h3><p><b>' + esc(rec.section || '') + '</b> · ' + esc(rec.username || '') + '</p><p>' + esc((rec.message || '').slice(0, 280)) + '</p>' +
+    el.innerHTML = '<div class="sugcard"><h3>New suggestion</h3><p><b>' + sugSectionHeadHtml(rec.section) + '</b> · ' + esc(rec.username || '') + '</p><p>' + esc((rec.message || '').slice(0, 280)) + '</p>' +
       '<div class="row"><button type="button" class="btn primary sm" data-act="inboxOpen">Open inbox</button><button type="button" class="btn sm" data-act="sugPopDismiss">Dismiss</button></div></div>';
   }
   function hideSugPop() { var el = document.getElementById('sugPop'); if (el) { el.hidden = true; el.innerHTML = ''; } }
@@ -12761,7 +12991,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
           (r.screenshot_path ? '<img class="sugthumb" data-path="' + esc(r.screenshot_path) + '" alt="">' : '<div class="sugthumb" aria-hidden="true"></div>') +
           '<div class="main"><div data-act="sugOpen" data-id="' + esc(r.id) + '" style="cursor:pointer">' +
           '<div class="t1 sugitem-head">' + ((r.read_at && !unreadMsgs.length) ? '' : msgNewIconHtml()) +
-          '<span>' + esc(r.section || '') + ' \u00b7 ' + esc(r.username || '') + '</span></div>' +
+          '<span>' + sugSectionHeadHtml(r.section) + ' \u00b7 ' + esc(r.username || '') + '</span></div>' +
           '<div class="t2">' + esc(fmtInboxTime(r.created_at)) + (r.read_at ? '' : ' \u00b7 unread') + '</div>' +
           '<div style="font-size:14px;margin-top:4px;white-space:pre-wrap;overflow-wrap:anywhere">' + esc(r.message || '') + '</div></div>' +
           (r.read_at ? '' : '<button type="button" class="btn sm" data-act="sugMark" data-id="' + esc(r.id) + '" style="margin-top:8px">Mark read</button>') +
@@ -12808,7 +13038,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         var title = sug ? (sug.section || 'Suggestion') : 'Notice';
         var html = '<div data-sec="21b">';
         if (sug) {
-          html += '<div class="item" style="display:block;padding:0 0 10px"><div class="t1">' + esc(sug.section || '') + '</div>' +
+          html += '<div class="item" style="display:block;padding:0 0 10px"><div class="t1">' + sugSectionHeadHtml(sug.section) + '</div>' +
             '<div class="t2">' + esc(fmtInboxTime(sug.created_at)) + '</div>' +
             '<div style="font-size:14px;margin-top:4px;white-space:pre-wrap;overflow-wrap:anywhere">' + esc(sug.message || '') + '</div></div>';
         } else {
@@ -12959,8 +13189,19 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
 
   function adminSheet() {
     openSheet('Beta users', '<div id="adminList" data-sec="13a" class="muted">Loading\u2026</div>');
-    Promise.resolve(cloudClient().rpc('admin_list_users')).then(q).then(function (rows) {
-      ui.adminRows = rows || []; var el = document.getElementById('adminList'); if (!el) return; el.classList.remove('muted');
+    var c = cloudClient();
+    var usersP = Promise.resolve(c.rpc('admin_list_users')).then(q);
+    var dirP = isDirectoryAdmin() ? Promise.resolve(c.rpc('directory_admin_overview')).then(q).catch(function () { return null; }) : Promise.resolve(null);
+    Promise.all([usersP, dirP]).then(function (parts) {
+      var rows = parts[0] || [], overview = parts[1];
+      ui.adminRows = rows;
+      var verified = {}, pendingBy = {};
+      if (overview) {
+        (overview.members || []).forEach(function (m) { if (m && m.id) verified[m.id] = m; });
+        (overview.pending || []).forEach(function (r) { if (r && r.user_id) pendingBy[r.user_id] = r; });
+      }
+      var showDir = !!(overview && isDirectoryAdmin());
+      var el = document.getElementById('adminList'); if (!el) return; el.classList.remove('muted');
       var groups = [['pending', 'Pending'], ['approved', 'Approved'], ['denied', 'Denied'], ['revoked', 'Revoked']];
       el.innerHTML = groups.map(function (g) {
         var list = ui.adminRows.filter(function (r) { return r.status === g[0]; });
@@ -12970,9 +13211,20 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
             g[0] === 'pending' ? '<button class="btn sm primary" data-act="adminSet" data-id="' + r.id + '" data-s="approved">Approve</button><button class="btn sm danger" data-act="adminSet" data-id="' + r.id + '" data-s="denied">Deny</button>' :
             g[0] === 'approved' ? '<button class="btn sm danger" data-act="adminSet" data-id="' + r.id + '" data-s="revoked">Revoke</button>' :
             '<button class="btn sm" data-act="adminSet" data-id="' + r.id + '" data-s="approved">Approve</button>');
-          return '<div class="item admrow" data-u="' + esc(r.username) + '"><div class="main"><div class="t1">' + esc(r.username) + (r.role === 'admin' ? ' <span class="betatag">admin</span>' : '') + '</div><div class="t2">' + esc([r.full_name, r.command].filter(Boolean).join(' \u00b7 ') || 'No name given') + '</div><div class="t2">Requested ' + esc(fmtStamp(r.created_at)) + (r.decided_at && g[0] !== 'pending' ? ' \u00b7 ' + g[1].toLowerCase() + ' ' + esc(fmtStamp(r.decided_at)) : '') + '</div></div><div class="admbtns">' + b + '</div></div>';
+          var dirChip = '', dirBtns = '';
+          if (showDir && g[0] === 'approved') {
+            var st = verified[r.id] ? 'verified' : (pendingBy[r.id] ? 'pending' : 'none');
+            dirChip = st === 'verified' ? '<span class="dirstat dirstat-on" data-dirstat="verified">Verified</span>'
+              : st === 'pending' ? '<span class="dirstat dirstat-pending" data-dirstat="pending">Pending request</span>'
+              : '<span class="dirstat dirstat-off" data-dirstat="none">Not verified</span>';
+            if (!me && r.username !== 'admin' && r.username !== 'zee') {
+              if (st === 'verified') dirBtns = '<button class="btn sm danger" data-act="adminDirRevoke" data-id="' + r.id + '" data-user="' + esc(r.username) + '">Revoke verified access</button>';
+              else dirBtns = '<button class="btn sm primary" data-act="adminDirGrant" data-id="' + r.id + '" data-user="' + esc(r.username) + '">Grant verified access</button>';
+            }
+          }
+          return '<div class="item admrow" data-u="' + esc(r.username) + '"' + (showDir && g[0] === 'approved' ? ' data-dirstat="' + (verified[r.id] ? 'verified' : (pendingBy[r.id] ? 'pending' : 'none')) + '"' : '') + '><div class="main"><div class="t1">' + esc(r.username) + (r.role === 'admin' ? ' <span class="betatag">admin</span>' : '') + dirChip + '</div><div class="t2">' + esc([r.full_name, r.command].filter(Boolean).join(' \u00b7 ') || 'No name given') + '</div><div class="t2">Requested ' + esc(fmtStamp(r.created_at)) + (r.decided_at && g[0] !== 'pending' ? ' \u00b7 ' + g[1].toLowerCase() + ' ' + esc(fmtStamp(r.decided_at)) : '') + '</div></div><div class="admbtns">' + b + dirBtns + '</div></div>';
         }).join('') + '</div>' : '<div class="empty">None</div>');
-      }).join('') + '<div class="hint">Approving lets the person sign in and sync their own data. Revoke stops their access (their device keeps its local copy). Nobody can see anyone else\'s data, including the admin.</div>';
+      }).join('') + '<div class="hint">Approving lets the person sign in and sync their own data. Revoke stops their access (their device keeps its local copy). Nobody can see anyone else\'s data, including the admin.' + (showDir ? ' Grant or revoke verified directory access from this list the same way as the Verified Access queue; it does not add anyone to the directory.' : '') + '</div>';
     }).catch(function (e) { var el = document.getElementById('adminList'); if (el) el.textContent = 'Couldn\'t load users: ' + errText(e); });
   }
   // ---------- Court / certification slips (optional photo -> straightened PDF, stored in IndexedDB) ----------
@@ -14790,7 +15042,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="' + ((s.defaultCalendar || 'google') === 'apple' ? 'on' : '') + '" data-act="calDefault" data-v="apple">Apple</button></div>' +
       '<h3 style="margin-top:20px" data-sec="9m">Subscribe to calendar</h3>' + calendarSubscribeHtml() +
       '<button class="btn danger block" data-act="reset" data-sec="9k" style="margin-top:20px">Erase all data</button>' +
-      '<p class="build-tag muted" id="appBuildTag">Build r118 · patrol-test-8034b92b9e8f</p>');
+      '<p class="build-tag muted" id="appBuildTag">Build r119 · patrol-test-fc6612a3eb6e</p>');
   }
 
   // ---------- Day summary: what's saved on a date; tap an entry to view or change it ----------
@@ -15639,6 +15891,22 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         Promise.resolve(cloudClient().rpc('revoke_directory_access', { target_id: id })).then(q).then(function () { toast('Access revoked'); dirAccessAdminSheet(); }, function (e) { toast(errText(e)); });
       } });
     },
+    adminDirGrant: function (t) {
+      if (!isDirectoryAdmin()) return;
+      var id = t && t.dataset && t.dataset.id, name = (t && t.dataset && t.dataset.user) || 'this member';
+      if (!id) return;
+      confirmDlg({ title: 'Grant verified access?', body: '<p>Grant verified directory access to <b>' + esc(name) + '</b>? This is the same as approving a request. Their name is not added to the directory.</p>', ok: 'Grant access', onOk: function () {
+        Promise.resolve(cloudClient().rpc('grant_directory_access', { target_id: id })).then(q).then(function () { toast('Verified access granted'); adminSheet(); }, function (e) { toast(errText(e)); });
+      } });
+    },
+    adminDirRevoke: function (t) {
+      if (!isDirectoryAdmin()) return;
+      var id = t && t.dataset && t.dataset.id, name = (t && t.dataset && t.dataset.user) || 'this member';
+      if (!id) return;
+      confirmDlg({ title: 'Revoke verified access?', body: '<p>Revoke verified directory access for <b>' + esc(name) + '</b>? They will lose access immediately.</p>', ok: 'Revoke', danger: true, onOk: function () {
+        Promise.resolve(cloudClient().rpc('revoke_directory_access', { target_id: id })).then(q).then(function () { toast('Access revoked'); adminSheet(); }, function (e) { toast(errText(e)); });
+      } });
+    },
 
     adminBeta: function (t) {
       var r = (ui.adminRows || []).filter(function (x) { return x.id === t.dataset.id; })[0]; if (!r) return; t.disabled = true;
@@ -16244,6 +16512,10 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     sugCapture: function () { sugCapture(); },
     sugClear: function () { if (ui.sugUrl && String(ui.sugUrl).indexOf('blob:') === 0) try { URL.revokeObjectURL(ui.sugUrl); } catch (e) {} setSugFile(null, ''); },
     sugSend: function () { sugSend(); },
+    sugPickSection: function () { startSugPick(); },
+    sugPickCancel: function () { sugPickCancel(); },
+    sugPickClear: function () { sugPickClear(); },
+
     inboxOpen: function () { openInbox(); },
     sugPopDismiss: function () { hideSugPop(); },
     sugMark: function (t) { sugMark(t.dataset.id); },
@@ -16585,6 +16857,16 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   document.addEventListener('pointerup', swipeUp);
   document.addEventListener('pointercancel', swipeUp);
   document.addEventListener('click', function (ev) {
+    if (!document.body.classList.contains('sugpick')) return;
+    if (ev.target.closest && ev.target.closest('#sugPickBanner, [data-act="sugPickCancel"]')) return;
+    ev.preventDefault();
+    ev.stopImmediatePropagation();
+    var el = ev.target.closest && ev.target.closest('[data-sec]');
+    if (!el) return;
+    var tag = el.getAttribute('data-sec');
+    if (tag) finishSugPick(tag, el);
+  }, true);
+  document.addEventListener('click', function (ev) {
     if (SW.suppressClick) { var same = SW.suppressRow && ev.target.closest && ev.target.closest('.swrow') === SW.suppressRow; SW.suppressClick = false; SW.suppressRow = null; if (same) { ev.preventDefault(); ev.stopPropagation(); return; } }
     var box = document.getElementById('lvOpts');
     if (box && box.classList.contains('open') && !box.contains(ev.target)) closeDaySel();
@@ -16897,6 +17179,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     if (ev.key !== 'Escape') return;
     var box = document.getElementById('lvOpts');
     if (box && box.classList.contains('open')) { closeDaySel(); ev.preventDefault(); return; }
+    if (document.body.classList.contains('sugpick')) { ev.preventDefault(); sugPickCancel(); return; }
     if (document.getElementById('cfmDlg')) return; // the confirm box handles its own Escape
     var pick = document.getElementById('payPickList');
     if (pick && !pick.hidden) { closePayPick(); ev.preventDefault(); return; }
