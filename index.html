@@ -1111,10 +1111,14 @@ html[data-theme="dark"] #vdirPdfQ{
   background:#fff;color:#0b1f3a
 }
 
+#bootSplash{position:fixed;inset:0;z-index:99990;display:flex;align-items:center;justify-content:center;background:var(--bg);padding:env(safe-area-inset-top) 16px env(safe-area-inset-bottom)}
+#bootSplash[hidden]{display:none!important}
+#bootSplash img{width:min(72vw,58vh,320px);height:auto;display:block;flex-shrink:0}
 </style>
 <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
 </head>
 <body>
+<div id="bootSplash" role="img" aria-label="FINEST HQ"><img src="icons/finest-hq-in-shield.png" alt="FINEST HQ"></div>
 <div id="app">
   <div id="topStack" class="topstack">
   <header class="top">
@@ -10637,7 +10641,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="btn sm chip' + (ui.dirHospLevel1 ? ' on' : '') + '" data-act="hospChip" data-filter="level1" aria-pressed="' + (ui.dirHospLevel1 ? 'true' : 'false') + '">Level 1 Trauma</button>' +
       '</div>' +
       '</div>' +
-      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r120 · patrol-e986bc812991</p></div>' +
+      '<div class="map-legend" data-sec="4m"><p>Reference map only — it does not give turn-by-turn directions. Use Google, Apple, or Waze for that.</p><p class="build-tag muted" id="mapBuildTag">Build r121 · patrol-66851633649c</p></div>' +
       '</div>';
     var mapTools = '<div class="dir-map-chrome">' +
       '<div class="dir-map-search"><input id="dirQ" class="dirq acIn" data-ac="map" type="text" value="' + esc(q) + '" placeholder="Search an address or precinct" aria-label="Search an address or precinct" autocomplete="off"></div>' +
@@ -15093,7 +15097,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         '<button type="button" class="' + ((s.defaultCalendar || 'google') === 'apple' ? 'on' : '') + '" data-act="calDefault" data-v="apple">Apple</button></div>' +
       '<h3 style="margin-top:20px" data-sec="9m">Subscribe to calendar</h3>' + calendarSubscribeHtml() +
       '<button class="btn danger block" data-act="reset" data-sec="9k" style="margin-top:20px">Erase all data</button>' +
-      '<p class="build-tag muted" id="appBuildTag">Build r120 · patrol-e986bc812991</p>');
+      '<p class="build-tag muted" id="appBuildTag">Build r121 · patrol-66851633649c</p>');
   }
 
   // ---------- Day summary: what's saved on a date; tap an entry to view or change it ----------
@@ -17267,8 +17271,15 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
   inboxSheet = navable('inbox', inboxSheet, function () { return ''; }); userInboxSheet = navable('messages', userInboxSheet, function (k) { return k || ''; }); adminSheet = navable('admin', adminSheet, function () { return ''; }); dirAccessAdminSheet = navable('dirAccess', dirAccessAdminSheet, function () { return ''; });
   x15Sheet = navable('x15', x15Sheet); x15Editor = navable('x15ed', x15Editor, function (y, m, t) { return [y, m, t].join('-'); });
   A.leaveNew = navable('leaveNew', A.leaveNew, function (t) { return t && t.dataset ? t.dataset.kind || '' : ''; }); A.syncOpen = navable('sync', A.syncOpen, function () { return ''; });
+  function hideBootSplash(){
+    var el = document.getElementById('bootSplash');
+    if (!el) return;
+    if (/(?:^|[?&])splash=1(?:&|$)/.test(location.search)) return;
+    el.hidden = true;
+  }
   applyTheme(); watchTheme();
   if (CL.enabled) cloudBoot(); else { render(); slipReconcile(); }
+  hideBootSplash();
   setTimeout(function () { try { if (S.profile) resolveHistPcts(); } catch (e) {} }, 1500);
   if ('serviceWorker' in navigator && document.querySelector('link[rel="manifest"]') && /^(https:|http:\/\/(localhost|127\.0\.0\.1))/.test(location.href)) {
     var swRefreshing = false;
